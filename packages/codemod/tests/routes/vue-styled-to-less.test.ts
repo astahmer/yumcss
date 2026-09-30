@@ -60,6 +60,7 @@ test("vue-styled -> less: migrates concrete vue-styled syntax to less", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("vue-styled -> less: carries a documented secondary vue-styled API explicit
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,6 +161,7 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,6 +198,7 @@ test("vue-styled -> less: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,6 +247,7 @@ test("vue-styled -> less: resolves concrete token values with project context", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,6 +294,7 @@ test("vue-styled -> less: preserves malformed concrete vue-styled input", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

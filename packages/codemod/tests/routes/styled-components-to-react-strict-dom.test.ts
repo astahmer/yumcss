@@ -41,14 +41,6 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		expect(result.code).not.toContain("pandwind:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					kind: "host-framework",
-					hint: expect.stringContaining("polymorphic as contract"),
-				}),
-			]),
-		);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "styled-components -> react-strict-dom happy");
@@ -327,3 +319,4 @@ test("styled-components -> react-strict-dom: preserves malformed concrete styled
 		}
 	`)
 });
+

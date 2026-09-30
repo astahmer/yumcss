@@ -4,10 +4,12 @@ import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, Codemod
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Tailwind, CodemodAdapterId.NextYak, "#f97316");
 	const targetSemantic = undefined;
 
-test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round trip", () => {
+test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,9 +46,9 @@ test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round t
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> next-yak round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -116,19 +119,21 @@ test("tailwind -> next-yak -> tailwind: preserves an actionable concrete round t
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("tailwind -> next-yak -> tailwind: retains the documented secondary API without silent loss", () => {
+test("tailwind -> next-yak -> tailwind: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "tailwind -> next-yak round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -176,15 +181,18 @@ test("tailwind -> next-yak -> tailwind: retains the documented secondary API wit
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("tailwind -> next-yak -> tailwind: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.NextYak);
@@ -192,15 +200,15 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 	expectRouteScenarioEvidence(firstBlue, "tailwind -> next-yak round-trip blue forward");
 	expectRouteScenarioEvidence(firstAmber, "tailwind -> next-yak round-trip amber forward");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -273,6 +281,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
@@ -344,6 +353,7 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -351,14 +361,15 @@ test("tailwind -> next-yak -> tailwind: preserves concrete theme and project con
 
 test("tailwind -> next-yak -> tailwind: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Tailwind, CodemodAdapterId.NextYak);
 	expectRouteScenarioEvidence(first, "tailwind -> next-yak round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -429,6 +440,7 @@ test("tailwind -> next-yak -> tailwind: resolves token values across both concre
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

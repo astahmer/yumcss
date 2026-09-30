@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import { extname, resolve } from "node:path";
 import { expect } from "vitest";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
@@ -83,6 +83,44 @@ interface AdapterRouteInput {
 	readonly semantic?: AdapterMigrationOptions["semantic"];
 	readonly project?: AdapterRouteProject;
 }
+
+export const createReverseRouteInput = ({
+	forward,
+	input,
+	semantic,
+}: {
+	readonly forward: AdapterMigrationResult;
+	readonly input: AdapterRouteInput;
+	readonly semantic?: AdapterRouteInput["semantic"];
+}): AdapterRouteInput => {
+	const project = input.project ?? {
+		root: routeProjectRoot,
+		files: {},
+		loaderCalls: { packages: [], files: [] },
+	};
+	const file =
+		forward.outputExtension === undefined
+			? input.file
+			: input.file.slice(0, -extname(input.file).length) + forward.outputExtension;
+	const sourcePath = resolve(project.root, input.file);
+	const outputPath = resolve(project.root, file);
+	const files: Record<string, string> = { ...project.files };
+	delete files[sourcePath];
+	files[outputPath] = forward.code;
+	for (const change of forward.fileChanges) {
+		const path = resolve(project.root, change.path);
+		if (change.expectedContent !== undefined && files[path] !== undefined)
+			expect(files[path], `stale reverse project file ${path}`).toBe(change.expectedContent);
+		files[path] = change.content;
+	}
+	for (const artifact of forward.generatedFiles) {
+		const path = resolve(project.root, artifact.path);
+		if (files[path] !== undefined)
+			expect(files[path], `conflicting reverse project artifact ${path}`).toBe(artifact.content);
+		files[path] = artifact.content;
+	}
+	return { source: forward.code, file, semantic, project: { ...project, files } };
+};
 
 /** Virtual project context used by route specs to exercise config-aware adapters. */
 interface AdapterRouteProject {
@@ -408,6 +446,56 @@ export interface AdapterRouteSpec {
 	runAsync(input: AdapterRouteInput): Promise<AdapterMigrationResult>;
 }
 
+export const reverseGeneratedRouteFiles = async ({
+	route,
+	forward,
+	input,
+	semantic,
+}: {
+	readonly route: AdapterRouteSpec;
+	readonly forward: AdapterMigrationResult;
+	readonly input: AdapterRouteInput;
+	readonly semantic?: AdapterRouteInput["semantic"];
+}) => {
+	const reverseInput = createReverseRouteInput({ forward, input, semantic });
+	const results = [];
+	for (const artifact of forward.generatedFiles) {
+		if (artifact.path.endsWith(".map")) continue;
+		const result = await route.runAsync({
+			...reverseInput,
+			file: artifact.path,
+			source: artifact.content,
+		});
+		results.push({ path: artifact.path, result });
+	}
+	return results;
+};
+
+export const expectArtifactProjectRoundTrip = (
+	forward: AdapterMigrationResult,
+	reverse: AdapterMigrationResult,
+	artifacts: Awaited<ReturnType<typeof reverseGeneratedRouteFiles>>,
+) => {
+	if (forward.generatedFiles.length === 0) {
+		expectActionableRoundTrip(forward, reverse);
+		return;
+	}
+	if (reverse.converted + reverse.skipped + reverse.residuals.length > 0) return;
+	expect(reverse.code, "artifact-only reverse projection must preserve its component consumers").toBe(
+		forward.code,
+	);
+	expect(artifacts.length, "reverse projection omitted generated style documents").toBeGreaterThan(0);
+	expect(
+		artifacts.some(({ result }) => result.converted + result.skipped + result.residuals.length > 0),
+		"reverse projection did not recognize any generated style document",
+	).toBe(true);
+	for (const { result } of artifacts) {
+		if (result.converted + result.skipped + result.residuals.length === 0) continue;
+		expectRouteScenarioEvidence(result, "generated document reverse projection");
+		expectExplicitResidualEvidence(result);
+	}
+};
+
 /** In-process route harness shared by every generated directional spec. */
 export function createAdapterRouteSpec(
 	source: CodemodAdapterId,
@@ -705,7 +793,6 @@ export function expectActionableRoundTrip(
 	if (forward.converted > 0 && !forwardHasResidual) {
 		expect(
 			reverseActionable ||
-				forward.changed ||
 				(forwardHasPortableArtifact && reverse.code === forward.code),
 		).toBe(true);
 		return;

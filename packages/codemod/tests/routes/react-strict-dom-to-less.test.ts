@@ -49,7 +49,7 @@ test("react-strict-dom -> less: migrates concrete react-strict-dom syntax to les
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -61,24 +61,20 @@ test("react-strict-dom -> less: migrates concrete react-strict-dom syntax to les
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -100,7 +96,7 @@ test("react-strict-dom -> less: carries a documented secondary react-strict-dom 
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: nesting: keyframes nested rules | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -111,24 +107,20 @@ test("react-strict-dom -> less: carries a documented secondary react-strict-dom 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "nesting: keyframes nested rules",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -159,7 +151,7 @@ test("react-strict-dom -> less: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -171,24 +163,20 @@ test("react-strict-dom -> less: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -201,7 +189,7 @@ test("react-strict-dom -> less: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -213,24 +201,20 @@ test("react-strict-dom -> less: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -255,7 +239,7 @@ test("react-strict-dom -> less: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -267,24 +251,20 @@ test("react-strict-dom -> less: resolves concrete token values with project cont
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -306,7 +286,7 @@ test("react-strict-dom -> less: preserves malformed concrete react-strict-dom in
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> less | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",
@@ -319,24 +299,20 @@ test("react-strict-dom -> less: preserves malformed concrete react-strict-dom in
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",

@@ -60,6 +60,7 @@ test("solid-styled -> sass: migrates concrete solid-styled syntax to sass", () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("solid-styled -> sass: carries a documented secondary solid-styled API expl
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,6 +161,7 @@ test("solid-styled -> sass: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,6 +198,7 @@ test("solid-styled -> sass: loads concrete theme and project context variants", 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,6 +247,7 @@ test("solid-styled -> sass: resolves concrete token values with project context"
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,6 +294,7 @@ test("solid-styled -> sass: preserves malformed concrete solid-styled input", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

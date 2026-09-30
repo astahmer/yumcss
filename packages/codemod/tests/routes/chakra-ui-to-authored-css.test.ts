@@ -51,7 +51,7 @@ test("chakra-ui -> authored-css: migrates concrete chakra-ui syntax to authored-
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -62,6 +62,7 @@ test("chakra-ui -> authored-css: migrates concrete chakra-ui syntax to authored-
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -80,6 +81,11 @@ test("chakra-ui -> authored-css: migrates concrete chakra-ui syntax to authored-
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -96,7 +102,7 @@ test("chakra-ui -> authored-css: carries a documented secondary chakra-ui API ex
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: capability | available: residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -107,6 +113,7 @@ test("chakra-ui -> authored-css: carries a documented secondary chakra-ui API ex
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -154,7 +161,7 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,6 +172,7 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -183,6 +191,11 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "authored-css has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -190,7 +203,7 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,6 +214,7 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -217,6 +231,11 @@ test("chakra-ui -> authored-css: loads concrete theme and project context varian
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "authored-css has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -238,7 +257,7 @@ test("chakra-ui -> authored-css: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -249,6 +268,7 @@ test("chakra-ui -> authored-css: resolves concrete token values with project con
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -267,6 +287,11 @@ test("chakra-ui -> authored-css: resolves concrete token values with project con
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -283,7 +308,7 @@ test("chakra-ui -> authored-css: preserves malformed concrete chakra-ui input", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 0,
@@ -295,6 +320,7 @@ test("chakra-ui -> authored-css: preserves malformed concrete chakra-ui input", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -311,6 +337,11 @@ test("chakra-ui -> authored-css: preserves malformed concrete chakra-ui input", 
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

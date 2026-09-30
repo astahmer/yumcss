@@ -48,8 +48,8 @@ test("panda -> bamboo: migrates concrete panda syntax to bamboo", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "red", "&:hover": { color: "blue" } });",
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -143,8 +143,8 @@ test("panda -> bamboo: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "#f97316", "&:hover": { color: "#f97316" } });",
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +177,8 @@ test("panda -> bamboo: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +223,8 @@ test("panda -> bamboo: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -266,8 +266,8 @@ test("panda -> bamboo: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "red", "&:hover": { color: "blue" } });
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,
 		  "generatedFiles": [],

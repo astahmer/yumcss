@@ -49,7 +49,7 @@ test("next-yak -> authored-css: migrates concrete next-yak syntax to authored-cs
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("next-yak -> authored-css: migrates concrete next-yak syntax to authored-cs
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("next-yak -> authored-css: carries a documented secondary next-yak API expl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: component | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("next-yak -> authored-css: carries a documented secondary next-yak API expl
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +150,7 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,6 +161,7 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +187,7 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +198,7 @@ test("next-yak -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +236,7 @@ test("next-yak -> authored-css: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -243,6 +247,7 @@ test("next-yak -> authored-css: resolves concrete token values with project cont
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +282,7 @@ test("next-yak -> authored-css: preserves malformed concrete next-yak input", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 0,
@@ -289,6 +294,7 @@ test("next-yak -> authored-css: preserves malformed concrete next-yak input", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

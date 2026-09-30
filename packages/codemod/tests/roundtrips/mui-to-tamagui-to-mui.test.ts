@@ -4,10 +4,12 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapt
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.Tamagui, "#f97316");
 	const targetSemantic = undefined;
 
-test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () => {
+test("mui -> tamagui -> mui: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,9 +46,9 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 	}
 	expectRouteScenarioEvidence(first, "mui -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -117,19 +120,21 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", () =>
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("mui -> tamagui -> mui: retains the documented secondary API without silent loss", () => {
+test("mui -> tamagui -> mui: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> tamagui round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -201,15 +206,18 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("mui -> tamagui -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Tamagui);
@@ -217,15 +225,15 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 	expectRouteScenarioEvidence(firstBlue, "mui -> tamagui round-trip blue forward");
 	expectRouteScenarioEvidence(firstAmber, "mui -> tamagui round-trip amber forward");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -307,6 +315,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
@@ -387,6 +396,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -394,14 +404,15 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 
 test("mui -> tamagui -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.Tamagui);
 	expectRouteScenarioEvidence(first, "mui -> tamagui round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -481,6 +492,7 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

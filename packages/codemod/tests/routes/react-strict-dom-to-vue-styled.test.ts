@@ -95,7 +95,7 @@ test("react-strict-dom -> vue-styled: carries a documented secondary react-stric
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> vue-styled | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -120,7 +120,7 @@ test("react-strict-dom -> vue-styled: carries a documented secondary react-stric
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules",
+		      "hint": "rule-level: 1 semantic rules; keyframes: keyframes rule",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

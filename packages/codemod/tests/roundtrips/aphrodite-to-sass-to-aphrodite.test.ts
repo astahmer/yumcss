@@ -4,10 +4,12 @@ import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, Codemo
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Aphrodite, CodemodAdapterId.Sass, "#f97316");
 	const targetSemantic = undefined;
 
-test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round trip", () => {
+test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "styles.ts" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "styles.ts" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,14 +46,14 @@ test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round tri
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -61,24 +64,20 @@ test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round tri
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -91,7 +90,7 @@ test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -101,24 +100,26 @@ test("aphrodite -> sass -> aphrodite: preserves an actionable concrete round tri
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("aphrodite -> sass -> aphrodite: retains the documented secondary API without silent loss", () => {
+test("aphrodite -> sass -> aphrodite: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "styles.ts", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.ts", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "styles.ts" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "styles.ts" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "aphrodite -> sass round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -129,21 +130,22 @@ test("aphrodite -> sass -> aphrodite: retains the documented secondary API witho
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: fonts; nesting: style nested rules",
+		        "hint": "nesting: style nested rules",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -159,7 +161,7 @@ test("aphrodite -> sass -> aphrodite: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: fonts; nesting: style nested rules | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -169,15 +171,18 @@ test("aphrodite -> sass -> aphrodite: retains the documented secondary API witho
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("aphrodite -> sass -> aphrodite: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "styles.ts", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "styles.ts", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.ts", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.ts", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "styles.ts", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "styles.ts", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Sass);
@@ -186,22 +191,22 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 	expectRouteScenarioEvidence(firstAmber, "aphrodite -> sass round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Sass, "aphrodite -> sass round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -212,24 +217,20 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "named-map",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "named-rules: named style rule: card",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -242,7 +243,7 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -252,12 +253,13 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -268,24 +270,20 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "named-map",
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "named-rules: named style rule: card",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		          "kind": "capability",
@@ -298,7 +296,7 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -308,6 +306,7 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -315,19 +314,20 @@ test("aphrodite -> sass -> aphrodite: preserves concrete theme and project conte
 
 test("aphrodite -> sass -> aphrodite: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.ts", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.ts", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "styles.ts", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "styles.ts", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Aphrodite, CodemodAdapterId.Sass);
 	expectRouteScenarioEvidence(first, "aphrodite -> sass round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -338,24 +338,20 @@ test("aphrodite -> sass -> aphrodite: resolves token values across both concrete
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -368,7 +364,7 @@ test("aphrodite -> sass -> aphrodite: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -378,6 +374,7 @@ test("aphrodite -> sass -> aphrodite: resolves token values across both concrete
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

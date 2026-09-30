@@ -49,7 +49,7 @@ test("bamboo -> authored-css: migrates concrete bamboo syntax to authored-css", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("bamboo -> authored-css: migrates concrete bamboo syntax to authored-css", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("bamboo -> authored-css: carries a documented secondary bamboo API explicit
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("bamboo -> authored-css: carries a documented secondary bamboo API explicit
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +150,7 @@ test("bamboo -> authored-css: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,6 +161,7 @@ test("bamboo -> authored-css: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +187,7 @@ test("bamboo -> authored-css: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +198,7 @@ test("bamboo -> authored-css: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +236,7 @@ test("bamboo -> authored-css: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -243,6 +247,7 @@ test("bamboo -> authored-css: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +282,7 @@ test("bamboo -> authored-css: preserves malformed concrete bamboo input", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 0,
@@ -289,6 +294,7 @@ test("bamboo -> authored-css: preserves malformed concrete bamboo input", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

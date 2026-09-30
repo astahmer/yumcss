@@ -49,7 +49,7 @@ test("panda -> authored-css: migrates concrete panda syntax to authored-css", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("panda -> authored-css: migrates concrete panda syntax to authored-css", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("panda -> authored-css: carries a documented secondary panda API explicitly
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: composition, capability | capability-blocked: named-conditions: named: size | available: residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: composition, capability | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("panda -> authored-css: carries a documented secondary panda API explicitly
 		        "composition-flatten",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -162,7 +164,7 @@ test("panda -> authored-css: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -173,6 +175,7 @@ test("panda -> authored-css: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -198,7 +201,7 @@ test("panda -> authored-css: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -209,6 +212,7 @@ test("panda -> authored-css: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -246,7 +250,7 @@ test("panda -> authored-css: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -257,6 +261,7 @@ test("panda -> authored-css: resolves concrete token values with project context
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -291,7 +296,7 @@ test("panda -> authored-css: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: panda -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
@@ -303,6 +308,7 @@ test("panda -> authored-css: preserves malformed concrete panda input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

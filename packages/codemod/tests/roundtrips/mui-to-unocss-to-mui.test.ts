@@ -4,6 +4,8 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapt
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Mui, CodemodAdapterId.UnoCSS, "#f97316");
 	const targetSemantic = undefined;
 
-test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => {
+test("mui -> unocss -> mui: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -45,7 +48,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 	expectExplicitResidualEvidence(first);
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mui -> unocss round-trip happy");
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -85,51 +88,43 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => <Box sx={{ color: "red", padding: "16px" }} />;",
-		    "converted": 1,
+		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		import { Box } from "@mui/material";
+		export const App = () => <Box className={"[color:red] [padding:16px]"}/>;",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "static",
-		        "residuals": [],
-		      },
-		    ],
+		    "loweringPlans": [],
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "no uno.config or unocss.config file was found, so the project's utility rules cannot be verified",
+		        "kind": "configuration",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("mui -> unocss -> mui: retains the documented secondary API without silent loss", () => {
+test("mui -> unocss -> mui: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "App.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "App.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "mui -> unocss round-trip secondary forward");
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mui -> unocss round-trip secondary");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -194,15 +189,18 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("mui -> unocss -> mui: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "App.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "App.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "App.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.UnoCSS);
@@ -217,8 +215,8 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -292,6 +290,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
@@ -364,6 +363,7 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -371,14 +371,15 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 
 test("mui -> unocss -> mui: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "App.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "App.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "App.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Mui, CodemodAdapterId.UnoCSS);
 	expectRouteScenarioEvidence(first, "mui -> unocss round-trip token forward");
 	expectTargetClassProjection(first, second, ["text-","bg-","p-","[","className","class"], "mui -> unocss round-trip token");
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -450,6 +451,7 @@ test("mui -> unocss -> mui: resolves token values across both concrete legs", as
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

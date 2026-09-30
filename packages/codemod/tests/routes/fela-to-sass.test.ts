@@ -50,7 +50,7 @@ test("fela -> sass: migrates concrete fela syntax to sass", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -61,6 +61,7 @@ test("fela -> sass: migrates concrete fela syntax to sass", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -95,7 +96,7 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -106,6 +107,7 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -155,7 +157,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -166,6 +168,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -192,7 +195,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,6 +206,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -241,7 +245,7 @@ test("fela -> sass: resolves concrete token values with project context", async 
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -252,6 +256,7 @@ test("fela -> sass: resolves concrete token values with project context", async 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -287,7 +292,7 @@ test("fela -> sass: preserves malformed concrete fela input", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));
 		const unfinished = { /* unfinished fela */",
 		  "converted": 0,
@@ -299,6 +304,7 @@ test("fela -> sass: preserves malformed concrete fela input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

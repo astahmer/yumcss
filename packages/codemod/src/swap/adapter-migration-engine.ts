@@ -1769,6 +1769,7 @@ function runAdapterMigrationInternal(
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	const sourceCssSurvives =
 		converted > 0 &&
+		!sourceImportsBinding(code, "css", targetOwnership.modules, targetOwnership.matchers) &&
 		sourceImportsBinding(code, "css", sourceOwnership.modules, sourceOwnership.matchers);
 	if (sourceCssSurvives) {
 		code = normalizeSourceCssBinding(code, sourceOwnership.modules, sourceOwnership.matchers);

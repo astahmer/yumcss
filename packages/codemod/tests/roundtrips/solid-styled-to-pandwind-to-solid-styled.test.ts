@@ -4,10 +4,12 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, Code
 const amberProject = createAdapterRouteProject(CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind, "#f97316");
 	const targetSemantic = undefined;
 
-test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete round trip", () => {
+test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "styles.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "styles.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,9 +46,9 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -127,19 +130,21 @@ test("solid-styled -> pandwind -> solid-styled: preserves an actionable concrete
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("solid-styled -> pandwind -> solid-styled: retains the documented secondary API without silent loss", () => {
+test("solid-styled -> pandwind -> solid-styled: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "styles.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "styles.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -221,15 +226,18 @@ test("solid-styled -> pandwind -> solid-styled: retains the documented secondary
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "styles.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "styles.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind);
@@ -238,15 +246,15 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 	expectRouteScenarioEvidence(firstAmber, "solid-styled -> pandwind round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Pandwind, "solid-styled -> pandwind round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -333,6 +341,54 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": false,
+		        "code": "import { Dynamic } from "solid-js/web";
+
+		type PandwindSlotProps = Record<string, any> & { as?: any };
+		type PandwindSlotOptions = {
+			readonly defaultComponent: any;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly string[];
+			readonly attrs: Record<string, any>;
+			readonly joinClass: (...values: any[]) => string;
+		};
+
+		export const __pandwindSlot = ({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions) => {
+			const component = (props: PandwindSlotProps) => {
+				const Component = attrs.as ?? props.as ?? defaultComponent;
+				const { as: _as, ...rest } = props;
+			const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix))));
+				return <Dynamic component={Component} {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
+			};
+			component.__pandwindClassName = stableClass;
+			return component;
+		};
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [],
+		        "outcomes": [],
+		        "path": "__pandwind/solid-slot.tsx",
+		        "residuals": [],
+		        "skipped": 0,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "forward": {
@@ -419,6 +475,54 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": false,
+		        "code": "import { Dynamic } from "solid-js/web";
+
+		type PandwindSlotProps = Record<string, any> & { as?: any };
+		type PandwindSlotOptions = {
+			readonly defaultComponent: any;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly string[];
+			readonly attrs: Record<string, any>;
+			readonly joinClass: (...values: any[]) => string;
+		};
+
+		export const __pandwindSlot = ({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions) => {
+			const component = (props: PandwindSlotProps) => {
+				const Component = attrs.as ?? props.as ?? defaultComponent;
+				const { as: _as, ...rest } = props;
+			const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix))));
+				return <Dynamic component={Component} {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
+			};
+			component.__pandwindClassName = stableClass;
+			return component;
+		};
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [],
+		        "outcomes": [],
+		        "path": "__pandwind/solid-slot.tsx",
+		        "residuals": [],
+		        "skipped": 0,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -426,14 +530,15 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 
 test("solid-styled -> pandwind -> solid-styled: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.SolidStyled, CodemodAdapterId.Pandwind);
 	expectRouteScenarioEvidence(first, "solid-styled -> pandwind round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -519,6 +624,54 @@ test("solid-styled -> pandwind -> solid-styled: resolves token values across bot
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [
+		    {
+		      "changed": false,
+		      "code": "import { Dynamic } from "solid-js/web";
+
+		type PandwindSlotProps = Record<string, any> & { as?: any };
+		type PandwindSlotOptions = {
+			readonly defaultComponent: any;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly string[];
+			readonly attrs: Record<string, any>;
+			readonly joinClass: (...values: any[]) => string;
+		};
+
+		export const __pandwindSlot = ({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions) => {
+			const component = (props: PandwindSlotProps) => {
+				const Component = attrs.as ?? props.as ?? defaultComponent;
+				const { as: _as, ...rest } = props;
+			const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix))));
+				return <Dynamic component={Component} {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />;
+			};
+			component.__pandwindClassName = stableClass;
+			return component;
+		};
+		",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "path": "__pandwind/solid-slot.tsx",
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  ],
 		}
 	`)
 });

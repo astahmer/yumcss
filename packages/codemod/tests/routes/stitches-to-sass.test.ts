@@ -49,7 +49,7 @@ test("stitches -> sass: migrates concrete stitches syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("stitches -> sass: migrates concrete stitches syntax to sass", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("stitches -> sass: carries a documented secondary stitches API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("stitches -> sass: carries a documented secondary stitches API explicitly",
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +150,7 @@ test("stitches -> sass: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,6 +161,7 @@ test("stitches -> sass: loads concrete theme and project context variants", asyn
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +187,7 @@ test("stitches -> sass: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +198,7 @@ test("stitches -> sass: loads concrete theme and project context variants", asyn
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +236,7 @@ test("stitches -> sass: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -243,6 +247,7 @@ test("stitches -> sass: resolves concrete token values with project context", as
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +282,7 @@ test("stitches -> sass: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: stitches -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 0,
@@ -289,6 +294,7 @@ test("stitches -> sass: preserves malformed concrete stitches input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

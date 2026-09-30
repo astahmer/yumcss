@@ -51,7 +51,7 @@ test("chakra-ui -> less: migrates concrete chakra-ui syntax to less", async () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -62,6 +62,7 @@ test("chakra-ui -> less: migrates concrete chakra-ui syntax to less", async () =
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -80,6 +81,11 @@ test("chakra-ui -> less: migrates concrete chakra-ui syntax to less", async () =
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -96,7 +102,7 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: capability | available: residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -107,6 +113,7 @@ test("chakra-ui -> less: carries a documented secondary chakra-ui API explicitly
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -154,7 +161,7 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,6 +172,7 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -183,6 +191,11 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -190,7 +203,7 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,6 +214,7 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -217,6 +231,11 @@ test("chakra-ui -> less: loads concrete theme and project context variants", asy
 		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "less has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -238,7 +257,7 @@ test("chakra-ui -> less: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -249,6 +268,7 @@ test("chakra-ui -> less: resolves concrete token values with project context", a
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -267,6 +287,11 @@ test("chakra-ui -> less: resolves concrete token values with project context", a
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -283,7 +308,7 @@ test("chakra-ui -> less: preserves malformed concrete chakra-ui input", async ()
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 0,
@@ -295,6 +320,7 @@ test("chakra-ui -> less: preserves malformed concrete chakra-ui input", async ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -311,6 +337,11 @@ test("chakra-ui -> less: preserves malformed concrete chakra-ui input", async ()
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

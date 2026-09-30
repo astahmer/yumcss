@@ -4,10 +4,12 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents,
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Less, "#f97316");
 	const targetSemantic = undefined;
 
-test("styled-components -> less -> styled-components: preserves an actionable concrete round trip", () => {
+test("styled-components -> less -> styled-components: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "Card.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "Card.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,9 +46,9 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -67,6 +70,7 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -103,19 +107,58 @@ test("styled-components -> less -> styled-components: preserves an actionable co
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [
+		    {
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.pw-Card-wwrtu8 { color: red; padding: 1rem; }
+		",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "path": "Card.styles.less",
+		      "residuals": [
+		        {
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  ],
 		}
 	`)
 });
 
-test("styled-components -> less -> styled-components: retains the documented secondary API without silent loss", () => {
+test("styled-components -> less -> styled-components: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "Card.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "Card.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "styled-components -> less round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -137,6 +180,7 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -173,15 +217,55 @@ test("styled-components -> less -> styled-components: retains the documented sec
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [
+		    {
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.pw-Card-wwrtu8 { color: red; padding: 1rem; }
+		",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "path": "Card.styles.less",
+		      "residuals": [
+		        {
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  ],
 		}
 	`)
 });
 
 test("styled-components -> less -> styled-components: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "Card.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "Card.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Less);
@@ -190,15 +274,15 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 	expectRouteScenarioEvidence(firstAmber, "styled-components -> less round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Less, "styled-components -> less round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -222,6 +306,7 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -258,6 +343,44 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": true,
+		        "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.pw-Card-wwrtu8 { color: #2563eb; padding: 1rem; }
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [
+		          {
+		            "applied": [],
+		            "availableRepresentations": [
+		              "static",
+		              "named-map",
+		              "residual",
+		            ],
+		            "representation": "named-map",
+		            "residuals": [],
+		          },
+		        ],
+		        "outcomes": [
+		          {
+		            "outcome": "residual",
+		            "representation": "residual",
+		          },
+		        ],
+		        "path": "Card.styles.less",
+		        "residuals": [
+		          {
+		            "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		            "kind": "capability",
+		            "preserved": undefined,
+		          },
+		        ],
+		        "skipped": 1,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "forward": {
@@ -280,6 +403,7 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -316,6 +440,44 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": true,
+		        "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.pw-Card-wwrtu8 { color: #2563eb; padding: 1rem; }
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [
+		          {
+		            "applied": [],
+		            "availableRepresentations": [
+		              "static",
+		              "named-map",
+		              "residual",
+		            ],
+		            "representation": "named-map",
+		            "residuals": [],
+		          },
+		        ],
+		        "outcomes": [
+		          {
+		            "outcome": "residual",
+		            "representation": "residual",
+		          },
+		        ],
+		        "path": "Card.styles.less",
+		        "residuals": [
+		          {
+		            "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		            "kind": "capability",
+		            "preserved": undefined,
+		          },
+		        ],
+		        "skipped": 1,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -323,14 +485,15 @@ test("styled-components -> less -> styled-components: preserves concrete theme a
 
 test("styled-components -> less -> styled-components: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Less);
 	expectRouteScenarioEvidence(first, "styled-components -> less round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -352,6 +515,7 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -388,6 +552,44 @@ test("styled-components -> less -> styled-components: resolves token values acro
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [
+		    {
+		      "changed": true,
+		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		.pw-Card-wwrtu8 { color: #2563eb; padding: 1rem; }
+		",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [
+		        {
+		          "applied": [],
+		          "availableRepresentations": [
+		            "static",
+		            "named-map",
+		            "residual",
+		          ],
+		          "representation": "named-map",
+		          "residuals": [],
+		        },
+		      ],
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "path": "Card.styles.less",
+		      "residuals": [
+		        {
+		          "hint": "global stylesheet selectors cannot become an unreferenced class map",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  ],
 		}
 	`)
 });

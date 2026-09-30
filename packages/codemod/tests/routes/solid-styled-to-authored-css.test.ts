@@ -60,6 +60,7 @@ test("solid-styled -> authored-css: migrates concrete solid-styled syntax to aut
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("solid-styled -> authored-css: carries a documented secondary solid-styled 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,6 +161,7 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,6 +198,7 @@ test("solid-styled -> authored-css: loads concrete theme and project context var
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,6 +247,7 @@ test("solid-styled -> authored-css: resolves concrete token values with project 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,6 +294,7 @@ test("solid-styled -> authored-css: preserves malformed concrete solid-styled in
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

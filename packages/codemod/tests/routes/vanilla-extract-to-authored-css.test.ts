@@ -49,7 +49,7 @@ test("vanilla-extract -> authored-css: migrates concrete vanilla-extract syntax 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("vanilla-extract -> authored-css: migrates concrete vanilla-extract syntax 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("vanilla-extract -> authored-css: carries a documented secondary vanilla-ex
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("vanilla-extract -> authored-css: carries a documented secondary vanilla-ex
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +150,7 @@ test("vanilla-extract -> authored-css: loads concrete theme and project context 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,6 +161,7 @@ test("vanilla-extract -> authored-css: loads concrete theme and project context 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +187,7 @@ test("vanilla-extract -> authored-css: loads concrete theme and project context 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +198,7 @@ test("vanilla-extract -> authored-css: loads concrete theme and project context 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +236,7 @@ test("vanilla-extract -> authored-css: resolves concrete token values with proje
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -243,6 +247,7 @@ test("vanilla-extract -> authored-css: resolves concrete token values with proje
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +282,7 @@ test("vanilla-extract -> authored-css: preserves malformed concrete vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 0,
@@ -289,6 +294,7 @@ test("vanilla-extract -> authored-css: preserves malformed concrete vanilla-extr
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

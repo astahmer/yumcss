@@ -4,10 +4,12 @@ import { CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.Compiled, Codemod
 const amberProject = createAdapterRouteProject(CodemodAdapterId.Compiled, CodemodAdapterId.Less, "#f97316");
 	const targetSemantic = undefined;
 
-test("compiled -> less -> compiled: preserves an actionable concrete round trip", () => {
+test("compiled -> less -> compiled: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "styles.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "styles.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,14 +46,14 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 	}
 	expectRouteScenarioEvidence(first, "compiled -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -61,6 +64,7 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -86,7 +90,7 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -96,24 +100,26 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("compiled -> less -> compiled: retains the documented secondary API without silent loss", () => {
+test("compiled -> less -> compiled: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "styles.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "styles.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "styles.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "styles.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "compiled -> less round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -124,24 +130,20 @@ test("compiled -> less -> compiled: retains the documented secondary API without
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: red",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -154,7 +156,7 @@ test("compiled -> less -> compiled: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,15 +166,18 @@ test("compiled -> less -> compiled: retains the documented secondary API without
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("compiled -> less -> compiled: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "styles.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "styles.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "styles.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "styles.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.Less);
@@ -181,22 +186,22 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 	expectRouteScenarioEvidence(firstAmber, "compiled -> less round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Less, "compiled -> less round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -207,6 +212,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -232,7 +238,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -242,12 +248,13 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -258,6 +265,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -283,7 +291,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -293,6 +301,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -300,19 +309,20 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 
 test("compiled -> less -> compiled: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "styles.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "styles.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "styles.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.Compiled, CodemodAdapterId.Less);
 	expectRouteScenarioEvidence(first, "compiled -> less round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -323,6 +333,7 @@ test("compiled -> less -> compiled: resolves token values across both concrete l
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -348,7 +359,7 @@ test("compiled -> less -> compiled: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -358,6 +369,7 @@ test("compiled -> less -> compiled: resolves token values across both concrete l
 		    "skipped": 0,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

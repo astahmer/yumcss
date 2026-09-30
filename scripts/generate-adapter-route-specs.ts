@@ -156,7 +156,7 @@ function roundTripCheck(
 ): string {
 	return isClassProjectionTarget(target)
 		? `expectTargetClassProjection(${forward}, ${reverse}, ${JSON.stringify(classProjectionMarkers(target))}, ${JSON.stringify(label)});`
-		: `expectActionableRoundTrip(${forward}, ${reverse});`;
+		: `expectArtifactProjectRoundTrip(${forward}, ${reverse}, ${reverse}Artifacts);`;
 }
 
 /**
@@ -399,7 +399,6 @@ function roundTripSource(source: CodemodAdapterId, target: CodemodAdapterId): st
 	const targetExample = sourceExample(target);
 	const routeFile = targetModuleFile(target, example.file);
 	const edgeFile = targetModuleFile(target, example.edgeFile);
-	const targetFile = example.file;
 	const usesInstalledChakraProject =
 		source === CodemodAdapterId.ChakraUi || target === CodemodAdapterId.ChakraUi;
 	const chakraProjectFactory =
@@ -437,10 +436,12 @@ import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	${usesInstalledChakraProject ? `${chakraProjectFactory},\n\t` : ""}expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	${isClassProjectionTarget(target) ? "expectTargetClassProjection" : "expectActionableRoundTrip"},
+	${isClassProjectionTarget(target) ? "expectTargetClassProjection" : "expectArtifactProjectRoundTrip"},
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -451,9 +452,10 @@ const reverse = createAdapterRouteSpec(${identifier(target)}, ${identifier(sourc
 	${sourceConstants(example, source, target)}
 ${usesInstalledChakraProject ? `const installedChakraProject = ${chakraProjectFactory}();\n` : ""}	const targetSemantic = ${targetExample.semantic};
 
-test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", ${usesInstalledChakraProject ? "async " : ""}() => {
+test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", async () => {
 	const first = ${directRun("forward", `source: happySource, file: ${JSON.stringify(routeFile)}, semantic: sourceSemantic`)};
-	const second = ${directRun("reverse", `source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic`)};
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: ${JSON.stringify(routeFile)}${usesInstalledChakraProject ? ", project: installedChakraProject" : ""} }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: ${JSON.stringify(routeFile)}${usesInstalledChakraProject ? ", project: installedChakraProject" : ""} }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -467,25 +469,28 @@ test("${source} -> ${target} -> ${source}: preserves an actionable concrete roun
 	expectExplicitResidualEvidence(first);
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip happy`)}
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot();
 });
 
-test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", ${usesInstalledChakraProject ? "async " : ""}() => {
+test("${source} -> ${target} -> ${source}: retains the documented secondary API without silent loss", async () => {
 	const first = ${directRun("forward", `source: edgeSource, file: ${JSON.stringify(edgeFile)}, semantic: sourceSemantic`)};
-	const second = ${directRun("reverse", `source: first.code, file: ${JSON.stringify(targetFile)}, semantic: targetSemantic`)};
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: ${JSON.stringify(edgeFile)}${usesInstalledChakraProject ? ", project: installedChakraProject" : ""} }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: ${JSON.stringify(edgeFile)}${usesInstalledChakraProject ? ", project: installedChakraProject" : ""} }, semantic: targetSemantic });
 	${edgeRoundTripAssertions}
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip secondary forward");
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip secondary`)}
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot();
 });
 
 test("${source} -> ${target} -> ${source}: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: ${JSON.stringify(targetFile)}, semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: ${JSON.stringify(routeFile)}, project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: ${JSON.stringify(routeFile)}, project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: ${JSON.stringify(routeFile)}, semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: ${JSON.stringify(targetFile)}, semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: ${JSON.stringify(routeFile)}, project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: ${JSON.stringify(routeFile)}, project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
@@ -500,21 +505,22 @@ ${usesLiteralThemedSource(source) ? `\texpectConfiguredTargetTokenAbsence(firstA
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot();
 });
 
 test("${source} -> ${target} -> ${source}: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: ${JSON.stringify(routeFile)}, semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: ${JSON.stringify(targetFile)}, semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: ${JSON.stringify(routeFile)}, project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: ${JSON.stringify(routeFile)}, project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, ${identifier(source)}, ${identifier(target)});
 	expectRouteScenarioEvidence(first, "${source} -> ${target} round-trip token forward");
 	${roundTripCheck(target, "first", "second", `${source} -> ${target} round-trip token`)}
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot();
 });
 
 `;

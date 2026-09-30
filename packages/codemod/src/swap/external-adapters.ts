@@ -307,6 +307,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 							const generatedStatements = new Set<string>();
 							const generatedFiles: AdapterGeneratedFile[] = [];
 							const semanticPrograms: StyleProgram[] = [];
+							const residuals: StyleProgramResidual[] = [];
 							const entries = namedRules.map((rule) => {
 								const single = render({
 									...program,
@@ -317,12 +318,14 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 								for (const statement of single.generatedStatements ?? [])
 									generatedStatements.add(statement);
 								generatedFiles.push(...(single.generatedFiles ?? []));
+								residuals.push(...(single.residuals ?? []));
 								if (single.semantic !== undefined) semanticPrograms.push(single.semantic);
 								return `${JSON.stringify(rule.name)}: ${single.text}`;
 							});
 							return {
 								text: `{ ${entries.join(", ")} }`,
 								imports: [...imports],
+								residuals,
 								...(generatedStatements.size === 0
 									? {}
 									: { generatedStatements: [...generatedStatements] }),

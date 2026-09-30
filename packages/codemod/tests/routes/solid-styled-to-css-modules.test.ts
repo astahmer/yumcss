@@ -60,6 +60,7 @@ test("solid-styled -> css-modules: migrates concrete solid-styled syntax to css-
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("solid-styled -> css-modules: carries a documented secondary solid-styled A
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,6 +161,7 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,6 +198,7 @@ test("solid-styled -> css-modules: loads concrete theme and project context vari
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,6 +247,7 @@ test("solid-styled -> css-modules: resolves concrete token values with project c
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,6 +294,7 @@ test("solid-styled -> css-modules: preserves malformed concrete solid-styled inp
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

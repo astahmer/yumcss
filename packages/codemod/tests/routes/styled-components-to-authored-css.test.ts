@@ -66,6 +66,7 @@ test("styled-components -> authored-css: migrates concrete styled-components syn
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -117,6 +118,7 @@ test("styled-components -> authored-css: carries a documented secondary styled-c
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -177,6 +179,7 @@ test("styled-components -> authored-css: loads concrete theme and project contex
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -219,6 +222,7 @@ test("styled-components -> authored-css: loads concrete theme and project contex
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -273,6 +277,7 @@ test("styled-components -> authored-css: resolves concrete token values with pro
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -319,6 +324,7 @@ test("styled-components -> authored-css: preserves malformed concrete styled-com
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

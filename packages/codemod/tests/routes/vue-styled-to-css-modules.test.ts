@@ -60,6 +60,7 @@ test("vue-styled -> css-modules: migrates concrete vue-styled syntax to css-modu
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("vue-styled -> css-modules: carries a documented secondary vue-styled API e
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -159,6 +161,7 @@ test("vue-styled -> css-modules: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -195,6 +198,7 @@ test("vue-styled -> css-modules: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -243,6 +247,7 @@ test("vue-styled -> css-modules: resolves concrete token values with project con
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -289,6 +294,7 @@ test("vue-styled -> css-modules: preserves malformed concrete vue-styled input",
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

@@ -49,7 +49,7 @@ test("stylex -> authored-css: migrates concrete stylex syntax to authored-css", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,24 +60,20 @@ test("stylex -> authored-css: migrates concrete stylex syntax to authored-css", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -99,7 +95,7 @@ test("stylex -> authored-css: carries a documented secondary stylex API explicit
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -110,24 +106,20 @@ test("stylex -> authored-css: carries a documented secondary stylex API explicit
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -158,7 +150,7 @@ test("stylex -> authored-css: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -169,24 +161,20 @@ test("stylex -> authored-css: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -199,7 +187,7 @@ test("stylex -> authored-css: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -210,24 +198,20 @@ test("stylex -> authored-css: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -252,7 +236,7 @@ test("stylex -> authored-css: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -263,24 +247,20 @@ test("stylex -> authored-css: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -302,7 +282,7 @@ test("stylex -> authored-css: preserves malformed concrete stylex input", () => 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 0,
@@ -314,24 +294,20 @@ test("stylex -> authored-css: preserves malformed concrete stylex input", () => 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",

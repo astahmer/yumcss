@@ -49,7 +49,7 @@ test("next-yak -> css-modules: migrates concrete next-yak syntax to css-modules"
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("next-yak -> css-modules: migrates concrete next-yak syntax to css-modules"
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -105,6 +106,7 @@ test("next-yak -> css-modules: carries a documented secondary next-yak API expli
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -148,7 +150,7 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -159,6 +161,7 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -184,7 +187,7 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +198,7 @@ test("next-yak -> css-modules: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -232,7 +236,7 @@ test("next-yak -> css-modules: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -243,6 +247,7 @@ test("next-yak -> css-modules: resolves concrete token values with project conte
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -277,7 +282,7 @@ test("next-yak -> css-modules: preserves malformed concrete next-yak input", () 
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 0,
@@ -289,6 +294,7 @@ test("next-yak -> css-modules: preserves malformed concrete next-yak input", () 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

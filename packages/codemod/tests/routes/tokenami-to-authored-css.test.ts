@@ -49,7 +49,7 @@ test("tokenami -> authored-css: migrates concrete tokenami syntax to authored-cs
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("tokenami -> authored-css: migrates concrete tokenami syntax to authored-cs
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("tokenami -> authored-css: carries a documented secondary tokenami API expl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | parse-residual: composition | lowering-residual: capability | available: residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -104,6 +105,7 @@ test("tokenami -> authored-css: carries a documented secondary tokenami API expl
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -151,7 +153,7 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,6 +164,7 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -187,7 +190,7 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -198,6 +201,7 @@ test("tokenami -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -235,7 +239,7 @@ test("tokenami -> authored-css: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -246,6 +250,7 @@ test("tokenami -> authored-css: resolves concrete token values with project cont
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -280,7 +285,7 @@ test("tokenami -> authored-css: preserves malformed concrete tokenami input", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: tokenami -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,
@@ -292,6 +297,7 @@ test("tokenami -> authored-css: preserves malformed concrete tokenami input", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

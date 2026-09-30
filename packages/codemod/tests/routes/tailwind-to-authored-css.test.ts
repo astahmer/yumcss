@@ -48,7 +48,7 @@ test("tailwind -> authored-css: migrates concrete tailwind syntax to authored-cs
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | available: static, residual)
+		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -59,6 +59,7 @@ test("tailwind -> authored-css: migrates concrete tailwind syntax to authored-cs
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -77,6 +78,11 @@ test("tailwind -> authored-css: migrates concrete tailwind syntax to authored-cs
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -92,7 +98,7 @@ test("tailwind -> authored-css: carries a documented secondary tailwind API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
+		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -103,6 +109,7 @@ test("tailwind -> authored-css: carries a documented secondary tailwind API expl
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -124,6 +131,11 @@ test("tailwind -> authored-css: carries a documented secondary tailwind API expl
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -149,7 +161,7 @@ test("tailwind -> authored-css: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | available: static, residual)
+		    "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,6 +172,7 @@ test("tailwind -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -178,13 +191,18 @@ test("tailwind -> authored-css: loads concrete theme and project context variant
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "authored-css has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | available: static, residual)
+		    "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,6 +213,7 @@ test("tailwind -> authored-css: loads concrete theme and project context variant
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -211,6 +230,11 @@ test("tailwind -> authored-css: loads concrete theme and project context variant
 		      {
 		        "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "authored-css has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -231,7 +255,7 @@ test("tailwind -> authored-css: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | available: static, residual)
+		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -242,6 +266,7 @@ test("tailwind -> authored-css: resolves concrete token values with project cont
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -260,6 +285,11 @@ test("tailwind -> authored-css: resolves concrete token values with project cont
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -275,7 +305,7 @@ test("tailwind -> authored-css: preserves malformed concrete tailwind input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability | available: static, residual)
+		  "code": "// pandwind:migrate-skip (route: tailwind -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 0,
@@ -287,6 +317,7 @@ test("tailwind -> authored-css: preserves malformed concrete tailwind input", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -303,6 +334,11 @@ test("tailwind -> authored-css: preserves malformed concrete tailwind input", ()
 		    {
 		      "hint": "css emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "authored-css has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

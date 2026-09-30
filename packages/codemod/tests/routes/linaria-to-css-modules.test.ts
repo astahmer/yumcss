@@ -49,7 +49,7 @@ test("linaria -> css-modules: migrates concrete linaria syntax to css-modules", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("linaria -> css-modules: migrates concrete linaria syntax to css-modules", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("linaria -> css-modules: carries a documented secondary linaria API explici
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("linaria -> css-modules: carries a documented secondary linaria API explici
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -153,7 +155,7 @@ test("linaria -> css-modules: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,6 +166,7 @@ test("linaria -> css-modules: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -189,7 +192,7 @@ test("linaria -> css-modules: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,6 +203,7 @@ test("linaria -> css-modules: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -237,7 +241,7 @@ test("linaria -> css-modules: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -248,6 +252,7 @@ test("linaria -> css-modules: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -282,7 +287,7 @@ test("linaria -> css-modules: preserves malformed concrete linaria input", () =>
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: linaria -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 0,
@@ -294,6 +299,7 @@ test("linaria -> css-modules: preserves malformed concrete linaria input", () =>
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

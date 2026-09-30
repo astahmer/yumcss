@@ -49,7 +49,7 @@ test("compiled -> css-modules: migrates concrete compiled syntax to css-modules"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("compiled -> css-modules: migrates concrete compiled syntax to css-modules"
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -94,7 +95,7 @@ test("compiled -> css-modules: carries a documented secondary compiled API expli
 		{
 		  "changed": true,
 		  "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,24 +106,20 @@ test("compiled -> css-modules: carries a documented secondary compiled API expli
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: red",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -153,7 +150,7 @@ test("compiled -> css-modules: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,6 +161,7 @@ test("compiled -> css-modules: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -189,7 +187,7 @@ test("compiled -> css-modules: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,6 +198,7 @@ test("compiled -> css-modules: loads concrete theme and project context variants
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -237,7 +236,7 @@ test("compiled -> css-modules: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -248,6 +247,7 @@ test("compiled -> css-modules: resolves concrete token values with project conte
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -282,7 +282,7 @@ test("compiled -> css-modules: preserves malformed concrete compiled input", () 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: compiled -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 0,
@@ -294,6 +294,7 @@ test("compiled -> css-modules: preserves malformed concrete compiled input", () 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

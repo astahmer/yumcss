@@ -4,10 +4,12 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -29,9 +31,10 @@ const blueProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents,
 const amberProject = createAdapterRouteProject(CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind, "#f97316");
 	const targetSemantic = undefined;
 
-test("styled-components -> pandwind -> styled-components: preserves an actionable concrete round trip", () => {
+test("styled-components -> pandwind -> styled-components: preserves an actionable concrete round trip", async () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "Card.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "Card.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -43,9 +46,9 @@ test("styled-components -> pandwind -> styled-components: preserves an actionabl
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> pandwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -123,19 +126,21 @@ test("styled-components -> pandwind -> styled-components: preserves an actionabl
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
-test("styled-components -> pandwind -> styled-components: retains the documented secondary API without silent loss", () => {
+test("styled-components -> pandwind -> styled-components: retains the documented secondary API without silent loss", async () => {
 	const first = forward.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
-	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "Card.tsx" }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "Card.tsx" }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "styled-components -> pandwind round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -213,15 +218,18 @@ test("styled-components -> pandwind -> styled-components: retains the documented
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("styled-components -> pandwind -> styled-components: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "Card.tsx", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "Card.tsx", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind);
@@ -230,15 +238,15 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 	expectRouteScenarioEvidence(firstAmber, "styled-components -> pandwind round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.Pandwind, "styled-components -> pandwind round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -323,6 +331,99 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": false,
+		        "code": "import { createElement, forwardRef } from "react";
+		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
+
+		type PandwindSlotTransientProps<Prefix extends string> = {
+			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
+		};
+		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
+			readonly as?: Component;
+			readonly className?: string;
+			readonly ref?: Ref<ComponentRef<Component>>;
+		};
+		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: PandwindSlotProps<Component, Prefix>,
+		) => ReactElement | null;
+		type PandwindSlotRuntimeProps = Record<string, unknown> & {
+			readonly as?: ElementType;
+			readonly className?: string;
+			readonly style?: CSSProperties;
+		};
+		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
+			readonly defaultComponent: DefaultComponent;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly Prefix[];
+			readonly attrs: Readonly<Record<string, unknown>> & {
+				readonly as?: ElementType;
+				readonly className?: string;
+				readonly style?: CSSProperties;
+			};
+			readonly joinClass: (...values: (string | undefined)[]) => string;
+		};
+		const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+			typeof value === "string" ||
+			typeof value === "function" ||
+			typeof value === "symbol" ||
+			(typeof value === "object" && value !== null);
+
+		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
+			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
+				const { as: _as, ...rest } = props;
+				const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded =
+					filteredPropPrefixes.length === 0
+						? { ...rest, ...attrsProps }
+						: Object.fromEntries(
+								[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+									([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)),
+								),
+							);
+				const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
+				const propsClassName = typeof props.className === "string" ? props.className : undefined;
+				return createElement(Component, {
+					...forwarded,
+					ref,
+					[classAttribute]: joinClass(
+						style,
+						stableClass,
+						inheritedClass,
+						attrsClassName,
+						propsClassName,
+					),
+				});
+			});
+			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
+				__pandwindClassName: stableClass,
+			});
+		};
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [],
+		        "outcomes": [],
+		        "path": "__pandwind/slot.tsx",
+		        "residuals": [],
+		        "skipped": 0,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		  "blue": {
 		    "forward": {
@@ -406,6 +507,99 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		        },
 		      ],
 		    },
+		    "reverseArtifacts": [
+		      {
+		        "changed": false,
+		        "code": "import { createElement, forwardRef } from "react";
+		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
+
+		type PandwindSlotTransientProps<Prefix extends string> = {
+			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
+		};
+		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
+			readonly as?: Component;
+			readonly className?: string;
+			readonly ref?: Ref<ComponentRef<Component>>;
+		};
+		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: PandwindSlotProps<Component, Prefix>,
+		) => ReactElement | null;
+		type PandwindSlotRuntimeProps = Record<string, unknown> & {
+			readonly as?: ElementType;
+			readonly className?: string;
+			readonly style?: CSSProperties;
+		};
+		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
+			readonly defaultComponent: DefaultComponent;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly Prefix[];
+			readonly attrs: Readonly<Record<string, unknown>> & {
+				readonly as?: ElementType;
+				readonly className?: string;
+				readonly style?: CSSProperties;
+			};
+			readonly joinClass: (...values: (string | undefined)[]) => string;
+		};
+		const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+			typeof value === "string" ||
+			typeof value === "function" ||
+			typeof value === "symbol" ||
+			(typeof value === "object" && value !== null);
+
+		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
+			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
+				const { as: _as, ...rest } = props;
+				const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded =
+					filteredPropPrefixes.length === 0
+						? { ...rest, ...attrsProps }
+						: Object.fromEntries(
+								[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+									([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)),
+								),
+							);
+				const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
+				const propsClassName = typeof props.className === "string" ? props.className : undefined;
+				return createElement(Component, {
+					...forwarded,
+					ref,
+					[classAttribute]: joinClass(
+						style,
+						stableClass,
+						inheritedClass,
+						attrsClassName,
+						propsClassName,
+					),
+				});
+			});
+			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
+				__pandwindClassName: stableClass,
+			});
+		};
+		",
+		        "converted": 0,
+		        "generatedFiles": [],
+		        "loweringPlans": [],
+		        "outcomes": [],
+		        "path": "__pandwind/slot.tsx",
+		        "residuals": [],
+		        "skipped": 0,
+		        "validations": [],
+		      },
+		    ],
 		  },
 		}
 	`)
@@ -413,14 +607,15 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 
 test("styled-components -> pandwind -> styled-components: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "Card.tsx", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.StyledComponents, CodemodAdapterId.Pandwind);
 	expectRouteScenarioEvidence(first, "styled-components -> pandwind round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -503,6 +698,99 @@ test("styled-components -> pandwind -> styled-components: resolves token values 
 		      },
 		    ],
 		  },
+		  "reverseArtifacts": [
+		    {
+		      "changed": false,
+		      "code": "import { createElement, forwardRef } from "react";
+		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
+
+		type PandwindSlotTransientProps<Prefix extends string> = {
+			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
+		};
+		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
+			readonly as?: Component;
+			readonly className?: string;
+			readonly ref?: Ref<ComponentRef<Component>>;
+		};
+		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: PandwindSlotProps<Component, Prefix>,
+		) => ReactElement | null;
+		type PandwindSlotRuntimeProps = Record<string, unknown> & {
+			readonly as?: ElementType;
+			readonly className?: string;
+			readonly style?: CSSProperties;
+		};
+		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
+			readonly defaultComponent: DefaultComponent;
+			readonly style: string;
+			readonly stableClass: string;
+			readonly inheritedClass?: string;
+			readonly classAttribute: string;
+			readonly filteredPropPrefixes: readonly Prefix[];
+			readonly attrs: Readonly<Record<string, unknown>> & {
+				readonly as?: ElementType;
+				readonly className?: string;
+				readonly style?: CSSProperties;
+			};
+			readonly joinClass: (...values: (string | undefined)[]) => string;
+		};
+		const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+			typeof value === "string" ||
+			typeof value === "function" ||
+			typeof value === "symbol" ||
+			(typeof value === "object" && value !== null);
+
+		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
+			defaultComponent,
+			style,
+			stableClass,
+			inheritedClass,
+			classAttribute,
+			filteredPropPrefixes,
+			attrs,
+			joinClass,
+		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
+			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
+				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
+				const { as: _as, ...rest } = props;
+				const { as: _attrsAs, ...attrsProps } = attrs;
+				const forwarded =
+					filteredPropPrefixes.length === 0
+						? { ...rest, ...attrsProps }
+						: Object.fromEntries(
+								[...Object.entries(rest), ...Object.entries(attrsProps)].filter(
+									([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)),
+								),
+							);
+				const attrsClassName = typeof attrs.className === "string" ? attrs.className : undefined;
+				const propsClassName = typeof props.className === "string" ? props.className : undefined;
+				return createElement(Component, {
+					...forwarded,
+					ref,
+					[classAttribute]: joinClass(
+						style,
+						stableClass,
+						inheritedClass,
+						attrsClassName,
+						propsClassName,
+					),
+				});
+			});
+			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
+				__pandwindClassName: stableClass,
+			});
+		};
+		",
+		      "converted": 0,
+		      "generatedFiles": [],
+		      "loweringPlans": [],
+		      "outcomes": [],
+		      "path": "__pandwind/slot.tsx",
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  ],
 		}
 	`)
 });

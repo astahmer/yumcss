@@ -66,6 +66,7 @@ test("styled-components -> less: migrates concrete styled-components syntax to l
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -117,6 +118,7 @@ test("styled-components -> less: carries a documented secondary styled-component
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -177,6 +179,7 @@ test("styled-components -> less: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -219,6 +222,7 @@ test("styled-components -> less: loads concrete theme and project context varian
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -273,6 +277,7 @@ test("styled-components -> less: resolves concrete token values with project con
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -319,6 +324,7 @@ test("styled-components -> less: preserves malformed concrete styled-components 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

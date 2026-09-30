@@ -59,9 +59,10 @@ test("less -> sass: migrates concrete less syntax to sass", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
@@ -103,6 +104,7 @@ test("less -> sass: carries a documented secondary less API explicitly", () => {
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -160,6 +162,7 @@ test("less -> sass: loads concrete theme and project context variants", async ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -194,6 +197,7 @@ test("less -> sass: loads concrete theme and project context variants", async ()
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -240,6 +244,7 @@ test("less -> sass: resolves concrete token values with project context", async 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -285,9 +290,10 @@ test("less -> sass: preserves malformed concrete less input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],

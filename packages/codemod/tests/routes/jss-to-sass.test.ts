@@ -49,7 +49,7 @@ test("jss -> sass: migrates concrete jss syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,24 +60,20 @@ test("jss -> sass: migrates concrete jss syntax to sass", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -99,7 +95,7 @@ test("jss -> sass: carries a documented secondary jss API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -110,24 +106,20 @@ test("jss -> sass: carries a documented secondary jss API explicitly", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -158,7 +150,7 @@ test("jss -> sass: loads concrete theme and project context variants", async () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -169,24 +161,20 @@ test("jss -> sass: loads concrete theme and project context variants", async () 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -199,7 +187,7 @@ test("jss -> sass: loads concrete theme and project context variants", async () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -210,24 +198,20 @@ test("jss -> sass: loads concrete theme and project context variants", async () 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
@@ -252,7 +236,7 @@ test("jss -> sass: resolves concrete token values with project context", async (
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -263,24 +247,20 @@ test("jss -> sass: resolves concrete token values with project context", async (
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
@@ -302,7 +282,7 @@ test("jss -> sass: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// pandwind:migrate-skip (route: jss -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 0,
@@ -314,24 +294,20 @@ test("jss -> sass: preserves malformed concrete jss input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
-		      "representation": "static",
+		      "representation": "named-map",
 		      "residuals": [],
 		    },
 		  ],
 		  "outcomes": [
 		    {
 		      "outcome": "residual",
-		      "representation": "static",
+		      "representation": "named-map",
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "named-rules: named style rule: card",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",

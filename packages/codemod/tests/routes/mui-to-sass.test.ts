@@ -49,7 +49,7 @@ test("mui -> sass: migrates concrete mui syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("mui -> sass: migrates concrete mui syntax to sass", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -76,6 +77,11 @@ test("mui -> sass: migrates concrete mui syntax to sass", () => {
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -105,6 +111,7 @@ test("mui -> sass: carries a documented secondary mui API explicitly", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -147,7 +154,7 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,6 +165,7 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -176,6 +184,11 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "sass has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -183,7 +196,7 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -194,6 +207,7 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -210,6 +224,11 @@ test("mui -> sass: loads concrete theme and project context variants", async () 
 		      {
 		        "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "sass has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -231,7 +250,7 @@ test("mui -> sass: resolves concrete token values with project context", async (
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -242,6 +261,7 @@ test("mui -> sass: resolves concrete token values with project context", async (
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -260,6 +280,11 @@ test("mui -> sass: resolves concrete token values with project context", async (
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "sass has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -276,7 +301,7 @@ test("mui -> sass: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,
@@ -288,6 +313,7 @@ test("mui -> sass: preserves malformed concrete mui input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -304,6 +330,11 @@ test("mui -> sass: preserves malformed concrete mui input", () => {
 		    {
 		      "hint": "sass emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "sass has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

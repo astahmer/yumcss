@@ -4,11 +4,13 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../../src/swap/index.ts"
 import {
 	createAdapterRouteSpec,
 	createAdapterRouteProject,
+	createReverseRouteInput,
+	reverseGeneratedRouteFiles,
 	createInstalledChakraRouteProject,
 	expectConfiguredProjectEvidence,
 	expectConfiguredTargetTokenEvidence,
 	expectConfiguredTargetTokenAbsence,
-	expectActionableRoundTrip,
+	expectArtifactProjectRoundTrip,
 	expectExplicitResidualEvidence,
 	expectRouteScenarioEvidence,
 	routeEvidence,
@@ -33,7 +35,8 @@ const installedChakraProject = createInstalledChakraRouteProject();
 
 test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete round trip", async () => {
 	const first = await forward.runAsync({ source: happySource, file: "Card.module.css", semantic: sourceSemantic, project: installedChakraProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: targetSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: happySource, file: "Card.module.css", project: installedChakraProject }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: happySource, file: "Card.module.css", project: installedChakraProject }, semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
@@ -45,9 +48,9 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -87,7 +90,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,
@@ -99,6 +102,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -121,19 +125,21 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("css-modules -> chakra-ui -> css-modules: retains the documented secondary API without silent loss", async () => {
 	const first = await forward.runAsync({ source: edgeSource, file: "Card.module.css", semantic: sourceSemantic, project: installedChakraProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: targetSemantic, project: installedChakraProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: edgeSource, file: "Card.module.css", project: installedChakraProject }, semantic: targetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: edgeSource, file: "Card.module.css", project: installedChakraProject }, semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectRouteScenarioEvidence(first, "css-modules -> chakra-ui round-trip secondary forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -192,8 +198,8 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "primary": defaultSystem.css({ color: "red", fontWeight: "semibold" }) };
 		export default styles;",
 		    "converted": 0,
@@ -205,6 +211,7 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -216,6 +223,7 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -247,15 +255,18 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		    "skipped": 2,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });
 
 test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and project context variants", async () => {
 	const firstBlue = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const secondBlue = await reverse.runAsync({ source: firstBlue.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const secondBlue = await reverse.runAsync(createReverseRouteInput({ forward: firstBlue, input: { source: themedSource, file: "Card.module.css", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondBlueArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstBlue, input: { source: themedSource, file: "Card.module.css", project: blueProject }, semantic: blueTargetSemantic });
 	const firstAmber = await forward.runAsync({ source: themedSource, file: "Card.module.css", semantic: amberSemantic, project: amberProject });
-	const secondAmber = await reverse.runAsync({ source: firstAmber.code, file: "Card.module.css", semantic: amberTargetSemantic, project: amberProject });
+	const secondAmber = await reverse.runAsync(createReverseRouteInput({ forward: firstAmber, input: { source: themedSource, file: "Card.module.css", project: amberProject }, semantic: amberTargetSemantic }));
+	const secondAmberArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: firstAmber, input: { source: themedSource, file: "Card.module.css", project: amberProject }, semantic: amberTargetSemantic });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
 	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.ChakraUi);
@@ -264,15 +275,15 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 	expectRouteScenarioEvidence(firstAmber, "css-modules -> chakra-ui round-trip amber forward");
 	expectConfiguredTargetTokenAbsence(firstAmber, CodemodAdapterId.ChakraUi, "css-modules -> chakra-ui round-trip amber literal config");
 
-	expectActionableRoundTrip(firstBlue, secondBlue);
-	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectArtifactProjectRoundTrip(firstBlue, secondBlue, secondBlueArtifacts);
+	expectArtifactProjectRoundTrip(firstAmber, secondAmber, secondAmberArtifacts);
 	expectExplicitResidualEvidence(firstBlue);
 	expectExplicitResidualEvidence(secondBlue);
 	expectExplicitResidualEvidence(firstAmber);
 	expectExplicitResidualEvidence(secondAmber);
 	expect({
-		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
-		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue), reverseArtifacts: secondBlueArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber), reverseArtifacts: secondAmberArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) },
 	}).toMatchInlineSnapshot(`
 		{
 		  "amber": {
@@ -314,7 +325,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
@@ -326,6 +337,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -348,6 +360,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		  "blue": {
 		    "forward": {
@@ -388,7 +401,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
@@ -400,6 +413,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
 		          "representation": "static",
@@ -422,6 +436,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverseArtifacts": [],
 		  },
 		}
 	`)
@@ -429,14 +444,15 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 
 test("css-modules -> chakra-ui -> css-modules: resolves token values across both concrete legs", async () => {
 	const first = await forward.runAsync({ source: tokenSource, file: "Card.module.css", semantic: blueSemantic, project: blueProject });
-	const second = await reverse.runAsync({ source: first.code, file: "Card.module.css", semantic: blueTargetSemantic, project: blueProject });
+	const second = await reverse.runAsync(createReverseRouteInput({ forward: first, input: { source: tokenSource, file: "Card.module.css", project: blueProject }, semantic: blueTargetSemantic }));
+	const secondArtifacts = await reverseGeneratedRouteFiles({ route: reverse, forward: first, input: { source: tokenSource, file: "Card.module.css", project: blueProject }, semantic: blueTargetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectConfiguredProjectEvidence(blueProject, CodemodAdapterId.CssModules, CodemodAdapterId.ChakraUi);
 	expectRouteScenarioEvidence(first, "css-modules -> chakra-ui round-trip token forward");
-	expectActionableRoundTrip(first, second);
+	expectArtifactProjectRoundTrip(first, second, secondArtifacts);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second), reverseArtifacts: secondArtifacts.map(({ path, result }) => ({ path, ...routeEvidence(result) })) }).toMatchInlineSnapshot(`
 		{
 		  "forward": {
 		    "changed": true,
@@ -476,7 +492,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		/* /* pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, residual) */ */
+		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,
@@ -488,6 +504,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -510,6 +527,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		  "reverseArtifacts": [],
 		}
 	`)
 });

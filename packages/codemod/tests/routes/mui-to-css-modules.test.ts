@@ -49,7 +49,7 @@ test("mui -> css-modules: migrates concrete mui syntax to css-modules", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("mui -> css-modules: migrates concrete mui syntax to css-modules", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -78,6 +79,11 @@ test("mui -> css-modules: migrates concrete mui syntax to css-modules", () => {
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "css-modules has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -94,7 +100,7 @@ test("mui -> css-modules: carries a documented secondary mui API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +111,7 @@ test("mui -> css-modules: carries a documented secondary mui API explicitly", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -147,7 +154,7 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,6 +165,7 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -176,6 +184,11 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "css-modules has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -183,7 +196,7 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -194,6 +207,7 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -210,6 +224,11 @@ test("mui -> css-modules: loads concrete theme and project context variants", as
 		      {
 		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "css-modules has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -231,7 +250,7 @@ test("mui -> css-modules: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -242,6 +261,7 @@ test("mui -> css-modules: resolves concrete token values with project context", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -260,6 +280,11 @@ test("mui -> css-modules: resolves concrete token values with project context", 
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "css-modules has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -276,7 +301,7 @@ test("mui -> css-modules: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mui -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,
@@ -288,6 +313,7 @@ test("mui -> css-modules: preserves malformed concrete mui input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -304,6 +330,11 @@ test("mui -> css-modules: preserves malformed concrete mui input", () => {
 		    {
 		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "css-modules has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

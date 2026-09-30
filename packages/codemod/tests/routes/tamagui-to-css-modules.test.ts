@@ -61,6 +61,7 @@ test("tamagui -> css-modules: migrates concrete tamagui syntax to css-modules", 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -95,7 +96,7 @@ test("tamagui -> css-modules: carries a documented secondary tamagui API explici
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: residual)
+		// pandwind:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -105,6 +106,7 @@ test("tamagui -> css-modules: carries a documented secondary tamagui API explici
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -170,6 +172,7 @@ test("tamagui -> css-modules: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -207,6 +210,7 @@ test("tamagui -> css-modules: loads concrete theme and project context variants"
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -256,6 +260,7 @@ test("tamagui -> css-modules: resolves concrete token values with project contex
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -303,6 +308,7 @@ test("tamagui -> css-modules: preserves malformed concrete tamagui input", () =>
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",

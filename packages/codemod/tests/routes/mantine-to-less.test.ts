@@ -49,7 +49,7 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -60,6 +60,7 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -78,6 +79,11 @@ test("mantine -> less: migrates concrete mantine syntax to less", () => {
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -94,7 +100,7 @@ test("mantine -> less: carries a documented secondary mantine API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | parse-residual: host-framework | lowering-residual: capability | available: residual)
+		// pandwind:migrate-skip (route: mantine -> less | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -104,6 +110,7 @@ test("mantine -> less: carries a documented secondary mantine API explicitly", (
 		        "dynamic-and-theme",
 		      ],
 		      "availableRepresentations": [
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "residual",
@@ -151,7 +158,7 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,6 +169,7 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -180,6 +188,11 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "less has no host representation for react",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -187,7 +200,7 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -198,6 +211,7 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -214,6 +228,11 @@ test("mantine -> less: loads concrete theme and project context variants", async
 		      {
 		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "less has no host representation for react",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -235,7 +254,7 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -246,6 +265,7 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -264,6 +284,11 @@ test("mantine -> less: resolves concrete token values with project context", asy
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
 		  ],
 		  "skipped": 1,
 		  "validations": [],
@@ -280,7 +305,7 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability | available: static, residual)
+		// pandwind:migrate-skip (route: mantine -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
@@ -292,6 +317,7 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -308,6 +334,11 @@ test("mantine -> less: preserves malformed concrete mantine input", () => {
 		    {
 		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
 		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "less has no host representation for react",
+		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
 		  ],

@@ -47,9 +47,9 @@ test("bamboo -> panda: migrates concrete bamboo syntax to panda", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "red" });",
+		  "changed": false,
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -90,9 +90,9 @@ test("bamboo -> panda: carries a documented secondary bamboo API explicitly", ()
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ display: "flex", gap: "4" });",
+		  "changed": false,
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -142,9 +142,9 @@ test("bamboo -> panda: loads concrete theme and project context variants", async
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
 		{
 		  "amber": {
-		    "changed": true,
-		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "#2563eb" });",
+		    "changed": false,
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,8 +177,8 @@ test("bamboo -> panda: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "brand.500" });",
+		    "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -223,8 +223,8 @@ test("bamboo -> panda: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "brand.500" });",
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -265,9 +265,9 @@ test("bamboo -> panda: preserves malformed concrete bamboo input", () => {
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
-		  "changed": true,
-		  "code": "import { css as sourceCss } from "styled-system/css";
-		export const card = sourceCss({ color: "red" });
+		  "changed": false,
+		  "code": "import { css } from "styled-system/css";
+		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,
 		  "generatedFiles": [],
