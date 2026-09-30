@@ -237,7 +237,7 @@ import { preset } from "./preset.ts";
 export const css = createCss(preset);
 `;
 
-export const pandwindGeneratedStyles = (): string => `export { css } from "./css.generated.ts";
+const pandwindGeneratedStyles = (): string => `export { css } from "./css.generated.ts";
 `;
 
 const pandaTokens = (catalogCount: number): string => {

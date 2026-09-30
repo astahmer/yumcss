@@ -15,12 +15,10 @@ import {
 	type DynamicStyles,
 } from "./runtime-base.ts";
 import type { KeyframeBody } from "./keyframes.ts";
-import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import type { VarsOutput } from "./var-compiler.ts";
 import { ALL_RUNTIME_METHODS } from "./runtime-methods.ts";
 import { createPresetCssRuntime, type TypedPreset } from "./runtime-preset.ts";
 
-export type { ClassNameStrategy };
 export type { CreateCssOptions } from "./runtime-base.ts";
 
 /**

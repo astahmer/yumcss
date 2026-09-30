@@ -47,5 +47,9 @@ repeated button/card workload with colors, spacing, radii, hover state, a
 responsive state, and a runtime color in the dynamic lanes. The build mode and
 package versions are stored beside every snapshot.
 
+The runner generates isolated consumer projects from per-library source
+templates. Their manifest dependencies are consumed by those generated
+projects, so the Knip configuration records them as dynamic benchmark inputs.
+
 Competitor rows are descriptive. Only Pandwind rows are regression-gated,
 because competitor releases and compiler output can change independently.

@@ -16,7 +16,7 @@ const GENERATED_DIRECTORIES = new Set([
 	"storybook-static",
 ]);
 
-export interface CompilerPreviewFile {
+interface CompilerPreviewFile {
 	readonly path: string;
 	readonly bytes: number;
 }

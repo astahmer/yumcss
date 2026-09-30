@@ -9,12 +9,25 @@ const reportPath = resolve(repositoryRoot, "plans/evidence/codemod-installed-tar
 const proofRunnerPath = resolve(repositoryRoot, "scripts/verify-codemod-installed-targets.ts");
 const digest = (content: string): string => createHash("sha256").update(content).digest("hex");
 
+type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
+
+const JsonValueSchema: z.ZodType<JsonValue> = z.lazy((): z.ZodType<JsonValue> =>
+	z.union([
+		z.null(),
+		z.boolean(),
+		z.number(),
+		z.string(),
+		z.array(JsonValueSchema),
+		z.record(z.string(), JsonValueSchema),
+	]),
+);
+
 const InstalledTargetProofReportSchema = z.strictObject({
 	schema: z.literal("pandwind.codemod-installed-targets/2"),
 	sourceFingerprint: z.string().regex(/^[\da-f]{64}$/u),
 	proofImplementationHash: z.string().regex(/^[\da-f]{64}$/u),
 	scope: z.string().min(1),
-	reports: z.array(z.json()).min(1),
+	reports: z.array(JsonValueSchema).min(1),
 	reportFingerprint: z.string().regex(/^[\da-f]{64}$/u),
 });
 

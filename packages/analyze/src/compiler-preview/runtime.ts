@@ -28,14 +28,14 @@ interface ViteModule {
 	}): Promise<ViteDevServer>;
 }
 
-export interface CompilerPreviewRuntimeInfo {
+interface CompilerPreviewRuntimeInfo {
 	readonly root: string;
 	readonly viteVersion: string;
 	readonly plugins: readonly string[];
 	readonly pandwindPlugins: readonly string[];
 }
 
-export interface CompilerPreviewTransform {
+interface CompilerPreviewTransform {
 	readonly file: string;
 	readonly source: string;
 	readonly code: string;
@@ -44,7 +44,7 @@ export interface CompilerPreviewTransform {
 	readonly durationMs: number;
 }
 
-export interface CompilerPreviewSource {
+interface CompilerPreviewSource {
 	readonly file: string;
 	readonly source: string;
 	readonly sourceBytes: number;

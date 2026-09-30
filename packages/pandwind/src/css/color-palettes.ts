@@ -2,7 +2,7 @@ import { pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, DefinePresetOptions, Token } from "../types/typings.ts";
 import { hashCssVar } from "./hash.ts";
 
-export interface ColorPaletteAssignment {
+interface ColorPaletteAssignment {
 	readonly suffix: string;
 	readonly cssVar: string;
 	readonly value: string;

@@ -134,3 +134,7 @@ declaration fixture self-contained so it can measure type cost without making
 codegen setup noise part of every run. Time regressions also need to exceed a
 50ms absolute noise floor, keeping sub-50ms process jitter from making the
 gate flaky.
+
+The runner synthesizes consumer projects from per-library TypeScript source.
+Its manifest dependencies are installed for those generated fixtures, so the
+Knip configuration records them as dynamic benchmark inputs.

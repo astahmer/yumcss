@@ -3,14 +3,14 @@ import { css as uiCss } from "../ui-css.ts";
 
 type TableValue = string | number | null | undefined;
 
-export interface InspectorTableColumn<Row> {
+interface InspectorTableColumn<Row> {
 	id: string;
 	label: string;
 	value: (row: Row) => TableValue;
 	render?: (row: Row) => ReactNode;
 }
 
-export interface InspectorTableFilter<Row> {
+interface InspectorTableFilter<Row> {
 	id: string;
 	label: string;
 	value: (row: Row) => string | null;

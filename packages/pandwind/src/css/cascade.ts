@@ -10,7 +10,7 @@ export interface CssCascadeLayerOptions {
 /** Cascade policy accepted by CSS factories, sheets, and extractors. */
 export type CssCascade = CssCascadeMode | CssCascadeLayerOptions;
 
-export const DEFAULT_CASCADE_LAYER = "pandwind";
+const DEFAULT_CASCADE_LAYER = "pandwind";
 
 const CASCADE_LAYER_SEGMENT =
 	/^(?:-?(?:[A-Za-z_]|[\u{80}-\u{10FFFF}])(?:[A-Za-z0-9_-]|[\u{80}-\u{10FFFF}])*|--(?:[A-Za-z0-9_-]|[\u{80}-\u{10FFFF}])+)$/u;
@@ -42,7 +42,7 @@ const SPECIFICITY_MARKER = ":not(#\\#)";
  * Add one StyleX-compatible specificity level to a serialized style rule.
  * The marker contributes an ID selector without adding a matching element.
  */
-export const addSpecificityLevel = (css: string, level: number): string => {
+const addSpecificityLevel = (css: string, level: number): string => {
 	if (level <= 0 || css.startsWith("@keyframes")) return css;
 	const firstOpening = css.indexOf("{");
 	if (css.startsWith("@") && firstOpening === css.lastIndexOf("{")) return css;

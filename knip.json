@@ -37,6 +37,7 @@
 				"src/css/stylesheet-lowering.ts",
 				"src/css/runtime.ts",
 				"src/css/runtime-codegen.ts",
+				"src/css/class-name-strategy.ts",
 				"src/tw/generate-types.ts",
 				"tests/**/*.test.ts",
 				"tests/**/*.tst.ts"
@@ -53,6 +54,7 @@
 				"src/migration-preview/index.ts",
 				"src/migration-preview/server.ts",
 				"migration-preview-app/src/main.ts",
+				"compiler-preview-app/src/main.ts",
 				"vite.config.ts",
 				"tests/**/*.test.ts"
 			],
@@ -60,6 +62,7 @@
 				"src/**/*.ts",
 				"tests/**/*.ts",
 				"migration-preview-app/**/*.{ts,html}",
+				"compiler-preview-app/**/*.{ts,tsx,html}",
 				"vite.config.ts"
 			]
 		},
@@ -75,6 +78,7 @@
 			"entry": [
 				"src/{main,index,App}.{ts,tsx}",
 				"src/lib/format-playground-code.ts",
+				"src/tw.runtime.ts",
 				"vite.config.ts",
 				"e2e/**/*.ts"
 			],
@@ -116,13 +120,51 @@
 			"entry": ["runner/benchmark.mts"],
 			"project": ["runner/**/*.mts"],
 			"ignoreDependencies": [
+				"@compiled/react",
+				"@emotion/css",
+				"@emotion/react",
+				"@emotion/styled",
+				"@griffel/react",
+
+				"@linaria/core",
+				"@linaria/react",
+				"@pandacss/dev",
+				"@stitches/react",
+				"@stylexjs/stylex",
+				"@types/aphrodite",
+				"@types/node",
+				"@types/react",
+				"@vanilla-extract/css",
+				"@vanilla-extract/recipes",
+				"@vanilla-extract/sprinkles",
+				"aphrodite",
+				"csstype",
+				"fela",
+				"goober",
+				"jss",
+				"next-yak",
+				"pandwind",
+				"react-jss",
+				"react-strict-dom",
+				"style9",
+				"styled-components",
+				"treat",
+				"typestyle"
+			]
+		},
+		"benchmarks/styling-size": {
+			"entry": ["runner/benchmark.mts"],
+			"project": ["runner/**/*.mts"],
+			"ignoreDependencies": [
+				"@emotion/css",
+				"@linaria/core",
 				"@pandacss/dev",
 				"@stylexjs/stylex",
-				"@types/node",
 				"@vanilla-extract/css",
 				"@vanilla-extract/sprinkles",
-				"csstype",
-				"pandwind"
+				"goober",
+				"styled-components",
+				"unocss"
 			]
 		},
 		"docs": {
@@ -133,6 +175,7 @@
 	"ignoreDependencies": [
 		"@astrojs/starlight",
 		"@monaco-editor/react",
+		"shadcn",
 		"@opentui/core",
 		"@tailwindcss/node",
 		"@tailwindcss/typography",

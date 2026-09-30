@@ -18,7 +18,7 @@ export interface CompilerPreviewServerOptions {
 	readonly runtime?: CompilerPreviewRuntime;
 }
 
-export interface CompilerPreviewServerAddress {
+interface CompilerPreviewServerAddress {
 	readonly host: string;
 	readonly port: number;
 	readonly token: string;

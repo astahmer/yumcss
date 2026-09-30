@@ -474,7 +474,7 @@ const evalLiteralForCx = (
 	return result;
 };
 
-export const isLateObjectMemberRead = (input: object, consts: ConstantScope): boolean => {
+const isLateObjectMemberRead = (input: object, consts: ConstantScope): boolean => {
 	const node = input as OxcNode;
 	const member = classMapMember(node, consts);
 	return member !== undefined && typeof node.start === "number" && node.start < member.declStart;

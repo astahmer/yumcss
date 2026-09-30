@@ -23,7 +23,7 @@ interface ChakraSemanticLeaf {
 
 type ChakraSemanticRoot = ChakraSemanticLeaf | Record<string, ChakraSemanticLeaf>;
 
-export interface ChakraConfig {
+interface ChakraConfig {
 	readonly conditions: Record<string, string | ReadonlyArray<string>>;
 	readonly theme: {
 		readonly breakpoints: Record<string, string>;
@@ -36,7 +36,7 @@ export interface ChakraConfig {
 	};
 }
 
-export interface ChakraSystem {
+interface ChakraSystem {
 	readonly css: (styles: Record<string, unknown>) => Record<string, unknown>;
 	readonly token: ((path: string) => string | number | undefined) & {
 		readonly var: (path: string) => string;

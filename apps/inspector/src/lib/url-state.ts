@@ -2,7 +2,7 @@ export const INSPECTOR_TABS = ["tokens", "build", "history"] as const;
 
 export type InspectorTab = (typeof INSPECTOR_TABS)[number];
 
-export const BUILD_FILE_FILTERS = [
+const BUILD_FILE_FILTERS = [
 	"full",
 	"partial",
 	"runtime",
@@ -13,17 +13,17 @@ export const BUILD_FILE_FILTERS = [
 ] as const;
 export type BuildFileFilter = (typeof BUILD_FILE_FILTERS)[number];
 
-export const BUILD_MISSING_CSS_FILTERS = ["present", "none"] as const;
-export type BuildMissingCssFilter = (typeof BUILD_MISSING_CSS_FILTERS)[number];
+const BUILD_MISSING_CSS_FILTERS = ["present", "none"] as const;
+type BuildMissingCssFilter = (typeof BUILD_MISSING_CSS_FILTERS)[number];
 
-export const BUILD_AUTHORED_VALUE_FILTERS = ["token", "literal", "dynamic"] as const;
+const BUILD_AUTHORED_VALUE_FILTERS = ["token", "literal", "dynamic"] as const;
 export type BuildAuthoredValueFilter = (typeof BUILD_AUTHORED_VALUE_FILTERS)[number];
 
 export const TOKEN_USAGE_ACTIVITIES = ["hot", "used", "not-observed"] as const;
-export type TokenUsageActivity = (typeof TOKEN_USAGE_ACTIVITIES)[number];
+type TokenUsageActivity = (typeof TOKEN_USAGE_ACTIVITIES)[number];
 
 export const TOKEN_CONDITION_KINDS = ["responsive", "pseudo", "media", "other"] as const;
-export type TokenConditionKind = (typeof TOKEN_CONDITION_KINDS)[number];
+type TokenConditionKind = (typeof TOKEN_CONDITION_KINDS)[number];
 
 export const CLEANUP_SAFETIES = ["safe-to-remove", "review-required", "not-removable"] as const;
 export type CleanupSafetyFilter = (typeof CLEANUP_SAFETIES)[number];

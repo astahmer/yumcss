@@ -21,7 +21,7 @@
  *   `buildThemeForPreset`, the `themeVars` half of `buildRegistryBase`, and
  *   `DEFAULT_RADIUS_VALUE`.
  * - `apps/v4/app/(app)/(create)/components/design-system-provider.tsx` — the
- *   `lyra` / `sera` / `rhea` radius rewrite and `buildThemeCssText`.
+ *   `lyra` / `sera` / `rhea` radius rewrite.
  * - `apps/v4/app/(app)/(create)/lib/build-instructions.ts` — the radius
  *   multipliers a generated project stylesheet publishes.
  */
@@ -40,9 +40,9 @@ export interface ShadcnOracleVariables {
  * The declared value of a property name, or a failure when the data has none.
  *
  * Upstream reads these records with plain property access, so a missing name
- * would write `undefined` and `buildCssRule` would drop the declaration. The
- * oracle throws instead: a data hole is a generator bug, and silently dropping
- * a color role would make the parity test agree with a wrong preset.
+ * would propagate `undefined`. The oracle throws instead: a data hole is a
+ * generator bug, and silently dropping a color role would make the parity test
+ * agree with a wrong preset.
  */
 const declare = (variables: Record<string, string>, name: string): string => {
 	const value = variables[name];
@@ -74,7 +74,7 @@ export const effectiveRadius = (
  * `RADII[radius].value` only when it is non-empty, so `default` leaves the
  * base color's own `--radius` in place.
  */
-export const buildRegistryTheme = (config: ShadcnConfig): ShadcnOracleVariables => {
+const buildRegistryTheme = (config: ShadcnConfig): ShadcnOracleVariables => {
 	const baseColor = shadcnTheme.baseColors[config.baseColor];
 	const theme = shadcnTheme.themes[config.theme];
 	const chartTheme = shadcnTheme.themes[config.chartColor];
@@ -119,7 +119,7 @@ export const buildThemeForPreset = (config: ShadcnConfig): ShadcnOracleVariables
 };
 
 /** `getInheritedHeadingFontValue`: the body font's own custom property. */
-export const inheritedHeadingFont = (font: ShadcnConfig["font"]): string =>
+const inheritedHeadingFont = (font: ShadcnConfig["font"]): string =>
 	"var(" + shadcnTheme.fonts[font].variable + ")";
 
 /**
@@ -133,41 +133,4 @@ export const buildRegistryBaseThemeVars = (config: ShadcnConfig): Record<string,
 	return normalizedHeading === "inherit"
 		? { "--font-heading": inheritedHeadingFont(config.font) }
 		: {};
-};
-
-/** The css-variable blocks one config publishes, as `buildRegistryTheme` shapes them. */
-export interface ShadcnOracleBlocks {
-	readonly dark: Readonly<Record<string, string>>;
-	readonly light: Readonly<Record<string, string>>;
-}
-
-/** `buildCssRule`: falsy values are dropped, an empty rule keeps its braces. */
-export const buildCssRule = (
-	selector: string,
-	cssVars?: Readonly<Record<string, string>>,
-): string => {
-	const declarations = Object.entries(cssVars ?? {})
-		.filter(([, value]) => Boolean(value))
-		.map(([key, value]) => "  --" + key + ": " + value + ";")
-		.join("\n");
-	return declarations === "" ? selector + " {}\n" : selector + " {\n" + declarations + "\n}\n";
-};
-
-/**
- * `buildThemeCssText`: `:root` first, then `.dark`, then the pointer rule.
- *
- * Rendering the preset's own blocks through this is what proves the block
- * contents are the stylesheet a project would have pasted from the create
- * page, selector order included.
- */
-export const buildThemeCssText = (blocks: ShadcnOracleBlocks, pointer: boolean): string => {
-	const pointerCss =
-		"@layer base {\n  " + shadcnTheme.pointerSelector + " {\n    cursor: pointer;\n  }\n}\n";
-	return [
-		buildCssRule(":root", blocks.light),
-		buildCssRule(".dark", blocks.dark),
-		pointer ? pointerCss : "",
-	]
-		.filter(Boolean)
-		.join("\n");
 };

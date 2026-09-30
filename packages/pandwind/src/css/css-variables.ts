@@ -1,12 +1,12 @@
 import type { CssVariableDescriptor, CssVariables } from "../types/typings.ts";
 
-export interface CssVariableValueEntry {
+interface CssVariableValueEntry {
 	readonly name: string;
 	readonly condition: string;
 	readonly value: string;
 }
 
-export interface CssVariableRegistration {
+interface CssVariableRegistration {
 	readonly name: string;
 	readonly descriptor: CssVariableDescriptor;
 }

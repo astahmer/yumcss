@@ -30,7 +30,7 @@ interface ExamplePreviewInteractionBase {
 	description: string;
 }
 
-export type ExamplePreviewInteraction =
+type ExamplePreviewInteraction =
 	| (ExamplePreviewInteractionBase & { type: "color"; cssVariable: string })
 	| (ExamplePreviewInteractionBase & {
 			type: "select";
@@ -46,7 +46,7 @@ export type ExamplePreviewInteraction =
 			unit: "px";
 	  });
 
-export interface ExamplePreviewControlOption {
+interface ExamplePreviewControlOption {
 	label: string;
 	value: string;
 	/** Optional source literal for non-string props, such as `true`. */
