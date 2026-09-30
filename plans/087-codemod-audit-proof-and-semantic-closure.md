@@ -300,9 +300,12 @@ them to be unknown.
 Evidence ownership: `codemod-configured-audit.json` captures injected scenarios;
 `codemod-installed-targets.json` captures exact installed route inputs, outputs,
 versions, typechecks, builds, SSR/hydration, base/hover browser comparison and CSS
-sizes; `panda-installed-proof.json` adds canonical source/target checks. The
-primary ledger stays an empty-project capture and separately counts identity
-routes. None of these reports promotes route maturity automatically.
+sizes. Its source and runner fingerprints stay stable across JJ revisions, and a
+checked-in report digest is verified by `pnpm run
+pivot:proof:installed:targets:check`; `panda-installed-proof.json` adds canonical
+source/target checks. The primary ledger stays an empty-project capture and
+separately counts identity routes. None of these reports promotes route maturity
+automatically.
 
 ## Completion evidence — 2026-09-30
 

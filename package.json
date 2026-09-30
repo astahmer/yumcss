@@ -80,7 +80,7 @@
 		"bench:summary:check": "nub scripts/render-performance-summary.mts --check",
 		"bench:migration-preview": "nub scripts/benchmark-migration-preview.mts",
 		"migration-preview:proof:host": "nub scripts/run-migration-preview-host-proof.mts",
-		"check": "pnpm --filter pandwind run build && pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --fix --deny-warnings --report-unused-disable-directives && pnpm exec oxfmt && pnpm run surface:check && pnpm run generated:check && pnpm run generated:budget && pnpm run presets:check && pnpm run prose:check && pnpm run bench:summary:check && pnpm run proof:docs:check",
+		"check": "pnpm --filter pandwind run build && pnpm --filter @pandwind/lint-plugin run build && pnpm exec oxlint --fix --deny-warnings --report-unused-disable-directives && pnpm exec oxfmt && pnpm run surface:check && pnpm run generated:check && pnpm run generated:budget && pnpm run presets:check && pnpm run prose:check && pnpm run bench:summary:check && pnpm run proof:docs:check && pnpm run pivot:proof:installed:targets:check",
 		"changeset": "pnpm exec changeset",
 		"changeset:version": "pnpm exec changeset version && pnpm install --no-frozen-lockfile",
 		"release:smoke": "for p in pandwind codemod analyze devtools lint-plugin; do node scripts/release/smoke-pack.mjs packages/$p || exit 1; done",
@@ -89,7 +89,8 @@
 		"test:e2e:authored-tokens": "nub scripts/verify-authored-token-browser.ts",
 		"release:check": "node scripts/release/check-publish-ready.mjs",
 		"release:publish": "bash scripts/release/publish-all.sh",
-		"pivot:proof:installed:targets": "nub --conditions pandwind scripts/verify-codemod-installed-targets.ts"
+		"pivot:proof:installed:targets": "nub --conditions pandwind scripts/verify-codemod-installed-targets.ts",
+		"pivot:proof:installed:targets:check": "nub scripts/check-codemod-installed-targets.ts"
 	},
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",

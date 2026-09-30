@@ -2,7 +2,6 @@ import { proofSourceFingerprint } from "./proof-source-fingerprint.ts";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { execFileSync } from "node:child_process";
 import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
 import {
 	browserProof,
@@ -75,10 +74,6 @@ const versions = {
 	pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
 };
 const digest = (content: string) => createHash("sha256").update(content).digest("hex");
-const sourceRevision = execFileSync("jj", ["log", "-r", "@", "--no-graph", "-T", "commit_id"], {
-	cwd: repositoryRoot,
-	encoding: "utf8",
-}).trim();
 
 const writeFixture = ({
 	root,
@@ -267,13 +262,18 @@ const reports = await withInstalledProofProject(
 	},
 	{ retainOnError: true },
 );
-writeJson(join(repositoryRoot, "plans/evidence/codemod-installed-targets.json"), {
-	schema: "pandwind.codemod-installed-targets/1",
-	sourceRevision,
+const reportBody = {
+	schema: "pandwind.codemod-installed-targets/2",
 	sourceFingerprint: proofSourceFingerprint(repositoryRoot),
 	proofImplementationHash: digest(readFileSync(import.meta.filename, "utf8")),
 	scope:
 		"Nine exact static React route scenarios; no route maturity promotion or universal framework claim.",
 	reports,
+};
+writeJson(join(repositoryRoot, "plans/evidence/codemod-installed-targets.json"), {
+	...reportBody,
+	reportFingerprint: digest(JSON.stringify(reportBody)),
 });
-console.log(JSON.stringify({ passed: reports.length, sourceRevision }));
+console.log(
+	JSON.stringify({ passed: reports.length, sourceFingerprint: reportBody.sourceFingerprint }),
+);
