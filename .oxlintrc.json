@@ -57,6 +57,7 @@
 		// State non-obvious assertion invariants; comments on every assertion add noise.
 		"antislop/require-safety-comment-for-type-assertion": "off",
 		// These Oxc perf rules were absent from the pre-Emilint plugin set.
+		// Adapter maps preserve input immutability; Oxc's suggested fix mutates spread values.
 		"oxc/no-map-spread": "off",
 		"oxc/no-accumulating-spread": "off"
 	},

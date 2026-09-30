@@ -464,10 +464,9 @@ export function createCssExtractorPluginCore(
 			],
 			[],
 		);
-		const priorityUniverse = [...buckets.values()].flatMap((bucket) => [
-			...bucket.atomic,
-			...bucket.vars,
-		]);
+		const priorityUniverse = [...buckets.values()].flatMap((bucket) =>
+			bucket.atomic.concat(bucket.vars),
+		);
 		priorityUniverse.push(...externalAtomic, ...externalVars);
 
 		const common = render(

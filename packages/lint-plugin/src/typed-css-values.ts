@@ -1,7 +1,12 @@
 const values = (...items: string[]): ReadonlySet<string> => new Set(items);
 
-const combineValues = (...groups: readonly ReadonlySet<string>[]): ReadonlySet<string> =>
-	new Set(groups.flatMap((group) => [...group]));
+const combineValues = (...groups: readonly ReadonlySet<string>[]): ReadonlySet<string> => {
+	const combined = new Set<string>();
+	for (const group of groups) {
+		for (const value of group) combined.add(value);
+	}
+	return combined;
+};
 
 const COLOR_VALUES = values("transparent", "currentColor");
 const ALIGN_CONTENT_VALUES = values(

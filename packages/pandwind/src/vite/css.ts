@@ -603,9 +603,11 @@ export function pandwindCssVite(input: CssViteInput, options: PandwindCssViteOpt
 				);
 				if (affectedCompositionModules.length > 0) {
 					compositionChanged = true;
-					const consumers = affectedCompositionModules.flatMap((compositionModule) => [
-						...(compositionConsumers.get(compositionModule) ?? []),
-					]);
+					const consumers: string[] = [];
+					for (const compositionModule of affectedCompositionModules) {
+						for (const consumer of compositionConsumers.get(compositionModule) ?? [])
+							consumers.push(consumer);
+					}
 					compositionDependants = compositionModulesToUpdate(server, consumers);
 					server.moduleGraph.onFileChange(changedFile);
 					await reloadComposition(server, changedFile);

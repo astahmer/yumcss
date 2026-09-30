@@ -533,24 +533,24 @@ function scannedTagMatches(source: string, file: string, binding: string): TagMa
 				use.localName === binding &&
 				!index.isShadowedAt(binding, use.start),
 		);
-		return uses.flatMap((use) => [
-			{
+		return uses.flatMap((use) => {
+			const openingUse = {
 				start: use.start,
 				end: use.end,
 				text: source.slice(use.start, use.end),
 				closing: false,
-			},
-			...(use.closing === undefined
-				? []
-				: [
-						{
-							start: use.closing.start,
-							end: use.closing.end,
-							text: source.slice(use.closing.start, use.closing.end),
-							closing: true,
-						},
-					]),
-		]);
+			};
+			if (use.closing === undefined) return [openingUse];
+			return [
+				openingUse,
+				{
+					start: use.closing.start,
+					end: use.closing.end,
+					text: source.slice(use.closing.start, use.closing.end),
+					closing: true,
+				},
+			];
+		});
 	} catch {
 		// Vue/Svelte snippets without a parseable script island still use the
 		// bounded template matcher below. TypeScript/JSX callers fail closed.
