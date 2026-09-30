@@ -15,6 +15,11 @@ const RollupOutputKind = { Chunk: "chunk" } as const;
 const isOutputChunk = (entry: { type: string }): entry is OutputChunk =>
 	entry.type === RollupOutputKind.Chunk;
 
+const parseRequiredString = (value: unknown, message: string): string => {
+	if (typeof value !== "string") throw new Error(message);
+	return value;
+};
+
 const tsPlugin: Plugin = {
 	name: "rollup-e2e-typescript",
 	transform(code, id) {
@@ -120,8 +125,10 @@ let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 let serverUrl = "";
 try {
 	const cssPlugin = pandwindRollupCss({ preset: examplePreset, root: project });
-	const virtualId = cssPlugin.resolveId("pandwind:css");
-	if (typeof virtualId !== "string") throw new Error("Rollup CSS virtual module did not resolve");
+	const virtualId = parseRequiredString(
+		cssPlugin.resolveId("pandwind:css"),
+		"Rollup CSS virtual module did not resolve",
+	);
 	const bundle = await rollup({
 		input: join(source, "entry.ts"),
 		plugins: [
@@ -136,8 +143,10 @@ try {
 	const app = output.output.find(isOutputChunk);
 	if (app === undefined) throw new Error("Rollup emitted no application chunk");
 	writeFileSync(join(project, "app.js"), app.code);
-	const generated = cssPlugin.load(virtualId);
-	if (typeof generated !== "string") throw new Error("Rollup CSS virtual module did not load");
+	const generated = parseRequiredString(
+		cssPlugin.load(virtualId),
+		"Rollup CSS virtual module did not load",
+	);
 	writeFileSync(
 		join(project, "styles.css"),
 		readFileSync(join(source, "globals.css"), "utf8") + generated,

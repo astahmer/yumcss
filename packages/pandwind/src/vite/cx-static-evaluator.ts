@@ -488,7 +488,10 @@ const isLateObjectMemberRead = (input: AstExpressionInput, consts: ConstantScope
 	return member !== undefined && typeof start === "number" && start < member.declStart;
 };
 
-export const containsLateObjectMemberRead = (node: AstExpressionInput, consts: ConstantScope): boolean => {
+export const containsLateObjectMemberRead = (
+	node: AstExpressionInput,
+	consts: ConstantScope,
+): boolean => {
 	const start = node["start"];
 	if (typeof start !== "number") return false;
 	const possibleNames = classMapConstants(consts);

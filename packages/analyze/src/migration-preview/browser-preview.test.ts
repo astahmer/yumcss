@@ -2,14 +2,13 @@ import { describe, expect, test } from "vitest";
 import type { MigrationPreviewRequest } from "./contracts.ts";
 import { MigrationPreviewHostId, createBrowserMigrationPreviewHost } from "./browser-preview.ts";
 
-const request = (targetCss: string): MigrationPreviewRequest =>
-	({
-		evaluation: { artifacts: { targetCss, files: [] }, diagnostics: [] },
-		selection: null,
-		target: null,
-		theme: { scope: null },
-		workspace: { revision: 0, root: "/preview", files: [] },
-	});
+const request = (targetCss: string): MigrationPreviewRequest => ({
+	evaluation: { artifacts: { targetCss, files: [] }, diagnostics: [] },
+	selection: null,
+	target: null,
+	theme: { scope: null },
+	workspace: { revision: 0, root: "/preview", files: [] },
+});
 
 describe("Migration Preview browser host", () => {
 	test("injects evaluated CSS and returns computed-style evidence", async () => {

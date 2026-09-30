@@ -928,9 +928,7 @@ export const createRuntimePruningTransform = (
 			const pureCode = markCssFactoryCallsPure(code, id);
 			const pureChanged = pureCode !== code;
 			code = pureCode;
-			const program = toOxcNode(
-				SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program,
-			);
+			const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program);
 			const imports = collectImports(program);
 			if (imports.length === 0) return pureChanged ? { code, map: null } : null;
 			const replacements = new Map<string, { start: number; end: number; text: string }>();

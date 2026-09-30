@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "nod
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import type { PandwindMeta } from "pandwind-codemod/migration/meta";
+import { createEmptyPandwindMeta } from "pandwind-codemod/migration/meta";
 import {
 	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
@@ -35,15 +35,7 @@ function readPinnedReference(reference: (typeof corpus.references)[number]): str
 	);
 }
 
-const emptyMeta = {
-	keys: [],
-	keysByBase: new Map(),
-	valueLiterals: new Map(),
-	variants: new Map(),
-	conflicts: new Map(),
-	bridgeInverse: new Map(),
-	tokens: undefined,
-} as unknown as PandwindMeta;
+const emptyMeta = createEmptyPandwindMeta();
 
 const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	panda: ["@pandacss/dev"],

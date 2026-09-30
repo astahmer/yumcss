@@ -4,10 +4,7 @@ import {
 	type PandwindMigrateOptions,
 } from "./virtual-migration-core.ts";
 
-export type {
-	PandwindMigrateOptions,
-	VirtualMigrationResidual,
-} from "./virtual-migration-core.ts";
+export type { PandwindMigrateOptions, VirtualMigrationResidual } from "./virtual-migration-core.ts";
 
 /**
  * Universal codemod bundler plugin. Use a platform slice such as

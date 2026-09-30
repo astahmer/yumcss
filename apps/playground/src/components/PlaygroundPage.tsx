@@ -550,12 +550,9 @@ function makeInput(
 		);
 	return {
 		code,
-		tw: tw as unknown as (...args: Array<unknown>) => unknown,
-		css: createRuntimeDesignCss(examplePreset, runtimeOptions(strategy)) as unknown as ((
-			...args: Array<unknown>
-		) => unknown) &
-			Record<string, unknown>,
-		cx: cx as unknown as (...inputs: Array<never>) => string,
+		tw,
+		css: createRuntimeDesignCss(examplePreset, runtimeOptions(strategy)),
+		cx,
 		createCss: createPlaygroundCss,
 		createUnsafeCss: (options: unknown = {}) =>
 			createRuntimeCss(examplePreset, runtimeOptions(strategy, options)),

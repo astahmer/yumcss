@@ -159,9 +159,7 @@ async function generateUtilityBridge(
 	const valueFilter = options.values;
 	const authoredTokenNames = authoredThemeTokenNames(entry);
 	const resolveTheme = (name: string): string | undefined =>
-		(ds as { resolveThemeValue: (n: string) => string | undefined }).resolveThemeValue(
-			name,
-		);
+		(ds as { resolveThemeValue: (n: string) => string | undefined }).resolveThemeValue(name);
 
 	const candidates = ds
 		.getClassList()

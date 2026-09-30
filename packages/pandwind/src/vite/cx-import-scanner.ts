@@ -19,11 +19,13 @@ class CxImportScanner {
 	): CxImportInfo {
 		const program =
 			parsedProgram ??
-			toOxcNode(SOURCE_SCANNER_SERVICE.parse({
-				file: id,
-				source: code,
-				language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-			}).program);
+			toOxcNode(
+				SOURCE_SCANNER_SERVICE.parse({
+					file: id,
+					source: code,
+					language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+				}).program,
+			);
 		const info = { localNames: new Set<string>(), sources: [] as string[] };
 		const queue: unknown[] = [program];
 		for (let head = 0; head < queue.length; head++) {

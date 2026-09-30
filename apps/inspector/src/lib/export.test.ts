@@ -279,7 +279,7 @@ test("downloadFile creates an object URL, sets filename, clicks, revokes", () =>
 		revokeObjectURL: revoke,
 	});
 	vi.stubGlobal("document", {
-		createElement: vi.fn(() => anchor as unknown as HTMLAnchorElement),
+		createElement: vi.fn(() => anchor),
 	});
 	downloadFile("tokens.json", "{}");
 	expect(anchor.href).toBe("blob:x");

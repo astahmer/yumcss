@@ -287,9 +287,7 @@ class ProjectPresetGraph {
 			return UNRESOLVED;
 		const importedFilename = resolveModuleFile(module.filename, binding.source);
 		if (this.#isCompilerBuilderImport(module, binding))
-			return isDefineBuilderName(binding.imported)
-				? DEFINE_BUILDERS[binding.imported]
-				: undefined;
+			return isDefineBuilderName(binding.imported) ? DEFINE_BUILDERS[binding.imported] : undefined;
 		if (
 			binding.imported === "define" &&
 			importedFilename !== undefined &&

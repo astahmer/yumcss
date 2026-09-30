@@ -235,14 +235,11 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		flatVars: mergedThemeVars,
 		themes: {
 			...(isDogfoodApp
-				? ((examplePreset as { themes?: Record<string, Record<string, string>> })
-						.themes ?? {})
+				? ((examplePreset as { themes?: Record<string, Record<string, string>> }).themes ?? {})
 				: {}),
 			...Object.fromEntries(crawledThemes),
 		},
-		components: isDogfoodApp
-			? (examplePreset as { components?: never }).components
-			: undefined,
+		components: isDogfoodApp ? (examplePreset as { components?: never }).components : undefined,
 	});
 
 	// --- token governance (plans/054): official-loader policy + effective

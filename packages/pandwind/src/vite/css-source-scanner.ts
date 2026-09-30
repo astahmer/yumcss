@@ -229,11 +229,13 @@ export const findCssCarrierImportSources = (
 ): readonly string[] => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssImportCandidate(code, matchers))
 		return [];
-	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
-		file: id,
-		source: code,
-		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program);
+	const program = toOxcNode(
+		SOURCE_SCANNER_SERVICE.parse({
+			file: id,
+			source: code,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+		}).program,
+	);
 	return collectCssCarrierImportSources(program, matchers);
 };
 
@@ -347,11 +349,13 @@ export class CssSourceScannerService implements CssSourceScanner {
 			return cached.program;
 		}
 		if (cached !== undefined) this.programs.delete(id);
-		const program = toOxcNode(this.sourceScanner.parse({
-			file: id,
-			source: code,
-			language: this.sourceScanner.languageForFile(id),
-		}).program);
+		const program = toOxcNode(
+			this.sourceScanner.parse({
+				file: id,
+				source: code,
+				language: this.sourceScanner.languageForFile(id),
+			}).program,
+		);
 		if (this.programs.size >= CssSourceScannerService.PROGRAM_CACHE_LIMIT)
 			this.programs.delete(this.programs.keys().next().value!);
 		this.programs.set(id, { source: code, program });
@@ -467,11 +471,13 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 		]);
 		const parsed =
 			program ??
-			toOxcNode(this.sourceScanner.parse({
-				file: id,
-				source: code,
-				language: this.sourceScanner.languageForFile(id),
-			}).program);
+			toOxcNode(
+				this.sourceScanner.parse({
+					file: id,
+					source: code,
+					language: this.sourceScanner.languageForFile(id),
+				}).program,
+			);
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
 		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall);

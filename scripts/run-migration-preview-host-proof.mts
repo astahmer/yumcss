@@ -13,14 +13,18 @@ const server = createServer((_request, response) => {
 	response.end("<!doctype html><html><head></head><body></body></html>");
 });
 
+const parseServerPort = (address: ReturnType<typeof server.address>): number => {
+	if (address === null || typeof address === "string")
+		throw new Error("host proof server did not start");
+	return address.port;
+};
+
 await new Promise<void>((resolveServer) => server.listen(0, "127.0.0.1", resolveServer));
-const address = server.address();
-if (address === null || typeof address === "string")
-	throw new Error("host proof server did not start");
+const port = parseServerPort(server.address());
 
 const browser = await chromium.launch();
 const host = createBrowserMigrationPreviewHost({
-	url: `http://127.0.0.1:${address.port}/preview`,
+	url: `http://127.0.0.1:${port}/preview`,
 	browser: {
 		async newPage() {
 			const page = await browser.newPage();

@@ -27,10 +27,7 @@ const configuredClassName =
 	"app-display-flex app-flexDirection-column app-gap-4px app-padding-1rem " +
 	"app-alignItems-center app-justifyContent-space-between";
 
-const vueSetupContext = (
-	attrs: Record<string, unknown>,
-	child: VNode,
-): SetupContext => ({
+const vueSetupContext = (attrs: Record<string, unknown>, child: VNode): SetupContext => ({
 	attrs,
 	slots: { default: () => [child] },
 	emit: () => undefined,
@@ -77,11 +74,9 @@ describe("Stack renderer family", () => {
 		const setup = VueStack.setup;
 		if (setup === undefined) throw new Error("Vue Stack setup is missing");
 		const child = createTextVNode("content");
-		const render = setup(
-			stackInput,
-			vueSetupContext({ class: "custom", id: "vue-stack" }, child),
-		);
-		if (!isRenderFunction(render)) throw new Error("Vue Stack setup did not return a render function");
+		const render = setup(stackInput, vueSetupContext({ class: "custom", id: "vue-stack" }, child));
+		if (!isRenderFunction(render))
+			throw new Error("Vue Stack setup did not return a render function");
 		const rendered = render();
 		if (!isVNode(rendered)) throw new Error("Vue Stack render did not return a VNode");
 

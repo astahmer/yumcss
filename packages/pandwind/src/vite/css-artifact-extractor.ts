@@ -184,10 +184,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		const keyframes: ExtractedKeyframe[] = [];
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
-		const resolveLiteralScope = createCssLiteralScopeResolver(
-			parsed as OxcNode,
-			evaluateCall,
-		);
+		const resolveLiteralScope = createCssLiteralScopeResolver(parsed as OxcNode, evaluateCall);
 		for (const site of findStaticCssHelperCallSites(
 			parsed,
 			names,

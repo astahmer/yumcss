@@ -16,15 +16,11 @@ test("createCss rejects unbound runtime calls with the unsafe entrypoint", () =>
 	expect(() => {
 		// @ts-expect-error Verify the runtime guard for callers that bypass TypeScript.
 		createCss();
-	}).toThrow(
-		"pandwind/css: createCss requires a preset",
-	);
+	}).toThrow("pandwind/css: createCss requires a preset");
 	expect(() => {
 		// @ts-expect-error Verify invalid runtime options from untyped JavaScript callers.
 		createCss({ debug: true });
-	}).toThrow(
-		"pandwind/unsafe/css",
-	);
+	}).toThrow("pandwind/unsafe/css");
 });
 
 test("stylesheet resolution accepts dot-delimited aliases for legacy token keys", () => {

@@ -180,9 +180,7 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 	expect(typeValue<WidenedPropertyNames>()).type.toBe<never>();
 	expect(typeValue<string extends ExampleDisplay ? true : false>()).type.toBe<false>();
 	expect(typeValue<string extends StrictDisplay ? true : false>()).type.toBe<false>();
-	expect(
-		typeValue<string extends OpenStrictDisplay ? true : false>(),
-	).type.toBe<false>();
+	expect(typeValue<string extends OpenStrictDisplay ? true : false>()).type.toBe<false>();
 	expect(typeValue<Extract<ExampleDisplay, "flex">>()).type.toBe<"flex">();
 	expect(typeValue<Extract<StrictDisplay, "flex">>()).type.toBe<"flex">();
 	expect(typeValue<Extract<OpenStrictDisplay, "flex">>()).type.toBe<"flex">();

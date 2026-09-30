@@ -31,6 +31,28 @@ import {
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
+function parsePackageTargets(value) {
+	if (typeof value === "string") return [value];
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
+	return Object.values(value).filter((target) => typeof target === "string");
+}
+
+function parseExportTargets(value) {
+	if (typeof value === "string") return [value];
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
+	return Object.entries(value)
+		.filter(([condition]) => condition !== "pandwind")
+		.map(([, target]) => target)
+		.filter((target) => typeof target === "string");
+}
+
+function parsePackageEntry(value) {
+	if (typeof value === "string") return value;
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return undefined;
+	const target = value.import ?? value.default;
+	return typeof target === "string" ? target : undefined;
+}
+
 async function main() {
 	const pkgDir = resolve(process.argv[2] ?? ".");
 	const manifest = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
@@ -77,17 +99,12 @@ async function main() {
 		};
 		const missing = [];
 		for (const [key, value] of Object.entries(shipped.exports ?? {})) {
-			const targets =
-				typeof value === "string"
-					? [value]
-					: Object.entries(value ?? {})
-							.filter(([condition]) => condition !== "pandwind")
-							.map(([, target]) => target);
+			const targets = parseExportTargets(value);
 			for (const target of targets) {
-				if (typeof target === "string" && !exists(target)) missing.push(`${key} -> ${target}`);
+				if (!exists(target)) missing.push(`${key} -> ${target}`);
 			}
 		}
-		for (const binTarget of Object.values(shipped.bin ?? {})) {
+		for (const binTarget of parsePackageTargets(shipped.bin)) {
 			if (!exists(binTarget)) missing.push(`bin -> ${binTarget}`);
 		}
 		if (missing.length > 0) {
@@ -98,13 +115,8 @@ async function main() {
 		}
 
 		// 4. "." entry must import
-		const dotExport =
-			typeof shipped.exports?.["."] === "string"
-				? shipped.exports["."]
-				: typeof shipped.exports?.["."] === "object"
-					? (shipped.exports["."].import ?? shipped.exports["."].default)
-					: undefined;
-		if (typeof dotExport === "string") {
+		const dotExport = parsePackageEntry(shipped.exports?.["."]);
+		if (dotExport !== undefined) {
 			await import(pathToFileURL(join(extracted, dotExport)).href);
 		}
 

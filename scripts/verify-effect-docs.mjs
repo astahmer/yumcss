@@ -39,6 +39,12 @@ const mimeTypes = {
 	".woff2": "font/woff2",
 };
 
+const parseServerUrl = (address) => {
+	if (address === null || typeof address === "string")
+		throw new Error("could not start proof server");
+	return `http://127.0.0.1:${address.port}`;
+};
+
 const serve = async (root) => {
 	const server = createServer(async (request, response) => {
 		try {
@@ -72,10 +78,7 @@ const serve = async (root) => {
 		}
 	});
 	await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-	const address = server.address();
-	if (address === null || typeof address === "string")
-		throw new Error("could not start proof server");
-	return { server, url: `http://127.0.0.1:${address.port}` };
+	return { server, url: parseServerUrl(server.address()) };
 };
 
 const htmlRoutes = async (root) => {

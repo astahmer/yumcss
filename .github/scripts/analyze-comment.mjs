@@ -24,7 +24,7 @@ function fmtKb(bytes) {
 }
 
 function deltaBytes(headBytes, baseBytes) {
-	if (typeof headBytes !== "number" || typeof baseBytes !== "number") return "n/a";
+	if (!Number.isFinite(headBytes) || !Number.isFinite(baseBytes)) return "n/a";
 	const d = headBytes - baseBytes;
 	return `${d > 0 ? "+" : ""}${d} B (${d === 0 ? "±0" : `${d > 0 ? "+" : ""}${((d / baseBytes) * 100).toFixed(2)}%`})`;
 }
@@ -63,12 +63,12 @@ function buildBody() {
 
 	const hb = head.cssBudget?.cssBytes;
 	const bb = base.cssBudget?.cssBytes;
-	sections.push(row("css size", typeof hb === "number" ? fmtKb(hb) : "n/a", false));
+	sections.push(row("css size", Number.isFinite(hb) ? fmtKb(hb) : "n/a", false));
 	sections.push(
 		row(
 			"css size delta",
 			deltaBytes(hb, bb),
-			typeof hb === "number" && typeof bb === "number" && hb > bb,
+			Number.isFinite(hb) && Number.isFinite(bb) && hb > bb,
 		),
 	);
 	const hg = head.cssBudget?.cssGzipBytes;

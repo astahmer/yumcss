@@ -27,11 +27,11 @@ function makeInput(
 ): EvalInput {
 	return {
 		code,
-		tw: tw as unknown as (...args: Array<unknown>) => unknown,
-		css: dss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
-		cx: cx as unknown as (...inputs: Array<never>) => string,
-		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
-		createUnsafeCss: createUnsafeCss as unknown as (...args: Array<unknown>) => unknown,
+		tw,
+		css: dss,
+		cx,
+		createCss,
+		createUnsafeCss,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
 		classNameStrategy,

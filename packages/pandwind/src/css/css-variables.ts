@@ -1,8 +1,4 @@
-import type {
-	CssVariableDescriptor,
-	CssVariableValue,
-	CssVariables,
-} from "../types/typings.ts";
+import type { CssVariableDescriptor, CssVariableValue, CssVariables } from "../types/typings.ts";
 
 interface CssVariableValueEntry {
 	readonly name: string;

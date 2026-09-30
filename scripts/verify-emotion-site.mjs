@@ -63,8 +63,7 @@ function startStaticServer(root) {
 	return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve(server)));
 }
 
-function serverUrl(server) {
-	const address = server.address();
+function parseServerUrl(address) {
 	if (address === null || typeof address === "string")
 		throw new Error("static server has no address");
 	return `http://127.0.0.1:${address.port}`;
@@ -282,8 +281,8 @@ const [baselineServer, candidateServer] = await Promise.all([
 	startStaticServer(baselineRoot),
 	startStaticServer(candidateRoot),
 ]);
-const baselineUrl = serverUrl(baselineServer);
-const candidateUrl = serverUrl(candidateServer);
+const baselineUrl = parseServerUrl(baselineServer.address());
+const candidateUrl = parseServerUrl(candidateServer.address());
 const routes = (await htmlFiles(baselineRoot))
 	.map((file) => routeFor(baselineRoot, file))
 	.filter((route) => !route.startsWith("/_next"))

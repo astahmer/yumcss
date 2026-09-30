@@ -710,7 +710,7 @@ const createPlugins = async (library: Library, projectRoot: string): Promise<Plu
 		return [
 			pandwindCssVite(await loadPandwindPreset(projectRoot), {
 				root: projectRoot,
-			}) as unknown as PluginOption,
+			}),
 		];
 	}
 	if (library === "tailwind") return [tailwindcss()];

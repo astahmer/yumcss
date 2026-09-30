@@ -60,10 +60,7 @@ export default function setup(ctx: DockClientScriptContext): void {
 			};
 			// The client context currently exposes the unaugmented hub key map;
 			// the server registration and shared RPC schema remain the source of truth.
-			const call = ctx.rpc.call as (
-				name: string,
-				value: DevtoolsElementInput,
-			) => Promise<unknown>;
+			const call = ctx.rpc.call as (name: string, value: DevtoolsElementInput) => Promise<unknown>;
 			await call(DEVTOOLS_RPC.InspectElement, input);
 		};
 		document.addEventListener("mousemove", onMove, true);

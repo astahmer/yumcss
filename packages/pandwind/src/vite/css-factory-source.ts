@@ -80,11 +80,13 @@ export const findCssFactoryBindingsInProgram = (program: OxcNode): readonly CssF
 
 export const findCssFactoryBindings = (code: string, id: string): readonly CssFactoryBinding[] => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return [];
-	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
-		file: id,
-		source: code,
-		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program);
+	const program = toOxcNode(
+		SOURCE_SCANNER_SERVICE.parse({
+			file: id,
+			source: code,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+		}).program,
+	);
 	return findCssFactoryBindingsInProgram(program);
 };
 

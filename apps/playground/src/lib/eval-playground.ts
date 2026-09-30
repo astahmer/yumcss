@@ -17,7 +17,7 @@ import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemo
 import { flattenStyle } from "pandwind/lib/utils";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";
 import type { ConstantScope } from "pandwind/vite/cx-inline";
-import { NodeKind, ImportKindTag } from "pandwind/tw/literal";
+import { ImportKindTag, NodeKind } from "pandwind/tw/literal";
 
 export interface PlaygroundHostNode {
 	readonly type: string;
@@ -40,8 +40,16 @@ type PlaygroundAstNode = {
 	[key: string]: unknown;
 };
 
+const isPlaygroundAstNode = (value: unknown): value is PlaygroundAstNode => {
+	if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+	if ("type" in value && typeof value.type !== "string") return false;
+	if ("start" in value && typeof value.start !== "number") return false;
+	if ("end" in value && typeof value.end !== "number") return false;
+	return true;
+};
+
 const astNode = (value: unknown): PlaygroundAstNode | undefined =>
-	value !== null && typeof value === "object" ? (value as PlaygroundAstNode) : undefined;
+	isPlaygroundAstNode(value) ? value : undefined;
 
 const astSlice = (source: string, node: unknown): string => {
 	const value = astNode(node);
@@ -443,22 +451,7 @@ interface Prepared {
  */
 function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText"> {
 	const parsed = parseSync("module-syntax.tsx", code, { sourceType: "module", lang: "tsx" });
-	const statements = ((parsed.program as unknown as { body?: unknown }).body ?? []) as Array<
-		{
-			type: string;
-			start: number;
-			end: number;
-			source?: { value?: string };
-			specifiers?: Array<{
-				type: string;
-				local?: { name?: string };
-				imported?: { name?: string; value?: string };
-				importKind?: string;
-			}>;
-			importKind?: string;
-			declaration?: { type?: string; declarations?: Array<{ id?: { name?: string } }> };
-		} & Record<string, unknown>
-	>;
+	const statements = parsed.program.body;
 	const imports: Prepared["imports"] = [];
 	const exportNames: Array<string> = [];
 	const cuts: Array<[number, number]> = [];
@@ -472,15 +465,15 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 				cuts.push([statement.start, statement.end]);
 				continue;
 			}
-			const source = statement.source?.value ?? "";
+			const source = statement.source.value;
 			for (const spec of statement.specifiers ?? []) {
 				if (spec.type === NodeKind.ImportSpecifier && spec.importKind === ImportKindTag.Type)
 					continue;
-				const local = spec.local?.name;
-				if (local === undefined) continue;
-				if (spec.type === NodeKind.ImportSpecifier)
-					imports.push({ local, source, imported: spec.imported?.name ?? spec.imported?.value });
-				else imports.push({ local, source });
+				if (spec.type === NodeKind.ImportSpecifier) {
+					const imported =
+						spec.imported.type === NodeKind.Identifier ? spec.imported.name : spec.imported.value;
+					imports.push({ local: spec.local.name, source, imported });
+				} else imports.push({ local: spec.local.name, source });
 			}
 			cuts.push([statement.start, statement.end]);
 		} else if (statement.type === NodeKind.TSExportAssignment) {
@@ -509,17 +502,20 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 			}
 		} else if (statement.type === NodeKind.ExportNamedDeclaration) {
 			const inner = statement.declaration;
-			if (inner === undefined) cuts.push([statement.start, statement.end]);
+			if (inner === null) cuts.push([statement.start, statement.end]);
 			else {
 				unwraps.push([statement.start, statement.start + "export ".length]);
-				for (const decl of inner.declarations ?? []) {
-					if (decl.id?.name !== undefined) exportNames.push(decl.id.name);
+				if (inner.type === NodeKind.VariableDeclaration) {
+					for (const decl of inner.declarations) {
+						if (decl.id.type === NodeKind.Identifier) exportNames.push(decl.id.name);
+					}
+				} else if (
+					(inner.type === NodeKind.FunctionDeclaration ||
+						inner.type === NodeKind.ClassDeclaration) &&
+					inner.id !== null
+				) {
+					exportNames.push(inner.id.name);
 				}
-				if (
-					inner.type === NodeKind.FunctionDeclaration &&
-					(inner as { id?: { name?: string } }).id?.name
-				)
-					exportNames.push((inner as { id?: { name?: string } }).id!.name!);
 			}
 		}
 	}
@@ -547,24 +543,22 @@ function prepare(code: string, mode: EvalMode): Prepared {
 	const base = stripModule(code);
 	const evalCode = stripPlaygroundTypes(transformPlaygroundJsx(base.evalCode));
 	const parsed = parseSync("playground.ts", evalCode, { sourceType: "module", lang: "ts" });
-	const program = parsed.program as unknown as {
-		body?: Array<{ type: string; start: number; end: number }>;
-	};
-	const statements = program.body ?? [];
+	const statements = parsed.program.body;
 	// Module-declared names shadow the sandbox builtins: an example that
 	// says `const css = createUnsafeCss()` must receive its own css, not the
 	// prebuilt binding injected under the same identifier.
 	const declaredNames: Array<string> = [];
 	for (const statement of statements) {
-		const s = statement as unknown as {
-			type: string;
-			declarations?: Array<{ id?: { name?: string } }>;
-			id?: { name?: string };
-		};
-		if (s.type === NodeKind.VariableDeclaration) {
-			for (const decl of s.declarations ?? []) if (decl.id?.name) declaredNames.push(decl.id.name);
-		} else if (s.type === NodeKind.FunctionDeclaration || s.type === NodeKind.ClassDeclaration) {
-			if (s.id?.name) declaredNames.push(s.id.name);
+		if (statement.type === NodeKind.VariableDeclaration) {
+			for (const decl of statement.declarations) {
+				if (decl.id.type === NodeKind.Identifier) declaredNames.push(decl.id.name);
+			}
+		} else if (
+			(statement.type === NodeKind.FunctionDeclaration ||
+				statement.type === NodeKind.ClassDeclaration) &&
+			statement.id !== null
+		) {
+			declaredNames.push(statement.id.name);
 		}
 	}
 	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon.
@@ -572,9 +566,7 @@ function prepare(code: string, mode: EvalMode): Prepared {
 	for (const statement of statements) {
 		if (statement.type === NodeKind.ExpressionStatement) lastExpr = statement;
 	}
-	const consts = collectModuleConstants(
-		parsed.program as unknown as Parameters<typeof collectModuleConstants>[0],
-	);
+	const consts = collectModuleConstants({ ...parsed.program });
 	let body: string;
 	let exprText = "";
 	if (mode === "module") {
@@ -681,12 +673,11 @@ function classifyFold(
 	consts: ConstantScope,
 ): { fold: "full" | "partial" | "runtime"; note: string } {
 	const parsed = parseSync("fold.tsx", exprText, { sourceType: "module", lang: "tsx" });
-	const statement = (parsed.program as unknown as { body: Array<Record<string, unknown>> })
-		.body?.[0];
+	const statement = parsed.program.body[0];
 	if (statement === undefined || statement.type !== NodeKind.ExpressionStatement) {
 		return { fold: "runtime", note: "no expression to analyze" };
 	}
-	const expr = statement.expression as { type?: string };
+	const expr = statement.expression;
 	if (isStaticNode(expr, consts)) {
 		return { fold: "full", note: "all arguments static — fully eliminated at build time" };
 	}
@@ -891,15 +882,17 @@ function styleProgramsFromExpression(exprText: string): StyleProgram[] {
 	return programs;
 }
 
+type PlaygroundCallable = (...args: Array<never>) => unknown;
+
 export interface EvalInput {
 	code: string;
-	tw: (...args: Array<unknown>) => unknown;
-	css: ((...args: Array<unknown>) => unknown) & Record<string, unknown>;
+	tw: PlaygroundCallable;
+	css: PlaygroundCallable;
 	cx: (...inputs: Array<never>) => string;
 	/** Safe preset-bound factory used when resolving `pandwind/css` imports. */
-	createCss?: (...args: Array<unknown>) => unknown;
+	createCss?: PlaygroundCallable;
 	/** Explicit unsafe engine used when resolving `pandwind/unsafe/css` imports. */
-	createUnsafeCss?: (...args: Array<unknown>) => unknown;
+	createUnsafeCss?: PlaygroundCallable;
 	/** Explicit playground adapter; null selects Pandwind's default atomic output. */
 	classNameStrategy?: ClassNameStrategy | null;
 	/**
@@ -930,6 +923,9 @@ interface RuntimeCssInstance {
 
 const isStyleRecord = (value: unknown): value is Record<string, unknown> =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
+
+const isPlaygroundCallable = (value: unknown): value is PlaygroundCallable =>
+	typeof value === "function";
 
 const hostStyleFromResult = (result: unknown): Record<string, string> => {
 	if (!isStyleRecord(result) || !isStyleRecord(result.style)) return {};
@@ -1040,28 +1036,29 @@ function instrumentRuntimeCss(
 	resolveStyle?: (style: Record<string, unknown>) => Record<string, string>,
 	onRuntimeStyle?: (style: Record<string, string>) => void,
 ): unknown {
-	if (typeof instance !== "function") return instance;
-	const callable = instance as (...args: Array<unknown>) => unknown;
+	if (!isPlaygroundCallable(instance)) return instance;
+	const callable = instance;
 	const instrumented = ((...args: Array<unknown>) => {
-		const result = callable(...args);
+		const result = callable(...(args as never[]));
 		if (args.every(isCompilableStyleInput))
 			onStyleMappings(styleMappingsFromCompiled(args, result, resolveStyle));
 		return result;
 	}) as ((...args: Array<unknown>) => unknown) & Record<string, unknown>;
-	for (const [key, value] of Object.entries(instance as unknown as Record<string, unknown>)) {
-		if (typeof value !== "function") {
-			instrumented[key] = value;
+	for (const [key, value] of Object.entries(instance)) {
+		const property: unknown = value;
+		if (!isPlaygroundCallable(property)) {
+			instrumented[key] = property;
 			continue;
 		}
 		instrumented[key] = (...args: Array<unknown>) => {
-			const result = value(...args);
+			const result = property(...(args as never[]));
 			if (key === "vars" || key === "props") onRuntimeStyle?.(hostStyleFromResult(result));
 			const styleArgs = args.filter(isCompilableStyleInput);
 			if (
 				(key === "class" || key === "vars" || key === "props") &&
 				styleArgs.length === args.length
 			) {
-				const compiled = callable(...styleArgs);
+				const compiled = callable(...(styleArgs as never[]));
 				onStyleMappings(styleMappingsFromCompiled(styleArgs, compiled, resolveStyle));
 			}
 			return result;
@@ -1136,7 +1133,7 @@ function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
 function buildSandbox(
 	input: EvalInput,
 	prepared: Prepared,
-	tw: (...args: Array<unknown>) => unknown,
+	tw: PlaygroundCallable,
 	css: EvalInput["css"],
 	cx: (...inputs: Array<never>) => string,
 	onRuntimeCss?: (instance: RuntimeCssInstance) => void,
@@ -1368,9 +1365,11 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		(method?: string) =>
 		(...args: Array<unknown>): unknown => {
 			recordArgs(args);
-			const fn =
-				method === undefined ? input.css : (input.css[method] as (...a: Array<never>) => unknown);
-			if (typeof fn !== "function")
+			const fn: unknown =
+				method === undefined
+					? input.css
+					: Object.getOwnPropertyDescriptor(input.css, method)?.value;
+			if (!isPlaygroundCallable(fn))
 				throw new Error(`css.${method} is not available in the sandbox`);
 			const result = fn(...(args as never[]));
 			if (method === "vars" || method === "props") {
@@ -1412,12 +1411,13 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			}
 			return result;
 		};
-	const css = cssCall() as EvalInput["css"];
-	for (const key of Object.keys(input.css)) {
-		if (typeof (input.css as Record<string, unknown>)[key] === "function") {
-			(css as unknown as Record<string, unknown>)[key] = cssCall(key);
-		}
+	const css: EvalInput["css"] = cssCall();
+	const cssMethods: Record<string, unknown> = {};
+	for (const [key, value] of Object.entries(input.css)) {
+		const method: unknown = value;
+		if (isPlaygroundCallable(method)) cssMethods[key] = cssCall(key);
 	}
+	Object.assign(css, cssMethods);
 	const cx = (...callInputs: Array<never>) => {
 		recordArgs(callInputs);
 		const result = input.cx(...callInputs);

@@ -208,9 +208,8 @@ export async function browserProof(options: {
 	const pixelmatchModule = requireFromRoot("pixelmatch") as
 		| typeof import("pixelmatch")
 		| { readonly default: typeof import("pixelmatch") };
-	const pixelmatch = (typeof pixelmatchModule === "function"
-		? pixelmatchModule
-		: pixelmatchModule.default) as unknown as Pixelmatch;
+	const pixelmatch: Pixelmatch =
+		typeof pixelmatchModule === "function" ? pixelmatchModule : pixelmatchModule.default;
 	const { PNG } = requireFromRoot("pngjs") as { readonly PNG: PngApi };
 	const browser = await chromium.launch();
 	const page = await browser.newPage({ viewport: { width: 640, height: 240 } });

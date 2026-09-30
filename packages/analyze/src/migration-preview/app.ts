@@ -28,8 +28,7 @@ const isRequestBody = (value: unknown): value is Record<string, unknown> =>
 	value !== null && typeof value === "object" && !Array.isArray(value);
 
 const bodyObject = (value: unknown): Record<string, unknown> => {
-	if (!isRequestBody(value))
-		throw new Error("Migration Preview request body must be an object");
+	if (!isRequestBody(value)) throw new Error("Migration Preview request body must be an object");
 	return value;
 };
 

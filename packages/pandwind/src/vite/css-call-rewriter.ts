@@ -217,21 +217,15 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		});
 		const firstThatWorksNames = findFirstThatWorksBindings(toOxcNode(parsed));
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
-		const resolveLiteralScope = createCssLiteralScopeResolver(
-			toOxcNode(parsed),
-			evaluateCall,
-		);
+		const resolveLiteralScope = createCssLiteralScopeResolver(toOxcNode(parsed), evaluateCall);
 		const firstThatWorksValueNames = findCssFallbackValueNames(
 			toOxcNode(parsed),
 			firstThatWorksNames,
 		);
 		const staticHelperCalls = new Map(
-			findStaticCssHelperCallSites(
-				toOxcNode(parsed),
-				names,
-				resolveLiteralScope,
-				evaluateCall,
-			).map((site) => [site.start, site]),
+			findStaticCssHelperCallSites(toOxcNode(parsed), names, resolveLiteralScope, evaluateCall).map(
+				(site) => [site.start, site],
+			),
 		);
 		const usedIdentifiers = new Set<string>();
 		walk(toOxcNode(parsed), (node) => {
@@ -873,11 +867,13 @@ const literalGroup = (
 
 export const markCssFactoryCallsPure = (code: string, id: string): string => {
 	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id) || !mayContainCssFactoryImport(code)) return code;
-	const program = toOxcNode(SOURCE_SCANNER_SERVICE.parse({
-		file: id,
-		source: code,
-		language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-	}).program);
+	const program = toOxcNode(
+		SOURCE_SCANNER_SERVICE.parse({
+			file: id,
+			source: code,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+		}).program,
+	);
 	const bindings = findCssFactoryBindingsInProgram(program);
 	if (bindings.length === 0) return code;
 	const factoryNames = new Set(bindings.map((binding) => binding.local));

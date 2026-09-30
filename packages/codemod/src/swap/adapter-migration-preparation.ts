@@ -200,17 +200,17 @@ const sourceProgramsForTargetConfig = (
 			: { matchers: route.source.sourceModuleMatchers }),
 	};
 	const parsed = route.source.parse(source, {
-			...context,
-			config: sourceConfig,
-			targetId: route.target.id,
-			sourceModules: sourceOwnership.modules,
-			...(sourceOwnership.matchers === undefined
-				? {}
-				: { sourceModuleMatchers: sourceOwnership.matchers }),
-			...(sourceOwnership.semanticMatchers === undefined
-				? {}
-				: { sourceModuleSemanticMatchers: sourceOwnership.semanticMatchers }),
-		});
+		...context,
+		config: sourceConfig,
+		targetId: route.target.id,
+		sourceModules: sourceOwnership.modules,
+		...(sourceOwnership.matchers === undefined
+			? {}
+			: { sourceModuleMatchers: sourceOwnership.matchers }),
+		...(sourceOwnership.semanticMatchers === undefined
+			? {}
+			: { sourceModuleSemanticMatchers: sourceOwnership.semanticMatchers }),
+	});
 	const programs: StyleProgram[] = [];
 	for (const { program } of parsed.matches) {
 		if (program.schema !== STYLE_PROGRAM_SCHEMA) continue;

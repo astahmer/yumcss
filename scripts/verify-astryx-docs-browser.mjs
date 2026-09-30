@@ -150,7 +150,7 @@ function compareScreenshots(baseline, migrated) {
 	};
 }
 
-function canonicalIssue(item, origins) {
+function normalizeCanonicalIssue(item, origins) {
 	if (typeof item === "string")
 		return origins
 			.reduce((value, origin) => value.replaceAll(origin, "<server>"), item)
@@ -165,10 +165,10 @@ function canonicalIssue(item, origins) {
 
 function newItems(baseline, migrated, origins) {
 	const baselineItems = new Set(
-		baseline.map((item) => JSON.stringify(canonicalIssue(item, origins))),
+		baseline.map((item) => JSON.stringify(normalizeCanonicalIssue(item, origins))),
 	);
 	return migrated.filter(
-		(item) => !baselineItems.has(JSON.stringify(canonicalIssue(item, origins))),
+		(item) => !baselineItems.has(JSON.stringify(normalizeCanonicalIssue(item, origins))),
 	);
 }
 
