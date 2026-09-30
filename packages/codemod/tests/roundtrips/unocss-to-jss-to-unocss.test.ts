@@ -134,9 +134,9 @@ test("unocss -> jss -> unocss: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import jss from "jss";
+		export const App = () => <div className={jss.createStyleSheet({ style: { "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } } }).attach().classes.style}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -154,38 +154,55 @@ test("unocss -> jss -> unocss: retains the documented secondary API without sile
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "canonical CSS differs",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> jss | lowering-residual: validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "changed": true,
+		    "code": "import jss from "jss";
+		// pandwind:migrate-skip (route: jss -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <div className={jss.createStyleSheet({ style: { "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}

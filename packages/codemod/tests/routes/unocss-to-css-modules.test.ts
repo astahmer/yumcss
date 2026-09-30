@@ -48,10 +48,15 @@ test("unocss -> css-modules: migrates concrete unocss syntax to css-modules", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "purpose": "CSS Modules styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -59,6 +64,7 @@ test("unocss -> css-modules: migrates concrete unocss syntax to css-modules", ()
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -67,19 +73,19 @@ test("unocss -> css-modules: migrates concrete unocss syntax to css-modules", ()
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -92,10 +98,15 @@ test("unocss -> css-modules: carries a documented secondary unocss API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "purpose": "CSS Modules styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -103,6 +114,7 @@ test("unocss -> css-modules: carries a documented secondary unocss API explicitl
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -111,24 +123,19 @@ test("unocss -> css-modules: carries a documented secondary unocss API explicitl
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: md",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +156,15 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -160,6 +172,7 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -168,26 +181,31 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -195,6 +213,7 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -203,19 +222,19 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +250,15 @@ test("unocss -> css-modules: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "purpose": "CSS Modules styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -242,6 +266,7 @@ test("unocss -> css-modules: resolves concrete token values with project context
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -250,19 +275,19 @@ test("unocss -> css-modules: resolves concrete token values with project context
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -275,11 +300,16 @@ test("unocss -> css-modules: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
+		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;
 		const unfinished = { /* unfinished unocss */",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "purpose": "CSS Modules styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -287,6 +317,7 @@ test("unocss -> css-modules: preserves malformed concrete unocss input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,19 +326,19 @@ test("unocss -> css-modules: preserves malformed concrete unocss input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

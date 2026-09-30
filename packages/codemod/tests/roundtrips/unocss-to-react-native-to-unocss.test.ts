@@ -137,7 +137,7 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style}/>;",
+		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,8 +174,8 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
-		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "md": { "display": "flex" } } }).style}/>;",
+		// pandwind:migrate-skip (route: react-native -> unocss | capability-blocked: media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <View   style={StyleSheet.create({ style: { "hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -200,7 +200,7 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules",
+		        "hint": "media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

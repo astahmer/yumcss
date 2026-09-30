@@ -50,6 +50,14 @@ const migrateChakra = (source: string, to: CodemodAdapterId, file = "Card.tsx") 
 		semantic: { source: { framework: BuiltinHostFramework.React } },
 	});
 
+const migrateWithUnoTargetConfig = (source: string, from: CodemodAdapterId, file = "App.tsx") =>
+	createAdapterRouteSpec(from, CodemodAdapterId.UnoCSS).runAsync({
+		source,
+		file,
+		project: createAdapterRouteProject(from, CodemodAdapterId.UnoCSS, "#2a57c8"),
+		semantic: { source: { framework: BuiltinHostFramework.React } },
+	});
+
 describe("target adapter emission contract", () => {
 	test("preserves the JSX host when targeting Pandwind's tw dialect", async () => {
 		const result = await runAdapterMigrationAsync('<div className="bg-black" />', {
@@ -241,10 +249,18 @@ describe("target adapter emission contract", () => {
 				target,
 			);
 
-			expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
+			expect(
+				result.skipped,
+				`${CodemodAdapterId.ChakraUi} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
+			).toBe(0);
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain('className={"[background:tomato]"}');
 			expect(result.code).not.toMatch(/\bclassName\s*=\s*\{\s*<Box/u);
+			if (target === CodemodAdapterId.UnoCSS)
+				expect(result.code).toMatchInlineSnapshot(`
+				"import { Box } from "@chakra-ui/react";
+				export const App = () => <Box className={"[background:tomato]"}/>;"
+			`);
 		},
 	);
 
@@ -270,13 +286,21 @@ describe("target adapter emission contract", () => {
 			return;
 		}
 
-		expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
+		expect(
+			result.skipped,
+			`${CodemodAdapterId.ChakraUi} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
+		).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("className");
 		expect(result.code).toContain("style=");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).not.toContain("bg={theme.foreground}");
 		expect(result.code).not.toContain("adapter capability mismatch");
+		if (target === CodemodAdapterId.UnoCSS)
+			expect(result.code).toMatchInlineSnapshot(`
+			"import { Box } from "@chakra-ui/react";
+			export const App = () => <Box className={"[background:var(--pandwind-dynamic-5qa8dh)]"} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;"
+		`);
 	});
 
 	test("keeps an unbounded dynamic value as source with a typed residual", () => {
@@ -359,35 +383,39 @@ describe("target adapter emission contract", () => {
 		CodemodAdapterId.VanillaExtract,
 		CodemodAdapterId.Tailwind,
 		CodemodAdapterId.UnoCSS,
-	] as const)("projects a scalar dynamic styled subject through %s's class carrier", (target) => {
-		const result = runAdapterMigration(
-			'import styled from "styled-components";\n' +
+	] as const)(
+		"projects a scalar dynamic styled subject through %s's class carrier",
+		async (target) => {
+			const source =
+				'import styled from "styled-components";\n' +
 				"const Card = styled.div({ color: theme.foreground });\n" +
-				"export const App = () => <Card />;",
-			{
-				from: CodemodAdapterId.StyledComponents,
-				to: target,
-				file: "App.tsx",
-				mode: "safe",
-				readFile: () => undefined,
-				adapterRegistry: catalog.registry,
-				semantic: { source: { framework: BuiltinHostFramework.React } },
-			},
-		);
-		if (target === CodemodAdapterId.VanillaExtract) {
-			expect(result.converted).toBe(1);
-			expect(result.skipped).toBe(0);
-			expect(result.residuals).toEqual([]);
-			expect(result.code).toContain('from "./App.styles.css.ts"');
-			expect(result.code).toContain("String(theme.foreground)");
-			expect(result.code).toContain("<Card />");
-			expect(result.generatedFiles).toHaveLength(1);
-			expect(result.generatedFiles[0]).toMatchObject({
-				path: "App.styles.css.ts",
-				content: expect.stringContaining("var(--pandwind-dynamic-"),
-			});
-			expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
-				.toMatchInlineSnapshot(`
+				"export const App = () => <Card />;";
+			const result =
+				target === CodemodAdapterId.UnoCSS
+					? await migrateWithUnoTargetConfig(source, CodemodAdapterId.StyledComponents)
+					: runAdapterMigration(source, {
+							from: CodemodAdapterId.StyledComponents,
+							to: target,
+							file: "App.tsx",
+							mode: "safe",
+							readFile: () => undefined,
+							adapterRegistry: catalog.registry,
+							semantic: { source: { framework: BuiltinHostFramework.React } },
+						});
+			if (target === CodemodAdapterId.VanillaExtract) {
+				expect(result.converted).toBe(1);
+				expect(result.skipped).toBe(0);
+				expect(result.residuals).toEqual([]);
+				expect(result.code).toContain('from "./App.styles.css.ts"');
+				expect(result.code).toContain("String(theme.foreground)");
+				expect(result.code).toContain("<Card />");
+				expect(result.generatedFiles).toHaveLength(1);
+				expect(result.generatedFiles[0]).toMatchObject({
+					path: "App.styles.css.ts",
+					content: expect.stringContaining("var(--pandwind-dynamic-"),
+				});
+				expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
+					.toMatchInlineSnapshot(`
 					[
 					  {
 					    "content": "import { style } from "@vanilla-extract/css";
@@ -397,20 +425,28 @@ describe("target adapter emission contract", () => {
 					  },
 					]
 				`);
-			return;
-		}
+				return;
+			}
 
-		expect(
-			result.skipped,
-			`${CodemodAdapterId.StyledComponents} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
-		).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("__pandwindCardForwardRef");
-		expect(result.code).toContain("theme.foreground");
-		expect(result.code).toContain("<Card />");
-		expect(result.code).toContain("ref={ref}");
-		expect(result.code).not.toContain("styled-components");
-	});
+			expect(
+				result.skipped,
+				`${CodemodAdapterId.StyledComponents} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
+			).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("__pandwindCardForwardRef");
+			expect(result.code).toContain("theme.foreground");
+			expect(result.code).toContain("<Card />");
+			expect(result.code).toContain("ref={ref}");
+			expect(result.code).not.toContain("styled-components");
+			if (target === CodemodAdapterId.UnoCSS)
+				expect(result.code).toMatchInlineSnapshot(`
+			"import { forwardRef as __pandwindCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--pandwind-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __pandwindCardComponent; })();
+			export const App = () => <Card />;"
+		`);
+		},
+	);
 
 	test("reports a styled subject whose theme expression has no verified Chakra mapping", () => {
 		const result = runAdapterMigration(
@@ -523,21 +559,23 @@ describe("target adapter emission contract", () => {
 		catalog.adapters
 			.filter((adapter) => adapter.migration?.targetPolicy?.dynamicClassCarrier === true)
 			.map((adapter) => adapter.id),
-	)("uses the shared dynamic subject projection for %s", (target) => {
-		const result = runAdapterMigration(
+	)("uses the shared dynamic subject projection for %s", async (target) => {
+		const source =
 			'import styled from "styled-components";\n' +
-				"const Card = styled.div({ color: theme.foreground });\n" +
-				"export const App = () => <Card />;",
-			{
-				from: CodemodAdapterId.StyledComponents,
-				to: target,
-				file: "App.tsx",
-				mode: "safe",
-				readFile: () => undefined,
-				adapterRegistry: catalog.registry,
-				semantic: { source: { framework: BuiltinHostFramework.React } },
-			},
-		);
+			"const Card = styled.div({ color: theme.foreground });\n" +
+			"export const App = () => <Card />;";
+		const result =
+			target === CodemodAdapterId.UnoCSS
+				? await migrateWithUnoTargetConfig(source, CodemodAdapterId.StyledComponents)
+				: runAdapterMigration(source, {
+						from: CodemodAdapterId.StyledComponents,
+						to: target,
+						file: "App.tsx",
+						mode: "safe",
+						readFile: () => undefined,
+						adapterRegistry: catalog.registry,
+						semantic: { source: { framework: BuiltinHostFramework.React } },
+					});
 		if (target === CodemodAdapterId.VanillaExtract || target === CodemodAdapterId.Treat) {
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
@@ -556,6 +594,13 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).toContain("ref={ref}");
+		if (target === CodemodAdapterId.UnoCSS)
+			expect(result.code).toMatchInlineSnapshot(`
+			"import { forwardRef as __pandwindCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--pandwind-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __pandwindCardComponent; })();
+			export const App = () => <Card />;"
+		`);
 	});
 
 	test("emits dynamic styled values through Treat and Vanilla Extract sidecars", () => {
@@ -1096,13 +1141,12 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("theme.foreground");
 	});
 
-	test("lowers a host-bound dynamic value to an UnoCSS custom-property carrier", () => {
-		const result = migrate(
+	test("lowers a host-bound dynamic value through UnoCSS's configured generator", async () => {
+		const result = await migrateWithUnoTargetConfig(
 			'import { css } from "pandwind/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				"export const App = () => <div className={card} />;",
 			CodemodAdapterId.Pandwind,
-			CodemodAdapterId.UnoCSS,
 		);
 
 		expect(result.converted).toBe(1);
@@ -1111,6 +1155,10 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("[color:var(--pandwind-dynamic-");
 		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
 		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toMatchInlineSnapshot(`
+			"const card = "[color:var(--pandwind-dynamic-5qa8dh)]";
+			export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;"
+		`);
 	});
 
 	test.each([

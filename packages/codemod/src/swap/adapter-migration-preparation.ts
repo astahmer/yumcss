@@ -14,7 +14,12 @@ import type {
 	AdapterMigrationPorts,
 	AdapterMigrationResult,
 } from "./adapter-migration-contract.ts";
-import { StyleProgramResidualKindTag, type StyleProgramResidual } from "./semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "./semantic-ir.ts";
+import { StyleProgramCore } from "./style-program-core.ts";
 import { StyleMigrationOutcome, StyleRepresentationKind } from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 
@@ -181,6 +186,34 @@ function prepareResolvedMigration(
 	};
 }
 
+const sourceProgramsForTargetConfig = (
+	source: string,
+	context: AdapterConfigContext,
+	route: ReturnType<StyleAdapterRegistry["resolveRoute"]>,
+	sourceConfig: AdapterProjectConfig,
+): readonly StyleProgram[] => {
+	const sourceOwnership = route.source.resolveSourceModuleOwnership?.(sourceConfig) ?? {
+		modules: route.source.sourceModules,
+		...(route.source.sourceModuleMatchers === undefined
+			? {}
+			: { matchers: route.source.sourceModuleMatchers }),
+	};
+	return route.source
+		.parse(source, {
+			...context,
+			config: sourceConfig,
+			targetId: route.target.id,
+			sourceModules: sourceOwnership.modules,
+			...(sourceOwnership.matchers === undefined
+				? {}
+				: { sourceModuleMatchers: sourceOwnership.matchers }),
+			...(sourceOwnership.semanticMatchers === undefined
+				? {}
+				: { sourceModuleSemanticMatchers: sourceOwnership.semanticMatchers }),
+		})
+		.matches.map(({ program }) => StyleProgramCore.normalize(program));
+};
+
 export function prepareMigration(
 	source: string,
 	options: AdapterMigrationOptions,
@@ -215,6 +248,21 @@ export async function prepareMigrationAsync(
 	const context = migrationContext(source, options);
 	if (!route.source.detect(context).matched) return noOpMigration(source);
 	try {
+		if (
+			route.target.configRequiresSourcePrograms === true &&
+			route.target.loadConfigAsync !== undefined
+		) {
+			const sourceConfig =
+				(await route.source.loadConfigAsync?.(context)) ?? route.source.loadConfig(context);
+			const targetConfig = await route.target.loadConfigAsync({
+				...context,
+				stylePrograms: sourceProgramsForTargetConfig(source, context, route, sourceConfig),
+			});
+			return prepareResolvedMigration(source, options, route, context, {
+				source: sourceConfig,
+				target: targetConfig,
+			});
+		}
 		const [sourceConfig, targetConfig] = await Promise.all([
 			route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
 			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),

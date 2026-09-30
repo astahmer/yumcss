@@ -111,7 +111,7 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -137,11 +137,6 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: md",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
 		        "hint": "Vanilla Extract styles must be emitted from a .css.ts module",
 		        "kind": "capability",
 		        "preserved": undefined,
@@ -152,7 +147,7 @@ test("unocss -> vanilla-extract -> unocss: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

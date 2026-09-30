@@ -134,9 +134,20 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({
+			style: {
+				backgroundColor: {
+					default: null,
+					":hover": "black",
+				},
+				display: {
+					default: null,
+					"@media (min-width: 48rem)": "flex",
+				},
+			},
+		}).style;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -154,44 +165,66 @@ test("unocss -> stylex -> unocss: retains the documented secondary API without s
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "condition is not expressible as a StyleX property-value condition",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "canonical CSS differs; 1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "canonical CSS differs",
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "unsupported",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		// pandwind:migrate-skip (route: stylex -> unocss | capability-blocked: selector-conditions: selector: :hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => stylex.create({
+			style: {
+				backgroundColor: {
+					default: null,
+					":hover": "black",
+				},
+				display: {
+					default: null,
+					"@media (min-width: 48rem)": "flex",
+				},
+			},
+		}).style;",
 		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "named-map",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "selector-conditions: selector: :hover; media-conditions: media: @media (min-width: 48rem)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [],
 		  },
 		}

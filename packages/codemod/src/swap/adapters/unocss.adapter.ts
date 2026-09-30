@@ -2,7 +2,7 @@ import {
 	SemanticConditionKindTag,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
-	inferSemanticConditionKind,
+	StyleValueKindTag,
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
 	type StyleCondition,
@@ -26,6 +26,7 @@ import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleRepresentationKind,
+	StyleProgramEmissionHint,
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
@@ -44,6 +45,7 @@ import {
 	type GeneratedCssNode,
 } from "../generated-css-parser.ts";
 import { GeneratedCssNodeKind } from "../generated-css-parser.ts";
+import { dynamicVariableName } from "../lowering.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -184,11 +186,6 @@ const literal = (property: string, value: string | number): StyleDeclaration => 
 	value: { kind: "literal", value },
 });
 
-const authoredVariantCondition = (name: string): StyleCondition => ({
-	kind: "named",
-	name,
-});
-
 const generatedPseudoCondition = (name: string): StyleCondition => ({
 	kind: "pseudo",
 	name,
@@ -200,53 +197,6 @@ function sameStyleDeclaration(left: StyleDeclaration, right: StyleDeclaration): 
 		JSON.stringify(left.value) === JSON.stringify(right.value) &&
 		JSON.stringify(left.conditions) === JSON.stringify(right.conditions)
 	);
-}
-
-function splitUtilityToken(token: string): string[] {
-	const parts: string[] = [];
-	let start = 0;
-	let brackets = 0;
-	for (let index = 0; index < token.length; index++) {
-		const character = token[index]!;
-		if (character === "[") brackets++;
-		else if (character === "]" && brackets > 0) brackets--;
-		else if (character === ":" && brackets === 0) {
-			parts.push(token.slice(start, index));
-			start = index + 1;
-		}
-	}
-	parts.push(token.slice(start));
-	return parts;
-}
-
-function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
-	const arbitrary = /^\[([\w-]+):(.+)\]$/.exec(token);
-	if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined)
-		return [
-			literal(
-				arbitrary[1].replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
-				arbitrary[2],
-			),
-		];
-	const parts = splitUtilityToken(token);
-	const utility = parts.pop();
-	if (utility === undefined) return undefined;
-	const arbitraryUtilityMatch = /^\[([\w-]+):(.+)\]$/.exec(utility);
-	if (arbitraryUtilityMatch?.[1] === undefined || arbitraryUtilityMatch[2] === undefined)
-		return undefined;
-	return [
-		{
-			...literal(
-				arbitraryUtilityMatch[1]!.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
-				arbitraryUtilityMatch[2],
-			),
-			conditions: parts.map((name) =>
-				inferSemanticConditionKind(name) === SemanticConditionKindTag.Pseudo
-					? generatedPseudoCondition(name)
-					: authoredVariantCondition(name),
-			),
-		},
-	];
 }
 
 const UNO_TOKEN_NAME_POLICIES: readonly {
@@ -400,6 +350,25 @@ function emitUnoClassTokens(
 			});
 			continue;
 		}
+		const verifiedArbitrary =
+			resolver !== undefined &&
+			parseContext !== undefined &&
+			resolver
+				.resolve(token, parseContext)
+				?.some(
+					(candidate) =>
+						candidate.property === declaration.property &&
+						resolvedStyleValue(candidate.value) === resolvedStyleValue(declaration.value) &&
+						JSON.stringify(candidate.conditions) === JSON.stringify(declaration.conditions),
+				) === true;
+		if (!verifiedArbitrary) {
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Configuration,
+				text: token,
+				hint: "the official UnoCSS generator did not prove this emitted utility",
+			});
+			continue;
+		}
 		tokens.push(token);
 	}
 	return { text: JSON.stringify([...new Set(tokens)].join(" ")), residuals };
@@ -478,6 +447,67 @@ function staticUnoTokens(source: string): readonly string[] {
 	return [...tokens];
 }
 
+function staticUnoPropertyCandidates(source: string): readonly string[] {
+	const candidates = new Set<string>();
+	for (const match of source.matchAll(
+		/([A-Za-z_$-][\w$-]*)\s*:\s*(?:"([^"\n]+)"|'([^'\n]+)'|(-?(?:\d+(?:\.\d+)?)(?:[a-z%]+)?))/giu,
+	)) {
+		const property = match[1];
+		const value = match[2] ?? match[3] ?? match[4];
+		if (property === undefined || value === undefined) continue;
+		const candidate = unoToken({
+			property: cssPropertyToStyleProperty(property),
+			value: { kind: "literal", value },
+			conditions: [],
+		});
+		if (candidate !== undefined) candidates.add(candidate);
+	}
+	return [...candidates];
+}
+
+const styleProgramUnoCandidates = (
+	programs: readonly StyleProgram[],
+	tokenCatalog: TokenCatalog | undefined,
+): readonly string[] => {
+	const candidates = new Set<string>();
+	for (const program of programs) {
+		const styleRules = program.rules.filter((rule) => rule.kind === StyleRuleKindTag.Style);
+		const declarations =
+			styleRules.length > 0
+				? styleRules.flatMap((rule) => rule.declarations)
+				: program.declarations;
+		for (const declaration of declarations) {
+			const arbitrary = unoToken(declaration);
+			if (arbitrary !== undefined) candidates.add(arbitrary);
+			const named = unoNamedToken(declaration, tokenCatalog);
+			if (named !== undefined) candidates.add(named);
+			if (declaration.value.kind === StyleValueKindTag.Dynamic) {
+				const dynamicExpression = declaration.value.expression;
+				const dynamic = unoToken({
+					...declaration,
+					value: {
+						kind: StyleValueKindTag.Literal,
+						value: `var(${dynamicVariableName(dynamicExpression)})`,
+					},
+				});
+				if (dynamic !== undefined) candidates.add(dynamic);
+				const resolvedTheme = program.themes?.find(
+					(binding) =>
+						dynamicExpression === binding.authored || dynamicExpression === `theme.${binding.path}`,
+				);
+				if (resolvedTheme?.resolved !== undefined) {
+					const resolved = unoToken({
+						...declaration,
+						value: { kind: StyleValueKindTag.Literal, value: resolvedTheme.resolved },
+					});
+					if (resolved !== undefined) candidates.add(resolved);
+				}
+			}
+		}
+	}
+	return [...candidates];
+};
+
 function hasResolvedUnoToken(
 	value: string,
 	resolver: UnoCssTokenResolver,
@@ -486,24 +516,40 @@ function hasResolvedUnoToken(
 	return value.split(/\s+/u).some((token) => resolver.resolve(token, context) !== undefined);
 }
 
-function staticUnoClassMap(
+function staticUnoClassMaps(
 	source: string,
 	resolver: UnoCssTokenResolver,
 	context: AdapterParseContext,
-):
-	| { readonly start: number; readonly end: number; readonly entries: readonly RegExpExecArray[] }
-	| undefined {
-	for (const declaration of source.matchAll(/\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{/g)) {
+): readonly {
+	readonly start: number;
+	readonly end: number;
+	readonly entries: readonly RegExpExecArray[];
+}[] {
+	const maps: Array<{
+		readonly start: number;
+		readonly end: number;
+		readonly entries: readonly RegExpExecArray[];
+	}> = [];
+	for (const declaration of source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*\{/g)) {
 		const open = source.indexOf("{", declaration.index ?? 0);
 		if (open < 0) continue;
 		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const entries = [
-			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']+)\3/g),
-		].filter((entry) => entry[4] !== undefined && hasResolvedUnoToken(entry[4], resolver, context));
-		if (entries.length > 0) return { start: open, end: block.end, entries };
+			...block.body.matchAll(
+				/(?:(?:(["'])([A-Za-z_$][\w$-]*)\1)|([A-Za-z_$][\w$-]*))\s*:\s*(["'])([^"']+)\4/g,
+			),
+		];
+		const binding = declaration[1];
+		const hasClassMapBinding =
+			binding !== undefined && /^(?:classes|classNames|classMap|classNameMap)$/u.test(binding);
+		const hasResolvedUtility = entries.some(
+			(entry) => entry[5] !== undefined && hasResolvedUnoToken(entry[5], resolver, context),
+		);
+		if (entries.length > 0 && (hasClassMapBinding || hasResolvedUtility))
+			maps.push({ start: open, end: block.end, entries });
 	}
-	return undefined;
+	return maps;
 }
 
 function staticClassAssignments(source: string): readonly RegExpExecArray[] {
@@ -618,8 +664,14 @@ async function officialConfig(
 			| Record<string, unknown>
 			| undefined;
 		const tokenCatalog = TokenCatalog.fromNested(theme)?.contract;
+		const runtimeTokenCatalog = TokenCatalog.fromContract(tokenCatalog);
 		const candidates = [
-			...new Set([...staticUnoTokens(context.source), ...unoTokenCandidates(tokenCatalog)]),
+			...new Set([
+				...staticUnoTokens(context.source),
+				...staticUnoPropertyCandidates(context.source),
+				...unoTokenCandidates(tokenCatalog),
+				...styleProgramUnoCandidates(context.stylePrograms ?? [], runtimeTokenCatalog),
+			]),
 		];
 		const generated = await generator.generate(candidates, {
 			preflights: false,
@@ -671,55 +723,55 @@ function parseUnoCss(
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const excluded = context.document?.isExcluded ?? (() => false);
-	const classMap = staticUnoClassMap(source, resolver, context);
-	if (classMap !== undefined) {
+	const classMaps = staticUnoClassMaps(source, resolver, context);
+	const insideClassMap = (start: number): boolean =>
+		classMaps.some((classMap) => start >= classMap.start && start < classMap.end);
+	for (const classMap of classMaps) {
+		const unknown: StyleProgramResidual[] = [];
 		const rules = classMap.entries.map((entry, index) => {
 			const declarations: StyleDeclaration[] = [];
-			const unknown: string[] = [];
-			for (const token of (entry[4] ?? "").split(/\s+/u).filter(Boolean)) {
+			const unknownTokens: string[] = [];
+			for (const token of (entry[5] ?? "").split(/\s+/u).filter(Boolean)) {
 				const resolved = resolver.resolve(token, context);
-				if (resolved === undefined) unknown.push(token);
+				if (resolved === undefined) unknownTokens.push(token);
 				else declarations.push(...resolved);
 			}
-			residuals.push(
-				...unknown.map((token) => ({
-					kind: "unknown-utility" as const,
+			unknown.push(
+				...unknownTokens.map((token) => ({
+					kind: StyleProgramResidualKindTag.UnknownUtility,
 					text: token,
-					hint: "UnoCSS utility requires the resolver or a custom preset",
+					hint: "UnoCSS utility requires the project resolver or a custom preset",
 				})),
 			);
 			return {
 				kind: StyleRuleKindTag.Style,
-				name: entry[2],
+				name: entry[2] ?? entry[3],
 				conditions: [],
 				declarations,
 				children: [],
 				order: index,
 			};
 		});
-		return {
-			matches: [
-				{
+		matches.push({
+			start: classMap.start,
+			end: classMap.end,
+			program: styleProgramFromRules(rules, {
+				source: {
+					file: context.file,
 					start: classMap.start,
 					end: classMap.end,
-					program: styleProgramFromRules(rules, {
-						source: {
-							file: context.file,
-							start: classMap.start,
-							end: classMap.end,
-							adapter: CodemodAdapterId.UnoCSS,
-						},
-					}),
-					sourceText: source.slice(classMap.start, classMap.end),
+					adapter: CodemodAdapterId.UnoCSS,
 				},
-			],
-			residuals,
-		};
+				emissionHints: [StyleProgramEmissionHint.NamedClassMap],
+				residuals: unknown,
+			}),
+			sourceText: source.slice(classMap.start, classMap.end),
+		});
 	}
 	const attribute = /\b(className|class)\s*=\s*(?:("|')([^"']*)\2|\{\s*("|')([^"']*)\4\s*\})/g;
 	for (const match of source.matchAll(attribute)) {
 		const attributeStart = match.index ?? 0;
-		if (excluded(attributeStart)) continue;
+		if (excluded(attributeStart) || insideClassMap(attributeStart)) continue;
 		const attributeName = match[1];
 		const value = match[3] ?? match[5] ?? "";
 		if (attributeName === undefined || value.trim() === "") continue;
@@ -753,6 +805,7 @@ function parseUnoCss(
 					hostOpenTag: openingTag.text,
 					hostStyleAttributes: [match[0]],
 				},
+				emissionHints: [StyleProgramEmissionHint.ClassString],
 				residuals: unknown.map((token) => ({
 					kind: "unknown-utility",
 					text: token,
@@ -768,6 +821,7 @@ function parseUnoCss(
 		});
 	}
 	for (const assignment of staticClassAssignments(source)) {
+		if (insideClassMap(assignment.index ?? 0)) continue;
 		const binding = assignment[1];
 		const quote = assignment[2] ?? assignment[4];
 		const value = assignment[3] ?? assignment[5];
@@ -808,6 +862,7 @@ function parseUnoCss(
 						end: start + value.length + 2,
 						adapter: CodemodAdapterId.UnoCSS,
 					},
+					emissionHints: [StyleProgramEmissionHint.ClassString],
 					residuals: unknown.map((token) => ({
 						kind: "unknown-utility" as const,
 						text: token,
@@ -847,6 +902,7 @@ function parseUnoCss(
 						end: standalone.end,
 						adapter: CodemodAdapterId.UnoCSS,
 					},
+					emissionHints: [StyleProgramEmissionHint.ClassString],
 					residuals: unknown.map((token) => ({
 						kind: "unknown-utility" as const,
 						text: token,
@@ -870,6 +926,7 @@ function parseUnoCss(
 		const value = literal[2];
 		if (
 			value === undefined ||
+			insideClassMap(start) ||
 			assignmentValueStarts.has(start) ||
 			standalone?.start === start ||
 			!isExecutableClassLiteral(source, start)
@@ -903,6 +960,7 @@ function parseUnoCss(
 						end: start + value.length + 2,
 						adapter: CodemodAdapterId.UnoCSS,
 					},
+					emissionHints: [StyleProgramEmissionHint.ClassString],
 					residuals: unknown.map((token) => ({
 						kind: "unknown-utility" as const,
 						text: token,
@@ -913,6 +971,7 @@ function parseUnoCss(
 		});
 	}
 	for (const entry of namedClassMapEntries(source)) {
+		if (insideClassMap(entry.index ?? 0)) continue;
 		const name = entry[2];
 		const value = entry[4];
 		const quote = entry[3];
@@ -948,6 +1007,7 @@ function parseUnoCss(
 						end: start + value.length + 2,
 						adapter: CodemodAdapterId.UnoCSS,
 					},
+					emissionHints: [StyleProgramEmissionHint.ClassString],
 					residuals: unknown.map((token) => ({
 						kind: "unknown-utility" as const,
 						text: token,
@@ -968,14 +1028,13 @@ function parseUnoCss(
 
 /** UnoCSS is class/compiler driven; project presets and shortcuts are resolved through this port. */
 export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAdapter {
-	const fallbackResolver = options.resolver ?? {
-		resolve: (token: string) => defaultResolve(token),
-	};
+	const fallbackResolver = options.resolver ?? { resolve: () => undefined };
 	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.UnoCSS,
 		version: "2",
+		configRequiresSourcePrograms: true,
 		officialApi: AdapterEvidence.manifest({
 			apis: [
 				{ name: "rules", status: AdapterOfficialApiStatusTag.Supported },
@@ -1009,9 +1068,15 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			},
 		},
 		detect: (context) => {
+			const parseContext: AdapterParseContext = {
+				file: context.file,
+				source: context.source,
+				config: config(context),
+			};
 			const matched =
 				detectStaticClassTarget(context.source).matched ||
-				collectDynamicClassAttributes(context.source).length > 0;
+				collectDynamicClassAttributes(context.source).length > 0 ||
+				staticUnoClassMaps(context.source, fallbackResolver, parseContext).length > 0;
 			return {
 				matched,
 				confidence: /@unocss\/|\bunocss\b|presetWind/.test(context.source) ? 1 : 0.55,
@@ -1035,16 +1100,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			const configuredResolver = context.config.values.unoResolver as
 				| UnoCssTokenResolver
 				| undefined;
-			const resolver =
-				configuredResolver === undefined
-					? fallbackResolver
-					: {
-							resolve: (token: string, parseContext: AdapterParseContext) =>
-								configuredResolver.resolve(token, parseContext) ??
-								(parseContext.targetId === CodemodAdapterId.UnoCSS
-									? defaultResolve(token)
-									: undefined),
-						};
+			const resolver = configuredResolver ?? fallbackResolver;
 			return parseUnoCss(source, context, resolver);
 		},
 		emit: (program, context) => {
@@ -1063,10 +1119,19 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				? emitUnoNamedMap(program, tokenCatalog, resolver, parseContext)
 				: emitUnoClassTokens(program, tokenCatalog, resolver, parseContext);
 			const unoConfig = context.config.values.unoConfig;
-			if (
-				unoConfig !== undefined &&
-				!hasUnoUtilitySources(unoConfig, context.config.values.unoGeneratedCss)
-			)
+			if (unoConfig === undefined)
+				return {
+					...output,
+					residuals: [
+						...output.residuals,
+						{
+							kind: StyleProgramResidualKindTag.Configuration,
+							text: context.file,
+							hint: "UnoCSS output requires the target project's official config and generator",
+						},
+					],
+				};
+			if (!hasUnoUtilitySources(unoConfig, context.config.values.unoGeneratedCss))
 				return {
 					...output,
 					residuals: [

@@ -933,7 +933,7 @@ export const App = () => {
 		`);
 	});
 
-	test("round-trips pseudo arbitrary utilities between Tokenami and UnoCSS", () => {
+	test("preserves pseudo arbitrary utilities when UnoCSS target config is unavailable", () => {
 		const source =
 			"import { css } from '@tokenami/css'; const button = css({ '--hover_color': 'red' });";
 		const result = runAdapterMigration(source, {
@@ -941,10 +941,21 @@ export const App = () => {
 			to: CodemodAdapterId.UnoCSS,
 			file: "button.tsx",
 		});
-		expect(result.converted).toBe(1);
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"hover:[color:red]"');
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "configuration",
+					hint: expect.stringContaining("target project's official config and generator"),
+				}),
+			]),
+		);
+		expect(result.code).toContain(source);
+		expect(result.code).toMatchInlineSnapshot(`
+			"// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: configuration, validation)
+			import { css } from '@tokenami/css'; const button = css({ '--hover_color': 'red' });"
+		`);
 	});
 
 	test("uses a project resolver for UnoCSS utilities and preserves host syntax", () => {

@@ -57,7 +57,7 @@ const registry = createStyleAdapterRegistry();
 await registry.discover(["my-pandwind-adapter"]);
 ```
 
-Adapters implement the versioned `pandwind.style-adapter/5` contract and are
+Adapters implement the versioned `pandwind.style-adapter/6` contract and are
 routed through the semantic style-program IR. Target adapters may own a named
 style-use projection when lowering a source style map also requires rewriting
 its JSX host. Unsupported capabilities produce residual reports instead of

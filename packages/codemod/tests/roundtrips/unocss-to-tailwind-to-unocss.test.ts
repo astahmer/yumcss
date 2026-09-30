@@ -133,9 +133,8 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "export const App = () => <div className={"hover:[background-color:black] [@media_(min-width:_48rem)]:[display:flex]"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -153,24 +152,24 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-conditions: named: md",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tailwind | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
+		    "changed": true,
+		    "code": "// pandwind:migrate-skip (route: tailwind -> unocss | capability-blocked: named-conditions: named: hover | available: static, named-map, residual)
+		export const App = () => <div className={"hover:[background-color:black] [@media_(min-width:_48rem)]:[display:flex]"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [

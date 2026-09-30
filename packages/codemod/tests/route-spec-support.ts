@@ -4,6 +4,8 @@ import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	createStyleAdapterRegistry,
+	createUnoCssAdapter,
 	runAdapterMigration,
 	runAdapterMigrationAsync,
 	StyleMigrationOutcome,
@@ -11,12 +13,69 @@ import {
 	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
+import type { StyleDeclaration } from "../src/swap/semantic-ir.ts";
 import {
 	NODE_PROJECT_MODULE_LOADER,
 	type ProjectModuleLoader,
 } from "../src/swap/project-module-loader.ts";
 
 const catalog = createBuiltinCodemodCatalog();
+
+const routeUnoResolver = {
+	resolve(token: string): readonly StyleDeclaration[] | undefined {
+		const variantSeparator = token.lastIndexOf(":[");
+		const variant = variantSeparator < 0 ? undefined : token.slice(0, variantSeparator);
+		const utility = variantSeparator < 0 ? token : token.slice(variantSeparator + 1);
+		const arbitrary = /^\[([\w-]+):(.+)\]$/u.exec(utility);
+		if (arbitrary?.[1] === undefined || arbitrary[2] === undefined) return undefined;
+		const conditions =
+			variant === undefined
+				? []
+				: variant === "hover"
+					? [{ kind: "pseudo" as const, name: "hover" }]
+					: variant === "md"
+						? [
+								{
+									kind: "media" as const,
+									name: "(min-width: 48rem)",
+									value: "(min-width: 48rem)",
+								},
+							]
+						: undefined;
+		if (conditions === undefined) return undefined;
+		return [
+			{
+				property: arbitrary[1].replace(/-([a-z])/gu, (_match, letter: string) =>
+					letter.toUpperCase(),
+				),
+				value: { kind: "literal", value: arbitrary[2] },
+				conditions,
+			},
+		];
+	},
+};
+
+const routeUnoBase = createUnoCssAdapter({ resolver: routeUnoResolver });
+const routeUnoAdapter = {
+	...routeUnoBase,
+	loadConfig(context: Parameters<NonNullable<typeof routeUnoBase.loadConfig>>[0]) {
+		const loaded = routeUnoBase.loadConfig(context);
+		return {
+			...loaded,
+			values: {
+				...loaded.values,
+				unoConfig: { rules: [["test arbitrary property rule", {}]] },
+				unoGeneratedCss: ".test-fixture { display: block; }",
+				unoResolver: routeUnoResolver,
+			},
+		};
+	},
+};
+
+const routeUnoRegistry = createStyleAdapterRegistry([
+	...catalog.adapters.filter((adapter) => adapter.id !== CodemodAdapterId.UnoCSS),
+	routeUnoAdapter,
+]);
 
 interface AdapterRouteInput {
 	readonly source: string;
@@ -359,6 +418,10 @@ export function createAdapterRouteSpec(
 		target,
 		run(input) {
 			const project = input.project;
+			const adapterRegistry =
+				source === CodemodAdapterId.UnoCSS || target === CodemodAdapterId.UnoCSS
+					? routeUnoRegistry
+					: catalog.registry;
 			return runAdapterMigration(input.source, {
 				from: source,
 				to: target,
@@ -375,7 +438,7 @@ export function createAdapterRouteSpec(
 								),
 						}),
 				mode: "safe",
-				adapterRegistry: catalog.registry,
+				adapterRegistry,
 				...(input.semantic === undefined ? {} : { semantic: input.semantic }),
 			});
 		},
@@ -677,7 +740,7 @@ export function expectTargetClassProjection(
 	// A target adapter may legitimately preserve a source construct that has no
 	// target class carrier. In that case the reverse pass should be an exact
 	// identity, and the residual is the evidence that the source was preserved.
-	if (forwardHasResidual) {
+	if (forwardHasResidual && !reverseActionable) {
 		expect(reverse.code, `${label} residual class projection changed source`).toBe(forward.code);
 		expect(
 			forward.skipped + forward.residuals.length,

@@ -93,9 +93,20 @@ test("unocss -> stylex: carries a documented secondary unocss API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> stylex | lowering-residual: capability, validation)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		  "converted": 0,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({
+			style: {
+				backgroundColor: {
+					default: null,
+					":hover": "black",
+				},
+				display: {
+					default: null,
+					"@media (min-width: 48rem)": "flex",
+				},
+			},
+		}).style;",
+		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -113,31 +124,17 @@ test("unocss -> stylex: carries a documented secondary unocss API explicitly", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "condition is not expressible as a StyleX property-value condition",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "canonical CSS differs; 1 residual conversion(s)",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
+		  "residuals": [],
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "canonical CSS differs",
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}

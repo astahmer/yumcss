@@ -168,10 +168,10 @@ test("tailwind -> unocss -> tailwind: retains the documented secondary API witho
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> unocss | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
-		    "converted": 0,
+		export const App = () => <div className={"[color:rebeccapurple] [@media_(min-width:_48rem)]:[display:flex]"}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -189,19 +189,19 @@ test("tailwind -> unocss -> tailwind: retains the documented secondary API witho
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-conditions: named: md",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

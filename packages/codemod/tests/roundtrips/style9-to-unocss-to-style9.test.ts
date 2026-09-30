@@ -134,8 +134,10 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
-		    "converted": 1,
+		    "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -153,55 +155,45 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
+		        "outcome": "residual",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "canonical CSS differs or has residuals",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs or has residuals",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import style9 from "style9";
-		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": "0.5" }) };",
-		    "converted": 1,
+		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		    "converted": 0,
 		    "generatedFiles": [],
-		    "loweringPlans": [
-		      {
-		        "applied": [
-		          "dynamic-and-theme",
-		        ],
-		        "availableRepresentations": [
-		          "static",
-		          "named-map",
-		          "residual",
-		        ],
-		        "representation": "named-map",
-		        "residuals": [],
-		      },
-		    ],
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
+		    "loweringPlans": [],
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`)

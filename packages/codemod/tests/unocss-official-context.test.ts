@@ -5,6 +5,7 @@ import {
 	createPandwindAdapter,
 	createStyleAdapterRegistry,
 	createUnoCssAdapter,
+	runAdapterMigration,
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
@@ -42,6 +43,8 @@ function createLoader(candidates: string[][], configFile: string): ProjectModule
 										if (token === "bg-brand") return ".bg-brand{background-color:#123456}";
 										if (token === "shortcut-brand")
 											return "@media (min-width: 48rem){.shortcut-brand:hover{color:#fff}}";
+										if (token === "md:[display:flex]")
+											return "@media (min-width: 48rem){.md\\:\\[display\\:flex\\]{display:flex}}";
 										return "";
 									})
 									.join(""),
@@ -82,6 +85,37 @@ async function migrate(
 }
 
 describe("UnoCSS official extraction context", () => {
+	test("preserves utility syntax when the source project config is unavailable", () => {
+		const source = '<div className="[display:flex]" />';
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.UnoCSS,
+			to: CodemodAdapterId.Pandwind,
+			file,
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: createStyleAdapterRegistry([
+				createUnoCssAdapter({ moduleLoader: null }),
+				createPandwindAdapter({ moduleLoader: null }),
+			]),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "unknown-utility",
+					text: "[display:flex]",
+				}),
+			]),
+		);
+		expect(result.code).toContain(source);
+		expect(result.code).toMatchInlineSnapshot(`
+			"// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			<div className="[display:flex]" />"
+		`);
+	});
+
 	test("feeds static attributes, bindings, and assignments to the official generator", async () => {
 		const candidates: string[][] = [];
 		const result = await migrate(
@@ -105,6 +139,28 @@ describe("UnoCSS official extraction context", () => {
 			const css = createUnsafeCss();
 			const classes = "badge-brand";
 			export const App = () => <div data-x={classes}  className={css.class({ borderWidth: "2px" })}/>;"
+		`);
+	});
+
+	test("lowers a responsive utility only after the official generator proves its media condition", async () => {
+		const candidates: string[][] = [];
+		const result = await migrate(
+			'<div className="md:[display:flex]" />',
+			{ [`${root}/uno.config.ts`]: "export default {}" },
+			candidates,
+		);
+
+		expect(candidates.flat()).toContain("md:[display:flex]");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("@media (min-width: 48rem)");
+		expect(result.code).toContain('display: "flex"');
+		expect(result.validations.every(({ valid }) => valid)).toBe(true);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			const css = createUnsafeCss();
+			<div className={css.class({ "@media (min-width: 48rem)": { display: "flex" } })}/>"
 		`);
 	});
 
@@ -256,5 +312,60 @@ describe("UnoCSS official extraction context", () => {
 			"// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
 			import { css } from "styled-system/css"; export const card = css({ color: "red" });"
 		`);
+	});
+
+	test("emits an arbitrary target utility only when the official generator proves it", async () => {
+		const source =
+			'import { css } from "styled-system/css"; export const card = css({ color: "red" });';
+		const candidates: string[][] = [];
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName === "@unocss/config")
+					return {
+						loadConfig: async () => ({
+							config: { presets: [], rules: [[/^\\[color:red\\]$/u, { color: "red" }]] },
+							sources: [`${root}/uno.config.ts`],
+						}),
+					} as never;
+				if (packageName === "@unocss/core")
+					return {
+						createGenerator: async () => ({
+							generate: async (input: readonly string[]) => {
+								candidates.push([...input]);
+								return {
+									css: input
+										.filter((token) => token === "[color:red]")
+										.map(() => ".\\[color\\:red\\]{color:red}")
+										.join(""),
+								};
+							},
+						}),
+					} as never;
+				return undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Panda,
+			to: CodemodAdapterId.UnoCSS,
+			file,
+			root,
+			listFiles: () => [`${root}/uno.config.ts`],
+			adapterRegistry: createStyleAdapterRegistry([
+				createPandaAdapter({ moduleLoader: null }),
+				createUnoCssAdapter({ moduleLoader: loader }),
+			]),
+		});
+
+		expect(candidates.flat()).toContain("[color:red]");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("[color:red]");
+		expect(result.code).not.toContain("styled-system/css");
+		expect(result.validations.every(({ valid }) => valid)).toBe(true);
+		expect(result.code).toMatchInlineSnapshot(`" export const card = "[color:red]";"`);
 	});
 });

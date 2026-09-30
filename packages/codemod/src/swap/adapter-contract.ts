@@ -33,7 +33,7 @@ import type {
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/5" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/6" as const;
 
 export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 
@@ -180,6 +180,8 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 	readonly readFile?: (file: string) => string | undefined;
 	/** Optional project filesystem port used to discover the effective config graph. */
 	readonly listFiles?: (root: string) => readonly string[];
+	/** Neutral source programs available to target config loaders that must prove emitted syntax. */
+	readonly stylePrograms?: readonly StyleProgram[];
 }
 
 export interface AdapterParseContext extends AdapterDetectionContext {
@@ -639,6 +641,8 @@ export interface StyleAdapter extends AdapterConfigGraphPort {
 	readonly schema: typeof ADAPTER_CONTRACT_SCHEMA;
 	readonly id: string;
 	readonly version: string;
+	/** Load target config after parsing source programs when generated syntax needs compiler proof. */
+	readonly configRequiresSourcePrograms?: boolean;
 	/** Package entry points this adapter owns and may remove during migration. */
 	readonly sourceModules: readonly string[];
 	/** Optional target-specific source modules to remove after a complete migration. */

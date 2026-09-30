@@ -8,7 +8,7 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/5`. An adapter owns five
+The current protocol is `pandwind.style-adapter/6`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
@@ -19,6 +19,11 @@ operations:
    `sourceText` when migration orchestration has it, so an emitter can produce
    target-owned source maps without re-reading the project.
 5. `validate` compares source and target programs and reports lossiness.
+
+An async target may set `configRequiresSourcePrograms` when its official
+compiler must verify syntax derived from normalized source styles. The runner
+then supplies those programs as `stylePrograms` to `loadConfigAsync`; other
+routes keep source and target config loading parallel.
 
 Adapters also declare source modules, dependencies, versioned capabilities, and
 lossiness behavior. Unsupported semantics must remain residuals; an adapter

@@ -8,6 +8,7 @@ import type {
 	AdapterProjectConfig,
 	AdapterDependencies,
 	AdapterComponentRewriteContext,
+	AdapterHostRewriteContext,
 	AdapterEmitContext,
 	AdapterGeneratedFile,
 } from "../adapter-contract.ts";
@@ -155,6 +156,78 @@ const cssModuleClassArtifact = (
 	};
 };
 
+const canRewriteStaticClassHost = (file: string, program: StyleProgram): boolean =>
+	/\.[cm]?[jt]sx?$/iu.test(file) &&
+	program.source?.hostOpenTag !== undefined &&
+	(program.source.hostStyleAttributes?.length ?? 0) === 1 &&
+	/^\s*(?:className|class)\s*=\s*(?:"[^"\n]*"|'[^'\n]*'|\{\s*(?:"[^"\n]*"|'[^'\n]*')\s*\})$/u.test(
+		program.source?.hostStyleAttributes?.[0] ?? "",
+	);
+
+const rewriteStaticClassHost = (context: AdapterHostRewriteContext) => {
+	const openingTag = context.program.source?.hostOpenTag;
+	const attributes = context.program.source?.hostStyleAttributes ?? [];
+	if (openingTag === undefined || attributes.length === 0)
+		return { code: context.code, residuals: [] };
+	if (!canRewriteStaticClassHost(context.file, context.program))
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: openingTag,
+					hint: "stylesheet class artifacts require a JSX host with a static class attribute",
+				},
+			],
+		};
+	if (context.residuals !== undefined && context.residuals.length > 0)
+		return { code: context.code, residuals: context.residuals };
+	const attribute = attributes[0];
+	if (attribute === undefined) return { code: context.code, residuals: [] };
+	const name = /^(?:\s*)(className|class)\s*=/u.exec(attribute)?.[1];
+	if (name === undefined)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: attribute,
+					hint: "stylesheet class artifacts require an exact class or className attribute",
+				},
+			],
+		};
+	const tagIndex = context.code.indexOf(openingTag);
+	const attributeIndex = openingTag.indexOf(attribute);
+	if (tagIndex < 0 || attributeIndex < 0 || openingTag.indexOf(attribute, attributeIndex + 1) >= 0)
+		return {
+			code: context.code,
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.HostFramework,
+					text: openingTag,
+					hint: "stylesheet class artifact migration could not locate one exact source class attribute",
+				},
+			],
+		};
+	const frameworkClassName =
+		context.framework === BuiltinHostFramework.React ||
+		context.framework === BuiltinHostFramework.Preact;
+	const frameworkClass = context.framework === BuiltinHostFramework.Solid;
+	const attributeName = frameworkClassName ? "className" : frameworkClass ? "class" : name;
+	const replacement = `${attributeName}={${context.emittedExpression}}`;
+	const rewrittenTag =
+		openingTag.slice(0, attributeIndex) +
+		replacement +
+		openingTag.slice(attributeIndex + attribute.length);
+	return {
+		code:
+			context.code.slice(0, tagIndex) +
+			rewrittenTag +
+			context.code.slice(tagIndex + openingTag.length),
+		residuals: [],
+	};
+};
+
 /** Shared stylesheet adapter mechanics; each source family owns its definition module. */
 export function createStylesheetAdapter(definition: StylesheetAdapterDefinition) {
 	const baseMigration = createStylesheetFileMigration();
@@ -239,13 +312,37 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 							hostRepresentation: StyleHostRepresentationKind.Class,
 							rewriteComponent,
 						}),
+				...(definition.classStringArtifact === undefined
+					? {}
+					: {
+							handlesHostRewrites: true,
+							handlesFrameworkSemantics: true,
+							handlesSourceHostAttributes: true,
+							resolveHostRepresentation: ({ program }) =>
+								isStaticClassStringProgram(program) || program.source?.subject !== undefined
+									? StyleHostRepresentationKind.Class
+									: undefined,
+							rewriteHost: rewriteStaticClassHost,
+						}),
 				preflight: ({ file, source, program }) => {
 					if (componentArtifact !== undefined && program.source?.subject !== undefined) {
 						const reason = reactStyledComponentUnsupportedReason(file, source, program);
 						return reason === undefined ? [] : [componentResidual(program.source.subject, reason)];
 					}
-					if (definition.classStringArtifact !== undefined && isStaticClassStringProgram(program))
+					if (definition.classStringArtifact !== undefined && isStaticClassStringProgram(program)) {
+						if (
+							(program.source?.hostStyleAttributes?.length ?? 0) > 0 &&
+							!canRewriteStaticClassHost(file, program)
+						)
+							return [
+								{
+									kind: StyleProgramResidualKindTag.HostFramework,
+									text: program.source?.hostOpenTag ?? source,
+									hint: "stylesheet class artifacts require a JSX host with a static class attribute",
+								},
+							];
 						return [];
+					}
 					if (definition.classStringArtifact !== undefined && isStaticNamedClassMapProgram(program))
 						return [];
 					if (definition.keyframesArtifact !== undefined && isStaticKeyframesProgram(program))

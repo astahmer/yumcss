@@ -92,8 +92,10 @@ test("style9 -> unocss: carries a documented secondary style9 API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
-		  "converted": 1,
+		  "code": "import style9 from "style9";
+		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+		  "converted": 0,
 		  "generatedFiles": [],
 		  "loweringPlans": [
 		    {
@@ -111,17 +113,30 @@ test("style9 -> unocss: carries a documented secondary style9 API explicitly", (
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "target-native",
+		      "outcome": "residual",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "canonical CSS differs or has residuals",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "canonical CSS differs or has residuals",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
 		    },
 		  ],
 		}

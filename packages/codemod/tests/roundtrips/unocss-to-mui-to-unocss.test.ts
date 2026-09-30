@@ -133,13 +133,50 @@ test("unocss -> mui -> unocss: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box component="div" sx={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }} />;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		// pandwind:migrate-skip (route: mui -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <Box component="div" sx={{ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } }} />;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
 		        "availableRepresentations": [
 		          "static",
 		          "named-map",
@@ -157,24 +194,12 @@ test("unocss -> mui -> unocss: retains the documented secondary API without sile
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: md",
+		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

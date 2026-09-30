@@ -133,7 +133,7 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -167,8 +167,8 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: dynamic-custom-property | capability-blocked: selector-conditions: selector: &:hover | available: named-map, custom-property, residual)
-		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		// pandwind:migrate-skip (route: panda -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -177,34 +177,24 @@ test("unocss -> panda -> unocss: retains the documented secondary API without si
 		          "dynamic-and-theme",
 		        ],
 		        "availableRepresentations": [
+		          "static",
 		          "named-map",
-		          "custom-property",
 		          "residual",
 		        ],
-		        "representation": "custom-property",
-		        "residuals": [
-		          {
-		            "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target unocss",
-		            "kind": "dynamic-custom-property",
-		          },
-		        ],
+		        "representation": "static",
+		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "custom-property",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "selector-conditions: selector: &:hover",
+		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target unocss",
-		        "kind": "dynamic-custom-property",
 		        "preserved": undefined,
 		      },
 		    ],

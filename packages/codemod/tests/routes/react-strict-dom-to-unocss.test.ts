@@ -95,7 +95,7 @@ test("react-strict-dom -> unocss: carries a documented secondary react-strict-do
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> unocss | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules | available: static, named-map, residual)
+		// pandwind:migrate-skip (route: react-strict-dom -> unocss | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -121,7 +121,7 @@ test("react-strict-dom -> unocss: carries a documented secondary react-strict-do
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "rule-level: 1 semantic rules; keyframes: keyframes rule; nesting: keyframes nested rules",
+		      "hint": "rule-level: 1 semantic rules; keyframes: keyframes rule",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

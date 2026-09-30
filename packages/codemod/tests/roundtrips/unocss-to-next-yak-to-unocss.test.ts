@@ -132,7 +132,7 @@ test("unocss -> next-yak -> unocss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> next-yak | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> next-yak | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,17 +156,25 @@ test("unocss -> next-yak -> unocss: retains the documented secondary API without
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: md",
-		        "kind": "capability",
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> next-yak | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// pandwind:migrate-skip (route: unocss -> next-yak | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

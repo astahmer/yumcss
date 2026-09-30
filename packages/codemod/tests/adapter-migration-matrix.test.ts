@@ -178,6 +178,20 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.code.endsWith(fixture.source)).toBe(true);
 				return;
 			}
+			if (adapterId === CodemodAdapterId.UnoCSS) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(1);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							kind: "unknown-utility",
+							text: "[display:flex]",
+						}),
+					]),
+				);
+				expect(result.code).toContain(fixture.source);
+				return;
+			}
 			expect(
 				result.residuals,
 				`${adapterId} -> ${pandwind}: ${JSON.stringify(result.residuals)}`,
@@ -229,6 +243,20 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.skipped).toBeGreaterThan(0);
 				expect(result.residuals.length).toBeGreaterThan(0);
 				expect(result.code).toContain("pandwind:migrate-skip");
+				return;
+			}
+			if (targetId === CodemodAdapterId.UnoCSS) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBe(1);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							kind: "configuration",
+							hint: expect.stringContaining("target project's official config and generator"),
+						}),
+					]),
+				);
+				expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
 				return;
 			}
 			if (stylesheetTargets.has(targetId)) {
@@ -447,47 +475,66 @@ describe("composed cross-ecosystem routes", () => {
 		[CodemodAdapterId.VanillaExtract, "./Card.styles.css.ts"],
 	]);
 
-	test.each(classTargets)("rewrites a styled subject to a static class in %s", (targetId) => {
-		const result = migrateTo(
-			'import styled from "styled-components";\n' +
-				'const Card = styled.div({ color: "red" });\n' +
-				"export const App = () => <Card />;",
-			CodemodAdapterId.StyledComponents,
-			targetId,
-			"Card.tsx",
-			{ source: { framework: "react" } },
-		);
+	test.each(classTargets)(
+		"rewrites or preserves a styled subject with evidence in %s",
+		(targetId) => {
+			const result = migrateTo(
+				'import styled from "styled-components";\n' +
+					'const Card = styled.div({ color: "red" });\n' +
+					"export const App = () => <Card />;",
+				CodemodAdapterId.StyledComponents,
+				targetId,
+				"Card.tsx",
+				{ source: { framework: "react" } },
+			);
 
-		expect(
-			result.residuals,
-			`${CodemodAdapterId.StyledComponents} -> ${targetId}: ${result.code}`,
-		).toEqual([]);
-		expect(result.skipped).toBe(0);
-		expect(result.code).toContain("Card =");
-		if (inlineClassTargets.has(targetId)) {
-			expect(result.code).toContain("export const App = () => <div className={Card} />;");
-			return;
-		}
-		expect(result.code).toContain("export const App = () => <Card />;");
-		expect(result.code).toContain("__pandwindCardForwardRef");
-		const sidecarImport = sidecarClassTargets.get(targetId);
-		if (sidecarImport !== undefined) {
-			expect(result.code).toContain("__pandwindCardCreateElement");
-			expect(result.code).toContain("as?: As");
-			expect(result.code).toContain(JSON.stringify(sidecarImport));
-			expect(result.generatedFiles).toHaveLength(targetId === CodemodAdapterId.CssModules ? 2 : 1);
-			if (targetId === CodemodAdapterId.CssModules)
-				expect(result.generatedFiles.map((artifact) => artifact.path)).toEqual([
-					"Card.module.css",
-					"Card.module.css.map",
-				]);
-			if (targetId === CodemodAdapterId.Treat) expect(result.code).toContain(".styles.treat");
-			if (targetId === CodemodAdapterId.VanillaExtract)
-				expect(result.code).toContain(".styles.css");
-		} else {
-			expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
-		}
-	});
+			if (targetId === CodemodAdapterId.UnoCSS) {
+				expect(result.converted).toBe(0);
+				expect(result.skipped).toBeGreaterThan(0);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							kind: "configuration",
+							hint: expect.stringContaining("target project's official config and generator"),
+						}),
+					]),
+				);
+				expect(result.code).toContain('styled.div({ color: "red" })');
+				return;
+			}
+			expect(
+				result.residuals,
+				`${CodemodAdapterId.StyledComponents} -> ${targetId}: ${result.code}`,
+			).toEqual([]);
+			expect(result.skipped).toBe(0);
+			expect(result.code).toContain("Card =");
+			if (inlineClassTargets.has(targetId)) {
+				expect(result.code).toContain("export const App = () => <div className={Card} />;");
+				return;
+			}
+			expect(result.code).toContain("export const App = () => <Card />;");
+			expect(result.code).toContain("__pandwindCardForwardRef");
+			const sidecarImport = sidecarClassTargets.get(targetId);
+			if (sidecarImport !== undefined) {
+				expect(result.code).toContain("__pandwindCardCreateElement");
+				expect(result.code).toContain("as?: As");
+				expect(result.code).toContain(JSON.stringify(sidecarImport));
+				expect(result.generatedFiles).toHaveLength(
+					targetId === CodemodAdapterId.CssModules ? 2 : 1,
+				);
+				if (targetId === CodemodAdapterId.CssModules)
+					expect(result.generatedFiles.map((artifact) => artifact.path)).toEqual([
+						"Card.module.css",
+						"Card.module.css.map",
+					]);
+				if (targetId === CodemodAdapterId.Treat) expect(result.code).toContain(".styles.treat");
+				if (targetId === CodemodAdapterId.VanillaExtract)
+					expect(result.code).toContain(".styles.css");
+			} else {
+				expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
+			}
+		},
+	);
 
 	test("emits root-level component sidecars with relative imports", () => {
 		const source =

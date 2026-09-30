@@ -49,7 +49,7 @@ test("mantine -> unocss: migrates concrete mantine syntax to unocss", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -74,6 +74,11 @@ test("mantine -> unocss: migrates concrete mantine syntax to unocss", () => {
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "canonical CSS differs or has residuals",
 		      "kind": "validation",
@@ -156,7 +161,7 @@ test("mantine -> unocss: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -182,6 +187,11 @@ test("mantine -> unocss: loads concrete theme and project context variants", asy
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "canonical CSS differs or has residuals",
 		        "kind": "validation",
@@ -202,7 +212,7 @@ test("mantine -> unocss: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,6 +238,11 @@ test("mantine -> unocss: loads concrete theme and project context variants", asy
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "canonical CSS differs or has residuals",
 		        "kind": "validation",
@@ -260,7 +275,7 @@ test("mantine -> unocss: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -286,6 +301,11 @@ test("mantine -> unocss: resolves concrete token values with project context", a
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "canonical CSS differs or has residuals",
 		      "kind": "validation",
@@ -315,7 +335,7 @@ test("mantine -> unocss: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,
@@ -341,6 +361,11 @@ test("mantine -> unocss: preserves malformed concrete mantine input", () => {
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "the official UnoCSS generator did not prove this emitted utility",
+		      "kind": "configuration",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "canonical CSS differs or has residuals",
 		      "kind": "validation",

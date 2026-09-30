@@ -132,13 +132,50 @@ test("unocss -> bamboo -> unocss: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
+		    "code": "import { css } from "styled-system/css";
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
 		        "applied": [],
+		        "availableRepresentations": [
+		          "static",
+		          "named-map",
+		          "residual",
+		        ],
+		        "representation": "static",
+		        "residuals": [],
+		      },
+		    ],
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "styled-system/css";
+		// pandwind:migrate-skip (route: bamboo -> unocss | capability-blocked: selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem) | available: static, named-map, residual)
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
+		    "converted": 0,
+		    "generatedFiles": [],
+		    "loweringPlans": [
+		      {
+		        "applied": [
+		          "dynamic-and-theme",
+		        ],
 		        "availableRepresentations": [
 		          "static",
 		          "named-map",
@@ -156,24 +193,12 @@ test("unocss -> bamboo -> unocss: retains the documented secondary API without s
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-conditions: named: md",
+		        "hint": "selector-conditions: selector: &:hover; media-conditions: media: @media (min-width: 48rem)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
-		    "loweringPlans": [],
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

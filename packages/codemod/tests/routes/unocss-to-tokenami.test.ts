@@ -91,7 +91,7 @@ test("unocss -> tokenami: carries a documented secondary unocss API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> tokenami | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		  "code": "// pandwind:migrate-skip (route: unocss -> tokenami | lowering-residual: emission-empty, capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -115,7 +115,12 @@ test("unocss -> tokenami: carries a documented secondary unocss API explicitly",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "named-conditions: named: md",
+		      "hint": "target adapter produced no representable output",
+		      "kind": "emission-empty",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "Tokenami needs a matching responsive alias or a representable current-element selector",
 		      "kind": "capability",
 		      "preserved": undefined,
 		    },

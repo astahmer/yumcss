@@ -92,7 +92,7 @@ test("unocss -> panda: carries a documented secondary unocss API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, md: { display: "flex" } })}/>;",
+		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

@@ -48,10 +48,15 @@ test("unocss -> less: migrates concrete unocss syntax to less", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.styles.less",
+		      "purpose": "less styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -59,6 +64,7 @@ test("unocss -> less: migrates concrete unocss syntax to less", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -67,19 +73,19 @@ test("unocss -> less: migrates concrete unocss syntax to less", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -92,10 +98,15 @@ test("unocss -> less: carries a documented secondary unocss API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, residual)
-		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.styles.less",
+		      "purpose": "less styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -103,6 +114,7 @@ test("unocss -> less: carries a documented secondary unocss API explicitly", () 
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -111,24 +123,19 @@ test("unocss -> less: carries a documented secondary unocss API explicitly", () 
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "named-conditions: named: md",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -149,10 +156,15 @@ test("unocss -> less: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "App.styles.less",
+		        "purpose": "less styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -160,6 +172,7 @@ test("unocss -> less: loads concrete theme and project context variants", async 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -168,26 +181,31 @@ test("unocss -> less: loads concrete theme and project context variants", async 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;",
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "App.styles.less",
+		        "purpose": "less styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -195,6 +213,7 @@ test("unocss -> less: loads concrete theme and project context variants", async 
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
 		        "representation": "static",
@@ -203,19 +222,19 @@ test("unocss -> less: loads concrete theme and project context variants", async 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)
@@ -231,10 +250,15 @@ test("unocss -> less: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="text-brand p-card" />;",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;",
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.styles.less",
+		      "purpose": "less styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -242,6 +266,7 @@ test("unocss -> less: resolves concrete token values with project context", asyn
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -250,19 +275,19 @@ test("unocss -> less: resolves concrete token values with project context", asyn
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });
@@ -275,11 +300,16 @@ test("unocss -> less: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> less | lowering-residual: capability | available: static, residual)
-		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
+		  "code": "import "./App.styles.less";
+		export const App = () => <div className={"pw-style0-sh7wts"} />;
 		const unfinished = { /* unfinished unocss */",
-		  "converted": 0,
-		  "generatedFiles": [],
+		  "converted": 1,
+		  "generatedFiles": [
+		    {
+		      "path": "App.styles.less",
+		      "purpose": "less styles for a migrated static class",
+		    },
+		  ],
 		  "loweringPlans": [
 		    {
 		      "applied": [
@@ -287,6 +317,7 @@ test("unocss -> less: preserves malformed concrete unocss input", () => {
 		      ],
 		      "availableRepresentations": [
 		        "static",
+		        "named-map",
 		        "residual",
 		      ],
 		      "representation": "static",
@@ -295,19 +326,19 @@ test("unocss -> less: preserves malformed concrete unocss input", () => {
 		  ],
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "less emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`)
 });

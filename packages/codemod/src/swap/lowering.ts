@@ -151,14 +151,14 @@ function resolveThemeExpression(
 	return undefined;
 }
 
-function dynamicVariableName(expression: string): string {
+export const dynamicVariableName = (expression: string): string => {
 	let hash = 2166136261;
 	for (const character of expression) {
 		hash ^= character.charCodeAt(0);
 		hash = Math.imul(hash, 16777619);
 	}
 	return `--pandwind-dynamic-${(hash >>> 0).toString(36)}`;
-}
+};
 
 const dynamicAndThemes: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,

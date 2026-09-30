@@ -5,6 +5,7 @@ import {
 } from "./semantic-ir.ts";
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
+import { dynamicVariableName } from "./lowering.ts";
 
 export interface PortableStyleEmission {
 	readonly text: string;
@@ -32,7 +33,7 @@ export class PortableStyleArtifact {
 		const expressions = new Map<string, string>();
 		for (const residual of residuals) {
 			if (residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty) continue;
-			expressions.set(this.dynamicVariableName(residual.text), residual.text);
+			expressions.set(dynamicVariableName(residual.text), residual.text);
 		}
 
 		const restoreValue = (value: StyleValue): StyleValue => {
@@ -132,14 +133,5 @@ export class PortableStyleArtifact {
 		};
 		for (const rule of program.rules) addRule(root, rule);
 		return render(root);
-	}
-
-	private static dynamicVariableName(expression: string): string {
-		let hash = 2166136261;
-		for (const character of expression) {
-			hash ^= character.charCodeAt(0);
-			hash = Math.imul(hash, 16777619);
-		}
-		return `--pandwind-dynamic-${(hash >>> 0).toString(36)}`;
 	}
 }

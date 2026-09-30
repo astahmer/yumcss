@@ -242,11 +242,16 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "[color:#2563eb] [padding:1rem]" };
+		      "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-1boprif.module.css";
+		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-1llhqks"] };
 		export default styles;",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "Card.module.pandwind-pw-group0-1boprif.module.css",
+		          "purpose": "CSS Modules styles for a migrated static class",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -254,32 +259,28 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "named-rules: named style rule: card",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -321,11 +322,16 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "text-brand [padding:1rem]" };
+		      "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-1boprif.module.css";
+		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-1llhqks"] };
 		export default styles;",
-		      "converted": 0,
-		      "generatedFiles": [],
+		      "converted": 1,
+		      "generatedFiles": [
+		        {
+		          "path": "Card.module.pandwind-pw-group0-1boprif.module.css",
+		          "purpose": "CSS Modules styles for a migrated static class",
+		        },
+		      ],
 		      "loweringPlans": [
 		        {
 		          "applied": [
@@ -333,32 +339,28 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		          ],
 		          "availableRepresentations": [
 		            "static",
+		            "named-map",
 		            "residual",
 		          ],
-		          "representation": "static",
+		          "representation": "named-map",
 		          "residuals": [],
 		        },
 		      ],
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "target-native",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "named-rules: named style rule: card",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -414,11 +416,16 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "/* /* pandwind:migrate-skip (route: unocss -> css-modules | lowering-residual: capability | capability-blocked: named-rules: named style rule: card | available: static, residual) */ */
-		export const styles = { "card": "text-brand [padding:1rem]" };
+		    "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-1boprif.module.css";
+		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-1llhqks"] };
 		export default styles;",
-		    "converted": 0,
-		    "generatedFiles": [],
+		    "converted": 1,
+		    "generatedFiles": [
+		      {
+		        "path": "Card.module.pandwind-pw-group0-1boprif.module.css",
+		        "purpose": "CSS Modules styles for a migrated static class",
+		      },
+		    ],
 		    "loweringPlans": [
 		      {
 		        "applied": [
@@ -426,32 +433,28 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		        ],
 		        "availableRepresentations": [
 		          "static",
+		          "named-map",
 		          "residual",
 		        ],
-		        "representation": "static",
+		        "representation": "named-map",
 		        "residuals": [],
 		      },
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "named-rules: named style rule: card",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "css-modules emits stylesheet documents and cannot represent a TypeScript style call without a generated stylesheet artifact",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`)

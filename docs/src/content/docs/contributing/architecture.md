@@ -314,6 +314,14 @@ file list but no usable official entry, the adapter returns a configuration
 residual instead of silently claiming that its default resolver represents the
 project.
 
+A target adapter may set `configRequiresSourcePrograms` when its official
+compiler must verify syntax produced by source normalization. The async
+preparation path then loads the source config, parses and normalizes its
+`StyleProgram`s, and supplies those programs to the target config loader. Other
+routes keep source and target config loading parallel. UnoCSS uses this path to
+ask its project generator to prove the exact utility candidates emitted from
+normalized declarations, including dynamic CSS-variable carriers.
+
 | Ecosystem | Official integration              | What it contributes                                                                                               |
 | --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Panda     | `@pandacss/config`                | effective config, presets, plugins, merged theme/conditions/patterns; loader failures remain visible as residuals |
@@ -368,11 +376,12 @@ semantic program or reported as a residual.
 Compiler-driven adapters do not ship partial hand-maintained utility catalogs.
 Tailwind and UnoCSS resolve ordinary utilities, custom rules, shortcuts,
 variants, presets, and theme values through their official project engines (or
-an explicitly supplied generated-CSS resolver). The no-config/browser path
-handles only syntax-level arbitrary properties; unknown utilities produce a
-typed residual. Variant names are not classified from a guessed list: authored
-variants remain named conditions, while pseudo conditions come from the
-selectors emitted by the official engine.
+an explicitly supplied generated-CSS resolver). Without an official config,
+only an explicitly supplied resolver can prove a utility; the default resolver
+is empty, and unknown utilities or target output without generator evidence
+produce typed residuals. Variant names are not classified from a guessed list:
+authored variants remain named conditions, while pseudo conditions come from
+the selectors emitted by the official engine.
 
 ## Boundaries
 

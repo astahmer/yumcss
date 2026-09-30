@@ -50,7 +50,7 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -76,6 +76,11 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "canonical CSS differs or has residuals",
 		        "kind": "validation",
 		        "preserved": undefined,
@@ -95,7 +100,7 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -199,7 +204,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -226,6 +231,11 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "the official UnoCSS generator did not prove this emitted utility",
+		          "kind": "configuration",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "canonical CSS differs or has residuals",
 		          "kind": "validation",
 		          "preserved": undefined,
@@ -245,7 +255,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -260,7 +270,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,6 +297,11 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
+		          "hint": "the official UnoCSS generator did not prove this emitted utility",
+		          "kind": "configuration",
+		          "preserved": undefined,
+		        },
+		        {
 		          "hint": "canonical CSS differs or has residuals",
 		          "kind": "validation",
 		          "preserved": undefined,
@@ -306,7 +321,7 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +350,7 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -362,6 +377,11 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "the official UnoCSS generator did not prove this emitted utility",
+		        "kind": "configuration",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "canonical CSS differs or has residuals",
 		        "kind": "validation",
 		        "preserved": undefined,
@@ -381,7 +401,7 @@ test("mantine -> unocss -> mantine: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: validation)
+		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
