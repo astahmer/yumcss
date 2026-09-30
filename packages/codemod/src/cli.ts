@@ -905,8 +905,6 @@ async function runAdapterRoute(
 }
 
 /** Token-document exchange; adapters report any semantics they cannot preserve. */
-const TOKEN_FORMATS: readonly TokenFormatId[] = TOKEN_FORMAT_IDS;
-
 const configureTokensCommand = (command: Command): void => {
 	command
 		.option("-f, --from <format>", "Input token format")
@@ -924,10 +922,10 @@ const configureTokensCommand = (command: Command): void => {
 };
 
 const tokenFormat = (value: string | undefined, flag: string): TokenFormatId => {
-	if (value !== undefined && TOKEN_FORMATS.includes(value as TokenFormatId))
+	if (value !== undefined && TOKEN_FORMAT_IDS.includes(value as TokenFormatId))
 		return value as TokenFormatId;
 	throw new Error(
-		`codemod tokens: unknown --${flag} '${value ?? ""}' (expected ${TOKEN_FORMATS.join("|")})`,
+		`codemod tokens: unknown --${flag} '${value ?? ""}' (expected ${TOKEN_FORMAT_IDS.join("|")})`,
 	);
 };
 
