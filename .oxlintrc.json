@@ -44,7 +44,10 @@
 		"antislop/no-unsafe-dictionary-type": "off",
 		"antislop/no-unknown-parameters": "off",
 		"antislop/no-unknown-returns": "off",
-		"antislop/require-safety-comment-for-type-assertion": "off"
+		"antislop/require-safety-comment-for-type-assertion": "off",
+		// These Oxc perf rules were absent from the pre-Emilint plugin set.
+		"oxc/no-map-spread": "off",
+		"oxc/no-accumulating-spread": "off"
 	},
 	"ignorePatterns": [
 		"**/examples/example/src/types.d.ts",
