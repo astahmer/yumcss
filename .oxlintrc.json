@@ -1,5 +1,6 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"extends": ["./node_modules/emilint/configs/oxlint-generic.json"],
 	"categories": {
 		"correctness": "error",
 		"suspicious": "warn",
@@ -45,7 +46,13 @@
 		"**/packages/codemod/tests/roundtrips/**",
 		"**/packages/analyze/tests/fixtures/**"
 	],
-	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
+	"jsPlugins": [
+		"./packages/lint-plugin/dist/index.js",
+		{
+			"name": "antislop",
+			"specifier": "emilint/oxlint"
+		}
+	],
 	"overrides": [
 		{
 			"files": [

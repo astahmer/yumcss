@@ -105,6 +105,7 @@
 		"@unocss/core": "66.10.0",
 		"cac": "7.0.0",
 		"effect": "4.0.0-beta.107",
+		"emilint": "github:astahmer/emilint#fc30c1711a958b6c896e9d070dd5d71e6b21584e",
 		"knip": "6.34.0",
 		"less": "4.9.1",
 		"oxfmt": "0.66.0",

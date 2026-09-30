@@ -145,6 +145,9 @@ importers:
       effect:
         specifier: 4.0.0-beta.107
         version: 4.0.0-beta.107
+      emilint:
+        specifier: github:astahmer/emilint#fc30c1711a958b6c896e9d070dd5d71e6b21584e
+        version: https://codeload.github.com/astahmer/emilint/tar.gz/fc30c1711a958b6c896e9d070dd5d71e6b21584e
       knip:
         specifier: 6.34.0
         version: 6.34.0
@@ -6194,6 +6197,11 @@ packages:
 
   electron-to-chromium@1.5.422:
     resolution: {integrity: sha512-UvA/32XqrLDdZSn7Jllo1AYNcWji/G0d5M0GTViE7KoGBiMunw3a34Sb2KO4ZZyrSEhqsxFoVhWWJshdyfKqJA==}
+
+  emilint@https://codeload.github.com/astahmer/emilint/tar.gz/fc30c1711a958b6c896e9d070dd5d71e6b21584e:
+    resolution: {gitHosted: true, integrity: sha512-gWZQRwx7lXwptAOQ0M/WHVT1AzpZsF7Q3ylvYYcp9D3uilWlYuTtWdslnF0E1cum7+lzge9O+bsQqOKdedjDJA==, tarball: https://codeload.github.com/astahmer/emilint/tar.gz/fc30c1711a958b6c896e9d070dd5d71e6b21584e}
+    version: 0.1.0
+    engines: {node: '>=20.19.0'}
 
   emmet@2.4.11:
     resolution: {integrity: sha512-23QPJB3moh/U9sT4rQzGgeyyGIrcM+GH5uVYg2C6wZIxAIJq7Ng3QLT79tl8FUwDXhyq9SusfknOrofAKqvgyQ==}
@@ -15841,6 +15849,8 @@ snapshots:
       uuid: 14.0.2
 
   electron-to-chromium@1.5.422: {}
+
+  emilint@https://codeload.github.com/astahmer/emilint/tar.gz/fc30c1711a958b6c896e9d070dd5d71e6b21584e: {}
 
   emmet@2.4.11:
     dependencies:
