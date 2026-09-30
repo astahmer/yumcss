@@ -53,7 +53,7 @@
   },
   "createUnsafeCss(), fallback": {
     "min": 12841,
-    "gz": 4952
+    "gz": 4953
   },
   "createRuntimeCss(preset), live sheet": {
     "min": 39182,
