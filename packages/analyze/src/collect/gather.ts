@@ -152,24 +152,21 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	}
 	const bridgeStats = parseBridgeStats(bridgeSource);
 
-	const presetTokens = isDogfoodApp
-		? ((
-				examplePreset as {
-					tokens?: Record<string, Record<string, unknown>>;
-				}
-			).tokens ?? {})
-		: {};
-	const tokenSections: Array<TokenSection> = flattenTokenGroups(presetTokens, {
-		colors: "Colors",
-		semantic: "Semantic (condition-bound)",
-		spacing: "Spacing",
-		radii: "Radii",
-		fonts: "Font families",
-		fontSizes: "Font sizes",
-		fontWeights: "Font weights",
-		lineHeights: "Line heights",
-		letterSpacings: "Letter spacings",
-	});
+	const presetTokens = isDogfoodApp ? examplePreset.tokens : undefined;
+	const tokenSections: Array<TokenSection> = flattenTokenGroups(
+		Object.fromEntries(Object.entries(presetTokens ?? {})),
+		{
+			colors: "Colors",
+			semantic: "Semantic (condition-bound)",
+			spacing: "Spacing",
+			radii: "Radii",
+			fonts: "Font families",
+			fontSizes: "Font sizes",
+			fontWeights: "Font weights",
+			lineHeights: "Line heights",
+			letterSpacings: "Letter spacings",
+		},
+	);
 
 	// --- transitive css imports: @theme tokens live in imported files too
 	// (e.g. styles.css does `@import 'shadcn/tailwind.css'`).
@@ -219,17 +216,14 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 			site.rules = [...(site.rules ?? []), ...rules];
 		}
 	}
-	const tokenUniverse = Object.entries(presetTokens).flatMap(([group, values]) =>
-		Object.keys(values as Record<string, unknown>).map((k) => `${group}/${k}`),
+	const tokenUniverse = tokenSections.flatMap(({ id, entries }) =>
+		entries.map(({ name }) => `${id}/${name}`),
 	);
 	const analytics = analyzeStyleUsage(appSourceFiles, tokenUniverse);
 
 	// WCAG contrast: resolve every preset color value once, pair text/bg
 	// within the same call-site scope.
-	const contrastWarnings = computeContrastWarnings(
-		appSourceFiles,
-		(presetTokens.colors as Record<string, string> | undefined) ?? {},
-	);
+	const contrastWarnings = computeContrastWarnings(appSourceFiles, presetTokens?.colors ?? {});
 
 	const tokenGraph = buildTokenGraph({
 		flatVars: mergedThemeVars,

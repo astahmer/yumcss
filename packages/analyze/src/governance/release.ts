@@ -48,6 +48,13 @@ const pointerFor = (segments: readonly string[]): string =>
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isTokenJsonValue = (value: unknown): value is TokenJsonValue => {
+	if (value === null || typeof value === "string" || typeof value === "boolean") return true;
+	if (typeof value === "number") return Number.isFinite(value);
+	if (Array.isArray(value)) return value.every(isTokenJsonValue);
+	return isRecord(value) && Object.values(value).every(isTokenJsonValue);
+};
+
 const canonicalJson = (value: unknown): string => {
 	if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
 	if (isRecord(value)) {
@@ -238,19 +245,19 @@ const flattenDocument = (document: TokenDocument): FlatDocument => {
 		return containsToken;
 	};
 	visitGroup(document.root, [], undefined, undefined);
-	const visitJson = (value: TokenJsonValue, segments: readonly string[]): void => {
+	const visitJson = (value: unknown, segments: readonly string[]): void => {
+		if (!isTokenJsonValue(value)) return;
 		if (Array.isArray(value) && value.length > 0) {
 			value.forEach((child, index) => visitJson(child, [...segments, String(index)]));
 			return;
 		}
 		if (isRecord(value) && Object.keys(value).length > 0) {
-			for (const [key, child] of Object.entries(value))
-				visitJson(child as TokenJsonValue, [...segments, key]);
+			for (const [key, child] of Object.entries(value)) visitJson(child, [...segments, key]);
 			return;
 		}
 		contexts.set(pointerFor(segments), value);
 	};
-	if (document.resolver !== undefined) visitJson(document.resolver as TokenJsonValue, ["resolver"]);
+	if (document.resolver !== undefined) visitJson(document.resolver, ["resolver"]);
 	return { tokens, groups, contexts, contextTokenPaths };
 };
 

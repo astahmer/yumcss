@@ -126,21 +126,33 @@ export const parseUtilityUnions = (dts: string): Array<UtilityUnion> => {
  * pass through; object values (condition-bound tokens) render as compact
  * JSON with a marker so the UI can badge them.
  */
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+interface TokenGroupCatalog {
+	readonly [group: string]: unknown;
+}
+
 export const flattenTokenGroups = (
-	groups: Record<string, Record<string, unknown>>,
+	groups: TokenGroupCatalog,
 	labels?: Record<string, string>,
 ): Array<TokenSection> => {
-	return Object.entries(groups).map(([group, entries]) => ({
-		id: group,
-		label: labels?.[group] ?? group,
-		entries: Object.entries(entries).map(([name, value]) => ({
-			name,
-			value:
-				typeof value === "string"
-					? value
-					: (JSON.stringify(value) + " ⛭ condition-bound").slice(0, 120),
-		})),
-	}));
+	return Object.entries(groups).flatMap(([group, rawEntries]) => {
+		if (!isRecord(rawEntries)) return [];
+		return [
+			{
+				id: group,
+				label: labels?.[group] ?? group,
+				entries: Object.entries(rawEntries).map(([name, value]) => ({
+					name,
+					value:
+						typeof value === "string"
+							? value
+							: (JSON.stringify(value) + " ⛭ condition-bound").slice(0, 120),
+				})),
+			},
+		];
+	});
 };
 
 /** Count top-level property groups and leaf mappings in a generated bridge. */

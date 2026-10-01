@@ -123,9 +123,10 @@ interface CallInfo {
 
 /** The evaluator's NOT_STATIC sentinel, derived from a known-dynamic probe. */
 const NOT_STATIC: unknown = (() => {
-	const probe = SOURCE_SCANNER_SERVICE.parse({ file: "probe.ts", source: `unknownRuntimeValue` });
+	const probe = SOURCE_SCANNER_SERVICE.scan({ file: "probe.ts", source: `unknownRuntimeValue` });
+	if (probe.program === undefined) throw new Error("Could not parse the static-evaluation probe.");
 	let sentinel: unknown;
-	walk(probe.program as OxcNode, (node) => {
+	walk(probe.program, (node) => {
 		if ((node as { type?: string }).type !== NodeKind.ExpressionStatement) return;
 		sentinel = evalStaticCx((node as { expression?: unknown }).expression as never);
 	});
@@ -153,8 +154,8 @@ function parseModule(
 	parsedProgram?: OxcNode,
 	cxFold?: CxFoldContext,
 ): ParsedModule {
-	const program =
-		parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as OxcNode);
+	const program = parsedProgram ?? SOURCE_SCANNER_SERVICE.scan({ file, source }).program;
+	if (program === undefined) throw new Error(`Could not parse ${file} for analysis.`);
 
 	const imported = new Map<string, string>();
 	walk(program, (node) => {
