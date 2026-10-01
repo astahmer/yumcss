@@ -3,467 +3,118 @@
 Typed styling for teams that want the confidence of TypeScript without giving
 up the CSS tools they already use.
 
-Pandwind lets you describe styles as objects, checks those objects against
-your real design system, and turns known styles into ordinary CSS classes or
-an extracted atomic stylesheet. Tailwind remains Tailwind. CSS remains CSS.
-You get a typed layer on top, plus a clear escape hatch whenever the platform
-needs something special.
+Pandwind checks style objects against a project's real design system and moves
+known styles to ordinary CSS classes or an extracted atomic stylesheet. CSS
+remains CSS, Tailwind remains Tailwind, and runtime values keep an explicit
+escape hatch.
 
 ## Start here
 
-| If you…                                     | Start with                                                       | Why                                                                                  |
-| ------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| are writing new styled components           | [`css()`](./docs/src/content/docs/api/css.md)                    | The primary Pandwind path: typed CSS objects in, deterministic atomic CSS out.       |
-| already use Tailwind and want typed objects | [`tw()`](./docs/src/content/docs/api/tw.md)                      | Keep Tailwind as the stylesheet engine and generate types from the project you have. |
-| need a named design vocabulary              | [`createDesignCss()`](./docs/src/content/docs/api/design-css.md) | Give reusable components terms such as `$frame`, `$layout`, and `$text`.             |
-| need to combine existing classes            | [`cx()`](./docs/src/content/docs/api/cx.md)                      | Compose Pandwind output with ordinary class strings and styles from other libraries. |
-| are evaluating a move from another library  | [Migration guide](./docs/src/content/docs/guides/migrations.md)  | Preview route-specific output, residuals, and proof before applying a diff.          |
+| Your task                             | Guide                                                                  |
+| ------------------------------------- | ---------------------------------------------------------------------- |
+| Write typed CSS objects               | [Getting started](./docs/src/content/docs/getting-started.md)          |
+| Build shared tokens and themes        | [Design-system guide](./docs/src/content/docs/guides/design-system.md) |
+| Keep Tailwind and add typed utilities | [Tailwind guide](./docs/src/content/docs/api/tw.md)                    |
+| Combine styles from different sources | [Composition guide](./docs/src/content/docs/api/cx.md)                 |
+| Evaluate a migration                  | [Migration guide](./docs/src/content/docs/guides/migrations.md)        |
+
+The getting-started guide is the canonical setup and example source. It assumes
+an existing Vite app; use the [multi-bundler guide](./docs/src/content/docs/tooling/multi-bundler.md)
+for other bundlers. The [preset reference](./docs/src/content/docs/api/presets.md)
+lists the core and optional ecosystem presets.
 
 ## See it in action
 
-The repository includes a live playground, a project Inspector, analyzer
-coverage, and a read-only Migration Preview. These supporting tools help you
-learn or verify the `css()` workflow; they are not extra setup steps. The
-captures come from running apps, not mock marketing screens.
+The repository includes a Playground, Inspector, Analyzer, and read-only
+Migration Preview. These tools help explore and verify Pandwind; they are
+optional workflows, not required setup.
 
 <table>
   <tr>
     <td width="50%">
-      <img src="docs/assets/showcase/playground-variants-dark.png" alt="Pandwind playground showing typed variants, a live preview, and collapsed execution evidence" />
+      <img src="docs/assets/showcase/playground-variants-dark.png" alt="Pandwind playground showing typed variants and a live preview" />
     </td>
     <td width="50%">
-      <img src="docs/assets/showcase/playground-tokens-light.png" alt="Pandwind playground in light mode showing raw, semantic, and component tokens" />
+      <img src="docs/assets/showcase/playground-tokens-light.png" alt="Pandwind playground showing raw, semantic, and component tokens" />
     </td>
   </tr>
   <tr>
-    <td><strong>Playground — edit and see the result</strong><br />Change a typed example and inspect the rendered specimen only as deeply as you need.</td>
-    <td><strong>Playground — light mode and token layers</strong><br />See raw, semantic, and component token references resolve in a real preview.</td>
+    <td><strong>Playground</strong><br />Change a typed example and inspect the rendered result.</td>
+    <td><strong>Token layers</strong><br />See token references resolve in a real preview.</td>
   </tr>
   <tr>
-    <td>
-      <img src="docs/assets/showcase/inspector-design-system.png" alt="Pandwind design-system inspector showing typed unions and token swatches" />
+    <td width="50%">
+      <img src="docs/assets/showcase/inspector-design-system.png" alt="Pandwind inspector showing typed unions and token swatches" />
     </td>
-    <td>
-      <img src="docs/assets/showcase/analyzer-coverage.png" alt="Pandwind analyzer coverage view showing eliminated calls, CSS budget, and missing CSS warnings" />
+    <td width="50%">
+      <img src="docs/assets/showcase/analyzer-coverage.png" alt="Pandwind analyzer showing extraction coverage, CSS budget, and missing CSS warnings" />
     </td>
   </tr>
   <tr>
-    <td><strong>Inspector — understand your system</strong><br />Browse tokens, theme variables, utility unions, and bridge mappings.</td>
-    <td><strong>Analyzer — measure what shipped</strong><br />See build-time elimination, stylesheet shape, CSS size, and missing-CSS warnings.</td>
+    <td><strong>Inspector</strong><br />Browse tokens, utilities, and generated mappings.</td>
+    <td><strong>Analyzer</strong><br />Measure extraction, stylesheet shape, CSS size, and missing CSS.</td>
   </tr>
 </table>
 
-**Migration Preview** opens a real project in a read-only workspace. Choose a
-source and target, inspect generated code, and review unsupported behavior
-before changing files.
-
-## A working CSS setup in five minutes
-
-For a new Pandwind project, start with `createCss(preset)`. It is the primary
-authoring API: you write ordinary CSS properties as typed objects and Pandwind
-extracts the static part into atomic CSS.
-
-### 1. Install the runtime and build tools
-
-```sh
-pnpm add pandwind
-pnpm add -D unplugin
-```
-
-### 2. Let Vite extract static styles
-
-```ts
-// vite.config.ts
-import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
-import { pandwindCssVite } from "pandwind/vite";
-import { css } from "./src/styles";
-
-export default defineConfig({
-	plugins: [pandwindCssVite(css), react()],
-});
-```
-
-Import the generated stylesheet once from your application entry point:
-
-```ts
-import "pandwind:css";
-```
-
-### 3. Author typed CSS objects
-
-```ts
-// src/styles.ts
-import { createCss } from "pandwind/css";
-import { defaultPreset } from "pandwind/preset/default";
-
-export const css = createCss(defaultPreset);
-```
-
-```tsx
-import { css } from "./styles";
-
-export function Card() {
-	return (
-		<article
-			className={css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" })}
-		>
-			Your content
-		</article>
-	);
-}
-```
-
-Use `define.preset` when the application needs its own token vocabulary and
-property contract. The [design-system guide](./docs/src/content/docs/guides/design-system.md)
-builds that contract step by step.
-
-### Choose a preset layer
-
-Pandwind has seven intentionally separate preset tiers:
-
-- `csstypePreset` from `pandwind/preset/csstype` is tokenless. It supplies the
-  structural CSS and condition contract while your application owns the values.
-- `defaultPreset` from `pandwind/preset/default` is the ready-to-use Pandwind
-  layer with the stock property-to-token scales and no color palette: bring your
-  own colors as literals or tokens.
-- `tailwindPreset` from `pandwind/preset/tailwindcss` is the Tailwind ecosystem
-  layer: Tailwind v4's colors, scales, and breakpoints as a preset, generated
-  from the installed `tailwindcss` package.
-- `chakraPreset` from `pandwind/preset/chakra` is the Chakra UI ecosystem
-  layer: Chakra UI v3's token scales, light / dark semantic color roles, and
-  conditions as a preset, generated from the installed `@chakra-ui/react`
-  package.
-- `pandaPreset` from `pandwind/preset/panda` is the Panda CSS ecosystem layer:
-  Panda CSS's token scales, conditions, and breakpoints as a preset, generated
-  from the installed `@pandacss/config` resolver.
-- `shadcnPreset` / `createShadcnPreset(options)` from `pandwind/preset/shadcn`
-  is the parameterized layer: shadcn/ui's registry color roles, radius
-  multipliers, and font variables, resolved from the create-page selections and
-  generated from a pinned `shadcn/ui` checkout.
-- `examplePreset` from `@pandwind/example-preset` is a rich repository showcase
-  with semantic tokens, palettes, and theme scopes; it is not the default
-  application preset.
-
-Use the csstype layer for a deliberately BYO design system, the default layer
-for an ordinary Pandwind app, the Tailwind layer when Tailwind v4's vocabulary
-is the target, the Chakra layer when Chakra UI v3's is, the Panda layer when
-Panda CSS's is, the shadcn layer when a shadcn/ui project's registry variables
-are, and the example package only when exploring the repository's complete token
-composition patterns.
-
-The preset tiers are independent of the baseline stylesheet a project imports:
-`pandwind/reset/<ecosystem>` ships an ecosystem's own reset as a plain CSS
-asset, so an adopting project does not keep a second engine only to keep its
-baseline. See [Reset stylesheets](./docs/src/content/docs/api/resets.md).
-
-## If you already use Tailwind: typed utility objects
-
-Use this path when Tailwind already owns your stylesheet or when you
-specifically want its utility vocabulary, plugins, and scanning ecosystem.
-It is an integration lane, not the default Pandwind API. If you want Tailwind
-class output while keeping CSS-object authoring, use the
-[Tailwind class-name strategy](./docs/src/content/docs/interop/tailwind-adapter.md)
-with `createCss` instead.
-
-### 1. Install the runtime and build tools
-
-```sh
-pnpm add pandwind
-pnpm add -D tailwindcss @tailwindcss/vite pandwind-codemod
-```
-
-### 2. Add Tailwind's stylesheet entry
-
-```css
-/* src/tailwind.css */
-@import "tailwindcss";
-```
-
-### 3. Generate the typed helper
-
-```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
-```
-
-This creates `src/tw.ts` and its declarations from the Tailwind design system
-your stylesheet describes. Do not edit the generated files; rerun the command
-when the stylesheet or theme changes.
-
-### 4. Let Vite fold static calls
-
-```ts
-// vite.config.ts
-import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
-import { pandwindVite } from "pandwind/vite";
-
-export default defineConfig({
-	plugins: [pandwindVite(), tailwindcss(), react()],
-});
-```
-
-Import `src/tailwind.css` once from your application entry point.
-
-### 5. Write styles with autocomplete
-
-```tsx
-import { tw } from "./tw";
-
-export function Card() {
-	return (
-		<article
-			className={tw({
-				flex: "col",
-				gap: "4",
-				rounded: "xl",
-				bg: "white",
-				p: "6",
-				shadow: "lg",
-				hover: { shadow: "xl" },
-			})}
-		>
-			Your content
-		</article>
-	);
-}
-```
-
-Run your normal dev or build command. A misspelled utility or value is a
-TypeScript error; a literal call is folded into the class string before
-Tailwind generates CSS.
-
-If a class is chosen dynamically, run the scanner so Tailwind knows every
-possible candidate:
-
-```sh
-pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css
-```
-
-Then import the generated safelist from `src/tailwind.css`:
-
-```css
-@import "tailwindcss";
-@import "./pandwind.safelist.css";
-```
-
-The [basic guide](./docs/src/content/docs/guides/basic.md) explains when this
-extra step is needed and how to handle runtime values.
-
-## The styling lanes
-
-### The `css()` lane
-
-`createCss(preset)` is the primary Pandwind API. Use it for typed CSS objects,
-atomic extraction, and runtime values without making Tailwind the stylesheet
-engine. Create the function from a preset so your tokens and allowed values are
-part of the type contract:
-
-```ts
-import { createCss } from "pandwind/css";
-import { preset } from "./preset";
-
-export const css = createCss(preset);
-
-const card = css.class({
-	backgroundColor: "$surface",
-	color: "$ink",
-	padding: "4",
-	borderRadius: "lg",
-});
-```
-
-The default Vite setup extracts literal calls. Use `css.vars()` when a value
-is genuinely known only at runtime. See [the `css()` guide](./docs/src/content/docs/api/css.md).
-
-### The design `css()` lane
-
-Use `createDesignCss(preset)` when the component should read like a design
-specification rather than a list of CSS properties:
-
-```ts
-import { createDesignCss } from "pandwind/design";
-import { preset } from "./preset";
-
-const dss = createDesignCss(preset);
-
-const button = dss.class({
-	$frame: { fill: "$brand", pad: "4", corners: "md" },
-	$text: { color: "$onBrand", weight: "semibold" },
-	_hover: { $frame: { fill: "$brandStrong" } },
-});
-```
-
-This is the same engine with a smaller, intent-focused vocabulary. It does
-not create a second token system or a second stylesheet pipeline.
-
-### The `tw()` lane
-
-Use `tw()` when Tailwind already owns your stylesheet or when you specifically
-want Tailwind's utility vocabulary, plugins, and scanning ecosystem. Pandwind
-generates the types from your actual Tailwind theme, so this stays aligned with
-the project instead of a separate hand-written list of allowed classes.
-
-```ts
-tw({
-	textColor: "gray-900",
-	p: "4",
-	dark: { textColor: "white", bg: "gray-900" },
-	md: { p: "6" },
-});
-```
-
-If you want Tailwind class output but prefer the `css()` property API, use
-`createTwAdapter` as the `className` strategy for `createCss` instead. Read
-[the `tw()` guide](./docs/src/content/docs/api/tw.md) for the generated helper,
-variants, dynamic values, and conflict handling.
-
-### The `cx()` lane
-
-Use `cx()` at component boundaries when styles come from more than one place:
-
-```tsx
-import { createCx } from "pandwind/cx";
-
-const cx = createCx();
-
-export function Button(props: { className?: string; disabled: boolean }) {
-	return (
-		<button className={cx("rounded-lg", props.className, props.disabled && "opacity-50")}>
-			Continue
-		</button>
-	);
-}
-```
-
-It accepts ordinary class strings, `tw()` output, and Pandwind CSS atoms. Its
-merge rules are generated from the same design-system metadata as the rest of
-the build.
-
-## Build a design system once
-
-Keep tokens, themes, and conditions in one preset. The CSS and design lanes
-consume it directly; a Tailwind bridge can expose the same values to `tw()`
-when an application needs Tailwind's ecosystem. Component code can use
-semantic names instead of repeating raw colors and spacing values.
-
-```ts
-// src/preset.ts
-import { define, type PandwindProperties } from "pandwind/preset";
-
-const tokens = define.tokens({
-	colors: {
-		$surface: "#ffffff",
-		$ink: "#111827",
-		$brand: "#2563eb",
-		$brandStrong: "#1d4ed8",
-		$onBrand: "#ffffff",
-	},
-	spacing: { 4: "16px", 6: "24px" },
-	radii: { md: "8px", lg: "12px" },
-});
-
-const cssConfig: PandwindProperties = {};
-
-export const preset = define.preset(
-	{ config: cssConfig, tokens },
-	{
-		strict: true,
-		conditions: { base: "", _hover: "&:hover", _dark: ".dark &" },
-		properties: { $all: true },
-	},
-);
-```
-
-The [design-system guide](./docs/src/content/docs/guides/design-system.md)
-covers semantic tokens, light/dark themes, component scopes, and how to keep
-the preset shared by codegen, Vite, and the migration tools.
-
-The exported `PandwindProperties` is Pandwind's curated common-property CSS
-contract: it stays 1:1 with CSS property names while omitting the long tail of
-rare declarations. Narrow it further with `Pick<...>` when a component package
-needs an even smaller surface. For the complete grammar or a specialized
-variant, import `StandardProperties` directly from `csstype` and use that as
-your preset's config type; Pandwind does not replace an explicit BYO contract.
-
-## When you need more than the happy path
-
-- **Dynamic CSS values:** use `css.vars()` and pass its `class` and `style`
-  together to the element.
-- **Dynamic Tailwind values:** if you use the Tailwind compatibility lane, use
-  `tw:scan` or an explicit safelist so its generated stylesheet contains the
-  possible classes.
-- **Globals, fonts, keyframes, and complex selectors:** keep them in an
-  authored `.css` file. Pandwind can consume and analyze that stylesheet; it
-  does not try to hide browser-wide behavior inside a component API.
-- **Migration:** start with `--dry-run --diff --report`, inspect residuals,
-  then apply the result in a branch. A successful command is not a claim that
-  every framework behavior has an equivalent target.
-
-## Tools for seeing what is happening
+Migration Preview opens a project in a read-only workspace so you can inspect
+generated code, residuals, and evidence before editing files.
+
+## How the styling lanes fit
+
+- **Typed CSS objects:** the primary path for new code. Pandwind extracts
+  static styles and keeps runtime values explicit.
+- **Tailwind utilities:** generated types and build-time folding for projects
+  that keep Tailwind as their stylesheet engine.
+- **Design vocabulary:** named terms for components that should express intent
+  instead of individual CSS properties.
+- **Class composition:** combine Pandwind output with ordinary classes and
+  styles from other libraries.
+- **Migration tools:** preview registered source-to-target routes and preserve
+  unsupported behavior as typed residuals.
+
+The [CSS API](./docs/src/content/docs/api/css.md), [design API](./docs/src/content/docs/api/design-css.md),
+[Tailwind API](./docs/src/content/docs/api/tw.md), and [composition API](./docs/src/content/docs/api/cx.md)
+show each lane in detail.
+
+Pandwind is static-first, not universal compilation. Dynamic values use
+explicit runtime carriers or Tailwind safelists. Globals, complex selectors,
+and framework-owned behavior stay with authored CSS or the host integration
+when Pandwind cannot prove a safe representation. See
+[current limitations](./docs/src/content/docs/reference/current-limitations-and-criticism.md).
+
+## Repository tools
 
 Run these from the repository checkout:
 
 ```sh
-pnpm run playground   # learn the APIs in a live editor
-pnpm run inspect      # inspect tokens, coverage, and generated CSS
-pnpm run analyze      # produce a CI-friendly analysis report
-pnpm run migration-preview # review a migration in a read-only workspace
+pnpm run playground
+pnpm run inspect
+pnpm run analyze
+pnpm run migration-preview
 ```
 
-The [tooling workflows guide](./docs/src/content/docs/tooling/workflows.md)
-explains which question each tool answers. The [migration guide](./docs/src/content/docs/guides/migrations.md)
-shows the safe preview workflow.
+The [tooling guide](./docs/src/content/docs/tooling/workflows.md) explains what
+each tool checks.
 
-## Runtime and build behavior
+## Documentation
 
-Pandwind is static-first, not magic:
+- [Getting started](./docs/src/content/docs/getting-started.md)
+- [API references](./docs/src/content/docs/api/)
+- [Guides](./docs/src/content/docs/guides/)
+- [Migration adapters](./docs/src/content/docs/interop/css-in-js-adapters.md)
+- [Tooling](./docs/src/content/docs/tooling/)
+- [Implementation status](./docs/src/content/docs/reference/implementation-status.md)
+- [Current limitations](./docs/src/content/docs/reference/current-limitations-and-criticism.md)
 
-- literal `css()` calls can become extracted atomic CSS;
-- literal `tw()` calls can become plain class strings at build time when the
-  Tailwind compatibility lane is selected;
-- dynamic values stay dynamic and use an explicit runtime or CSS-variable
-  path; and
-- the runtime package does not require Tailwind for the atomic CSS lane.
-
-This gives you a small production path without pretending that runtime input,
-global CSS, or framework-specific behavior can be compiled away universally.
-See [bundle and stylesheet sizes](./docs/src/content/docs/reference/size.md)
-and [current limitations](./docs/src/content/docs/reference/current-limitations-and-criticism.md)
-for measured boundaries.
-
-## Documentation map
-
-- [Tailwind component patterns](./docs/src/content/docs/guides/basic.md) — use
-  the generated helper for reusable and finite runtime choices.
-- [Build a design system](./docs/src/content/docs/guides/design-system.md) —
-  tokens, themes, and component contracts.
-- [Build a component library](./docs/src/content/docs/guides/component-library.md) —
-  packaging, SSR, and consumer boundaries.
-- [Migrate from another library](./docs/src/content/docs/guides/migrations.md) —
-  preview, review, validate, and apply.
-- [API reference](./docs/src/content/docs/api/css.md) — the primary `css()` API
-  plus the design, Tailwind, and composition lanes.
-- [Tooling workflows](./docs/src/content/docs/tooling/workflows.md) —
-  playground, Inspector, analysis CLI, Migration Preview, codegen, and Vite.
-- [Reference](./docs/src/content/docs/reference/limitations.md) — technical
-  contracts, support boundaries, benchmarks, and architecture.
-- [Performance overview](./PERF-SUMMARY.md) — current real-world comparisons
-  with per-category rankings and refresh cadence.
-
-## Working on pandwind
+## Work on Pandwind
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm test
+pnpm run test
 pnpm run typecheck
-pnpm run playground
 pnpm --filter pandwind-docs run dev
 ```
 
-The project is pre-launch and experimental tooling is labeled as such in the
-documentation. Start new code with `css()`. Use `tw()` when Tailwind remains
-your stylesheet engine, and reach for design vocabulary or migration tools when
-the project calls for them. Long-tail adapter and backend fixtures do not by
-themselves establish project-level support.
+Pandwind is pre-launch. Experimental integrations and bounded proof claims
+remain labeled as such; a fixture does not promise universal framework or
+migration support.

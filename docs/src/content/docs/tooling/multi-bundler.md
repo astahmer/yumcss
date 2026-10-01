@@ -9,12 +9,19 @@ The vite plugins are also published as
 [unplugin](https://github.com/unjs/unplugin) adapters, so the same build-time
 folding works under rollup, webpack, rspack, esbuild, rolldown and more:
 
+Install the optional unplugin peer when using one of these adapters:
+
+```sh
+pnpm add -D unplugin
+```
+
 ```ts
 // rollup.config.mjs
 import { pandwindRollup, pandwindRollupCss } from "pandwind/unplugin";
+import { preset } from "./preset";
 
 export default {
-	plugins: [pandwindRollup(), pandwindRollupCss(examplePreset)],
+	plugins: [pandwindRollup({ css: { preset } }), pandwindRollupCss(preset)],
 };
 ```
 

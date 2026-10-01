@@ -8,6 +8,11 @@ sidebar:
 You do not need to understand the whole Pandwind repository to use it. Pick
 the path that matches your app today:
 
+The setup examples assume an existing React and Vite app. They add Pandwind
+and the selected styling tools; your app scaffold supplies Vite and its React
+plugin. The Vite snippets use `@vitejs/plugin-react-swc`; keep your existing
+React plugin if your scaffold uses a different one.
+
 | Your starting point                       | Read this first                                 |
 | ----------------------------------------- | ----------------------------------------------- |
 | You want typed CSS objects                | [The `css()` API](/api/css/)                    |
@@ -24,12 +29,14 @@ is the reason you are adopting Pandwind.
 Choose this path for new Pandwind code when you want typed CSS objects and an
 extracted atomic stylesheet without making Tailwind the stylesheet engine.
 
-### 1. Install
+### 1. Add Pandwind
 
 ```sh
 pnpm add pandwind
-pnpm add -D unplugin
 ```
+
+The Vite integration uses Vite's native plugin API and does not require
+unplugin. For other bundlers, see [multi-bundler support](/tooling/multi-bundler/).
 
 ### 2. Create a preset
 
@@ -48,12 +55,13 @@ export const css = createCss(defaultPreset);
 
 ```ts
 // vite.config.ts
+import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import { pandwindCssVite } from "pandwind/vite";
 import { css } from "./src/styles";
 
 export default defineConfig({
-	plugins: [pandwindCssVite(css)],
+	plugins: [pandwindCssVite(css), react()],
 });
 ```
 
@@ -95,7 +103,7 @@ keep resets, layers, nesting, and broader browser CSS in ordinary authored CSS.
 This path adds typed object syntax to a Tailwind project. Tailwind still owns
 the final stylesheet.
 
-### 1. Install
+### 1. Add Tailwind tooling
 
 ```sh
 pnpm add pandwind

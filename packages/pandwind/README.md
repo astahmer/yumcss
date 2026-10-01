@@ -24,13 +24,13 @@ Start with `createCss(preset)` for new Pandwind code. The generated `tw()`
 helper is the compatibility lane for applications that already use Tailwind
 or specifically want its utility ecosystem.
 
-The [repository README](../../README.md) has the five-minute setup. The
-[documentation directory](../../docs/) has the complete guides and API
-reference.
+The [Getting started guide](../../docs/src/content/docs/getting-started.md)
+is the canonical Vite setup. The [documentation directory](../../docs/) has
+the complete guides and API reference.
 
 ## Preset layers
 
-Pandwind ships two small built-in preset layers:
+The core package ships two base preset layers:
 
 - `csstypePreset` from `pandwind/preset/csstype` provides structural CSS properties
   and conditions without opinionated token scales.
@@ -41,6 +41,11 @@ Pandwind ships two small built-in preset layers:
 The repository's `@pandwind/example-preset` is intentionally separate: it is a
 rich semantic-token and color-palette showcase, not an implicit dependency of
 the default app path.
+
+Optional ecosystem presets are also available for Tailwind CSS, Chakra UI,
+Panda CSS, and shadcn/ui. Their generated package surfaces are experimental;
+see the [preset reference](../../docs/src/content/docs/api/presets.md) for
+their scope and evidence.
 
 ## A small example
 
@@ -68,11 +73,13 @@ step.
 
 ## Build integration
 
-Use pandwindCssVite() (or the equivalent bundler adapter) so literal calls
-are extracted during the build. Use css.vars() or css.input() when a value is
+For Vite, use the native pandwindCssVite() plugin to extract literal calls.
+It does not require unplugin. Other bundlers use the optional unplugin peer
+through pandwind/unplugin. Use css.vars() or css.input() when a value is
 genuinely known only at runtime. Presets can also carry flat build-time web
-CSS as the third argument to `define.preset(theme, options, web)`; keep resets, layers, nesting,
-arbitrary at-rules, and host-ordered browser CSS in authored CSS.
+CSS as the third argument to define.preset(theme, options, web); keep resets,
+layers, nesting, arbitrary at-rules, and host-ordered browser CSS in authored
+CSS.
 
 ## Learn more
 
