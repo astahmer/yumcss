@@ -1,5 +1,15 @@
 # Plan 061: make static, runtime, and framework boundaries explicit
 
+## Current status
+
+Complete for the contracted boundary. Capability reports expose dynamic and
+runtime residuals, official-loader failures remain visible, and evidence labels
+distinguish host-backed checks from in-process results. Framework-native
+behavior remains owned by its host integration; this plan does not claim
+universal framework support. See the
+[implementation status](../docs/src/content/docs/reference/implementation-status.md#plan-audit)
+for the current scope.
+
 ## Goal
 
 Make every styling construct in Pandwind choose an explicit, testable execution

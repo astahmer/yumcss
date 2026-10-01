@@ -228,9 +228,10 @@ adoption boundaries without expanding the frozen authoring API:
   authored CSS. Named cascade layers use one validated outer layer across
   pure CSS, Vite, runtime sheets, and library artifacts.
 
-The ecosystem starter-preset work remains active where its acceptance scope is
-not yet closed. Unfinished generated assets, package surfaces, and measured
-evidence stay in the engineering workspace until complete.
+The approved starter-preset and reset scope in Plan 074 is complete. These
+ecosystem presets remain opt-in and are labeled experimental in the package
+surface. Further preset work needs a named use case and its own generated
+artifacts and size evidence; it is not an open requirement of Plan 074.
 
 ## Deliberately not complete
 

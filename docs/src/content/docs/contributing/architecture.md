@@ -1135,37 +1135,28 @@ roots and reads generated `pandwind.interop/1` snapshots without scanning the
 repository or registry. Inspector shows release comparison within its existing
 Usage & cleanup view, alongside token validation/export fidelity.
 
-## Remaining plan boundaries
+## Plan status and deferred boundaries
 
-Completed plan documents have been removed from the active plan set; JJ history
-retains their implementation notes and closure records. Remaining plan files
-cover open work, deferred options, or evidence.
+The [implementation status](/reference/implementation-status/) page is the
+current source of truth. The `plans/` directory intentionally retains
+engineering records, including completed plans; their original checklists may
+describe work that was later narrowed or closed. Read each recorded outcome
+with the current status instead of treating every historical task as open.
 
-- `plans/041-any-direction-adapter-completeness.md` records the finite
-  registered-adapter semantic and route contract. Adapter-specific browser,
-  SSR, and RSC proof remains a separate promotion dimension; residual-matrix
-  safety is not universal-compatibility proof.
-- Shared AST and official-project-context boundaries are in place for imports,
-  shadow scopes, semantic call-site ranges, supported JSX host ranges, and
-  loader evidence. Adapter-specific template dialects remain target-owned and
-  fail closed when their framework contract is unproven.
-- Panda's installed pinned-host proof covers Velite, website typechecking,
-  Next production build, and representative `/` and `/showcase` browser
-  rendering in `plans/evidence/panda-website-proof.md`.
-- `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
-  deferred until a concrete consumer requires them. The preset also exposes a
-  narrow third-argument `define.preset(theme, options, web)` build-time surface
-  without becoming a second global-CSS language.
-- Runtime-only lazy method accessors were rejected after measurement. The
-  shipped compiler-aware runtime pruning removes unused attachments without
-  imposing a first-access tax on every factory instance.
-- Migration Preview pagination for very large catalogs and a write-mode
-  removal command remain deferred ideas; governance stays report-first.
+Plans 041 and 052 closed the registered-adapter contract, conservative
+residuals, and directional proof for declared capabilities. This does not
+claim that every route is lossless or production-proven. Installed project,
+browser, SSR, and hydration evidence remains explicit per route; unsupported
+framework behavior stays owned by its host adapter.
 
-Remaining installed-proof items are explicit evidence requests owned by the
-relevant adapters. New work should add a capability contract and proof to an
-owning active plan rather than create a parallel architecture or duplicate an
-already-shipped plan.
+The remaining deferred work has concrete boundaries:
+
+- Canvas and build-time Metro stay deferred until a real consumer needs them.
+  See `plans/021-multi-target-backends.md`.
+- Pagination for very large Migration Preview catalogs and a write-mode
+  removal command remain deferred; token governance stays report-first.
+- New installed-route claims need evidence from their owning adapter and
+  project fixture. A source-level route result does not promote a route.
 
 ## Expert target emission and generated files
 
