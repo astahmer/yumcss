@@ -6,6 +6,7 @@ import {
 	createStyleBackendContractSuite,
 	STYLE_BACKEND_CONTRACT_SCHEMA,
 	StyleBackendId,
+	ReactStrictDomPlatform,
 	type StyleBackendFactory,
 } from "../src/backends/index.ts";
 import { createOpentuiBackend } from "../src/backends/opentui.ts";
@@ -14,15 +15,36 @@ import { createRnBackend } from "../src/backends/react-native.ts";
 const backendOptions = (id: string) => (id === StyleBackendId.Object ? { name: id } : undefined);
 
 const contractFixtures = [
-	{ backend: StyleBackendId.Css, declarations: { color: "red" } },
+	{
+		backend: StyleBackendId.Css,
+		options: { hashFn: () => "color-red" },
+		declarations: { color: "red" },
+		expected: "color-red",
+	},
 	{
 		backend: StyleBackendId.Object,
 		options: { name: StyleBackendId.Object },
 		declarations: { color: "red" },
+		expected: { color: "red" },
 	},
-	{ backend: StyleBackendId.ReactNative, declarations: { color: "red" } },
-	{ backend: StyleBackendId.ReactStrictDom, declarations: { color: "red" } },
-	{ backend: StyleBackendId.OpenTui, declarations: { color: "red" } },
+	{
+		backend: StyleBackendId.ReactNative,
+		options: undefined,
+		declarations: { color: "red" },
+		expected: { color: "red" },
+	},
+	{
+		backend: StyleBackendId.ReactStrictDom,
+		options: { platform: ReactStrictDomPlatform.Native },
+		declarations: { color: "red" },
+		expected: { color: "red" },
+	},
+	{
+		backend: StyleBackendId.OpenTui,
+		options: undefined,
+		declarations: { color: "red" },
+		expected: { color: "red" },
+	},
 ] as const;
 
 describe("style backend contract matrix", () => {
@@ -46,6 +68,13 @@ describe("style backend contract matrix", () => {
 		for (const factory of STYLE_BACKENDS.factories) {
 			const backend = factory.create(backendOptions(factory.id));
 			expect(backend.declare("color", "red")).toBeDefined();
+		}
+	});
+
+	test("pins semantic output for each built-in backend", () => {
+		for (const fixture of contractFixtures) {
+			const backend = STYLE_BACKENDS.create(fixture.backend, fixture.options);
+			expect(backend.declare("color", "red")).toEqual(fixture.expected);
 		}
 	});
 
