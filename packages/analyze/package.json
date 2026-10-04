@@ -96,7 +96,6 @@
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
 		"@modelcontextprotocol/server": "2.0.0",
-		"@pandwind/example-preset": "workspace:*",
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
 		"hono": "4.13.5",
@@ -106,6 +105,7 @@
 		"zod": "4.5.4"
 	},
 	"devDependencies": {
+		"@pandwind/example-preset": "workspace:*",
 		"@pierre/diffs": "1.4.3",
 		"@types/node": "26.4.1",
 		"@vitest/coverage-v8": "5.0.0",

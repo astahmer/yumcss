@@ -27,8 +27,9 @@ import {
 	rmSync,
 	statSync,
 	symlinkSync,
+	writeFileSync,
 } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 function parsePackageTargets(value) {
@@ -77,6 +78,16 @@ async function main() {
 		execFileSync("tar", ["-xzf", tarballPath, "--strip-components", "1", "-C", extracted]);
 
 		const shipped = JSON.parse(readFileSync(join(extracted, "package.json"), "utf8"));
+		const broken = [];
+		const executableTargets = new Set(
+			parsePackageTargets(shipped.bin).map((target) => resolve(extracted, target)),
+		);
+		if (
+			manifest.name === "pandwind-analyze" &&
+			shipped.dependencies?.["@pandwind/example-preset"] !== undefined
+		) {
+			broken.push("package.json: depends on private @pandwind/example-preset");
+		}
 		// Resolve optional peer imports (for example React Native's React host)
 		// against the workspace installation while smoke-testing the tarball.
 		// The link is outside the tarball and is never part of the published files.
@@ -126,9 +137,10 @@ async function main() {
 		// a valid package-consumption test because its module-preload bootstrap uses
 		// the browser DOM at module evaluation time.
 		// Sequential imports by design: deterministic error ordering.
-		const broken = [];
 		const pathSeparator = process.platform === "win32" ? "\\" : "/";
 		const browserBundleMarker = `${pathSeparator}dist${pathSeparator}client${pathSeparator}`;
+		const privatePresetImport =
+			/(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()\s*["']@pandwind\/example-preset(?:\/[^"']*)?["']/;
 		const walkModules = async (dir) => {
 			for (const dirEntry of readdirSync(dir, { withFileTypes: true })) {
 				if (dirEntry.name === "node_modules") continue;
@@ -138,6 +150,10 @@ async function main() {
 				} else if (/\.(js|mjs)$/.test(dirEntry.name)) {
 					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
 					if (path.includes(browserBundleMarker)) continue;
+					if (executableTargets.has(path)) continue;
+					if (manifest.name === "pandwind-analyze" && privatePresetImport.test(readFileSync(path, "utf8"))) {
+						broken.push(`${path.replace(`${extracted}/`, "")}: imports private @pandwind/example-preset`);
+					}
 					try {
 						await import(pathToFileURL(path).href);
 					} catch (error) {
@@ -155,10 +171,13 @@ async function main() {
 			process.exitCode = 1;
 			return;
 		}
+		if (manifest.name === "pandwind-analyze") {
+			cleanConsumerSmoke({ manifest, packageDirectory: pkgDir, tarballPath, workdir });
+		}
 
 		const fileCount = countFiles(extracted);
 		console.log(
-			`smoke-pack(${manifest.name}): OK — ${fileCount} files shipped, all export targets resolve, all modules import`,
+			`smoke-pack(${manifest.name}): OK — ${fileCount} files shipped, all export targets resolve, all library modules import`,
 		);
 	} finally {
 		rmSync(smokeRoot, { recursive: true, force: true });
@@ -172,6 +191,80 @@ function statMaybe(path) {
 	} catch {
 		return false;
 	}
+}
+
+function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }) {
+	const repoRoot = resolve(packageDirectory, "../..");
+	const packageDirectories = new Map();
+	for (const workspaceRoot of ["packages", "examples"]) {
+		for (const entry of readdirSync(join(repoRoot, workspaceRoot), { withFileTypes: true })) {
+			if (!entry.isDirectory()) continue;
+			const directory = join(repoRoot, workspaceRoot, entry.name);
+			const packageJsonPath = join(directory, "package.json");
+			if (!statMaybe(packageJsonPath)) continue;
+			const workspaceManifest = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+			packageDirectories.set(workspaceManifest.name, directory);
+		}
+	}
+
+	const tarballs = new Map([[manifest.name, tarballPath]]);
+	const pending = Object.entries(manifest.dependencies ?? {})
+		.filter(([, version]) => typeof version === "string" && version.startsWith("workspace:"))
+		.map(([name]) => name);
+	while (pending.length > 0) {
+		const name = pending.pop();
+		if (name === undefined || tarballs.has(name)) continue;
+		const directory = packageDirectories.get(name);
+		if (directory === undefined) throw new Error(`No workspace package found for ${name}`);
+		const workspaceManifest = JSON.parse(readFileSync(join(directory, "package.json"), "utf8"));
+		const packOutput = execFileSync(
+			"pnpm",
+			["pack", "--json", "--pack-destination", workdir],
+			{ cwd: directory, encoding: "utf8" },
+		);
+		const packResult = JSON.parse(packOutput);
+		const packEntry = Array.isArray(packResult) ? packResult[0] : packResult;
+		if (packEntry?.filename === undefined) throw new Error(`pnpm pack produced no tarball for ${name}`);
+		const workspaceTarballPath = resolve(packEntry.filename);
+		tarballs.set(name, workspaceTarballPath);
+		for (const [dependencyName, version] of Object.entries(workspaceManifest.dependencies ?? {})) {
+			if (typeof version === "string" && version.startsWith("workspace:")) pending.push(dependencyName);
+		}
+	}
+
+	const consumerDirectory = join(workdir, "consumer");
+	mkdirSync(consumerDirectory, { recursive: true });
+	const consumerManifest = {
+		name: "pandwind-clean-consumer-smoke",
+		private: true,
+		type: "module",
+		dependencies: Object.fromEntries(
+			[...tarballs].map(([name, path]) => [
+				name,
+				`file:${relative(consumerDirectory, path).replaceAll("\\", "/")}`,
+			]),
+		),
+	};
+	writeFileSync(join(consumerDirectory, "package.json"), `${JSON.stringify(consumerManifest, null, 2)}\n`);
+	execFileSync("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"], {
+		cwd: consumerDirectory,
+		stdio: "ignore",
+	});
+	const importCheck = [
+		'import { DEFAULT_GOVERNANCE_PRESET } from "pandwind-analyze";',
+		'import { loadOfficialPresetModule } from "pandwind-analyze/governance";',
+		'await import("pandwind/cx");',
+		'await import("pandwind-codemod/swap");',
+		'const preset = await loadOfficialPresetModule(DEFAULT_GOVERNANCE_PRESET, process.cwd());',
+		'if (preset.status !== "loaded") throw new Error(JSON.stringify(preset));',
+	].join("\n");
+	execFileSync(process.execPath, ["--input-type=module", "-e", importCheck], { cwd: consumerDirectory });
+	execFileSync(
+		process.execPath,
+		[join(consumerDirectory, "node_modules/pandwind-analyze/dist/cli.js"), "--help"],
+		{ cwd: consumerDirectory, stdio: "ignore" },
+	);
+	console.log("smoke-pack(pandwind-analyze): clean consumer install and default preset load OK");
 }
 
 await main();

@@ -27,6 +27,7 @@ import {
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
 import { runGovernanceLane, runTokenReleaseLane } from "./governance-lane.ts";
+import { DEFAULT_GOVERNANCE_PRESET } from "./governance/project-context.ts";
 import { MCP_COMMAND, createNodeMcpValidationPort, runMcpServer } from "./mcp/server.ts";
 
 export interface CliArgs {
@@ -102,8 +103,7 @@ export function evaluateBudget(
 export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/1";
 /** Version tag for the governance lane document. */
 export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
-/** Default official preset for the governance lane. */
-export const DEFAULT_GOVERNANCE_PRESET = "@pandwind/example-preset";
+export { DEFAULT_GOVERNANCE_PRESET };
 
 type CliOptions = Readonly<Record<string, unknown>>;
 

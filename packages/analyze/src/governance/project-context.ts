@@ -15,6 +15,8 @@ import type { EffectiveTokenContextInputs } from "./effective-token-context.ts";
 
 type PresetModule = Record<string, unknown>;
 
+export const DEFAULT_GOVERNANCE_PRESET = "pandwind/preset/default";
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 

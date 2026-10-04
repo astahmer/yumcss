@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { analyzeTokenGovernance } from "./service.ts";
 import { scanPublicExports } from "./public-export.ts";
 import {
+	DEFAULT_GOVERNANCE_PRESET,
 	deriveProjectGovernanceContext,
 	loadOfficialPresetModule,
 	projectGovernanceInputs,
@@ -90,6 +91,15 @@ describe("deriveProjectGovernanceContext", () => {
 });
 
 describe("projectGovernanceInputs", () => {
+	it("loads the public default preset by package specifier", async () => {
+		const load = await loadOfficialPresetModule(
+			DEFAULT_GOVERNANCE_PRESET,
+			resolve(import.meta.dirname, "../../../../"),
+		);
+
+		expect(load.status).toBe("loaded");
+	});
+
 	it("downgrades a failed load to diagnostics + report-only policy", async () => {
 		const load = await loadOfficialPresetModule("./does/not/exist.ts", "/tmp");
 		expect(load.status).toBe("failed");

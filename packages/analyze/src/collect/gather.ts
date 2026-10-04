@@ -3,6 +3,7 @@
  * entry points (runCli / createCssBudgetService / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadTwConfig } from "../analyze.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
@@ -10,6 +11,7 @@ import { createSourceWorkspace } from "pandwind/source/workspace";
 import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";
 import { examplePreset } from "@pandwind/example-preset";
+import { defaultPreset } from "pandwind/preset/default";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
 import { createCssExtractionService } from "pandwind/vite/css-extract";
 import {
@@ -30,6 +32,7 @@ import { collectCssReport } from "../css-diagnostics.ts";
 import {
 	analyzeTokenGovernance,
 	buildGovernancePruneChangeset,
+	DEFAULT_GOVERNANCE_PRESET,
 	loadOfficialPresetModule,
 	projectGovernanceInputs,
 } from "../governance/index.ts";
@@ -50,10 +53,12 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const root =
 		repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
 	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
-	const isDogfoodApp = APP === DEFAULT_APP;
+	const isDogfoodApp =
+		APP === DEFAULT_APP && existsSync(resolve(root, "examples/pandwind-example-preset/package.json"));
+	const activePreset = isDogfoodApp ? examplePreset : defaultPreset;
 	const sourceWorkspace = createSourceWorkspace();
 	const cssBudgetService = createCssBudgetService();
-	const cssExtraction = createCssExtractionService({ matchers: [], preset: examplePreset });
+	const cssExtraction = createCssExtractionService({ matchers: [], preset: activePreset });
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
 	const appSourceRoot = resolve(root, APP, "src");
 	const readSourceArtifact = (file: string): string | undefined =>
@@ -69,7 +74,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// --- coverage: the CLI is the single interface to fold analysis.
 	const summaryJson = await runCli(
 		[`${APP}/src/**/*`, "--tw", appSrc("tw.ts"), "--root", root, "--json"],
-		isDogfoodApp ? { cssPreset: examplePreset } : {},
+		{ cssPreset: activePreset },
 	);
 	const summary = JSON.parse(summaryJson) as {
 		eliminatedPct: number;
@@ -210,7 +215,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		for (const extracted of cssExtraction.extract(content, file, names)) {
 			const site = cssSourcesByStart.get(`${file}:${extracted.provenance.start}`);
 			if (site === undefined) continue;
-			const sheet = createStylesheet(examplePreset);
+		const sheet = createStylesheet(activePreset);
 			sheet.process([extracted.style]);
 			const rules = sheet.gen.atomicEntries().map(({ id, css }) => ({ id, css }));
 			site.rules = [...(site.rules ?? []), ...rules];
@@ -240,10 +245,13 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// universe from the preset, theme vars, and interop artifact. A generated
 	// safelist file downgrades every unused candidate to review-required (its
 	// class strings cannot be attributed to token ids without guessing).
-	const presetLoad = await loadOfficialPresetModule(
-		isDogfoodApp ? "@pandwind/example-preset" : `./${APP}/src/pandwind.preset.ts`,
-		root,
-	);
+	const projectPreset = `./${APP}/src/pandwind.preset.ts`;
+	const presetSpecifier = isDogfoodApp
+		? "@pandwind/example-preset"
+		: existsSync(resolve(root, APP, "src", "pandwind.preset.ts"))
+			? projectPreset
+			: DEFAULT_GOVERNANCE_PRESET;
+	const presetLoad = await loadOfficialPresetModule(presetSpecifier, root);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
 	let interopTokens: PandwindInteropTokenSnapshot = {
 		state: "unavailable",

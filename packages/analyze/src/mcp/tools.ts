@@ -14,6 +14,7 @@ import {
 import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
 import { unifiedDiff } from "pandwind-codemod/diff";
 import { runCli } from "../cli.ts";
+import { DEFAULT_GOVERNANCE_PRESET } from "../governance/project-context.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
 import {
 	MCP_MIGRATION_MODE,
@@ -156,7 +157,6 @@ export function createMcpToolPorts(
 	return { ...DEFAULT_TOOL_PORTS, ...overrides };
 }
 
-const DEFAULT_ANALYZE_PRESET = "@pandwind/example-preset";
 
 const DEFAULT_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
 	MCP_VALIDATION_CHECK.Contract,
@@ -1357,7 +1357,7 @@ async function analyzeProject(
 	if (input.css === true) argv.push("--css");
 	const foldReport = JSON.parse(await ports.analyze(argv)) as Record<string, unknown>;
 	const preset =
-		input.preset === undefined ? DEFAULT_ANALYZE_PRESET : stringValue(input.preset, "preset");
+		input.preset === undefined ? DEFAULT_GOVERNANCE_PRESET : stringValue(input.preset, "preset");
 	const governanceReport = JSON.parse(
 		await ports.analyze([
 			...patterns,

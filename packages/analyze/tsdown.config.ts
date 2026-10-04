@@ -13,7 +13,11 @@ export default defineConfig({
 		"src/mcp/server.ts",
 		"src/mcp/http.ts",
 	],
-	deps: { neverBundle: true, dts: { neverBundle: true } },
+	deps: {
+		neverBundle: true,
+		alwaysBundle: ["@pandwind/example-preset"],
+		dts: { neverBundle: true },
+	},
 	dts: true,
 	format: "es",
 	outDir: "dist",

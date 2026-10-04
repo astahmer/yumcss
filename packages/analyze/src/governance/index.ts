@@ -44,6 +44,7 @@ export {
 } from "./release-contracts.ts";
 export {
 	deriveProjectGovernanceContext,
+	DEFAULT_GOVERNANCE_PRESET,
 	loadOfficialPresetModule,
 	presetCandidates,
 	projectGovernanceInputs,
