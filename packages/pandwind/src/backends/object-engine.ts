@@ -133,13 +133,26 @@ export function createObjectBackend(options: ObjectBackendOptions): ObjectBacken
 					},
 				]
 			: [];
-		return [...conditionIssues, ...propertyIssues];
+		if (conditionIssues.length > 0 || propertyIssues.length > 0)
+			return [...conditionIssues, ...propertyIssues];
+		try {
+			convert(prop, value);
+			return [];
+		} catch (error) {
+			return [
+				{
+					property: prop,
+					value,
+					lossiness: "unsupported",
+					message: error instanceof Error ? error.message : String(error),
+				},
+			];
+		}
 	};
 
 	const check = (key: string, value: string): void => {
 		const issues = diagnose(key, value);
-		if (issues.length > 0)
-			throw new Error(`${issues[0]!.message} — remove it, or provide a resolver via conditions`);
+		if (issues.length > 0) throw new Error(issues[0]!.message);
 	};
 
 	const register = (style: TargetStyle): TargetStyle => {

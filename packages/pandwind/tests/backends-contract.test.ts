@@ -61,6 +61,12 @@ describe("style backend contract matrix", () => {
 		expect(() => openTui.declare("boxShadow", "1px")).toThrow(
 			/"boxShadow" has no OpenTUI representation/,
 		);
+		expect(reactNative.diagnose?.("boxShadow", "1px")).toMatchObject([
+			{ property: "boxShadow", lossiness: "unsupported" },
+		]);
+		expect(() => reactNative.declare("boxShadow", "1px")).toThrow(
+			/"boxShadow" has no React Native representation/,
+		);
 	});
 
 	test("third-party backends can register without changing the built-in root", () => {
