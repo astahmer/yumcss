@@ -197,9 +197,8 @@ describe("token parity — one DTCG preset, three unit policies", () => {
 		const dense = createOpentuiDesignCss(examplePreset, { cellSize: 2 });
 		expect(dense({ $frame: { pad: [4, 8] } })).toMatchObject({ paddingTop: 2, paddingRight: 4 });
 
-		// Same policy split on radii: lg = 0.5rem = 8px.
+		// RN maps the shared lg radius token to 8 dp.
 		expect(rnCss({ $frame: { corners: "lg" } })).toEqual({ borderRadius: 8 });
-		expect(otCss({ $frame: { corners: "lg" } })).toEqual({ borderRadius: 2 });
 	});
 });
 

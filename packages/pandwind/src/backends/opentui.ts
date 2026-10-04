@@ -1,5 +1,4 @@
 import {
-	CORNER_EXPANSION,
 	CSS_LENGTH,
 	CSS_NUMERIC_WITH_UNIT,
 	expandShorthand,
@@ -53,7 +52,6 @@ const CELL_PROPERTIES = new Set([
 	"gap",
 	"rowGap",
 	"columnGap",
-	"borderRadius",
 ]);
 const PERCENT_PROPERTIES = new Set([
 	"top",
@@ -130,6 +128,7 @@ const UNSUPPORTED = new Set([
 	"borderRightWidth",
 	"borderBottomWidth",
 	"borderLeftWidth",
+	"borderRadius",
 	"fontFamily",
 	"fontSize",
 	"lineHeight",
@@ -211,15 +210,6 @@ const makeConvert =
 			if (parts.length === 1 && isPercentage(parts[0]!)) return { [prop]: value };
 			if (parts.length === 1 && value === "auto" && AUTO_PROPERTIES.has(prop))
 				return { [prop]: value };
-			if (prop === "borderRadius" && parts.every((part) => CSS_LENGTH.test(part))) {
-				const expanded = expandShorthand(
-					parts,
-					CORNER_EXPANSION,
-					(part) => makeToCells(cellSize)(part),
-					(suffix) => `border${suffix}Radius`,
-				);
-				if (expanded !== undefined) return expanded;
-			}
 			if (prop === "padding" || prop === "margin") {
 				const allConvertible = parts.every((part) => CSS_LENGTH.test(part) || isPercentage(part));
 				if (allConvertible) {

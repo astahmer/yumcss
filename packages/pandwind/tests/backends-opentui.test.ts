@@ -89,6 +89,13 @@ describe("opentui border model", () => {
 });
 
 describe("opentui refusal policy", () => {
+	test("border radii are refused because OpenTUI has no radius field", () => {
+		const backend = createOpentuiBackend();
+		expect(() => backend.declare("borderRadius", "8px")).toThrow(
+			/property "borderRadius" has no OpenTUI representation/,
+		);
+	});
+
 	test("cascade/paint-only props throw", () => {
 		const backend = createOpentuiBackend();
 		for (const prop of ["boxShadow", "backdropFilter", "transitionDuration"]) {
@@ -121,16 +128,14 @@ describe("opentui refusal policy", () => {
 });
 
 describe("pandwind/opentui surface", () => {
-	test("design vocabulary resolves tokens and lowers to cells", () => {
+	test("design vocabulary resolves colors and lowers spacing to cells", () => {
 		const dss = createDesignCss(examplePreset);
 		const panel = dss({
-			$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
+			$frame: { fill: "$blue-500", pad: [4, 8] },
 		});
-		// Colors pass through; radii/spacing quantize: lg = 0.5rem = 8px ->
-		// 2 cells, 4px -> 1, 8px -> 2.
+		// Colors pass through; spacing quantizes to the nearest 4px cell.
 		expect(panel).toEqual({
 			backgroundColor: "#3182ce",
-			borderRadius: 2,
 			paddingTop: 1,
 			paddingRight: 2,
 			paddingBottom: 1,

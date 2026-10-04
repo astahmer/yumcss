@@ -10,6 +10,7 @@ import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
+import { defaultPreset } from "../src/preset/default.ts";
 import { examplePreset } from "@pandwind/example-preset";
 import type {
 	RuntimeDeclaration,
@@ -209,6 +210,19 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(className).toMatch(/^[a-z0-9]+$/);
 		expect(sheet.css()).toContain("color:#3182ce");
 		expect(sheet.snapshot().rules).toHaveLength(1);
+	});
+
+	test("keeps preset tokens when a tokenless preset shares the runtime sheet", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const tokenfulCss = createRuntimeCss(examplePreset, { sheet });
+		const tokenPrelude = createStylesheet(examplePreset).gen.tokens();
+
+		tokenfulCss.class({ color: "$blue-500" });
+		const css = createRuntimeCss(defaultPreset, { sheet });
+		css.class({ padding: 4 });
+
+		expect(tokenPrelude).not.toBe("");
+		expect(sheet.css()).toContain(tokenPrelude);
 	});
 
 	test("supports StyleX-like priority specificity for runtime declarations", () => {

@@ -154,7 +154,8 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const registeredVarKeys = new Set<string>();
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
 		if (!tokensSynced) {
-			sheet.setTokens(stylesheet.gen.tokens());
+			const tokens = stylesheet.gen.tokens();
+			if (tokens.length > 0) sheet.setTokens(tokens);
 			tokensSynced = true;
 		}
 		if (rules.length > 0) sheet.register(rules);
