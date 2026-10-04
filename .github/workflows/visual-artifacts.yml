@@ -35,7 +35,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install chromium (playwright cache)
-        run: npx playwright@1.61.1 install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: css-example capture
         working-directory: examples/css-example

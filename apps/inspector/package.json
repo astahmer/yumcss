@@ -11,8 +11,7 @@
 		"pandwind": "workspace:*",
 		"pandwind-analyze": "workspace:*",
 		"react": "19.2.8",
-		"react-dom": "19.2.8",
-		"zod": "4.5.4"
+		"react-dom": "19.2.8"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",
@@ -21,6 +20,7 @@
 		"@vitejs/plugin-react-swc": "4.3.3",
 		"typescript": "7.0.2",
 		"vite": "8.2.2",
-		"vitest": "5.0.0"
+		"vitest": "5.0.0",
+		"zod": "4.5.4"
 	}
 }

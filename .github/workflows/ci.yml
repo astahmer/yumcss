@@ -61,6 +61,8 @@ jobs:
 
       - name: Production ownership and pivot gates
         run: >-
+          pnpm run surface:check &&
+          pnpm run proof:docs:check &&
           pnpm run knip:production &&
           pnpm run generated:budget &&
           pnpm run pivot:proof &&

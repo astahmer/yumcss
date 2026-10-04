@@ -2,61 +2,140 @@
 	"$schema": "https://unpkg.com/knip@6/schema.json",
 	"workspaces": {
 		".": {
-			"entry": ["scripts/**/*.{ts,mts,mjs}"],
+			"entry": ["scripts/**/*.{ts,mts,mjs}!"],
 			"project": ["scripts/**/*.{ts,mts,mjs}"]
 		},
 		"packages/codemod": {
 			"entry": [
-				"src/cli.ts",
-				"src/css/index.ts",
-				"src/lib/index.ts",
-				"src/runtime/index.ts",
-				"src/source-pass-utils.ts",
-				"src/swap/index.ts",
-				"src/swap/browser.ts",
-				"src/swap/adapters/panda/theme.ts",
-				"tests/**/*.test.ts"
+				"src/cli.ts!",
+				"src/css/index.ts!",
+				"src/lib/index.ts!",
+				"src/runtime/index.ts!",
+				"src/source-pass-utils.ts!",
+				"src/swap/index.ts!",
+				"src/swap/browser.ts!",
+				"src/swap/adapters/panda/theme.ts!",
+				"tests/**/*.test.ts",
+				"src/diff.ts!",
+				"src/swap/semantic-ir.ts!",
+				"src/swap/official-api-cases.ts!",
+				"src/swap/identifiers.ts!",
+				"src/swap/real-repository-corpus.ts!",
+				"src/meta.ts!",
+				"src/map.ts!",
+				"src/shared.ts!",
+				"src/tokens.ts!",
+				"src/class-sorter.ts!",
+				"src/arbitrary-values.ts!",
+				"src/swap/variant-hoisting.ts!",
+				"src/swap/token-document-codec.ts!",
+				"src/swap/token-document-serializer.ts!",
+				"src/swap/unplugin.ts!",
+				"src/swap/vite.ts!",
+				"src/tw/index.ts!",
+				"src/swap/style-program-units.ts!",
+				"src/swap/adapters/styled-components.adapter.ts!",
+				"src/tw/codegen-conflicts.ts!"
 			],
 			"project": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
 			"ignoreDependencies": ["magic-string"]
 		},
 		"packages/pandwind": {
 			"entry": [
-				"src/index.ts",
-				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts",
-				"src/preset/csstype.ts",
-				"src/preset/default.ts",
-				"src/preset/tailwindcss.ts",
-				"src/preset/chakra.ts",
-				"src/preset/shadcn.ts",
-				"src/preset/panda.ts",
-				"src/reset/*.css",
-				"src/prose/*.css",
-				"src/{unplugin,source-scanner,rn,opentui}.ts",
-				"src/css/create-stylesheet.ts",
-				"src/css/stylesheet-lowering.ts",
-				"src/css/runtime.ts",
-				"src/css/runtime-codegen.ts",
-				"src/css/class-name-strategy.ts",
-				"src/tw/generate-types.ts",
+				"src/index.ts!",
+				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts!",
+				"src/preset/csstype.ts!",
+				"src/preset/default.ts!",
+				"src/preset/tailwindcss.ts!",
+				"src/preset/chakra.ts!",
+				"src/preset/shadcn.ts!",
+				"src/preset/panda.ts!",
+				"src/reset/*.css!",
+				"src/prose/*.css!",
+				"src/{unplugin,source-scanner,rn,opentui}.ts!",
+				"src/css/create-stylesheet.ts!",
+				"src/css/stylesheet-lowering.ts!",
+				"src/css/runtime.ts!",
+				"src/css/runtime-codegen.ts!",
+				"src/css/class-name-strategy.ts!",
+				"src/tw/generate-types.ts!",
 				"tests/**/*.test.ts",
-				"tests/**/*.tst.ts"
+				"tests/**/*.tst.ts",
+				"src/css/index.ts!",
+				"src/css/generated.ts!",
+				"src/css/named-atoms-strategy.ts!",
+				"src/unsafe/css.ts!",
+				"src/css/selector-scan.ts!",
+				"src/css/stylex-adapter.ts!",
+				"src/css/panda-adapter.ts!",
+				"src/css/unocss-adapter.ts!",
+				"src/cx/index.ts!",
+				"src/preset/index.ts!",
+				"src/reset/tailwindcss.css!",
+				"src/reset/panda.css!",
+				"src/reset/pandwind.css!",
+				"src/prose/tailwindcss.css!",
+				"src/stack/index.ts!",
+				"src/stack/react.tsx!",
+				"src/stack/solid.tsx!",
+				"src/stack/vue.ts!",
+				"src/stack/preact.ts!",
+				"src/stack/Stack.svelte!",
+				"src/stack/Stack.astro!",
+				"src/design/index.ts!",
+				"src/host/index.ts!",
+				"src/tw/index.ts!",
+				"src/tw/collect.ts!",
+				"src/vite/index.ts!",
+				"src/vite/runtime-pruner.ts!",
+				"src/vite/css-extract.ts!",
+				"src/vite/css-inline-analysis.ts!",
+				"src/vite/preset-context.ts!",
+				"src/vite/lib-artifact.ts!",
+				"src/vite/cross-module-consts.ts!",
+				"src/vite/cx-inline.ts!",
+				"src/vite/inline.ts!",
+				"src/vite/stack-fold.ts!",
+				"src/unplugin.ts!",
+				"src/design/resolve.ts!",
+				"src/lib/utils.ts!",
+				"src/tw/compile.ts!",
+				"src/tw/literal.ts!",
+				"src/rn.ts!",
+				"src/types/typings.ts!",
+				"src/opentui.ts!",
+				"src/react-strict-dom.ts!",
+				"src/backends/index.ts!",
+				"src/source-scanner.ts!",
+				"src/source-workspace.ts!",
+				"src/css/runtime-base.ts!",
+				"src/css/runtime-preset.ts!",
+				"src/design/runtime.ts!",
+				"src/css/runtime-method-class.ts!",
+				"src/css/runtime-method-vars.ts!",
+				"src/css/runtime-method-raw.ts!",
+				"src/css/runtime-method-props.ts!",
+				"src/css/runtime-method-group.ts!",
+				"src/css/runtime-method-input.ts!",
+				"src/css/runtime-method-keyframes.ts!"
 			],
 			"project": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
 		},
 		"packages/analyze": {
 			"entry": [
-				"src/cli.ts",
-				"src/collect/index.ts",
-				"src/governance/index.ts",
-				"src/mcp/http.ts",
-				"src/mcp/server.ts",
-				"src/migration-preview/index.ts",
-				"src/migration-preview/server.ts",
-				"migration-preview-app/src/main.ts",
-				"compiler-preview-app/src/main.ts",
+				"src/cli.ts!",
+				"src/collect/index.ts!",
+				"src/governance/index.ts!",
+				"src/mcp/http.ts!",
+				"src/mcp/server.ts!",
+				"src/migration-preview/index.ts!",
+				"src/migration-preview/server.ts!",
+				"migration-preview-app/src/main.ts!",
+				"compiler-preview-app/src/main.ts!",
 				"vite.config.ts",
-				"tests/**/*.test.ts"
+				"tests/**/*.test.ts",
+				"src/collect/browser.ts!",
+				"src/governance/browser.ts!"
 			],
 			"project": [
 				"src/**/*.ts",
@@ -67,57 +146,58 @@
 			]
 		},
 		"packages/lint-plugin": {
-			"entry": ["src/index.ts"],
+			"entry": ["src/index.ts!"],
 			"project": ["src/**/*.ts"]
 		},
 		"apps/*": {
-			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts"],
+			"entry": ["src/{main,index,App}.{ts,tsx}!", "vite.config.ts", "vite.config.ts!"],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
 		},
 		"apps/playground": {
 			"entry": [
-				"src/{main,index,App}.{ts,tsx}",
-				"src/lib/format-playground-code.ts",
-				"src/tw.runtime.ts",
+				"src/{main,index,App}.{ts,tsx}!",
+				"src/lib/format-playground-code.ts!",
+				"src/tw.runtime.ts!",
 				"vite.config.ts",
-				"e2e/**/*.ts"
+				"e2e/**/*.ts",
+				"src/ui-theme.ts!"
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"]
 		},
 		"examples/*": {
-			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"],
+			"entry": ["src/{main,index,App}.{ts,tsx}!", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
 		"examples/css-example": {
 			"entry": [
-				"src/{main,index,App}.{ts,tsx}",
-				"src/hydration.tsx",
+				"src/{main,index,App}.{ts,tsx}!",
+				"src/hydration.tsx!",
 				"vite.config.ts",
 				"test/**/*.{ts,tsx,mjs}"
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
 		"examples/opentui-example": {
-			"entry": ["src/index.tsx", "src/app.tsx", "test/**/*.{ts,tsx,mjs}"],
+			"entry": ["src/index.tsx!", "src/app.tsx!", "test/**/*.{ts,tsx,mjs}"],
 			"project": ["src/**/*.{ts,tsx}", "test/**/*.{ts,tsx,mjs}"]
 		},
 		"examples/showcase": {
 			"entry": [
-				"src/web/App.tsx",
-				"src/native/App.tsx",
-				"src/tui/main.tsx",
-				"src/tui/app.tsx",
+				"src/web/App.tsx!",
+				"src/native/App.tsx!",
+				"src/tui/main.tsx!",
+				"src/tui/app.tsx!",
 				"vite.config.ts",
 				"test/**/*.{ts,tsx,mjs}"
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
 		"examples/pandwind-example-preset": {
-			"entry": ["src/index.ts"],
+			"entry": ["src/index.ts!"],
 			"project": ["src/**/*.ts"]
 		},
 		"benchmarks/styling-tsc": {
-			"entry": ["runner/benchmark.mts"],
+			"entry": ["runner/benchmark.mts!"],
 			"project": ["runner/**/*.mts"],
 			"ignoreDependencies": [
 				"@compiled/react",
@@ -125,7 +205,6 @@
 				"@emotion/react",
 				"@emotion/styled",
 				"@griffel/react",
-
 				"@linaria/core",
 				"@linaria/react",
 				"@pandacss/dev",
@@ -153,7 +232,7 @@
 			]
 		},
 		"benchmarks/styling-size": {
-			"entry": ["runner/benchmark.mts"],
+			"entry": ["runner/benchmark.mts!"],
 			"project": ["runner/**/*.mts"],
 			"ignoreDependencies": [
 				"@emotion/css",
@@ -168,8 +247,12 @@
 			]
 		},
 		"docs": {
-			"entry": ["astro.config.mjs", "src/content.config.ts"],
+			"entry": ["astro.config.mjs", "src/content.config.ts!"],
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
+		},
+		"apps/inspector": {
+			"entry": ["src/main.tsx!", "vite.config.ts!"],
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
 		}
 	},
 	"ignoreDependencies": [
