@@ -18,7 +18,7 @@
  * at workspace TypeScript and is not part of the published tarball; the
  * default import/types conditions must resolve to built `dist` artifacts.
  */
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import {
 	mkdirSync,
 	mkdtempSync,
@@ -65,7 +65,7 @@ async function main() {
 
 	try {
 		// 1-2. pack + extract (npm tarballs wrap in `package/` — strip it)
-		const packOut = execSync(`pnpm pack --json --pack-destination ${workdir}`, {
+		const packOut = execFileSync("pnpm", ["pack", "--json", "--pack-destination", workdir], {
 			cwd: pkgDir,
 			encoding: "utf8",
 		});
@@ -74,7 +74,7 @@ async function main() {
 		if (entry?.filename === undefined) throw new Error("pnpm pack produced no tarball");
 		const tarballPath = resolve(entry.filename);
 		mkdirSync(extracted, { recursive: true });
-		execSync(`tar -xzf ${tarballPath} --strip-components 1 -C ${extracted}`);
+		execFileSync("tar", ["-xzf", tarballPath, "--strip-components", "1", "-C", extracted]);
 
 		const shipped = JSON.parse(readFileSync(join(extracted, "package.json"), "utf8"));
 		// Resolve optional peer imports (for example React Native's React host)
