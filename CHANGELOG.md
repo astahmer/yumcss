@@ -4,6 +4,22 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-10-05 audit fixes
+
+### Runtime correctness
+
+- Keep shared stylesheet tokens intact when tokenless presets attach, isolate
+  default browser sheets by preset, and make object-backend cache hits collision
+  safe. Reject unsupported OpenTUI border-radius styles instead of emitting
+  props the installed runtime cannot render. Source revisions: `251a2b51`,
+  `616bc894`.
+
+### Analyzer tooling
+
+- Bundle the example preset into `pandwind-analyze`, exercise the packed
+  analyzer in a clean consumer install, and refresh the installed migration
+  proof for all nine target routes. Source revisions: `1e79b296`, `8bffdc38`.
+
 ## Unreleased — 2026-09-15 static JSX style carriers
 
 ### API / codemod
