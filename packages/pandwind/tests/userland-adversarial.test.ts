@@ -245,11 +245,14 @@ describe("userland adversarial contracts", () => {
 		const css = createUnsafeCss();
 		const colorClass = css.class({ color: "red" });
 		const paddingClass = css.class({ padding: 4 });
-		const nested: unknown[] = [colorClass, [paddingClass]];
+		const shared: unknown[] = [colorClass];
+		const nested: unknown[] = [shared, [paddingClass], shared];
 		nested.push(nested);
 
 		expect(() => css.props(nested as never)).not.toThrow();
-		expect(css.props(nested as never).className).toBe(`${colorClass} ${paddingClass}`);
+		expect(css.props(nested as never).className).toBe(
+			`${colorClass} ${paddingClass} ${colorClass}`,
+		);
 	});
 
 	test("cx rejects NUL-bearing class strings", () => {

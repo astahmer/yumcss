@@ -98,6 +98,8 @@ export type CxInput =
 	| null
 	| undefined;
 
+type CxInputFrame = { readonly input: CxInput } | { readonly leave: readonly CxInput[] };
+
 /** Re-exported for consumers threading vars outputs through custom helpers. */
 export type { VarsOutput, VarAtom };
 
@@ -814,15 +816,21 @@ export function createCx(options: CxOptions = {}): CxFn {
 			pushScalar(input as Exclude<CxInput, readonly CxInput[]>);
 			return;
 		}
-		const stack: CxInput[] = [input];
+		const stack: CxInputFrame[] = [{ input }];
 		const active = new WeakSet<object>();
 		while (stack.length > 0) {
-			const nested = stack.pop();
+			const frame = stack.pop()!;
+			if ("leave" in frame) {
+				active.delete(frame.leave);
+				continue;
+			}
+			const nested = frame.input;
 			if (Array.isArray(nested)) {
 				if (active.has(nested)) continue;
 				active.add(nested);
+				stack.push({ leave: nested });
 				for (let index = nested.length - 1; index >= 0; index--) {
-					stack.push(nested[index]!);
+					stack.push({ input: nested[index]! });
 				}
 				continue;
 			}

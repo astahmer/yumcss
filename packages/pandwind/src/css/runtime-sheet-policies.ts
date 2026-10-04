@@ -42,7 +42,7 @@ export class RuntimeRuleStore {
 				previous.priority === rule.priority
 			)
 				continue;
-			this.values.set(rule.id, rule);
+			this.values.set(rule.id, Object.freeze({ ...rule }));
 			changed = true;
 		}
 		return changed;
@@ -50,6 +50,6 @@ export class RuntimeRuleStore {
 
 	replace(next: readonly RuntimeRule[]): void {
 		this.values.clear();
-		for (const rule of next) this.values.set(rule.id, rule);
+		for (const rule of next) this.values.set(rule.id, Object.freeze({ ...rule }));
 	}
 }

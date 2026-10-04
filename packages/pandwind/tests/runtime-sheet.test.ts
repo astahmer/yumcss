@@ -87,6 +87,21 @@ test("lazy sheets defer serialization until they are read or mounted", () => {
 	expect(orderCalls).toBe(1);
 });
 
+test("runtime sheets snapshot caller-owned rules before ordering and serialization", () => {
+	const sheet = createRuntimeSheet({ autoMount: false });
+	sheet.register([{ id: "first", css: ".first{color:red}", priority: 1 }]);
+	sheet.css();
+	const nextRule = { id: "next", css: ".next{color:blue}", priority: 2 };
+	sheet.register([nextRule]);
+	nextRule.css = ".next{color:green}";
+
+	expect(sheet.css()).toContain(".next{color:blue}");
+	const storedRule = sheet.snapshot().rules.find((rule) => rule.id === "next");
+	if (storedRule === undefined) throw new Error("registered rule missing from runtime sheet");
+	expect(Reflect.set(storedRule, "css", ".next{color:green}")).toBe(false);
+	expect(sheet.css()).toContain(".next{color:blue}");
+});
+
 test("priority sheets insert new rules without changing deterministic order", () => {
 	const sheet = createRuntimeSheet({ autoMount: false });
 
@@ -319,16 +334,54 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(updates).toBe(firstUpdateCount);
 	});
 
-	test("shares the default sheet across module-scoped runtime CSS instances", () => {
+	test("isolates default runtime sheets across server renders", () => {
 		const first = createRuntimeCss(examplePreset);
 		const second = createRuntimeCss(examplePreset);
 
 		first.class({ color: "$blue-500" });
 		second.class({ padding: 4 });
 
-		expect(first.sheet).toBe(second.sheet);
+		expect(first.sheet).not.toBe(second.sheet);
 		expect(first.sheet.css()).toContain("color:#3182ce");
-		expect(first.sheet.css()).toContain("padding:4px");
+		expect(first.sheet.css()).not.toContain("padding:4px");
+		expect(second.sheet.css()).toContain("padding:4px");
+	});
+
+	test("shares default runtime sheets across browser module instances", () => {
+		const sharedSheetsKey = Symbol.for("pandwind.runtime.default-sheet");
+		const browserGlobal = globalThis as typeof globalThis & {
+			[sharedSheetsKey]?: unknown;
+		};
+		const documentDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
+		const existingSheets = browserGlobal[sharedSheetsKey];
+		const document = {
+			querySelector: () => null,
+			createElement: () => ({
+				tagName: "STYLE",
+				textContent: "",
+				setAttribute: () => undefined,
+				remove: () => undefined,
+			}),
+			head: { appendChild: () => undefined },
+		};
+		Object.defineProperty(globalThis, "document", { configurable: true, value: document });
+		Reflect.deleteProperty(globalThis, sharedSheetsKey);
+		try {
+			const first = createRuntimeCss(examplePreset);
+			const second = createRuntimeCss(examplePreset);
+			first.class({ color: "$blue-500" });
+			second.class({ padding: 4 });
+
+			expect(first.sheet).toBe(second.sheet);
+			expect(first.sheet.css()).toContain("color:#3182ce");
+			expect(first.sheet.css()).toContain("padding:4px");
+		} finally {
+			if (documentDescriptor !== undefined)
+				Object.defineProperty(globalThis, "document", documentDescriptor);
+			else Reflect.deleteProperty(globalThis, "document");
+			if (existingSheets === undefined) Reflect.deleteProperty(globalThis, sharedSheetsKey);
+			else browserGlobal[sharedSheetsKey] = existingSheets;
+		}
 	});
 
 	test("adds var-inline rules to the same runtime sheet", () => {
@@ -442,7 +495,10 @@ describe("runtime CSS-in-JS sheet", () => {
 			remove: () => void;
 		}> = [];
 		const document = {
-			querySelector: () => styles[0] ?? null,
+			querySelector: (selector: string) => {
+				const id = selector.match(/data-pandwind-sheet="([^"]+)"/)?.[1];
+				return styles.find((style) => style.attributes.get("data-pandwind-sheet") === id) ?? null;
+			},
 			createElement: () => {
 				const style = {
 					tagName: "STYLE",
@@ -465,6 +521,19 @@ describe("runtime CSS-in-JS sheet", () => {
 
 		sheet.register([{ id: "b", css: ".b{color:blue}", priority: 2 }]);
 		expect(styles[0]?.textContent).toBe(".a{color:red}\n.b{color:blue}");
+
+		const secondSheet = createRuntimeSheet({ autoMount: false, document });
+		secondSheet.register([{ id: "separate", css: ".separate{color:green}", priority: 1 }]);
+		expect(secondSheet.mount()).toBe(true);
+		expect(styles).toHaveLength(2);
+		expect(styles[0]?.textContent).toBe(".a{color:red}\n.b{color:blue}");
+		expect(styles[1]?.textContent).toBe(".separate{color:green}");
+		expect(styles[0]?.attributes.get("data-pandwind-sheet")).toBe("pandwind");
+		expect(styles[1]?.attributes.get("data-pandwind-sheet")).toBe("pandwind-2");
+
+		sheet.unmount();
+		expect(styles).toHaveLength(1);
+		expect(styles[0]?.textContent).toBe(".separate{color:green}");
 	});
 
 	test("registers semantic rules with stable IDs and preserves rich CSS order", () => {

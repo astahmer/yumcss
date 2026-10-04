@@ -1,6 +1,7 @@
 /** Shared conversion mechanics; target adapters retain all target semantics. */
 const ROOT_FONT_SIZE = 16;
-export const CSS_LENGTH = /^(-?\d+(?:\.\d+)?)(px|rem)?$/;
+export const CSS_LENGTH = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))(px|rem)?$/;
+export const CSS_NUMERIC_WITH_UNIT = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))([a-z]+|%)$/i;
 
 export type ShorthandSlot = readonly [suffix: string, valueIndex: number];
 
@@ -54,9 +55,63 @@ export function parseCssLength(value: string): number | undefined {
 	return match[2] === "rem" ? amount * ROOT_FONT_SIZE : amount;
 }
 
-export function splitCssValue(value: string): string[] {
-	return value.trim().split(/\s+/).filter(Boolean);
-}
+export const splitCssValue = (value: string): string[] => {
+	const parts: string[] = [];
+	let partStart: number | undefined;
+	let parentheses = 0;
+	let brackets = 0;
+	let quote: string | undefined;
+	let escaped = false;
+
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index]!;
+		if (quote !== undefined) {
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+			if (character === "\\") {
+				escaped = true;
+				continue;
+			}
+			if (character === quote) quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			partStart ??= index;
+			quote = character;
+			continue;
+		}
+		if (character === "(") {
+			partStart ??= index;
+			parentheses++;
+			continue;
+		}
+		if (character === ")") {
+			parentheses = Math.max(0, parentheses - 1);
+			continue;
+		}
+		if (character === "[") {
+			partStart ??= index;
+			brackets++;
+			continue;
+		}
+		if (character === "]") {
+			brackets = Math.max(0, brackets - 1);
+			continue;
+		}
+		if (/\s/.test(character) && parentheses === 0 && brackets === 0) {
+			if (partStart !== undefined) {
+				parts.push(value.slice(partStart, index));
+				partStart = undefined;
+			}
+			continue;
+		}
+		partStart ??= index;
+	}
+	if (partStart !== undefined) parts.push(value.slice(partStart));
+	return parts;
+};
 
 export function expandShorthand(
 	parts: readonly string[],

@@ -21,7 +21,14 @@ describe("rn value/unit policy", () => {
 		const backend = createRnBackend();
 		expect(backend.declare("width", "20px")).toEqual({ width: 20 });
 		expect(backend.declare("width", "0.5rem")).toEqual({ width: 8 });
+		expect(backend.declare("width", ".5rem")).toEqual({ width: 8 });
 		expect(backend.declare("top", "-4px")).toEqual({ top: -4 });
+	});
+
+	test("rejects CSS units React Native cannot represent", () => {
+		const backend = createRnBackend();
+		expect(() => backend.declare("width", "1em")).toThrow(/does not support the length unit/);
+		expect(() => backend.declare("color", "1rem")).toThrow(/not representable/);
 	});
 
 	test("non-numeric values pass through as strings", () => {
@@ -93,7 +100,7 @@ describe("rn shorthand expansion", () => {
 	test("lists outside the CSS grammar refuse loudly", () => {
 		const backend = createRnBackend();
 		expect(() => backend.declare("color", "red blue")).toThrow(/not representable/);
-		expect(() => backend.declare("opacity", "1px 2px")).toThrow(/shorthand list/);
+		expect(() => backend.declare("opacity", "1px 2px")).toThrow(/not representable/);
 	});
 });
 

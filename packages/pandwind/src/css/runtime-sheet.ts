@@ -241,12 +241,16 @@ export function createRuntimeSheet(
 				return true;
 			});
 		if (store.register(validRules)) {
+			const storedRules = validRules.flatMap((rule) => {
+				const stored = store.rules.get(rule.id);
+				return stored === undefined ? [] : [stored];
+			});
 			if (canInsert) {
 				const previousCount = ordered.length;
 				generation++;
-				ordered = ordering.insert!(ordered, validRules);
+				ordered = ordering.insert!(ordered, storedRules);
 				orderedGeneration = generation;
-				refresh({ rules: validRules, previousCount });
+				refresh({ rules: storedRules, previousCount });
 			} else {
 				invalidate();
 				refresh();

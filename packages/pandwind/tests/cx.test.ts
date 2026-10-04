@@ -130,6 +130,11 @@ describe("fallbacks", () => {
 		);
 	});
 
+	test("repeated nested arrays are flattened each time they appear", () => {
+		const shared: string[] = ["bg-red-500"];
+		expect(cx([shared, "bg-blue-500", shared])).toBe("bg-red-500");
+	});
+
 	test("cx without conflicts keeps strings in order", () => {
 		const plain = createCx({ css });
 		const atom = css.class({ color: "red" });

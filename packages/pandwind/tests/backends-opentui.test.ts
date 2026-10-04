@@ -36,6 +36,7 @@ describe("opentui unit policy", () => {
 	test("rem resolves through the 16px root font size first", () => {
 		const backend = createOpentuiBackend();
 		expect(backend.declare("width", "0.5rem")).toEqual({ width: 2 });
+		expect(backend.declare("width", ".5rem")).toEqual({ width: 2 });
 	});
 
 	test("negative lengths stay negative after rounding", () => {
@@ -53,6 +54,13 @@ describe("opentui unit policy", () => {
 		expect(backend.declare("width", "50%")).toEqual({ width: "50%" });
 		expect(backend.declare("flexDirection", "column")).toEqual({ flexDirection: "column" });
 	});
+
+	test("unit conversion follows the target property contract", () => {
+		const backend = createOpentuiBackend();
+		expect(backend.declare("opacity", "0.5")).toEqual({ opacity: 0.5 });
+		expect(() => backend.declare("opacity", "0.5rem")).toThrow(/unitless numeric/);
+		expect(() => backend.declare("width", "1em")).toThrow(/does not support the length unit/);
+	});
 });
 
 describe("opentui border model", () => {
@@ -67,6 +75,16 @@ describe("opentui border model", () => {
 	test("a shorthand without a color emits only the border flag", () => {
 		const backend = createOpentuiBackend();
 		expect(backend.declare("border", "solid")).toEqual({ border: true });
+	});
+
+	test("disabled CSS borders stay disabled and functional colors stay intact", () => {
+		const backend = createOpentuiBackend();
+		for (const value of ["none", "hidden", "0", "0 solid red"])
+			expect(backend.declare("border", value)).toEqual({ border: false });
+		expect(backend.declare("border", "1px solid rgb(255, 0, 0)")).toEqual({
+			border: true,
+			borderColor: "rgb(255, 0, 0)",
+		});
 	});
 });
 

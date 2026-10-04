@@ -8,6 +8,8 @@ import {
 	StyleBackendId,
 	type StyleBackendFactory,
 } from "../src/backends/index.ts";
+import { createOpentuiBackend } from "../src/backends/opentui.ts";
+import { createRnBackend } from "../src/backends/react-native.ts";
 
 const backendOptions = (id: string) => (id === StyleBackendId.Object ? { name: id } : undefined);
 
@@ -45,6 +47,20 @@ describe("style backend contract matrix", () => {
 			const backend = factory.create(backendOptions(factory.id));
 			expect(backend.declare("color", "red")).toBeDefined();
 		}
+	});
+
+	test("pins representative values and unsupported diagnostics", () => {
+		const reactNative = createRnBackend();
+		const openTui = createOpentuiBackend();
+
+		expect(reactNative.declare("width", ".5rem")).toEqual({ width: 8 });
+		expect(openTui.declare("opacity", "0.5")).toEqual({ opacity: 0.5 });
+		expect(openTui.diagnose?.("boxShadow", "1px")).toMatchObject([
+			{ property: "boxShadow", lossiness: "unsupported" },
+		]);
+		expect(() => openTui.declare("boxShadow", "1px")).toThrow(
+			/"boxShadow" has no OpenTUI representation/,
+		);
 	});
 
 	test("third-party backends can register without changing the built-in root", () => {

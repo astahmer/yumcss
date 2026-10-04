@@ -18,6 +18,8 @@ type PropsInput =
 	| null
 	| undefined;
 
+type PropsInputFrame = { readonly input: PropsInput } | { readonly leave: readonly PropsInput[] };
+
 interface PropsReturn {
 	style: CssStyle | undefined;
 	className: string | undefined;
@@ -51,8 +53,8 @@ export const attachProps: RuntimeCssAttachment = (css) => {
 		let copiedCompiled = false;
 		let styles: Array<CssStyle> | undefined;
 		let classNames: string[] | undefined;
-		let stack: PropsInput[] | undefined;
-		let active: WeakSet<object> | undefined;
+		const stack: PropsInputFrame[] = [];
+		const active = new WeakSet<object>();
 		const appendCompiled = (value: CompiledStyles): void => {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) return;
 			if (compiled === undefined) {
@@ -102,21 +104,21 @@ export const attachProps: RuntimeCssAttachment = (css) => {
 				append(prop);
 				continue;
 			}
-			active ??= new WeakSet<object>();
-			if (active.has(prop)) continue;
-			active.add(prop);
-			stack ??= [];
-			for (let index = prop.length - 1; index >= 0; index--) {
-				stack.push(prop[index]!);
-			}
+			stack.push({ input: prop });
 			while (stack.length > 0) {
-				const current = stack.pop();
+				const frame = stack.pop()!;
+				if ("leave" in frame) {
+					active.delete(frame.leave);
+					continue;
+				}
+				const current = frame.input;
 				if (!current) continue;
 				if (Array.isArray(current)) {
 					if (active.has(current)) continue;
 					active.add(current);
+					stack.push({ leave: current });
 					for (let index = current.length - 1; index >= 0; index--) {
-						stack.push(current[index]!);
+						stack.push({ input: current[index]! });
 					}
 					continue;
 				}

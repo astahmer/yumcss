@@ -14,6 +14,25 @@ type RuntimeElementWithSheet = RuntimeStyleElement & {
 	readonly sheet?: StyleSheetWithRules | null;
 };
 
+const mountedSheetIdsKey = Symbol.for("pandwind.runtime.mounted-sheet-ids");
+
+type RuntimeGlobal = typeof globalThis & {
+	[mountedSheetIdsKey]?: WeakMap<RuntimeDocument, Set<string>>;
+};
+
+const mountedIdsFor = (document: RuntimeDocument): Set<string> => {
+	const globalObject = globalThis as RuntimeGlobal;
+	const idsByDocument =
+		globalObject[mountedSheetIdsKey] ?? new WeakMap<RuntimeDocument, Set<string>>();
+	globalObject[mountedSheetIdsKey] = idsByDocument;
+	let mountedIds = idsByDocument.get(document);
+	if (mountedIds === undefined) {
+		mountedIds = new Set();
+		idsByDocument.set(document, mountedIds);
+	}
+	return mountedIds;
+};
+
 const escapeAttributeSelector = (value: string): string =>
 	// oxlint-disable-next-line no-control-regex -- CSS selectors require control characters to be escaped.
 	value.replace(/[\u0000-\u001f\u007f"\\]/g, (character) => {
@@ -26,6 +45,8 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 	private readonly options: RuntimeSheetOptions;
 	private ruleOffset: number | undefined;
 	private ruleCount = 0;
+	private mountedId: string | undefined;
+	private mountedDocument: RuntimeDocument | undefined;
 
 	constructor(options: RuntimeSheetOptions) {
 		this.options = options;
@@ -45,17 +66,29 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 		}
 		const document = this.document();
 		if (document === undefined) return false;
-		const id = this.options.id ?? "pandwind";
-		const existing = document.querySelector(
-			`style[data-pandwind-sheet="${escapeAttributeSelector(id)}"]`,
-		);
+		const requestedId = this.options.id ?? "pandwind";
+		const mountedIds = mountedIdsFor(document);
+		const requestedSelector = (id: string) =>
+			`style[data-pandwind-sheet="${escapeAttributeSelector(id)}"]`;
+		const existing = mountedIds.has(requestedId)
+			? null
+			: document.querySelector(requestedSelector(requestedId));
+		let id = requestedId;
 		if (existing?.tagName === "STYLE") this.element = existing;
 		else {
+			let suffix = 2;
+			while (mountedIds.has(id) || document.querySelector(requestedSelector(id)) !== null) {
+				id = `${requestedId}-${suffix}`;
+				suffix++;
+			}
 			this.element = document.createElement("style");
 			this.element.setAttribute("data-pandwind-sheet", id);
 			if (this.options.nonce !== undefined) this.element.nonce = this.options.nonce;
 			document.head.appendChild(this.element);
 		}
+		mountedIds.add(id);
+		this.mountedId = id;
+		this.mountedDocument = document;
 		this.element.textContent = css;
 		this.ruleOffset = undefined;
 		this.ruleCount = 0;
@@ -93,7 +126,11 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 	}
 	unmount(): void {
 		this.element?.remove();
+		if (this.mountedDocument !== undefined && this.mountedId !== undefined)
+			mountedIdsFor(this.mountedDocument).delete(this.mountedId);
 		this.element = undefined;
+		this.mountedId = undefined;
+		this.mountedDocument = undefined;
 		this.ruleOffset = undefined;
 		this.ruleCount = 0;
 	}

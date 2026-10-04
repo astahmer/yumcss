@@ -1,6 +1,7 @@
 import {
 	CORNER_EXPANSION,
 	CSS_LENGTH,
+	CSS_NUMERIC_WITH_UNIT,
 	expandShorthand,
 	parseCssLength,
 	SIDE_EXPANSION,
@@ -12,6 +13,44 @@ import { StyleBackendId } from "./types.ts";
 import { STYLE_BACKEND_SCHEMA, type BackendCapabilityContract } from "./types.ts";
 
 const KEEP_STRING = new Set(["fontWeight", "fontFamily", "fontVariant"]);
+const LENGTH_PROPERTIES = new Set([
+	"width",
+	"height",
+	"minWidth",
+	"minHeight",
+	"maxWidth",
+	"maxHeight",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"margin",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"padding",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"borderWidth",
+	"borderTopWidth",
+	"borderRightWidth",
+	"borderBottomWidth",
+	"borderLeftWidth",
+	"borderRadius",
+	"borderTopLeftRadius",
+	"borderTopRightRadius",
+	"borderBottomRightRadius",
+	"borderBottomLeftRadius",
+	"gap",
+	"rowGap",
+	"columnGap",
+	"fontSize",
+	"lineHeight",
+	"letterSpacing",
+]);
 const UNSUPPORTED = new Set([
 	"backdropFilter",
 	"filter",
@@ -61,6 +100,18 @@ const convert = (prop: string, value: string): Record<string, unknown> => {
 	if (KEEP_STRING.has(prop)) return { [prop]: value };
 
 	const parts = splitCssValue(value);
+	const unsupportedUnit = parts.find((part) => {
+		const unit = CSS_NUMERIC_WITH_UNIT.exec(part)?.[2]?.toLowerCase();
+		return unit !== undefined && unit !== "px" && unit !== "rem" && unit !== "%";
+	});
+	if (LENGTH_PROPERTIES.has(prop) && unsupportedUnit !== undefined)
+		throw new Error(
+			`pandwind/react-native: property "${prop}" does not support the length unit in "${unsupportedUnit}"`,
+		);
+	if (!LENGTH_PROPERTIES.has(prop) && parts.some((part) => CSS_NUMERIC_WITH_UNIT.test(part)))
+		throw new Error(
+			`pandwind/react-native: property "${prop}" value "${value}" is not representable`,
+		);
 	const allLengths = parts.every((part) => CSS_LENGTH.test(part));
 	if (parts.length === 1) return { [prop]: allLengths ? toNumber(parts[0]!) : value };
 	if (!allLengths)
@@ -101,6 +152,8 @@ export function createRnBackend(options: RnBackendOptions = {}): ObjectBackend {
 		...options,
 		name: options.name ?? "react-native",
 		capabilities: REACT_NATIVE_BACKEND_CAPABILITIES,
+		unsupportedProperties: UNSUPPORTED,
+		unsupportedPropertyLabel: "React Native",
 		convert,
 	});
 }

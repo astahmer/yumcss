@@ -111,10 +111,8 @@ interface RuntimeBinding {
 	registerVars: (css: CssFn<StyleObject>) => void;
 }
 
-// Module-scoped style declarations are common in codemod output. Reusing the
-// default sheet keeps those declarations in one artifact instead of allowing
-// each module to overwrite the same `data-pandwind-sheet` element. The global
-// symbol also joins duplicate runtime copies emitted by split bundles.
+// Browser module-scoped declarations share one artifact across split bundles.
+// Server instances stay request-local so one render cannot inherit another's rules.
 const sharedSheetsKey = Symbol.for("pandwind.runtime.default-sheet");
 type RuntimeGlobal = typeof globalThis & {
 	[sharedSheetsKey]?: WeakMap<object, RuntimeSheet>;
@@ -135,6 +133,7 @@ function runtimeSheetFor(preset: CssConfigReturn, options: RuntimeCssOptions): R
 		options.tokenVariableNames !== undefined
 	)
 		return createRuntimeSheet({ cascade: options.cascade });
+	if ((globalThis as { document?: unknown }).document === undefined) return createRuntimeSheet();
 	const globalObject = globalThis as RuntimeGlobal;
 	const sheets = globalObject[sharedSheetsKey] ?? new WeakMap<object, RuntimeSheet>();
 	globalObject[sharedSheetsKey] = sheets;

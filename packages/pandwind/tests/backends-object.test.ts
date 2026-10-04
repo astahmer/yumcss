@@ -81,6 +81,22 @@ describe("object backend", () => {
 		expect(backend.resolve({ color: "blue" })).not.toBe(first);
 	});
 
+	test("registered results distinguish value types and cannot be mutated", () => {
+		const backend = createObjectBackend({
+			name: "typed-values",
+			convert: (property) => ({ value: property === "numeric" ? 1 : "1" }),
+		});
+		const numeric = backend.resolve({ numeric: "value" });
+		const text = backend.resolve({ text: "value" });
+
+		expect(numeric.value).toBe(1);
+		expect(text.value).toBe("1");
+		expect(text).not.toBe(numeric);
+		expect(Reflect.set(numeric, "value", 999)).toBe(false);
+		expect(backend.resolve({ numeric: "value" })).toBe(numeric);
+		expect(numeric.value).toBe(1);
+	});
+
 	test("object targets ignore unsupported primitive declarations", () => {
 		const backend = createObjectBackend({ name: "test" });
 

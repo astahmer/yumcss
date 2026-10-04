@@ -1,6 +1,7 @@
 import {
 	CORNER_EXPANSION,
 	CSS_LENGTH,
+	CSS_NUMERIC_WITH_UNIT,
 	expandShorthand,
 	parseCssLength,
 	SIDE_EXPANSION,
@@ -23,6 +24,87 @@ const BORDER_STYLES = new Set([
 	"inset",
 	"outset",
 ]);
+const CELL_PROPERTIES = new Set([
+	"width",
+	"height",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"minWidth",
+	"minHeight",
+	"maxWidth",
+	"maxHeight",
+	"flexBasis",
+	"margin",
+	"marginX",
+	"marginY",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"padding",
+	"paddingX",
+	"paddingY",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"gap",
+	"rowGap",
+	"columnGap",
+	"borderRadius",
+]);
+const PERCENT_PROPERTIES = new Set([
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"minWidth",
+	"minHeight",
+	"maxWidth",
+	"maxHeight",
+	"width",
+	"height",
+	"margin",
+	"marginX",
+	"marginY",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"padding",
+	"paddingX",
+	"paddingY",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"gap",
+	"rowGap",
+	"columnGap",
+]);
+const AUTO_PROPERTIES = new Set([
+	"width",
+	"height",
+	"minWidth",
+	"minHeight",
+	"maxWidth",
+	"maxHeight",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"flexBasis",
+	"margin",
+	"marginX",
+	"marginY",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+]);
+const NUMERIC_PROPERTIES = new Set(["flexGrow", "flexShrink", "opacity", "zIndex"]);
 const KEEP_STRING = new Set(["fontWeight"]);
 const UNSUPPORTED = new Set([
 	"backdropFilter",
@@ -43,6 +125,11 @@ const UNSUPPORTED = new Set([
 	"gridTemplateRows",
 	"gridColumn",
 	"gridRow",
+	"borderWidth",
+	"borderTopWidth",
+	"borderRightWidth",
+	"borderBottomWidth",
+	"borderLeftWidth",
 	"fontFamily",
 	"fontSize",
 	"lineHeight",
@@ -67,8 +154,14 @@ const OPENTUI_BACKEND_CAPABILITIES: BackendCapabilityContract = {
 };
 
 const toBorder = (value: string): Record<string, unknown> => {
+	const parts = splitCssValue(value);
+	if (
+		parts.some((part) => ["none", "hidden"].includes(part.toLowerCase())) ||
+		parts.some((part) => parseCssLength(part) === 0)
+	)
+		return { border: false };
 	const out: Record<string, unknown> = { border: true };
-	const candidates = splitCssValue(value).filter(
+	const candidates = parts.filter(
 		(part) => !CSS_LENGTH.test(part) && !BORDER_STYLES.has(part.toLowerCase()),
 	);
 	const color = candidates[candidates.length - 1];
@@ -93,22 +186,59 @@ const makeConvert =
 		if (KEEP_STRING.has(prop)) return { [prop]: value };
 
 		const parts = splitCssValue(value);
-		const allLengths = parts.every((part) => CSS_LENGTH.test(part));
-		if (prop === "borderRadius" || prop === "padding" || prop === "margin") {
-			if (!allLengths) return { [prop]: value };
-			const toCells = makeToCells(cellSize);
-			if (parts.length === 1) return { [prop]: toCells(parts[0]!) };
-			const table = prop === "borderRadius" ? CORNER_EXPANSION : SIDE_EXPANSION;
-			const property =
-				prop === "borderRadius"
-					? (suffix: string) => `border${suffix}Radius`
-					: (suffix: string) => `${prop}${suffix}`;
-			return expandShorthand(parts, table, toCells, property) ?? { [prop]: value };
+		const unsupportedUnit = parts.find((part) => {
+			const unit = CSS_NUMERIC_WITH_UNIT.exec(part)?.[2]?.toLowerCase();
+			return unit !== undefined && unit !== "px" && unit !== "rem" && unit !== "%";
+		});
+		if (CELL_PROPERTIES.has(prop) && unsupportedUnit !== undefined)
+			throw new Error(
+				`pandwind/opentui: property "${prop}" does not support the length unit in "${unsupportedUnit}"`,
+			);
+		if (NUMERIC_PROPERTIES.has(prop)) {
+			const match = parts.length === 1 ? CSS_LENGTH.exec(parts[0]!) : null;
+			if (match !== null && match[2] === undefined) return { [prop]: Number(match[1]) };
+			throw new Error(
+				`pandwind/opentui: property "${prop}" value "${value}" must be unitless numeric`,
+			);
 		}
+		if (CELL_PROPERTIES.has(prop)) {
+			const isPercentage = (part: string) =>
+				PERCENT_PROPERTIES.has(prop) && CSS_NUMERIC_WITH_UNIT.exec(part)?.[2] === "%";
+			const convertLength = (part: string) =>
+				CSS_LENGTH.test(part) ? makeToCells(cellSize)(part) : part;
+			if (parts.length === 1 && CSS_LENGTH.test(parts[0]!))
+				return { [prop]: makeToCells(cellSize)(parts[0]!) };
+			if (parts.length === 1 && isPercentage(parts[0]!)) return { [prop]: value };
+			if (parts.length === 1 && value === "auto" && AUTO_PROPERTIES.has(prop))
+				return { [prop]: value };
+			if (prop === "borderRadius" && parts.every((part) => CSS_LENGTH.test(part))) {
+				const expanded = expandShorthand(
+					parts,
+					CORNER_EXPANSION,
+					(part) => makeToCells(cellSize)(part),
+					(suffix) => `border${suffix}Radius`,
+				);
+				if (expanded !== undefined) return expanded;
+			}
+			if (prop === "padding" || prop === "margin") {
+				const allConvertible = parts.every((part) => CSS_LENGTH.test(part) || isPercentage(part));
+				if (allConvertible) {
+					const expanded = expandShorthand(
+						parts,
+						SIDE_EXPANSION,
+						convertLength,
+						(suffix) => `${prop}${suffix}`,
+					);
+					if (expanded !== undefined) return expanded;
+				}
+			}
+			throw new Error(`pandwind/opentui: property "${prop}" value "${value}" is not representable`);
+		}
+		if (parts.some((part) => CSS_NUMERIC_WITH_UNIT.test(part)))
+			throw new Error(`pandwind/opentui: property "${prop}" value "${value}" is not representable`);
 		if (parts.length > 1)
 			throw new Error(`pandwind/opentui: property "${prop}" value "${value}" is not representable`);
-		if (!allLengths) return { [prop]: value };
-		return { [prop]: makeToCells(cellSize)(parts[0]!) };
+		return { [prop]: value };
 	};
 
 export interface OpentuiBackendOptions extends Omit<
@@ -127,6 +257,8 @@ export function createOpentuiBackend(options: OpentuiBackendOptions = {}): Objec
 		...options,
 		name: options.name ?? "opentui",
 		capabilities: OPENTUI_BACKEND_CAPABILITIES,
+		unsupportedProperties: UNSUPPORTED,
+		unsupportedPropertyLabel: "OpenTUI",
 		convert: makeConvert(cellSize),
 	});
 }
