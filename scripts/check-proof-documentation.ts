@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const limitationsPath = resolve(
 	repositoryRoot,
-	"docs/src/content/docs/reference/current-limitations-and-criticism.md",
+	"docs/src/content/docs/contributing/limitations.md",
 );
 const realRepositoryReportPath = resolve(
 	repositoryRoot,

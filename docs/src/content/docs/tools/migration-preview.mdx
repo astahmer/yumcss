@@ -1,0 +1,73 @@
+---
+title: Migration & Compiler Preview
+description: Two read-only local web apps — one to try migrations on your real project, one to see exactly what YumCSS does to each file in your Vite build.
+sidebar:
+  label: Migration & Compiler Preview
+  order: 4
+---
+
+import Screenshot from "../../../components/Screenshot.astro";
+import migrationShot from "../../../assets/screenshots/migration-preview.png";
+import compilerShot from "../../../assets/screenshots/compiler-preview.png";
+
+Both tools ship with `@yumcss/analyze`, run on `127.0.0.1` behind a random
+access token, and **never write to your project**.
+
+```sh
+pnpm add -D @yumcss/analyze
+```
+
+## Migration Preview
+
+Try a migration on your real codebase before running the codemod. Open a
+project, pick a file, choose a source and target adapter, and see what the
+migration would produce.
+
+```sh
+pnpm exec yumcss-migration-preview . --no-open
+# YumCSS Migration Preview: http://127.0.0.1:53817/?token=…
+```
+
+<Screenshot
+	src={migrationShot}
+	alt="Migration Preview: workspace tree, an Emotion Card in the in-memory editor, css.class target output, and the canonical CSS panel."
+/>
+
+| Area                                  | What it does                                                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| **Workspace**                         | Your project's files and the style sites the scanner found                       |
+| **Source editor (memory only)**       | Edit a file to test a variation. _Apply edit_ re-scans; nothing is saved to disk |
+| **Migration result**                  | Source adapter (auto-detected) and target adapter, with the generated output     |
+| **Semantic program**                  | The intermediate representation shared by every adapter                          |
+| **Themes and tokens**                 | Tokens and theme scopes recovered from the source                                |
+| **Canonical CSS**                     | The normalized CSS of source and target, used to prove they're equivalent        |
+| **Artifacts and size**                | Generated support files and CSS size                                             |
+| **Execution evidence / host preview** | What ran, and how the result renders                                             |
+
+When the output looks right, run the same route with
+[`yumcss-codemod migrate`](/migrate/overview/).
+
+## Compiler Preview
+
+See what YumCSS (and every other plugin) does to your source, using **your
+own** Vite config. Pick a file on the left to see its source and the compiled
+module side by side.
+
+```sh
+pnpm exec yumcss-compiler-preview . --no-open
+pnpm exec yumcss-compiler-preview . --config vite.preview.config.ts
+```
+
+<Screenshot
+	src={compilerShot}
+	alt="Compiler Preview: a source file list on the left and a split diff of source versus Vite output on the right."
+/>
+
+- **Diff** or **Source + output** views, in unified or split layout.
+- The plugin chain that produced the output is listed under the diff
+  (`yumcss:extract-css`, `@tailwindcss/vite:scan`, …).
+- **Recompile** after editing, and **Open in VS Code** to jump to the file.
+
+Use it to check that a call was folded to a string, that a dynamic value
+went through `css.vars()`, or that a refactor didn't push a component back
+to the runtime path.

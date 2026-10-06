@@ -1,0 +1,130 @@
+---
+title: Migrating class strings
+description: Convert existing className="…" Tailwind strings to tw() objects with a codemod that previews, explains, and never drops a class.
+sidebar:
+  order: 4
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+`yumcss-codemod migrate` rewrites Tailwind `className` strings into `tw()`
+objects. Anything it can't convert safely (custom classes, utilities your
+theme doesn't define, ambiguous cases) **stays as a string** and is reported,
+so the rendered CSS doesn't change.
+
+## Before and after
+
+```tsx title="Before"
+export const Card = (props: { title: string }) => (
+	<article className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm hover:shadow-lg md:flex-row">
+		<h2 className="text-lg font-semibold text-slate-900">{props.title}</h2>
+		<p className="text-sm text-slate-600 legacy-copy">Typed utilities, same Tailwind output.</p>
+	</article>
+);
+```
+
+```tsx title="After: yumcss-codemod migrate --from=tailwind --to=tw"
+import { createCx } from "yumcss/cx";
+import { tw } from "./tw.ts";
+const cx = createCx();
+
+export const Card = (props: { title: string }) => (
+	<article
+		className={cx(
+			tw({
+				flex: true,
+				gap: "4",
+				rounded: "xl",
+				bgColor: "white",
+				p: "6",
+				shadow: "sm",
+				hover: { shadow: "lg" },
+			}),
+			"flex-col md:flex-row",
+		)}
+	>
+		<h2 className={tw({ textSize: "lg", font: "semibold", textColor: "slate-900" })}>
+			{props.title}
+		</h2>
+		<p className={cx(tw({ textSize: "sm", textColor: "slate-600" }), "legacy-copy")}>
+			Typed utilities, same Tailwind output.
+		</p>
+	</article>
+);
+```
+
+`legacy-copy` isn't a Tailwind utility, so it's kept as is. `flex-col md:flex-row`
+is kept as a string too, because folding it next to `flex` would be
+ambiguous. You can tidy residuals like these by hand later. The output is
+already correct.
+
+## Run it
+
+<Steps>
+
+1. **Generate `tw()` first** ([setup](/tailwind/tw/#setup)), so the codemod
+   knows your theme's vocabulary.
+
+2. **Preview** without touching files:
+
+   ```sh
+   pnpm exec yumcss-codemod migrate --from=tailwind --to=tw --meta=src --dry-run --diff "src/**/*.tsx"
+   ```
+
+   ```text
+   src/Card.tsx: would change — 3 converted, 0 skipped, 3 residual(s), tailwind->yumcss:tw
+   summary: 1 file(s) scanned · 1 changed · 3 converted · 0 skipped · 3 residual(s) · dry-run (no files written)
+   ```
+
+3. **Apply.** Without `--dry-run` the command writes files. Commit first, so
+   the change is easy to review:
+
+   ```sh
+   pnpm exec yumcss-codemod migrate --from=tailwind --to=tw --meta=src --no-install "src/**/*.tsx"
+   ```
+
+4. **Check.** Run `tsc` and your app, then use the [Migration Preview](/tools/migration-preview/)
+   or `--report=json` to go through the residuals.
+
+</Steps>
+
+## Useful flags
+
+| Flag                        | Effect                                                                                                                     |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`                 | Report and diff only, write nothing                                                                                        |
+| `--diff`                    | Print unified diffs                                                                                                        |
+| `--report`, `--report=json` | Per-file details: converted, skipped, residuals, and why                                                                   |
+| `--meta <dir>`              | Where your generated `tw.ts` / `types.d.ts` live. Without it, support files are generated into `--out` (default `yumcss/`) |
+| `--root <dir>`              | Project root, used to find your Tailwind setup                                                                             |
+| `--no-install`              | Don't install target dependencies after writing                                                                            |
+| `--safe` / `--partial`      | Require the target to support everything (`--safe`), or allow partial lowering with residuals (`--partial`)                |
+| `--skip-marker <text>`      | Comment marker that excludes a call (default `yumcss:migrate-skip`)                                                        |
+
+## How it stays safe
+
+- **It uses Tailwind itself.** The codemod loads your project's Tailwind
+  setup through Tailwind's official loader (`@tailwindcss/node`, installed
+  with `@tailwindcss/vite`), so custom theme values and plugins are
+  understood. If the loader can't be found from `--root`, nothing is
+  converted and the report says why.
+- **Unknown classes are kept.** Arbitrary values, negative utilities,
+  `!important` modifiers, and unsupported `data-*` variants stay as strings.
+- **Strings and comments are left alone**, and running the codemod twice
+  changes nothing the second time.
+- **Opt out per call** with a `// yumcss:migrate-skip <reason>` comment.
+
+## Going further: Tailwind → css()
+
+`--to=css.class` converts Tailwind classes into `css()` objects, and
+`--to=dss` into [design CSS](/design-system/design-css/).
+
+<Aside type="caution" title="Experimental">
+	Converting straight from utilities to CSS properties is still rough. It writes Tailwind's internal
+	variables (`--tw-shadow`) and uses `createUnsafeCss()` when values don't match a preset token. For
+	production code, move to `tw()` first, then rewrite components to `css()` one at a time with your
+	preset.
+</Aside>
+
+To migrate from another styling library (styled-components, Emotion, Panda,
+StyleX, …), see [migrating to YumCSS](/migrate/overview/).

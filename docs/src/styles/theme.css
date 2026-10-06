@@ -1,0 +1,271 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/bricolage-grotesque";
+
+:root {
+	--sl-font: "Inter Variable", system-ui, sans-serif;
+	--sl-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+	--yum-font-display: "Bricolage Grotesque Variable", var(--sl-font);
+
+	--sl-hue-accent: 22;
+	--sl-color-white: hsl(30, 33%, 98%);
+	--sl-color-gray-1: hsl(30, 18%, 90%);
+	--sl-color-gray-2: hsl(30, 9%, 76%);
+	--sl-color-gray-3: hsl(28, 6%, 58%);
+	--sl-color-gray-4: hsl(26, 6%, 38%);
+	--sl-color-gray-5: hsl(24, 8%, 22%);
+	--sl-color-gray-6: hsl(24, 10%, 13%);
+	--sl-color-black: hsl(24, 12%, 7%);
+
+	--sl-color-accent-low: hsl(var(--sl-hue-accent), 45%, 16%);
+	--sl-color-accent: hsl(var(--sl-hue-accent), 78%, 62%);
+	--sl-color-accent-high: hsl(var(--sl-hue-accent), 92%, 82%);
+
+	--sl-color-bg-nav: hsl(24, 12%, 7% / 0.78);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-bg-inline-code: hsl(24, 10%, 15%);
+	--sl-color-hairline: hsl(24, 9%, 15%);
+	--sl-color-hairline-light: hsl(24, 9%, 20%);
+
+	--yum-surface: hsl(24, 11%, 10%);
+	--yum-surface-raised: hsl(24, 10%, 13%);
+	--yum-glow: hsl(var(--sl-hue-accent), 90%, 55% / 0.18);
+	--yum-radius: 14px;
+	--yum-code-bg: hsl(24, 12%, 8.5%);
+
+	--sl-content-width: 48rem;
+	--sl-sidebar-width: 17rem;
+	--sl-line-height: 1.7;
+	--sl-text-code: 0.84rem;
+}
+
+:root[data-theme="light"] {
+	--sl-color-white: hsl(24, 20%, 10%);
+	--sl-color-gray-1: hsl(24, 14%, 16%);
+	--sl-color-gray-2: hsl(24, 9%, 26%);
+	--sl-color-gray-3: hsl(26, 6%, 40%);
+	--sl-color-gray-4: hsl(28, 6%, 56%);
+	--sl-color-gray-5: hsl(30, 12%, 82%);
+	--sl-color-gray-6: hsl(32, 28%, 93%);
+	--sl-color-gray-7: hsl(34, 40%, 96%);
+	--sl-color-black: hsl(36, 50%, 99%);
+
+	--sl-color-accent-low: hsl(var(--sl-hue-accent), 90%, 92%);
+	--sl-color-accent: hsl(var(--sl-hue-accent), 62%, 46%);
+	--sl-color-accent-high: hsl(var(--sl-hue-accent), 70%, 28%);
+
+	--sl-color-bg-nav: hsl(36, 50%, 99% / 0.8);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-bg-inline-code: hsl(30, 35%, 93%);
+	--sl-color-hairline: hsl(30, 22%, 90%);
+	--sl-color-hairline-light: hsl(30, 22%, 88%);
+
+	--yum-surface: hsl(34, 45%, 97%);
+	--yum-surface-raised: hsl(0, 0%, 100%);
+	--yum-glow: hsl(var(--sl-hue-accent), 90%, 55% / 0.12);
+	--yum-code-bg: hsl(36, 40%, 98%);
+}
+
+html,
+body {
+	overflow-x: clip;
+}
+
+/* Splash pages with a custom hero: no title band, wider canvas */
+.content-panel:has(+ .content-panel .hero) {
+	display: none;
+}
+
+.content-panel:has(.hero) {
+	padding-top: 0;
+	border-top: none;
+}
+
+.content-panel:has(.hero) .sl-container,
+.content-panel:has(.hero) ~ .content-panel .sl-container {
+	max-width: 72rem;
+}
+
+/* Header: translucent, hairline-only, no heavy band */
+header.header {
+	backdrop-filter: saturate(1.4) blur(12px);
+	border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.site-title {
+	font-family: var(--yum-font-display);
+	font-weight: 700;
+	font-size: 1.25rem;
+	letter-spacing: -0.02em;
+	color: var(--sl-color-white);
+}
+
+/* Sidebar: quiet groups, accent pill for the current page */
+nav.sidebar .top-level > li > details > summary .group-label > span,
+nav.sidebar .large {
+	font-family: var(--yum-font-display);
+	font-size: 0.78rem;
+	font-weight: 650;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+nav.sidebar a {
+	border-radius: 8px;
+	font-size: 0.9rem;
+	padding-block: 0.3rem;
+}
+
+nav.sidebar a[aria-current="page"],
+nav.sidebar a[aria-current="page"]:hover {
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-accent-high);
+	font-weight: 600;
+}
+
+/* Typography */
+.sl-markdown-content :is(h1, h2, h3, h4),
+h1#_top {
+	font-family: var(--yum-font-display);
+	letter-spacing: -0.025em;
+	font-weight: 700;
+}
+
+h1#_top {
+	font-size: clamp(2.2rem, 4vw, 3rem);
+	line-height: 1.05;
+}
+
+.sl-markdown-content h2 {
+	margin-top: 2.6em;
+	padding-top: 0.4em;
+	font-size: 1.75rem;
+}
+
+.sl-markdown-content h3 {
+	font-size: 1.3rem;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: var(--sl-color-text-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+	text-decoration-color: currentColor;
+}
+
+.sl-markdown-content :not(pre) > code {
+	border-radius: 6px;
+	padding: 0.12em 0.38em;
+	border: 1px solid var(--sl-color-hairline-light);
+	font-size: 0.86em;
+}
+
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: var(--yum-radius);
+	overflow: hidden;
+	font-size: 0.92rem;
+}
+
+.sl-markdown-content :is(th, td) {
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+	padding: 0.6rem 0.9rem;
+}
+
+.sl-markdown-content tr:last-child td {
+	border-bottom: none;
+}
+
+.sl-markdown-content th {
+	background: var(--yum-surface);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.sl-markdown-content img {
+	border-radius: var(--yum-radius);
+}
+
+/* Code blocks are styled through Expressive Code; this only rounds the frame */
+.expressive-code .frame {
+	box-shadow: none;
+}
+
+/* Asides: softer, tinted cards */
+.starlight-aside {
+	border-radius: var(--yum-radius);
+	border-inline-start-width: 3px;
+}
+
+/* Cards */
+.card {
+	padding: clamp(1rem, 2.5vw, 1.5rem);
+	border-radius: var(--yum-radius);
+	background: var(--yum-surface);
+	border-color: var(--sl-color-hairline-light);
+	transition:
+		border-color 160ms,
+		transform 160ms;
+}
+
+.sl-link-card {
+	border-radius: var(--yum-radius);
+	background: var(--yum-surface);
+	border-color: var(--sl-color-hairline-light);
+	box-shadow: none;
+}
+
+.sl-link-card:hover {
+	border-color: var(--sl-color-accent);
+	background: var(--yum-surface-raised);
+}
+
+/* Pagination */
+.pagination-links a {
+	border-radius: var(--yum-radius);
+	box-shadow: none;
+	border-color: var(--sl-color-hairline-light);
+}
+
+.pagination-links a:hover {
+	border-color: var(--sl-color-accent);
+}
+
+/* Right rail */
+starlight-toc nav h2,
+mobile-starlight-toc nav h2 {
+	font-family: var(--yum-font-display);
+	font-size: 0.78rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+starlight-toc a[aria-current="true"] {
+	color: var(--sl-color-text-accent);
+}
+
+.expressive-code,
+code,
+pre {
+	font-variant-ligatures: none;
+}
+
+.card .title {
+	font-family: var(--yum-font-display);
+	font-size: 1.15rem;
+	letter-spacing: -0.01em;
+}
+
+.card .body {
+	font-size: 0.95rem;
+}

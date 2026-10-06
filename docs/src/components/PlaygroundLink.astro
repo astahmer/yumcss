@@ -1,0 +1,56 @@
+---
+import { playgroundHref } from "../site-links";
+
+interface Props {
+	path?: string;
+	api?: "tw" | "css" | "dss";
+	label?: string;
+}
+
+const href = playgroundHref({ path: Astro.props.path, api: Astro.props.api });
+---
+
+<a class="playground-link not-content" href={href} target="_blank" rel="noopener">
+	<span class="playground-link__icon" aria-hidden="true">▶</span>
+	<span>{Astro.props.label ?? "Open in the playground"}</span>
+	<span class="playground-link__path">{Astro.props.path ?? "/basics"}</span>
+</a>
+
+<style>
+	.playground-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-block: 0.5rem 1rem;
+		padding: 0.45rem 0.9rem 0.45rem 0.5rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 999px;
+		background: var(--yum-surface);
+		color: var(--sl-color-white);
+		font-size: 0.88rem;
+		font-weight: 550;
+		text-decoration: none;
+		transition:
+			border-color 160ms,
+			background-color 160ms;
+	}
+	.playground-link:hover {
+		border-color: var(--sl-color-accent);
+		background: var(--yum-surface-raised);
+	}
+	.playground-link__icon {
+		display: grid;
+		place-items: center;
+		width: 1.6rem;
+		height: 1.6rem;
+		border-radius: 999px;
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+		font-size: 0.62rem;
+	}
+	.playground-link__path {
+		font-family: var(--__sl-font-mono);
+		font-size: 0.78rem;
+		color: var(--sl-color-gray-3);
+	}
+</style>

@@ -1137,7 +1137,7 @@ Usage & cleanup view, alongside token validation/export fidelity.
 
 ## Plan status and deferred boundaries
 
-The [implementation status](/reference/implementation-status/) page is the
+The [implementation status](/contributing/implementation-status/) page is the
 current source of truth. The `plans/` directory intentionally retains
 engineering records, including completed plans; their original checklists may
 describe work that was later narrowed or closed. Read each recorded outcome

@@ -1,0 +1,80 @@
+---
+title: Why YumCSS
+description: What YumCSS is, the problem it solves, how it compares, and when it isn't the right tool.
+sidebar:
+  label: Why YumCSS
+  order: 1
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+YumCSS is a **typed styling compiler**. You write styles as objects checked
+against your design system, and the build turns them into plain class strings
+and one atomic stylesheet. What reaches the browser is strings and CSS.
+
+## The problem
+
+Most teams choose between three imperfect options:
+
+- **Utility class strings** are quick to write, but they're untyped
+  (`p-13` fails silently), hard to compose, and allow any value.
+- **Runtime CSS-in-JS** is expressive, but it ships a runtime, injects
+  styles while rendering, and makes SSR and streaming harder.
+- **Hand-written CSS** gives full control, but it doesn't enforce the design
+  system, and dead CSS piles up.
+
+YumCSS keeps the authoring model people like (objects, colocated styles, a
+design-system vocabulary) and moves the work to build time.
+
+<CardGrid>
+	<Card title="Your design system is the type system" icon="approve-check">
+		Tokens, conditions, and allowed properties come from **your** preset. An off-palette color is a
+		type error, not a code-review comment.
+	</Card>
+	<Card title="Static by default" icon="rocket">
+		Literal calls compile to strings. Known variants are generated ahead of time. Runtime values go
+		through inline CSS variables: no injection, no hydration mismatch.
+	</Card>
+	<Card title="Meet teams where they are" icon="puzzle">
+		Keep Tailwind with typed `tw()`, emit Tailwind classes from `css()`, or go fully atomic.
+		Designers get a Figma-like `$frame` / `$layout` / `$text` vocabulary.
+	</Card>
+	<Card title="Tools that show their work" icon="magnifier">
+		A playground, a design-system Inspector, an analyzer for CI, and migration previews that show
+		what changed and what didn't.
+	</Card>
+</CardGrid>
+
+## How it compares
+
+|                                                                  |  YumCSS   |      Tailwind       | Panda CSS |   StyleX   | styled-components / Emotion |
+| ---------------------------------------------------------------- | :-------: | :-----------------: | :-------: | :--------: | :-------------------------: |
+| Styles checked against _your_ tokens                             |    ✅     | ⚠️ editor extension |    ✅     | ⚠️ partial |             ❌              |
+| Zero runtime for static styles                                   |    ✅     |         ✅          |    ✅     |     ✅     |             ❌              |
+| Object syntax with CSS property names                            |    ✅     |         ❌          |    ✅     |     ✅     |             ✅              |
+| Works on top of an existing Tailwind app                         | ✅ `tw()` |          —          |    ❌     |     ❌     |             ❌              |
+| Can emit another engine's classes (Tailwind, StyleX, Panda, Uno) |    ✅     |         ❌          |    ❌     |     ❌     |             ❌              |
+| Last-wins merging across components                              | ✅ `cx()` |  ⚠️ tailwind-merge  |    ✅     |     ✅     |             ✅              |
+| Migration codemods from 30+ libraries                            |    ✅     |         ❌          |    ❌     |     ❌     |             ❌              |
+
+## When not to use it
+
+- **Plain CSS or Tailwind already works for you.** YumCSS is worth it when a
+  shared token contract, typed authoring, or migration tooling pays off.
+- **Most of your styles are computed from data at runtime** (theme editors,
+  user-built pages). YumCSS has a [runtime mode](/css/escape-hatches/#runtime-css-in-js),
+  but a runtime-first library may suit you better.
+- **You can't add a build step.** Extraction needs a bundler plugin.
+
+## The trade-offs, stated plainly
+
+- **A build step and generated files.** `tw()` needs generated types, and
+  `css()` needs the Vite (or unplugin) plugin.
+- **Strict presets are strict.** One-off values go through `$raw`, which is
+  visible in review. That's the point, but it's friction at first.
+- **A deliberately small API.** There's no recipe API, `styled()`, or theme
+  provider: variants are maps, themes are CSS variables. The surface is frozen
+  so it stays small enough to keep in your head.
+- **Migrations are evidence-based, not magic.** Routes are labeled with their
+  maturity, and anything the codemod can't prove is left in place and reported.
+  See the [current limitations](/contributing/limitations/).

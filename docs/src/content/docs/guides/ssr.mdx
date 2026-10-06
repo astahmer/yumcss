@@ -1,0 +1,43 @@
+---
+title: SSR & streaming
+description: How YumCSS behaves on the server, with React Server Components, streaming, and hydration.
+sidebar:
+  label: SSR & streaming
+  order: 2
+---
+
+**Build-time `css()` needs nothing special for SSR.** Class names are
+strings computed at build time, and the stylesheet is a normal CSS asset.
+The server and the client render the same markup.
+
+## Dynamic values
+
+`css.vars()` returns plain data (`{ class, style }`), which you render as
+`className` and `style` attributes. It doesn't touch `window`, `document`, or
+a global style registry, so it works in Server Components, streaming, and
+edge runtimes, and hydration matches.
+
+## Runtime CSS on the server
+
+If part of your app uses [`createRuntimeCss`](/css/escape-hatches/#runtime-css-in-js),
+each server render collects the rules it used:
+
+```ts
+import { createRuntimeCss, createRuntimeSheet } from "yumcss/css/runtime";
+
+const sheet = createRuntimeSheet({ autoMount: false, nonce });
+const css = createRuntimeCss(preset, { sheet });
+
+// …render…
+const styles = sheet.css(); // put into <style nonce={nonce}> in the document head
+```
+
+- Rule registration is idempotent, so retries and streamed chunks don't
+  duplicate rules.
+- `sheet.snapshot()` on the server and `sheet.hydrate(snapshot)` on the
+  client hand the collected rules over without re-injecting them.
+- On the server, each instance gets its own sheet, so requests don't share
+  state.
+
+With Next.js, insert `sheet.css()` with `useServerInsertedHTML`. A React
+`renderToPipeableStream` test covers streamed output and sheet hydration.

@@ -1,0 +1,93 @@
+---
+title: Playground
+description: Write YumCSS in the browser and see the class string, generated CSS, tokens, IR, and build-time fold for every API.
+sidebar:
+  order: 1
+---
+
+import { LinkButton } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import cssShot from "../../../assets/screenshots/playground-css.png";
+import responsiveShot from "../../../assets/screenshots/playground-responsive.png";
+import migrateShot from "../../../assets/screenshots/playground-migrate.png";
+import { playgroundHref } from "../../../site-links";
+
+The playground runs the real YumCSS compiler in your browser. Every scenario
+shows the same component written with `tw()`, `css()`, and `dss()`, a live
+preview you can interact with, and everything YumCSS produced along the way.
+
+<LinkButton href={playgroundHref({ path: "/basics" })} icon="external">
+	Open the playground
+</LinkButton>
+
+<Screenshot src={cssShot} alt="Playground Basics scenario with the css() API selected." />
+
+## What you see
+
+| Panel                                     | Shows                                                                      |
+| ----------------------------------------- | -------------------------------------------------------------------------- |
+| **Live preview**                          | The rendered component, with controls for its props and theme              |
+| **Class string**                          | The exact `className` the call returns                                     |
+| **Generated CSS**                         | The atomic rules and token variables written for this file                 |
+| **css() atoms / Declarations to classes** | Which declaration produced which class                                     |
+| **Tokens**                                | Tokens kept or pruned for this example                                     |
+| **Build-time fold**                       | Whether the call was folded to a string at build time, or stays at runtime |
+| **StyleProgram IR**                       | The semantic program the compiler and migrations share                     |
+| **Execution evidence**                    | What actually ran in the sandbox                                           |
+
+Use the **API** switch to compare `tw()`, `css()`, and `dss()`, and the
+**adapter** switch to see the same `css()` call produce atomic, named,
+Tailwind, UnoCSS, Panda, or StyleX class names.
+
+## Scenarios
+
+| Scenario                  | Path                                                      | Topic                             |
+| ------------------------- | --------------------------------------------------------- | --------------------------------- |
+| Basics                    | <PlaygroundLink path="/basics" label="Open" />            | One component, three APIs         |
+| Dynamic styling           | <PlaygroundLink path="/dynamic" label="Open" />           | Known sets vs `css.vars()`        |
+| Runtime pruning           | <PlaygroundLink path="/runtime-pruning" label="Open" />   | What stays in the bundle          |
+| Responsive                | <PlaygroundLink path="/responsive" label="Open" />        | Breakpoint conditions             |
+| Container queries         | <PlaygroundLink path="/container-queries" label="Open" /> | `@container` rules                |
+| Runtime at-rules          | <PlaygroundLink path="/runtime-at-rules" label="Open" />  | At-rules with runtime values      |
+| Conflicts                 | <PlaygroundLink path="/conflicts" label="Open" />         | Last-wins merging                 |
+| Named token bindings      | <PlaygroundLink path="/token-bindings" label="Open" />    | Property → token group bindings   |
+| Component token contracts | <PlaygroundLink path="/component-tokens" label="Open" />  | Raw → semantic → component tokens |
+| Color palettes            | <PlaygroundLink path="/color-palettes" label="Open" />    | `colorPalette` switching          |
+| Design presets            | <PlaygroundLink path="/design-preset" label="Open" />     | `define.preset()` + `dss()`       |
+| Variants with cx()        | <PlaygroundLink path="/variants" label="Open" />          | Variant maps                      |
+| Groups & vars             | <PlaygroundLink path="/groups" label="Open" />            | `css.group()` and `$input`        |
+| Static folding            | <PlaygroundLink path="/folding" label="Open" />           | What the build replaces           |
+| tw() compat               | <PlaygroundLink path="/tw-compat" label="Open" />         | Tailwind with types               |
+| Limits                    | <PlaygroundLink path="/limits-strings" label="Open" />    | What doesn't work, and why        |
+
+<Screenshot src={responsiveShot} alt="Playground Responsive scenario in light mode." />
+
+## Sharing
+
+The URL holds the scenario, the API, and the class-name adapter
+(`/basics?api=css&adapter=tailwind`). When you run edited code (<kbd>⌘</kbd>
+
+<kbd>↵</kbd>), the first file is encoded in the URL hash, so copying the address bar shares your
+exact example.
+
+## Migration lab
+
+The **migration examples** page (`/migrate`) runs the real migration adapters
+on the documented examples of each library: pick a source (styled-components,
+Emotion, Panda, StyleX, …) and a target, then read the output, the capability
+decision, and the residual report.
+
+<PlaygroundLink path="/migrate" label="Open the migration lab" />
+
+<Screenshot
+	src={migrateShot}
+	alt="Playground migration lab converting styled-components to YumCSS."
+/>
+
+## Run it locally
+
+```sh
+pnpm install
+pnpm playground # http://localhost:5173
+```

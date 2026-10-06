@@ -1,0 +1,136 @@
+---
+title: Dynamic styles
+description: Handle values that depend on props or runtime data without giving up build-time CSS.
+sidebar:
+  order: 3
+---
+
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+Most "dynamic" styles aren't really dynamic. A button has two tones, a card has
+three sizes. YumCSS splits runtime values into two kinds and handles each one
+differently.
+
+| The value is…                                        | Example                                         | What YumCSS does                                             |
+| ---------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| **One of a known set**: ternaries, unions, constants | `tone === "danger" ? "$red-600" : "$slate-700"` | Generates a class for **every** possible value at build time |
+| **Truly open**: user input, API data, measurements   | `color` from a color picker                     | One fixed class + an inline CSS variable, via `css.vars()`   |
+
+## Known sets: write normal code
+
+The build step follows ternaries, union-typed props, and module-level
+constants, and creates a class for each possibility:
+
+```tsx
+type Tone = "neutral" | "danger";
+
+export const Badge = (props: { tone: Tone }) => (
+	<span className={css.class({ color: props.tone === "danger" ? "$red-600" : "$slate-700" })} />
+);
+```
+
+Both color rules end up in the stylesheet. At runtime the call only picks a
+class name, which is cheap and never injects CSS.
+
+## Open values: `css.vars()`
+
+When a value can be anything, `css.vars()` returns a **stable class** plus an
+**inline custom property** that carries the value:
+
+```tsx
+export const Swatch = (props: { color: string; size: number }) => {
+	const swatch = css.vars({
+		backgroundColor: props.color,
+		width: `${props.size}px`,
+		height: `${props.size}px`,
+	});
+	return <span className={swatch.class} style={swatch.style} />;
+};
+```
+
+The stylesheet gets one rule per property, written once:
+
+```css
+.pw-background-color {
+	background-color: var(--pw-c-background-color);
+}
+.pw-width {
+	width: var(--pw-c-width);
+}
+.pw-height {
+	height: var(--pw-c-height);
+}
+```
+
+The value goes in `style`, so no CSS is generated at runtime and the result is
+serializable, which makes it safe for SSR and streaming.
+`css.vars()` accepts any string, plus your own `--custom-property` keys.
+
+<PlaygroundLink path="/dynamic" api="css" label="Dynamic styling scenario" />
+
+## Mixing both: `css.props()`
+
+`css.props()` merges compiled styles, `vars` results, and plain class names
+into the `{ className, style }` pair a React element expects:
+
+```tsx
+export const Progress = (props: { value: number }) => (
+	<div
+		{...css.props(
+			css({ height: 8, borderRadius: "full", backgroundColor: "$blue-600" }),
+			css.vars({ width: `${props.value}%` }),
+		)}
+	/>
+);
+```
+
+## Reusable groups: `css.group()`
+
+`css.group()` declares a component's style pieces in one place. Each entry can
+be a static style, a plain class string, a function, or a typed input:
+
+```tsx
+const styles = css.group({
+	card: { borderRadius: "lg", padding: 16, backgroundColor: "$white" },
+	inset: (amount: number) => ({ padding: amount }),
+	accent: { $input: {} as { color: string }, borderColor: css.input("color") },
+	legacy: "legacy-card",
+});
+
+export const Panel = (props: { accent: string }) => (
+	<section
+		{...css.props(
+			styles.card,
+			styles.inset(24),
+			styles.accent({ color: props.accent }),
+			styles.legacy,
+		)}
+	/>
+);
+```
+
+- **Static entries** compile at build time, like `css()`.
+- **Functions** go through `css.vars()`, so their arguments become inline
+  variables.
+- **`$input` entries** declare typed inputs. `css.input("color")` is
+  `var(--color)` in the stylesheet, and calling `styles.accent({ color })`
+  sets that variable.
+
+<PlaygroundLink path="/groups" api="css" label="Groups & vars scenario" />
+
+## What doesn't work
+
+A fully dynamic value passed straight to `css.class()` can't be compiled:
+
+```ts
+css.class({ color: userColor }); // ⚠️ hashed class, but no CSS rule exists for it
+```
+
+The build can't know the value, so it can't write the rule. Use
+`css.vars({ color: userColor })` instead. The
+[lint plugin](/tools/lint/) flags this with `no-dynamic-values`, and the
+[Inspector](/tools/inspector/) lists every runtime call site.
+
+If you need real runtime CSS-in-JS (styles defined from data at runtime,
+injected into a live stylesheet), see
+[runtime CSS](/css/escape-hatches/#runtime-css-in-js).

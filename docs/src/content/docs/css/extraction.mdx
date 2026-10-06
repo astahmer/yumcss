@@ -1,0 +1,95 @@
+---
+title: How extraction works
+description: What happens to your css() calls at build time, how class names are made, and how to split CSS per route.
+sidebar:
+  order: 6
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import Screenshot from "../../../components/Screenshot.astro";
+import compilerPreview from "../../../assets/screenshots/compiler-preview.png";
+
+`css()` is designed to disappear at build time. Knowing what the extractor
+does makes it easy to write code that compiles fully.
+
+<Steps>
+
+1. **Find calls.** `yumcssExtractVite` scans every module that imports your
+   css instance, whatever local name you gave it. By default that's any import
+   from a module whose file name is `css` or `design`; change it with
+   `cssSources`.
+
+2. **Evaluate what's knowable.** Literal objects, module constants, ternaries,
+   union-typed props, and `css.group()` entries are expanded into every value
+   they can take, up to a safety cap.
+
+3. **Rewrite.** Each fully static call is replaced by its result: a class
+   string for `css.class()`, an object literal for `css()`. `createCss()` calls
+   are marked `/* @__PURE__ */`, so bundlers can drop an instance once
+   nothing calls it at runtime.
+
+4. **Emit atomic CSS.** One rule per unique (condition, property, value),
+   shared across the whole app. Only the tokens that are used become CSS
+   variables. Breakpoints are sorted from narrow to wide.
+
+5. **Serve one stylesheet.** The rules are served as the virtual module
+   `yumcss:css`. The plugin adds the import for you, and production builds
+   only include CSS from files that are in the bundle.
+
+</Steps>
+
+<Screenshot
+	src={compilerPreview}
+	alt="Compiler Preview showing a source file next to its Vite output as a split diff."
+	caption="Compiler Preview runs your own Vite config and shows each file before and after the YumCSS transforms."
+/>
+
+## Class names
+
+Class names are short hashes of the **authored** key and value (`1f29p40`),
+so they stay the same between builds and machines, and don't change when a
+token's value changes. Set `debug: true` on `createCss` to get readable names
+like `color__$blue-600` while you're developing.
+
+The naming is pluggable through a [`ClassNameStrategy`](/reference/class-name-strategies/):
+readable atoms, StyleX-style hashes, Panda-style names, or real Tailwind
+utilities.
+
+## Plugin options
+
+```ts title="vite.config.ts"
+yumcssExtractVite(css, {
+	cssSources: ["css", "design"], // module names that export css instances
+	include: /\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/,
+	exclude: [/node_modules/, /dist/],
+	virtualId: "yumcss:css", // must be unique when you run two instances
+	debug: false, // prepend a file:line origin manifest (dev only)
+});
+```
+
+The full list is in the [Vite plugin reference](/reference/vite/).
+
+## Split CSS per route
+
+For multi-page apps you can split the stylesheet. Atoms used by only one route
+move into that route's chunk, and shared atoms stay in the main sheet:
+
+```ts
+yumcssExtractVite(css, {
+	splitByRoute: [
+		{ match: /src\/pages\/checkout\//, name: "checkout", html: "checkout.html" },
+		{ match: /src\/pages\/admin\//, name: "admin", html: "admin.html" },
+	],
+	inlineCritical: { capBytes: 14_000 },
+});
+```
+
+- `yumcss:css?route=checkout` serves a route's own atoms, and
+  `yumcss:css-manifest` maps route names to module ids.
+- `inlineCritical` writes each route's CSS into its HTML page at build time
+  (requires `html`).
+
+## Other bundlers
+
+Vite is the main integration. For Rollup, webpack, esbuild, Rspack,
+Rolldown, Farm, and Bun, use the unplugin build. See [bundlers](/guides/bundlers/).

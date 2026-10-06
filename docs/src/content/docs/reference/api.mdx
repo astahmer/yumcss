@@ -1,0 +1,96 @@
+---
+title: API reference
+description: Every YumCSS runtime entry point, its signature, and what it returns.
+sidebar:
+  order: 1
+---
+
+## `createCss(preset, options?)`
+
+`import { createCss } from "yumcss/css"`
+
+Returns a `css` function bound to the preset. Throws if `preset` is missing.
+
+| Option               | Type                                                     | Default      | Effect                                                     |
+| -------------------- | -------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| `className`          | `ClassNameStrategy`                                      | hashed atoms | [How classes are named](/reference/class-name-strategies/) |
+| `cascade`            | `"specificity" \| "layers" \| { mode: "layers", layer }` | none         | Strategy for beating third-party CSS                       |
+| `debug`              | `boolean`                                                | `false`      | Readable class names (`color__$blue-600`)                  |
+| `namespace`          | `string`                                                 | `"pw"`       | Prefix for `css.vars()` classes/variables and keyframes    |
+| `tokenVariableNames` | `"authored"`                                             | hashed       | Use the preset's `tokenVariables` as CSS variable names    |
+| `hashFn`             | `(input: string) => string`                              | murmur hash  | Custom class-name hash                                     |
+
+### Instance members
+
+| Member                 | Returns                                | Notes                                                                |
+| ---------------------- | -------------------------------------- | -------------------------------------------------------------------- |
+| `css(...styles)`       | `Record<string, string>`               | Compiled style map, mergeable by `cx()` and `css.props()`            |
+| `css.class(...styles)` | `string`                               | Space-separated class names                                          |
+| `css.vars(...styles)`  | `{ class: string; style: object }`     | Runtime values through inline CSS variables. Accepts `--custom` keys |
+| `css.props(...inputs)` | `{ className: string; style: object }` | Merges maps, vars, class strings, arrays, falsy values               |
+| `css.group(entries)`   | Object of compiled entries             | Entries: style object, class string, function, or `$input` entry     |
+| `css.input(name)`      | Marker                                 | Typed runtime input inside a `$input` group entry                    |
+| `css.keyframes(steps)` | `string`                               | Deterministic animation name (`pw-kf-…`)                             |
+| `css.raw(...styles)`   | Style object                           | Merged and validated, not compiled. `$raw` expanded                  |
+
+Style arguments are deep-merged left to right; the last value wins per
+property and condition. See [css() basics](/css/overview/).
+
+### Types
+
+- `AtomicStyleProps<typeof css>`: a style object for this instance, to use in
+  component props.
+- `CssFn`, `CreateCssOptions`, `ClassNameStrategy`.
+
+## `firstThatWorks(...values)`
+
+`import { firstThatWorks } from "yumcss/css"`. Emits fallback declarations
+(`position: -webkit-sticky; position: sticky`). Requires at least two values.
+
+## `createDesignCss(preset, options?)`
+
+`import { createDesignCss } from "yumcss/design"`. The same members as
+`createCss`, with the `$frame` / `$layout` / `$text` vocabulary. See
+[design CSS](/design-system/design-css/). `DesignStyleObject<typeof preset>`
+types shareable design objects. `resolveDesignStyle(style, tokens)` from
+`yumcss/design/resolve` turns one into a plain CSS object.
+
+## `createCx(options?)`
+
+`import { createCx } from "yumcss/cx"`
+
+| Option                                         | Effect                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- |
+| `css`                                          | A css instance whose atoms `cx()` can merge                                     |
+| `conflicts`, `compose`, `directionalConflicts` | Tailwind conflict data (spread `__yumcssConflictConfig` from `tw.conflicts.ts`) |
+
+`cx(...inputs)` returns a merged class string. `cx.vars(...inputs)` returns
+`{ class, style }` and keeps inline variables.
+
+## `define` (presets)
+
+`import { define, presetConditions, presetProperties, type YumCSSProperties } from "yumcss/preset"`
+
+| Builder                              | Purpose                                                                                                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `define.tokens(groups)`              | Token groups. The result has `.defineSemanticTokens(conditions, layer)` and `.defineColorPalettes(map)`                                                   |
+| `define.conditions(map)`             | Condition names → selectors / at-rules (arrays nest)                                                                                                      |
+| `define.properties(map)`             | Property bindings (`true`, `{ $tokens }`, inline maps, `$strict`, `$all`)                                                                                 |
+| `define.theme({ config, tokens })`   | Pairs a config type with tokens                                                                                                                           |
+| `define.preset(theme, preset, web?)` | The preset. `preset`: `conditions`, `properties`, `strict`, `colorPalettes`, `cssVariables`, `tokenVariables`. `web`: `globals`, `keyframes`, `fontFaces` |
+
+See [create a preset](/design-system/presets/).
+
+## Other entry points
+
+| Import                                                             | Exports                                                                                                                |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `yumcss/unsafe/css`                                                | `createUnsafeCss(options?)`: no preset, no checks                                                                      |
+| `yumcss/css/runtime`                                               | `createRuntimeCss`, `createRuntimeDesignCss`, `createRuntimeSheet`                                                     |
+| `yumcss/css/generated`                                             | `createGeneratedCss`: uses types generated by `yumcss-codemod css generate`, for faster type-checking on large presets |
+| `yumcss/css/create-stylesheet`                                     | `createStylesheet`: the pure stylesheet compiler, for custom tooling                                                   |
+| `yumcss/tw`                                                        | `createTw`, `createTwAdapter`                                                                                          |
+| `yumcss/stack/*`                                                   | `Stack` / `createStack` layout primitive per framework                                                                 |
+| `yumcss/vite`                                                      | [Vite plugins](/reference/vite/)                                                                                       |
+| `yumcss/unplugin`                                                  | [Other bundlers](/guides/bundlers/#rollup-webpack-rspack-esbuild-rolldown-farm-bun)                                    |
+| `yumcss/react-native`, `yumcss/opentui`, `yumcss/react-strict-dom` | [Other platforms](/guides/platforms/)                                                                                  |

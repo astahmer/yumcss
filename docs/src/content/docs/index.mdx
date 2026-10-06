@@ -1,128 +1,74 @@
 ---
-title: yumcss
-description: Typed CSS objects for application styles, design systems, and Tailwind integrations.
+title: YumCSS
+description: Typed styles checked against your design system, compiled to plain class strings and atomic CSS at build time.
 template: splash
-hero:
-  title: yumcss
-  tagline: Write styles with autocomplete, keep the CSS tools you already use, and move known work to build time.
-  actions:
-    - text: Quick start
-      link: ./getting-started/
-      icon: right-arrow
-    - text: Tailwind component patterns
-      link: ./guides/basic/
-      icon: external
+tableOfContents: false
+editUrl: false
+lastUpdated: false
 ---
 
-YumCSS is for teams who want typed style objects without throwing away CSS,
-their design-system conventions, or an existing Tailwind workflow. For new
-YumCSS code, start with `createCss`; add the other lanes only when they solve
-a real problem.
+import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
+import HomeHero from "../../components/HomeHero.astro";
+import ToolShowcase from "../../components/ToolShowcase.astro";
 
-## Primary path: css()
+<HomeHero />
 
-### Typed CSS objects for new code
+## Start from where you are
 
-Use [`css()`](/api/css/) as the default YumCSS API. It authors ordinary CSS
-properties as typed objects and extracts static calls into atomic CSS without
-making Tailwind the stylesheet engine.
+<CardGrid>
+	<LinkCard
+		title="New project"
+		description="Typed CSS objects with css(), extracted to atomic CSS. The recommended path."
+		href="/start/quick-start/"
+	/>
+	<LinkCard
+		title="Building a design system"
+		description="Tokens, semantic themes, conditions, and a vocabulary nobody can step outside of."
+		href="/design-system/presets/"
+	/>
+	<LinkCard
+		title="Building a component library"
+		description="Variants, component tokens, overrides, and shipping prebuilt CSS."
+		href="/components/component-library/"
+	/>
+	<LinkCard
+		title="Coming from Tailwind"
+		description="Typed tw(), css() that emits Tailwind classes, or a gradual move off Tailwind."
+		href="/tailwind/overview/"
+	/>
+	<LinkCard
+		title="Designers & Figma"
+		description="$frame, $layout, $text: an inspector-panel vocabulary, plus design-token import."
+		href="/design-system/design-css/"
+	/>
+	<LinkCard
+		title="Migrating a codebase"
+		description="styled-components, Emotion, Panda, StyleX, Chakra and 25+ more, with previews and residual reports."
+		href="/migrate/overview/"
+	/>
+</CardGrid>
 
-```ts
-import { createCss } from "yumcss/css";
-import { defaultPreset } from "yumcss/preset/default";
+## Why teams pick YumCSS
 
-const css = createCss(defaultPreset);
-const card = css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" });
-```
+<CardGrid>
+	<Card title="Tokens are types" icon="approve-check">
+		`color: "#2563eb"` is a type error when your preset says colors are tokens. Typos, off-palette
+		values, and unknown breakpoints never reach review.
+	</Card>
+	<Card title="Zero runtime for static styles" icon="rocket">
+		Literal calls compile to strings. Variants from unions and ternaries are generated ahead of
+		time. Truly dynamic values use inline CSS variables.
+	</Card>
+	<Card title="One atomic stylesheet" icon="document">
+		Each declaration becomes one shared rule, so CSS grows with your design system, not with your
+		component count. Split it per route if you need to.
+	</Card>
+	<Card title="Pick your output" icon="random">
+		The same `css()` call can emit YumCSS atoms, Tailwind utilities, StyleX or Panda class names.
+		Change strategy without touching components.
+	</Card>
+</CardGrid>
 
-## Other workflows when a project calls for them
+## Tools that show their work
 
-If your project needs another styling workflow, add it alongside the primary
-path instead of learning every API up front.
-
-### I need a named design vocabulary
-
-Use [`createDesignCss()`](/api/design-css/) when component styles should read
-like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
-states.
-
-```ts
-import { createDesignCss } from "yumcss/design";
-import { preset } from "./preset";
-
-const dss = createDesignCss(preset);
-
-const button = dss.class({
-	$frame: { fill: "$brand", pad: "4", corners: "md" },
-	$text: { color: "$onBrand", weight: "semibold" },
-});
-```
-
-### I already use Tailwind
-
-Use [`tw()`](/api/tw/) to replace fragile class strings with an object whose
-keys and values come from your actual Tailwind project. This is the Tailwind
-compatibility lane: Tailwind remains the stylesheet engine, while YumCSS
-provides generated types, conflict handling, and build-time folding.
-
-```tsx
-import { tw } from "./tw";
-
-export const Card = () => (
-	<article
-		className={tw({
-			flex: "col",
-			gap: "4",
-			rounded: "xl",
-			bg: "white",
-			p: "6",
-			hover: { shadow: "lg" },
-		})}
-	>
-		Your content
-	</article>
-);
-```
-
-If you want Tailwind class output while keeping the `css()` property API, use
-the [`ClassNameStrategy` adapter](/interop/tailwind-adapter/) instead.
-
-### I need to combine existing classes
-
-Use [`cx()`](/api/cx/) when a component receives YumCSS classes alongside
-ordinary classes or styles from another library. It is a composition helper,
-not a separate authoring path.
-
-### I am evaluating a migration
-
-Start with the [migration guide](/guides/migrations/). Preview a diff, read the
-residuals, and check the route's canonicality and project-proof tier before
-changing the source tree. The [API matrix](/interop/official-api-matrix/)
-separates audited output from project-level proof.
-
-## What YumCSS does for you
-
-- **Types come from your project.** Tailwind utilities, preset tokens, and
-  conditions are not copied into a second hand-maintained list.
-- **Known work moves to build time.** Literal calls can become ordinary class
-  strings or extracted atomic CSS.
-- **Runtime values stay honest.** Dynamic colors, globals, fonts, and framework
-  behavior use explicit escape hatches instead of pretending to be static.
-- **Supporting tools explain and check the result.** The Playground helps you
-  explore styles, the Inspector and Analyzer report on a project, and Migration
-  Preview shows route output and residuals before files are edited.
-
-## Read next
-
-- [Getting started](/getting-started/) — the shortest explanation of the setup.
-- [Primary `css()` API](/api/css/) — start here for new code.
-- [Tailwind component patterns](/guides/basic/) — apply typed utilities to static and runtime choices after codegen is set up.
-- [Build a design system](/guides/design-system/) — tokens, themes, and
-  component contracts.
-- [Tooling workflows](/tooling/workflows/) — learn by
-  seeing the output.
-- [Why yumcss exists](/why-yumcss/) — the trade-offs and deliberate limits.
-
-The API and reference sections are intentionally more detailed. Use them when
-you already know which decision you are making; you should not need to read
-the compiler architecture to render your first button.
+<ToolShowcase />

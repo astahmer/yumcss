@@ -1,0 +1,39 @@
+---
+title: DevTools panel
+description: A YumCSS panel inside Vite DevTools that explains, for a clicked element, which source produced which CSS.
+sidebar:
+  order: 5
+---
+
+`@yumcss/devtools` adds a **YumCSS** panel to the
+[Vite DevTools](https://github.com/vitejs/devtools) dock in your running
+app. It answers "why does this element have this style?" without leaving the
+page. It runs in development only, is read-only, and adds nothing to
+production builds.
+
+```sh
+pnpm add -D @vitejs/devtools @yumcss/devtools
+```
+
+```ts title="vite.config.ts"
+import { DevTools } from "@vitejs/devtools";
+import { yumcssDevtools } from "@yumcss/devtools";
+
+export default defineConfig({
+	plugins: [DevTools(), yumcssDevtools() /* yumcssExtractVite(…), react(), … */],
+});
+```
+
+## Panels
+
+| Panel           | Use it to…                                                                             |
+| --------------- | -------------------------------------------------------------------------------------- |
+| **Inspector**   | Click **Inspect styles**, pick an element, and see its classes, rules, and source call |
+| **Style graph** | Follow source → style program edges, and expand the raw IR when needed                 |
+| **Tokens**      | See resolved token variables and theme evidence                                        |
+| **Migration**   | Preview a migration route for the current file (never writes)                          |
+| **Diagnostics** | Review scanner warnings and residual counts                                            |
+| **Performance** | Check source size, transform timings, and HMR events                                   |
+
+Options: `yumcssDevtools({ enabled, inspect })`. Set `inspect: false` to hide
+the element picker.

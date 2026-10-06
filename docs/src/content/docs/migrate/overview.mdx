@@ -1,0 +1,139 @@
+---
+title: Migrating to YumCSS
+description: Move from styled-components, Emotion, Panda, StyleX, Vanilla Extract, Chakra, and 25+ other styling libraries with a codemod that previews and reports everything it can't convert.
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import migrateShot from "../../../assets/screenshots/playground-migrate.png";
+import previewShot from "../../../assets/screenshots/migration-preview.png";
+
+YumCSS migrations go through a **source adapter** (which understands your
+current library), a shared semantic model, and a **target adapter** (which
+writes idiomatic YumCSS). The codemod converts what it can prove and keeps the
+rest as source, with a typed **residual** explaining why. It never drops a
+style silently.
+
+```sh
+pnpm exec yumcss-codemod migrate --from=emotion --to=css.class --dry-run --diff "src/**/*.tsx"
+```
+
+```tsx title="Before"
+import { css } from "@emotion/css";
+
+export const Card = css({ color: "red", padding: "1rem" });
+```
+
+```tsx title="After"
+import { createUnsafeCss } from "yumcss/unsafe/css";
+const css = createUnsafeCss();
+
+export const Card = css.class({ color: "red", padding: "1rem" });
+```
+
+On first run the codemod also generates support modules (`yumcss/preset.ts`,
+`yumcss/css.ts`, `yumcss/cx.ts`, …) in `--out`. The result uses
+`createUnsafeCss()` because these literal values aren't tokens in a preset
+yet. Typing it is the next step (see [after the codemod](#after-the-codemod)).
+
+## Supported libraries
+
+| Family                      | Source adapters                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Utility CSS                 | Tailwind CSS ([dedicated guide](/tailwind/migrating-class-strings/)), UnoCSS, Tokenami                        |
+| Atomic / compiled CSS-in-JS | Panda CSS, StyleX, React Strict DOM, Vanilla Extract, Compiled, Linaria, Style9, Next-Yak, Treat              |
+| Runtime CSS-in-JS           | styled-components, Emotion, Stitches, Goober, JSS / React-JSS, Fela, Aphrodite, Solid & Vue styled components |
+| Component systems           | Chakra UI, MUI, Mantine, Tamagui, Bamboo, React Native `StyleSheet`                                           |
+| Stylesheets                 | CSS Modules, Sass / SCSS, Less, authored CSS                                                                  |
+
+Targets: `css.class` (default), `dss` ([design CSS](/design-system/design-css/)),
+and `tw`. YumCSS can also be a **source**, for example `--to tailwind` to go
+back to class strings.
+
+<Aside type="note" title="Route maturity">
+	Each source → target route reports its maturity and the evidence behind it (typecheck, build,
+	browser states, SSR, CSS size) in the `--report=json` output. Most routes are **experimental**:
+	they're tested on real projects, but you should review the diff. The [API
+	matrix](/contributing/api-matrix/) lists, for each library, which documented APIs convert, which
+	stay native, and which are preserved as residuals.
+</Aside>
+
+## The workflow
+
+<Steps>
+
+1. **Explore in the playground.** The migration lab runs real adapters in the
+   browser on the documented examples of each library.
+
+   <PlaygroundLink path="/migrate" label="Open the migration lab" />
+
+2. **Preview your project, read-only.** The Migration Preview loads your
+   repository, lets you edit a file in memory, and shows the target output,
+   the semantic program, the canonical CSS, and the residuals. Nothing is
+   written to disk.
+
+   ```sh
+   pnpm exec yumcss-migration-preview . --no-open
+   ```
+
+3. **Dry-run the codemod** on a folder and read the summary:
+
+   ```sh
+   pnpm exec yumcss-codemod migrate --from=styled-components --dry-run --report "src/features/billing/**/*.tsx"
+   ```
+
+4. **Apply**, one folder or feature at a time. Each run is idempotent, and
+   sites marked `// yumcss:migrate-skip <reason>` are left alone.
+
+5. **Review residuals.** They're listed in the report and marked in the
+   source. The [lint plugin](/tools/lint/) keeps track of skip markers that
+   are missing a reason or no longer needed.
+
+</Steps>
+
+<Screenshot
+	src={migrateShot}
+	alt="Playground migration lab converting a styled-components Card into YumCSS, with the proof boundary, output, summary, and residual report panels."
+	caption="The playground migration lab: styled-components → YumCSS."
+/>
+
+<Screenshot
+	src={previewShot}
+	alt="Migration Preview with a workspace file list, an in-memory source editor, and the css.class target output with canonical CSS."
+	caption="Migration Preview runs on your real project and never writes to disk."
+/>
+
+## Project-aware conversion
+
+Adapters read your project's real configuration through the library's own
+packages when they can (Tailwind's loader, Panda's config, Chakra's system),
+resolved from `--root`. Custom tokens, conditions, and recipes are understood,
+not guessed. If that package or config isn't available, the adapter keeps the
+source and reports a configuration residual instead of guessing your
+vocabulary.
+
+## After the codemod
+
+1. **Create your preset** from the tokens the old library used. Panda,
+   StyleX, and DTCG token files convert directly with
+   [`yumcss-codemod tokens`](/design-system/design-tokens/).
+2. **Replace `createUnsafeCss()`** with your typed `css` instance, one file at
+   a time. Class names are identical for identical input, so mixing both
+   doesn't duplicate CSS.
+3. **Let TypeScript list the leftovers**: every raw value that isn't a token
+   becomes a type error you can fix or move to `$raw`.
+
+## Useful options
+
+| Flag                                | Effect                                                              |
+| ----------------------------------- | ------------------------------------------------------------------- |
+| `--from <adapter>`                  | Source adapter (default: auto-detect)                               |
+| `--to css.class \| dss \| tw`       | Target API (default: `css.class`)                                   |
+| `--token-refs off \| bare \| group` | How token references are written                                    |
+| `--tokenize`, `--nearest-tokens`    | Turn raw values into token references, or suggest the nearest token |
+| `--hoist-static-styles`, `--dedup`  | Move static style calls to module scope, deduplicate repeats        |
+| `--out <dir>` / `--force`           | Where generated support modules go / regenerate them                |

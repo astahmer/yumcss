@@ -1,0 +1,170 @@
+---
+title: For designers — createDesignCss()
+description: A design-tool vocabulary ($frame, $layout, $text) for people who think in Figma frames and auto layout rather than CSS properties.
+sidebar:
+  label: For designers
+  order: 4
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import playgroundDss from "../../../assets/screenshots/playground-dss.png";
+
+CSS has around 500 properties. A Figma inspector panel has around 30.
+`createDesignCss()` gives you that panel as an API: **frame**, **auto
+layout**, and **text**, typed against the same preset as `css()`.
+
+```ts
+import { createDesignCss } from "yumcss/design";
+import { preset } from "./preset";
+
+export const dss = createDesignCss(preset);
+
+export const button = dss.class({
+	$frame: { fill: "$brand-600", pad: ["sm", "md"], corners: "md" },
+	$layout: { flow: "stackX", align: "center", gap: "sm" },
+	$text: { color: "$white", weight: "bold", size: "md" },
+	_hover: { $frame: { fill: "$brand-500" } },
+});
+```
+
+It compiles to the same atomic CSS as `css()`:
+
+```css
+.\38 ci1wh {
+	padding: 0.5rem 1rem;
+}
+.\31 ko11iu {
+	border-radius: 8px;
+}
+.\31 lc3nll {
+	gap: 0.5rem;
+}
+.\31 bzcrdd {
+	flex-direction: row;
+}
+.\31 8rkbnd {
+	justify-content: center;
+}
+.oqqhm5 {
+	align-items: center;
+}
+.\31 bx6d14 {
+	background-color: #d9481a;
+}
+.\31 tunnbj {
+	color: #ffffff;
+}
+.\31 gkvvee {
+	font-weight: 700;
+}
+.ikvgnx {
+	font-size: 1rem;
+}
+.k0z3hb:is(:hover, [data-hover]) {
+	background-color: #f2622e;
+}
+```
+
+<PlaygroundLink path="/design-preset" api="dss" label="Design presets scenario (dss)" />
+
+<Screenshot
+	src={playgroundDss}
+	alt="Playground with a createDesignCss button using $frame, $layout, and $text, and its live preview."
+/>
+
+## Who it's for
+
+- **Designers who write code**, or who review it. `$frame.fill` reads like
+  the Fill section in Figma.
+- **Design engineers** turning Figma specs into components, where "auto layout,
+  horizontal, gap 8, padding 8/16" maps one to one.
+- **Teams sharing one style module across platforms.** The same design
+  objects also render to React Native and terminal UIs. See
+  [other platforms](/guides/platforms/).
+
+Engineers who think in CSS should use `css()`. Both share the preset, the
+extractor, `cx()`, and the class names, so you can mix them in one codebase.
+
+## `$frame`: the box
+
+| Key            | Means                                                          | CSS                                                             |
+| -------------- | -------------------------------------------------------------- | --------------------------------------------------------------- |
+| `w`, `h`       | Width, height                                                  | `width`, `height`                                               |
+| `fill`         | Fill color, or an array for a gradient                         | `background-color`, or `background: linear-gradient(135deg, …)` |
+| `border`       | Stroke color, or `{ color, width, style }`                     | `border: 1px solid …`                                           |
+| `corners`      | Corner radius, 1–4 values in Figma order (↖ ↗ ↘ ↙)             | `border-radius`                                                 |
+| `pad`          | Padding, 1–4 values                                            | `padding`                                                       |
+| `padX`, `padY` | Horizontal / vertical padding                                  | `padding-inline`, `padding-block`                               |
+| `overflow`     | `"show"`, `"clip"`, `"scroll"`, `"scroll-hidden"`, or `[x, y]` | `overflow: visible / hidden / scroll / auto`                    |
+| `blurBg`       | Background blur                                                | `backdrop-filter: blur(Npx)`                                    |
+| `opacity`      | 0–100, like the layer opacity field                            | `opacity` (divided by 100)                                      |
+| `z`            | Stacking order                                                 | `z-index`                                                       |
+
+## `$layout`: auto layout
+
+| Key            | Means                                                            | CSS                                                   |
+| -------------- | ---------------------------------------------------------------- | ----------------------------------------------------- |
+| `flow`         | `"stackX"` (horizontal), `"stackY"` (vertical), `"grid"`         | `display: flex` + direction, or `display: grid`       |
+| `align`        | `"center"`, or a 9-point anchor: `"top-left"` … `"bottom-right"` | `justify-content` + `align-items`, based on direction |
+| `gap`          | Spacing between items                                            | `gap`                                                 |
+| `gapX`, `gapY` | Column / row gap                                                 | `column-gap`, `row-gap`                               |
+| `wrap`         | Wrap items                                                       | `flex-wrap`                                           |
+| `cols`, `rows` | Grid tracks                                                      | `repeat(n, minmax(0, 1fr))`                           |
+
+`align` follows the direction, as in Figma: `"top-right"` in a horizontal
+stack means "pack to the end, align to the top".
+
+## `$text`: typography
+
+| Key          | Means                                                                                      | CSS                                          |
+| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `color`      | Text color                                                                                 | `color`                                      |
+| `font`       | Font family                                                                                | `font-family`                                |
+| `size`       | Font size                                                                                  | `font-size`                                  |
+| `weight`     | `100`–`900`, or a named weight                                                             | `font-weight`                                |
+| `align`      | Horizontal alignment                                                                       | `text-align`                                 |
+| `case`       | `"asTyped"`, `"upper"`, `"lower"`, `"title"`                                               | `text-transform`                             |
+| `spacing`    | Line height, or `{ line, letter }`                                                         | `line-height`, `letter-spacing`              |
+| `decoration` | `"underline"`, `"strikethrough"`, `"none"`, or `{ type, style, color, thickness, offset }` | `text-decoration-*`                          |
+| `truncate`   | Single-line ellipsis                                                                       | `overflow` + `text-overflow` + `white-space` |
+| `highlight`  | Highlight color, or `{ text, bg }`                                                         | `background-color`                           |
+
+## Tokens
+
+Design CSS reads tokens from fixed group names, the ones a design tool
+exports: `colors`, `spacing`, `radii`, `fonts`, `fontSizes`, `fontWeights`,
+`lineHeights`, `letterSpacings`. Name your preset's groups like this and every
+field autocompletes. A plain number is pixels.
+
+<Aside type="caution" title="Themes in design CSS">
+	Design CSS writes token **values** into the CSS (`#d9481a`), not CSS
+	variables, and it doesn't accept semantic, theme-dependent tokens. For dark
+	mode, write the variation as a condition (`_dark: { $frame: { fill: "$ink-900" } }`),
+	or use `css()` with [semantic tokens](/design-system/themes/) for themed
+	surfaces.
+</Aside>
+
+## Anything else: `$raw`
+
+Only `$frame`, `$layout`, `$text`, conditions, and selectors are allowed at
+the top level. For a property the panels don't cover (an outline, a
+transition), use `$raw`:
+
+```ts
+dss.class({
+	$frame: { fill: "$white", corners: "lg" },
+	$raw: { outline: "2px solid transparent", transition: "background-color 120ms" },
+});
+```
+
+## From Figma to code
+
+1. **Tokens**: export your variables as W3C design-token (DTCG) or Tokens Studio JSON and convert them into
+   a preset. See [importing design tokens](/design-system/design-tokens/).
+2. **Components**: read the inspector panel top to bottom: frame, then auto
+   layout, then text. Each section maps to one `$` group.
+3. **Review**: the [Inspector](/tools/inspector/) lists every token and where
+   it's used, and exports tokens back out as W3C design-token JSON for
+   Figma plugins.

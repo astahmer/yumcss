@@ -1,0 +1,54 @@
+---
+title: Class-name strategies
+description: Swap how css() names its classes — hashed atoms, readable names, StyleX, Panda, UnoCSS, or Tailwind utilities — without touching component code.
+sidebar:
+  order: 3
+---
+
+A `ClassNameStrategy` decides which class name each declaration gets. The
+style objects, types, and merge rules stay the same. Pass the strategy to
+`createCss` (and the same instance to the extractor):
+
+```ts
+import { createCss } from "yumcss/css";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+
+export const css = createCss(preset, { className: createNamedAtomsStrategy("ui") });
+```
+
+| Import              | Factory                                                                    | Output example                              | CSS owned by |
+| ------------------- | -------------------------------------------------------------------------- | ------------------------------------------- | ------------ |
+| _(default)_         | none                                                                       | `1f29p40`                                   | YumCSS       |
+| `yumcss/css/named`  | `createNamedAtomsStrategy(prefix = "pw")`                                  | `pw-color-$blue-500`, `pw-_hover-color-red` | YumCSS       |
+| `yumcss/css/stylex` | `createStyleXAdapter({ classNamePrefix, debug })`                          | `x1a2b3c`                                   | YumCSS       |
+| `yumcss/css/panda`  | `createPandaAdapter({ propClasses, prefix, conditions })`                  | `bg_red.500`, `hover:bg_red.500`            | Panda        |
+| `yumcss/css/unocss` | `createUnoCssAdapter({ conditions, preset })`                              | `[color:red]`                               | UnoCSS       |
+| `yumcss/tw`         | `createTwAdapter({ variants, bridge, preset })` (generated as `twAdapter`) | `bg-blue-500`, `hover:text-blue-400`        | Tailwind     |
+
+"CSS owned by YumCSS" strategies keep using YumCSS's stylesheet, so `cx()`
+merging works the same. The others hand CSS generation to another engine,
+and the extractor serves an empty `yumcss:css`. See
+[Tailwind classes from css()](/tailwind/tailwind-classes/).
+
+[Try every strategy](/tools/playground/) with the playground's adapter switch.
+
+## Writing your own
+
+```ts
+import type { ClassNameStrategy } from "yumcss/css";
+
+export const prefixed: ClassNameStrategy = {
+	name: "acme",
+	sheetBacked: true,
+	toClassName: (key, value) => `acme-${key}-${value}`.replace(/[^\w-]/g, "_"),
+};
+```
+
+- `key` is the flattened path, including conditions (`_hover__color`), and
+  `value` is the normalized value.
+- Return `null` to fall back to the default hash. A name with whitespace is
+  ignored, and the hash is used.
+- Throw to **refuse** a declaration the target can't express.
+- `sheetBacked: true` means YumCSS still writes the CSS for your class names.
+  Leave it unset when another engine compiles them.
+- `css.vars()` classes aren't affected by strategies.

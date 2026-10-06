@@ -1,0 +1,151 @@
+---
+title: Themes, dark mode & palettes
+description: Semantic tokens that change per theme, several themes at once, and color palettes components can switch between.
+sidebar:
+  order: 2
+---
+
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+A theme in YumCSS is **not** a second stylesheet. It's a set of CSS variable
+overrides under a selector. Components use semantic tokens (`surface`,
+`text`, `accent`), and themes decide what those tokens point to.
+
+## Semantic tokens per theme
+
+Declare the theme switches as conditions, then give each semantic token a
+`base` value plus overrides:
+
+```ts title="src/design-system/preset.ts"
+import { define, presetConditions, type YumCSSProperties } from "yumcss/preset";
+
+const tokens = define.tokens({
+	colors: {
+		"$orange-500": "#f2622e",
+		"$orange-600": "#d9481a",
+		"$teal-500": "#14b8a6",
+		"$teal-600": "#0d9488",
+		"$ink-50": "#faf8f6",
+		"$ink-900": "#1d1916",
+		$white: "#ffffff",
+	},
+});
+
+const themeConditions = {
+	_dark: "[data-theme=dark] &",
+	_ocean: "[data-brand=ocean] &",
+};
+
+const themed = tokens.defineSemanticTokens(
+	{ base: "", ...themeConditions },
+	{
+		semantic: {
+			surface: { base: "colors.$white", _dark: "colors.$ink-900" },
+			text: { base: "colors.$ink-900", _dark: "colors.$ink-50" },
+			accent: { base: "colors.$orange-600", _ocean: "colors.$teal-600" },
+		},
+	},
+);
+
+const config: YumCSSProperties = {};
+
+export const preset = define.preset(define.theme({ config, tokens: themed }), {
+	conditions: { ...presetConditions, ...themeConditions },
+	properties: {
+		color: { $tokens: "semantic" },
+		backgroundColor: { $tokens: "semantic" },
+	},
+});
+```
+
+`base` is the default value, and every other key must also be a condition of
+the preset. The output is one variable per token, with overrides under each
+theme selector:
+
+```css
+:root {
+	--\31 ivw8mx: var(--\31 iwtwtw);
+}
+:root {
+	--oubsci: var(--\31 p9j7qt);
+}
+[data-theme="dark"] {
+	--\31 ivw8mx: var(--\31 p00l0e);
+}
+[data-brand="ocean"] {
+	--oubsci: var(--\31 dh0vad);
+}
+```
+
+Themes are independent axes. `data-theme` (light/dark) and `data-brand`
+(orange/ocean) combine freely, because each one only overrides its own
+tokens.
+
+## Switching themes
+
+YumCSS doesn't ship a theme provider, and it doesn't need one. Set the
+attribute or class your conditions use:
+
+```ts
+document.documentElement.dataset.theme = "dark";
+```
+
+- **Follow the OS:** use a media-query condition,
+  `_dark: "@media (prefers-color-scheme: dark)"`.
+- **No flash on load:** set the attribute in a tiny inline `<script>` in
+  `<head>`, before the body renders, exactly as you would with any CSS-variable
+  theme.
+- **Scoped themes:** the selector `[data-theme=dark] &` matches any ancestor,
+  so `<section data-theme="dark">` themes just that subtree.
+
+## Color palettes
+
+A **color palette** is a set of roles (`solid`, `hover`, `contrast`, …) that
+can be switched per element. Write a component once against
+`colorPalette.*`, then pick the palette where it's used:
+
+```ts
+const colorPalettes = tokens.defineColorPalettes({
+	orange: { solid: "colors.$orange-600", hover: "colors.$orange-500", contrast: "colors.$white" },
+	teal: { solid: "colors.$teal-600", hover: "colors.$teal-500", contrast: "colors.$white" },
+});
+
+export const preset = define.preset(define.theme({ config, tokens: themed }), {
+	conditions: { ...presetConditions, ...themeConditions },
+	colorPalettes,
+	properties: { color: { $tokens: "semantic" }, backgroundColor: { $tokens: "semantic" } },
+});
+```
+
+```ts
+const button = css.class({
+	backgroundColor: "colorPalette.solid",
+	color: "colorPalette.contrast",
+	_hover: { backgroundColor: "colorPalette.hover" },
+});
+
+const tealScope = css.class({ colorPalette: "teal" });
+```
+
+`colorPalette: "teal"` sets the `colorPalette.*` variables on that element.
+Every descendant that uses `colorPalette.solid` then picks up teal. Unknown
+palettes and roles are type errors.
+
+<PlaygroundLink path="/color-palettes" api="css" label="Color palettes scenario" />
+
+## Component tokens
+
+For a component library, add a third layer between semantic tokens and
+components. `component.card.border` points to `semantic.border.default`,
+which points to a raw color. Teams can then re-skin one component without
+touching the others. The [component library guide](/components/component-library/#component-tokens)
+shows the full pattern.
+
+<PlaygroundLink path="/component-tokens" api="css" label="Component token contracts scenario" />
+
+## Tailwind projects
+
+If Tailwind owns your stylesheet, `yumcss-codemod tw generate --tokens <module>`
+writes your preset's tokens into a Tailwind `@theme` block. Condition-aware
+tokens become `.dark { … }` overrides, and a `themes` export becomes
+`[data-theme="…"]` scopes. See [the tw() guide](/tailwind/tw/#use-your-preset-as-the-tailwind-theme).

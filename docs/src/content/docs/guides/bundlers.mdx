@@ -1,0 +1,141 @@
+---
+title: Bundlers & frameworks
+description: Set up YumCSS with Vite, Rollup, webpack, Next.js, and other bundlers through unplugin.
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+YumCSS has two build plugins. Most apps need one of them; apps that use both
+`tw()` and `css()` use both.
+
+| Plugin                   | For              | What it does                                                                        |
+| ------------------------ | ---------------- | ----------------------------------------------------------------------------------- |
+| `yumcssExtractVite(css)` | `css()`, `dss()` | Compiles calls to class strings and serves the atomic stylesheet as `yumcss:css`    |
+| `yumcssVite()`           | `tw()`, `cx()`   | Folds literal `tw()` / static `cx()` calls into class strings before Tailwind scans |
+
+## Vite
+
+Vite is the main integration. It supports React, Preact, Solid, Vue,
+Svelte, and Astro sources (`.jsx/.tsx/.vue/.svelte/.astro`), HMR, and route
+splitting.
+
+<Tabs>
+	<TabItem label="css()">
+
+```ts title="vite.config.ts"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { yumcssExtractVite } from "yumcss/vite";
+import { css } from "./src/design-system/css";
+
+export default defineConfig({
+	plugins: [yumcssExtractVite(css), react()],
+});
+```
+
+    </TabItem>
+    <TabItem label="tw()">
+
+```ts title="vite.config.ts"
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { yumcssVite } from "yumcss/vite";
+
+export default defineConfig({
+	plugins: [yumcssVite(), tailwindcss(), react()],
+});
+```
+
+    </TabItem>
+    <TabItem label="Both">
+
+```ts title="vite.config.ts"
+import { createYumCSSEngineContext, yumcssExtractVite, yumcssVite } from "yumcss/vite";
+import { preset } from "./src/design-system/preset";
+
+const engine = createYumCSSEngineContext({ preset });
+
+export default defineConfig({
+	plugins: [
+		yumcssVite({ css: { preset, engine } }),
+		yumcssExtractVite(preset, { engine }),
+		tailwindcss(),
+		react(),
+	],
+});
+```
+
+A shared engine context lets `cx()` fold `css()` atoms and Tailwind classes
+together, with one atom registry.
+
+    </TabItem>
+
+</Tabs>
+
+Import the stylesheet once, in your entry file: `import "yumcss:css";`. For
+TypeScript, declare the virtual module in `src/vite-env.d.ts`:
+
+```ts
+declare module "yumcss:css";
+```
+
+## Rollup, webpack, Rspack, esbuild, Rolldown, Farm, Bun
+
+The same transforms ship as [unplugin](https://unplugin.unjs.io) adapters:
+
+```sh
+pnpm add -D unplugin
+```
+
+```ts title="rollup.config.mjs"
+import { yumcssRollup, yumcssRollupCss } from "yumcss/unplugin";
+import { preset } from "./src/design-system/preset.js";
+
+export default {
+	plugins: [yumcssRollup({ css: { preset } }), yumcssRollupCss({ preset })],
+};
+```
+
+- `yumcssRollup` / `yumcssRollupCss` and `yumcssWebpack` / `yumcssWebpackCss`
+  are ready-made.
+- For other bundlers, use the generic factories: `yumcssUnplugin.rspack(…)`,
+  `yumcssUnpluginCss.esbuild(…)`, and so on.
+- Outside Vite, the generated `tw` module is only folded when it's imported
+  with a **relative** path. Aliases and bare specifiers are Vite-only.
+- Your bundler still decides how CSS files are loaded (style-loader,
+  mini-css-extract-plugin, …). YumCSS provides the stylesheet content.
+
+Rollup and webpack are covered by real build, watch-rebuild, and browser
+tests. The other bundlers share the same adapter.
+
+## Next.js (webpack)
+
+Next.js uses webpack, so add the CSS plugin in `next.config`:
+
+```js title="next.config.mjs"
+import { yumcssWebpackCss } from "yumcss/unplugin";
+import { preset } from "./src/design-system/preset.js";
+
+export default {
+	webpack(config) {
+		config.plugins.push(
+			yumcssWebpackCss({ preset, root: process.cwd(), virtualId: "yumcss-css.css" }),
+		);
+		return config;
+	},
+};
+```
+
+Then import `yumcss-css.css` from your root layout. Turbopack isn't supported
+yet. For server rendering, see [SSR & streaming](/guides/ssr/).
+
+## Astro, Svelte, Vue, Solid
+
+These use Vite, so `yumcssExtractVite` works as is, and `class=` attributes
+work like `className`. Each framework also has a ready-made layout primitive:
+`yumcss/stack/react`, `/solid`, `/vue`, `/preact`, `/svelte`, and `/astro`
+export a `Stack` component (flex direction, gap, padding, alignment). Static
+`<Stack>` elements can be folded away at build time with `stackFoldVite()`.

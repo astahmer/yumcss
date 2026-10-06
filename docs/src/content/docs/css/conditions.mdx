@@ -1,0 +1,128 @@
+---
+title: Conditions & selectors
+description: States, pseudo-elements, breakpoints, dark mode, container queries, and arbitrary nested selectors in css().
+sidebar:
+  order: 2
+---
+
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+A **condition** is a named selector or at-rule defined by your preset:
+`_hover`, `_dark`, `md`, and so on. Conditions are typed. You can only use the
+ones your preset declares, and your editor suggests them as you type.
+
+## Two ways to write a condition
+
+**As a block**, when several properties change together:
+
+```ts
+css.class({
+	backgroundColor: "$white",
+	color: "$slate-900",
+	_dark: { backgroundColor: "$slate-950", color: "$slate-50" },
+});
+```
+
+**On one property**, when only that value changes:
+
+```ts
+css.class({
+	color: { _hover: "$blue-700", _disabled: "$slate-400" },
+	padding: { md: 24, lg: 32 },
+});
+```
+
+Both produce the same rules. Blocks nest, so a hover state inside a breakpoint
+is `md: { _hover: { … } }`.
+
+## Built-in condition names
+
+The built-in presets share one condition set (`presetConditions`, exported
+from `yumcss/preset`). The most used:
+
+| Group           | Conditions                                                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Interaction     | `_hover`, `_focus`, `_focusVisible`, `_focusWithin`, `_active`, `_disabled`, `_visited`, `_checked`, `_expanded`, `_highlighted` |
+| Pseudo-elements | `_before`, `_after`, `_placeholder`, `_selection`, `_marker`, `_file`, `_backdrop`, `_firstLetter`, `_firstLine`                 |
+| Structure       | `_first`, `_last`, `_only`, `_even`, `_odd`, `_firstOfType`, `_lastOfType`, `_empty`                                             |
+| Relationships   | `_groupHover`, `_groupFocus`, …, `_peerHover`, `_peerFocus`, …                                                                   |
+| Environment     | `_dark`, `_light`, `_motionReduce`, `_motionSafe`, `_print`, `_rtl`, `_ltr`, `_starting`                                         |
+
+Interaction states also match data attributes. `_hover` is
+`&:is(:hover, [data-hover])`, so headless UI libraries that set
+`data-hover` / `data-state` work without extra selectors.
+
+`tailwindPreset` adds the breakpoints `sm`, `md`, `lg`, `xl`, and `2xl` as
+`min-width` media queries (640px → 1536px). `defaultPreset` has **no**
+breakpoints: you define the ones your product uses in
+[your own preset](/design-system/presets/#conditions).
+
+## Responsive styles
+
+Breakpoints are ordinary conditions, and the stylesheet always orders narrower
+media queries before wider ones, whatever order your files were scanned in:
+
+```ts
+css.class({
+	display: "grid",
+	gap: 16,
+	$raw: { gridTemplateColumns: "1fr" },
+	md: { $raw: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" } },
+	xl: { gap: 24, $raw: { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" } },
+});
+```
+
+:::note[Why `$raw` here?]
+The built-in presets are **strict**: a property only accepts tokens and CSS
+keywords. Free-form values such as grid templates, `content`, or filters go
+through `$raw`, which can sit inside any condition. If your product repeats a
+value like this, give it a name in [your preset](/design-system/presets/#tokens)
+(for example a `layouts` token group bound to `gridTemplateColumns`), then use
+`gridTemplateColumns: "two-up"`.
+:::
+
+<PlaygroundLink path="/responsive" api="css" label="Responsive scenario" />
+
+## Nested selectors
+
+A key that contains `&` is a nested selector. `&` is the element itself:
+
+```ts
+css.class({
+	"&[data-state=open]": { borderColor: "$blue-500" },
+	"&::after": { position: "absolute", inset: 0, $raw: { content: '""' } },
+	"& > svg": { flexShrink: 0 },
+	".prose &": { marginBlock: 0 },
+	"&:hover::after, &:focus-visible::after": { opacity: 1 },
+});
+```
+
+Write `content` values as CSS strings: `'""'` or `'"→"'`.
+
+## At-rules
+
+`@media`, `@container`, `@supports`, and `@layer` keys work like conditions,
+and you can mix them with named conditions at any depth:
+
+```ts
+css.class({
+	$raw: { containerType: "inline-size" },
+	"@container (min-width: 28rem)": { flexDirection: "row" },
+	"@supports (backdrop-filter: blur(1px))": { $raw: { backdropFilter: "blur(12px)" } },
+	"@media (prefers-contrast: more)": { _hover: { textDecoration: "underline" } },
+});
+```
+
+<PlaygroundLink path="/container-queries" api="css" label="Container queries scenario" />
+
+If your team uses an at-rule often, give it a name in the preset instead
+(`_supportsHover: ["@media (hover: hover)", "&:hover"]`), so it is spelled the
+same way everywhere.
+
+## Dark mode
+
+`_dark` is `.dark &` in the built-in presets: put a `dark` class on `<html>`.
+For a different switch (`[data-theme=dark] &`, or
+`@media (prefers-color-scheme: dark)`), redefine `_dark` in your preset. The
+cleaner long-term setup is **semantic tokens** that change value per theme, so
+components never mention dark mode at all. See [themes](/design-system/themes/).

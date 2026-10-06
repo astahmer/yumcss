@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import starlightLinksValidator from "starlight-links-validator";
 
 const normalizeBase = (value) => {
 	const path = value ?? "/";
@@ -14,110 +15,112 @@ export default defineConfig({
 	site,
 	integrations: [
 		starlight({
-			title: "yumcss",
+			plugins: [starlightLinksValidator()],
+			title: "YumCSS",
 			description:
-				"Typed style objects that keep Tailwind and CSS familiar while moving known work to build time.",
+				"Typed styles checked against your design system, compiled to plain class strings and atomic CSS at build time.",
+			logo: { src: "./src/assets/logo.svg" },
 			favicon: "favicon.svg",
 			social: [
-				{
-					icon: "github",
-					label: "yumcss on GitHub",
-					href: "https://github.com/astahmer/yumcss",
-				},
+				{ icon: "github", label: "YumCSS on GitHub", href: "https://github.com/astahmer/yumcss" },
 			],
-			editLink: {
-				baseUrl: "https://github.com/astahmer/yumcss/edit/main/docs/",
+			editLink: { baseUrl: "https://github.com/astahmer/yumcss/edit/main/docs/" },
+			customCss: ["./src/styles/theme.css"],
+			expressiveCode: {
+				themes: ["github-dark-default", "github-light-default"],
+				styleOverrides: {
+					borderRadius: "12px",
+					codeBackground: "var(--yum-code-bg)",
+					borderColor: "var(--sl-color-hairline-light)",
+					codeFontFamily: "var(--__sl-font-mono)",
+					codeFontSize: "0.84rem",
+					frames: {
+						shadowColor: "transparent",
+						editorActiveTabIndicatorTopColor: "var(--sl-color-accent)",
+						terminalTitlebarBackground: "var(--yum-surface)",
+						editorTabBarBackground: "var(--yum-surface)",
+					},
+				},
 			},
-			customCss: ["./src/styles/custom.css"],
 			tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
 			sidebar: [
 				{
 					label: "Start here",
-					items: ["getting-started", "why-yumcss"],
+					items: ["start/why", "start/quick-start"],
 				},
 				{
-					label: "Build with yumcss",
+					label: "Styling with css()",
 					items: [
-						"guides/basic",
-						"guides/design-system",
-						"guides/component-library",
-						"guides/migrations",
-						"guides/advanced",
+						"css/overview",
+						"css/conditions",
+						"css/dynamic-styles",
+						"css/composition",
+						"css/escape-hatches",
+						"css/extraction",
 					],
 				},
 				{
-					label: "Authoring and integration",
+					label: "Design systems",
 					items: [
-						{
-							label: "Primary authoring — css()",
-							items: ["api/css"],
-						},
-						{
-							label: "Tailwind integration — tw()",
-							items: ["api/tw"],
-						},
-						{
-							label: "Design systems — createDesignCss()",
-							items: ["api/design-css"],
-						},
-						{
-							label: "Preset contracts — define.preset()",
-							items: ["api/presets"],
-						},
-						{
-							label: "Baseline stylesheets — reset",
-							items: ["api/resets"],
-						},
-						{
-							label: "Prose stylesheets — yumcss/prose",
-							items: ["api/prose"],
-						},
-						{
-							label: "Shared tools — cx() and themes",
-							items: ["api/cx", "api/theming"],
-						},
+						"design-system/presets",
+						"design-system/themes",
+						"design-system/built-in-presets",
+						"design-system/design-css",
+						"design-system/design-tokens",
 					],
 				},
 				{
-					label: "See and ship the result",
+					label: "Component libraries",
+					items: ["components/component-library"],
+				},
+				{
+					label: "Coming from Tailwind",
 					items: [
-						"tooling/workflows",
-						"tooling/codegen",
-						"tooling/vite-plugins",
-						"tooling/multi-bundler",
-						"tooling/codemod",
+						"tailwind/overview",
+						"tailwind/tw",
+						"tailwind/tailwind-classes",
+						"tailwind/migrating-class-strings",
 					],
 				},
 				{
-					label: "Integrations and proofs",
+					label: "Migrating",
+					items: ["migrate/overview"],
+				},
+				{
+					label: "Tools",
 					items: [
-						"interop/tailwind-adapter",
-						"interop/css-in-js-adapters",
-						"interop/migration-adapters",
-						"interop/compatibility",
+						"tools/playground",
+						"tools/inspector",
+						"tools/analyzer",
+						"tools/migration-preview",
+						"tools/devtools",
+						"tools/lint",
+						"tools/mcp",
 					],
+				},
+				{
+					label: "Guides",
+					items: ["guides/bundlers", "guides/ssr", "guides/platforms"],
 				},
 				{
 					label: "Reference",
 					items: [
-						"reference/technical-overview",
-						"reference/adoption",
-						"reference/authored-css",
-						"reference/backends",
-						"reference/ssr",
-						"reference/size",
-						"reference/benchmarks",
-						"reference/limitations",
-						{
-							label: "Ecosystem details",
-							items: ["reference/adapter-contract", "reference/css-in-js-scorecard"],
-						},
+						"reference/api",
+						"reference/vite",
+						"reference/class-name-strategies",
+						"reference/cli",
 					],
 				},
 				{
-					label: "Contributing",
+					label: "Project internals",
+					collapsed: true,
 					items: [
-						"reference/implementation-status",
+						"contributing/limitations",
+						"contributing/size",
+						"contributing/benchmarks",
+						"contributing/api-matrix",
+						"contributing/adapter-contract",
+						"contributing/implementation-status",
 						"contributing/architecture",
 						"contributing/testing",
 					],

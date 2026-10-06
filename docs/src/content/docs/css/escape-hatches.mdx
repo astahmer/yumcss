@@ -1,0 +1,135 @@
+---
+title: Keyframes, globals & escape hatches
+description: Animations, fallbacks, global styles, unchecked values, and runtime CSS-in-JS when you really need it.
+sidebar:
+  label: Escape hatches
+  order: 5
+---
+
+The typed API covers most styling. This page is for everything else, ordered
+from "use this freely" to "use it only when you have to".
+
+## Keyframes
+
+`css.keyframes()` returns an animation name. The extractor writes the
+`@keyframes` rule for you:
+
+```ts
+const spin = css.keyframes({
+	from: { transform: "rotate(0deg)" },
+	to: { transform: "rotate(360deg)" },
+});
+
+export const spinner = css.class({ $raw: { animation: `${spin} 1s linear infinite` } });
+```
+
+```css
+@keyframes pw-kf-lpoaov {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+```
+
+The name is a hash of the steps, so the same animation declared twice is
+written once. Named, design-level animations (`fade-in`, `slide-up`) belong in
+the preset's `keyframes` instead, so that every package uses the same ones.
+See [preset web styles](/design-system/presets/#global-styles-fonts-and-keyframes).
+
+## Fallback values: `firstThatWorks()`
+
+Emits the same property several times, so older browsers use the first value
+they understand:
+
+```ts
+import { firstThatWorks } from "yumcss/css";
+
+css.class({ position: firstThatWorks("sticky", "-webkit-sticky") });
+// .ednn4j{position:-webkit-sticky;position:sticky}
+```
+
+## Unchecked values: `$raw`
+
+`$raw` holds declarations that skip value checking. It merges in source
+order with the rest of the object, and it can sit inside any condition:
+
+```ts
+css.class({
+	padding: 16,
+	$raw: { gridTemplateColumns: "subgrid", color: "var(--brand-ink)" },
+	md: { $raw: { gridTemplateColumns: "repeat(3, 1fr)" } },
+});
+```
+
+Use it for one-offs. If a value keeps coming back, make it a token. The
+[`prefer-typed-css-values` lint rule](/tools/lint/) rewrites `$raw` values that
+already match a token or a typed value.
+
+## Global styles, fonts, and resets
+
+YumCSS styles elements through classes. For document-level CSS you have two
+options:
+
+- **Preset `web` styles**: flat global rules (`body`, `:root`, `a`), named
+  keyframes, and `@font-face` declarations, typed against your tokens. See
+  [presets](/design-system/presets/#global-styles-fonts-and-keyframes).
+- **Plain CSS files**: resets, `@layer` order, third-party CSS. YumCSS ships
+  [resets and a prose stylesheet](/design-system/built-in-presets/#resets-and-prose)
+  as ordinary CSS imports.
+
+## Opting out of the preset: `createUnsafeCss()`
+
+```ts
+import { createUnsafeCss } from "yumcss/unsafe/css";
+
+const looseCss = createUnsafeCss();
+looseCss.class({ anyProperty: "any value" });
+```
+
+Same API, no vocabulary, no checks. It exists so migrated code can compile
+before it's typed. The [migration tools](/migrate/overview/) output it when
+the source has no matching tokens. It produces the **same class names** as a
+typed instance for the same input, so you can type a file at a time without
+duplicating any CSS.
+
+## Runtime CSS-in-JS
+
+Some products really do define styles from data: theme editors, user-built
+pages, and the like. `yumcss/css/runtime` gives you the same API backed by a
+live stylesheet:
+
+```ts
+import { createRuntimeCss, createRuntimeSheet } from "yumcss/css/runtime";
+import { preset } from "./preset";
+
+const sheet = createRuntimeSheet({ autoMount: true });
+export const runtimeCss = createRuntimeCss(preset, { sheet });
+
+runtimeCss.class({ color: userPickedToken });
+```
+
+- In the browser, rules are injected the first time they're used, and one
+  sheet is shared per preset.
+- On the server, `sheet.css()` returns the collected CSS for the request.
+  `snapshot()` / `hydrate()` pass it to the client, and `nonce` supports CSP.
+
+Use it for the parts that need it, and keep the rest of the app on
+build-time `css()`. The two produce compatible class names.
+
+## Overriding third-party CSS: cascade modes
+
+If YumCSS classes have to beat CSS you don't control, pick a cascade mode
+when creating the instance. Don't reach for `!important`; YumCSS doesn't
+support it.
+
+```ts
+createCss(preset, { cascade: "layers" }); // wrap output in @layer yumcss
+createCss(preset, { cascade: { mode: "layers", layer: "components" } });
+createCss(preset, { cascade: "specificity" }); // raise specificity StyleX-style
+```
+
+Pass the same instance to `yumcssExtractVite` and the extractor uses the same
+mode.

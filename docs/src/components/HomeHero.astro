@@ -1,0 +1,217 @@
+---
+import { Code } from "@astrojs/starlight/components";
+import { playgroundHref } from "../site-links";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const source = `import { css } from "./css";
+
+export const Card = () => (
+  <article
+    className={css.class({
+      display: "flex",
+      gap: 16,
+      padding: 24,
+      borderRadius: "xl",
+      backgroundColor: "$white",
+      _hover: { boxShadow: "lg" },
+      md: { flexDirection: "row" },
+    })}
+  />
+);`;
+
+const output = `.\\31 f29p40{display:flex}
+.helpgx{gap:16px}
+.\\36 cjt53{padding:24px}
+.\\31 4edf0f{border-radius:var(--\\31 gaqnhn)}
+.d660fb{background-color:var(--\\31 iwtwtw)}
+.dojbs2:is(:hover, [data-hover]){box-shadow:var(--ux1uu9)}
+@media (min-width: 768px){.\\31 nmsz89{flex-direction:row}}`;
+---
+
+<section class="hero not-content">
+	<div class="hero__copy">
+		<p class="hero__eyebrow">Typed styles · zero-runtime CSS</p>
+		<h1 class="hero__title">
+			Your design system,<br /><span>as a type system.</span>
+		</h1>
+		<p class="hero__lead">
+			YumCSS checks every style against your tokens while you type, then compiles it to plain
+			class strings and one atomic stylesheet at build time. Bring your Tailwind, your Figma
+			tokens, or your old CSS-in-JS along.
+		</p>
+		<div class="hero__actions">
+			<a class="button button--primary" href={`${base}/start/quick-start/`}>Get started</a>
+			<a class="button" href={playgroundHref({ path: "/basics", api: "css" })} target="_blank" rel="noopener">
+				Open the playground ↗
+			</a>
+		</div>
+		<pre class="hero__install"><span>$</span> pnpm add yumcss</pre>
+	</div>
+	<div class="hero__demo">
+		<div class="hero__panel">
+			<p class="hero__label">You write</p>
+			<Code code={source} lang="tsx" />
+		</div>
+		<div class="hero__arrow" aria-hidden="true">↓ build</div>
+		<div class="hero__panel">
+			<p class="hero__label">The browser gets <code>className="1f29p40 helpgx 6cjt53 …"</code></p>
+			<Code code={output} lang="css" />
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		display: grid;
+		gap: 3rem;
+		align-items: center;
+		padding-block: 2.5rem 3.5rem;
+	}
+	.hero::before {
+		content: "";
+		position: absolute;
+		top: -6rem;
+		left: 50%;
+		width: 100vw;
+		height: 34rem;
+		transform: translateX(-50%);
+		background:
+			radial-gradient(40rem 22rem at 20% 20%, var(--yum-glow), transparent 70%),
+			radial-gradient(30rem 18rem at 85% 40%, hsl(40 90% 60% / 0.08), transparent 70%);
+		pointer-events: none;
+		z-index: -1;
+	}
+	@media (min-width: 64rem) {
+		.hero {
+			grid-template-columns: 1.05fr 1fr;
+			gap: 3.5rem;
+		}
+	}
+	.hero__eyebrow {
+		display: inline-block;
+		margin: 0 0 1.25rem;
+		padding: 0.3rem 0.75rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 999px;
+		background: var(--yum-surface);
+		color: var(--sl-color-text-accent);
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+	.hero__title {
+		margin: 0;
+		font-family: var(--yum-font-display);
+		font-size: clamp(2.6rem, 6vw, 4.4rem);
+		font-weight: 750;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		color: var(--sl-color-white);
+	}
+	.hero__title span {
+		background: linear-gradient(100deg, var(--sl-color-accent) 10%, hsl(38 92% 60%) 90%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	.hero__lead {
+		max-width: 34rem;
+		margin: 1.5rem 0 0;
+		font-size: 1.15rem;
+		line-height: 1.6;
+		color: var(--sl-color-gray-2);
+	}
+	.hero__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+	.button {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.7rem 1.2rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 12px;
+		background: var(--yum-surface);
+		color: var(--sl-color-white);
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			transform 160ms,
+			border-color 160ms,
+			background-color 160ms;
+	}
+	.button:hover {
+		border-color: var(--sl-color-accent);
+		transform: translateY(-1px);
+	}
+	.button--primary {
+		border-color: transparent;
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+	}
+	.button--primary:hover {
+		background: var(--sl-color-accent-high);
+		border-color: transparent;
+	}
+	:root[data-theme="light"] .button--primary {
+		color: white;
+	}
+	:root[data-theme="light"] .button--primary:hover {
+		background: var(--sl-color-accent-high);
+	}
+	.hero__install {
+		display: inline-block;
+		margin: 1.5rem 0 0;
+		padding: 0.55rem 0.9rem;
+		border: 1px dashed var(--sl-color-hairline-light);
+		border-radius: 10px;
+		font-family: var(--__sl-font-mono);
+		font-size: 0.85rem;
+		color: var(--sl-color-gray-2);
+		background: transparent;
+	}
+	.hero__install span {
+		color: var(--sl-color-accent);
+		user-select: none;
+	}
+	.hero__demo {
+		display: grid;
+		gap: 0.6rem;
+		min-width: 0;
+	}
+	.hero__panel {
+		min-width: 0;
+		padding: 0.9rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 18px;
+		background: var(--yum-surface);
+		box-shadow: 0 30px 80px -40px var(--yum-glow);
+	}
+	.hero__panel :global(.expressive-code) {
+		margin: 0;
+	}
+	.hero__label {
+		margin: 0 0 0.6rem;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--sl-color-gray-3);
+	}
+	.hero__label code {
+		text-transform: none;
+		letter-spacing: 0;
+		font-size: 0.75rem;
+		color: var(--sl-color-text-accent);
+	}
+	.hero__arrow {
+		justify-self: center;
+		font-family: var(--__sl-font-mono);
+		font-size: 0.78rem;
+		color: var(--sl-color-gray-3);
+	}
+</style>

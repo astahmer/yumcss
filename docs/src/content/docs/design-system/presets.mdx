@@ -1,0 +1,309 @@
+---
+title: Create a preset
+description: Define your tokens, conditions, and property vocabulary once, and every css() call is checked against them.
+sidebar:
+  order: 1
+---
+
+import { Aside, FileTree } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import inspectorTokens from "../../../assets/screenshots/inspector-tokens.png";
+
+A **preset** is your design system as data. It answers three questions:
+
+1. **Tokens**: which values exist? (`$brand-600`, `md`, `lg`, …)
+2. **Conditions**: which states and breakpoints exist? (`_hover`, `_dark`, `md`, …)
+3. **Properties**: which CSS properties may be used, and which token group
+   does each one accept?
+
+Every `css()` call is checked against these answers. If it isn't in the
+preset, it doesn't type-check.
+
+<FileTree>
+
+- src/
+  - design-system/
+    - preset.ts the source of truth
+    - css.ts `createCss(preset)`
+    - design.ts `createDesignCss(preset)` (optional, see [Design CSS](/design-system/design-css/))
+  - main.tsx imports `yumcss:css` once
+
+</FileTree>
+
+## A complete preset
+
+```ts title="src/design-system/preset.ts"
+import { define, presetConditions, type YumCSSProperties } from "yumcss/preset";
+
+const tokens = define.tokens({
+	colors: {
+		"$brand-50": "#fff4ed",
+		"$brand-500": "#f2622e",
+		"$brand-600": "#d9481a",
+		"$ink-50": "#faf8f6",
+		"$ink-100": "#f1ede8",
+		"$ink-700": "#433b35",
+		"$ink-900": "#1d1916",
+		$white: "#ffffff",
+	},
+	spacing: { xs: "0.25rem", sm: "0.5rem", md: "1rem", lg: "1.5rem", xl: "2.5rem" },
+	radii: { sm: "4px", md: "8px", lg: "14px", full: "9999px" },
+	fonts: {
+		body: "Inter, system-ui, sans-serif",
+		display: "'Bricolage Grotesque', Inter, sans-serif",
+	},
+	fontSizes: { sm: "0.875rem", md: "1rem", lg: "1.25rem", xl: "1.75rem" },
+	fontWeights: { regular: "400", medium: "500", bold: "700" },
+});
+
+const themed = tokens.defineSemanticTokens(
+	{ base: "", _dark: ".dark &" },
+	{
+		semantic: {
+			surface: { base: "colors.$white", _dark: "colors.$ink-900" },
+			text: { base: "colors.$ink-900", _dark: "colors.$ink-50" },
+			muted: { base: "colors.$ink-700", _dark: "colors.$ink-100" },
+			accent: { base: "colors.$brand-600", _dark: "colors.$brand-500" },
+		},
+	},
+);
+
+const config: YumCSSProperties = {};
+
+export const preset = define.preset(
+	define.theme({ config, tokens: themed }),
+	{
+		strict: true,
+		conditions: {
+			...presetConditions,
+			sm: "@media (min-width: 640px)",
+			md: "@media (min-width: 768px)",
+			lg: "@media (min-width: 1024px)",
+		},
+		properties: {
+			display: true,
+			flexDirection: true,
+			alignItems: true,
+			justifyContent: true,
+			color: { $tokens: "semantic" },
+			backgroundColor: { $tokens: "semantic" },
+			borderColor: { $tokens: "colors" },
+			padding: { $tokens: "spacing" },
+			paddingInline: { $tokens: "spacing" },
+			gap: { $tokens: "spacing" },
+			borderRadius: { $tokens: "radii" },
+			fontFamily: { $tokens: "fonts" },
+			fontSize: { $tokens: "fontSizes" },
+			fontWeight: { $tokens: "fontWeights" },
+		},
+	},
+	{
+		globals: { body: { fontFamily: "body", color: "text", backgroundColor: "surface" } },
+		keyframes: { "fade-in": { from: { opacity: 0 }, to: { opacity: 1 } } },
+		fontFaces: {
+			display: {
+				family: "Bricolage Grotesque",
+				src: 'url("/fonts/bricolage.woff2") format("woff2")',
+				display: "swap",
+			},
+		},
+	},
+);
+```
+
+```ts title="src/design-system/css.ts"
+import { createCss } from "yumcss/css";
+import { preset } from "./preset";
+
+export const css = createCss(preset);
+```
+
+Now components speak your vocabulary, and nothing else:
+
+```ts
+css.class({
+	padding: "lg",
+	gap: "md",
+	backgroundColor: "surface",
+	color: "text",
+	md: { padding: "xl" },
+});
+
+css.class({ color: "$brand-500" }); // ❌ color only accepts semantic tokens
+css.class({ padding: "20px" }); // ❌ not a spacing token
+```
+
+The rest of this page walks through each part.
+
+## Tokens
+
+`define.tokens()` takes **groups** of named values. Group names are up to you,
+and so are token names. The `$` prefix used for raw palette colors is a
+convention, not a rule: it keeps raw colors (`$brand-600`) visually separate
+from semantic roles (`surface`).
+
+A token is referenced by its **name**, without its group. The property's
+binding already says which group to look in, so `padding: "lg"` means
+`spacing.lg`.
+
+Tokens bound with `{ $tokens: "group" }` become CSS custom properties, and
+only the ones that are used are emitted:
+
+```css
+:root {
+	--\31 iwtwtw: #ffffff;
+}
+.\31 36tdjh {
+	background-color: var(--\31 ivw8mx);
+}
+```
+
+Variable names are hashed by default. To get readable, stable variable names
+(for example to share them with non-YumCSS CSS), add `tokenVariables` to the
+preset and create the instance with `tokenVariableNames: "authored"`. The
+[shadcn preset](/design-system/built-in-presets/) does this to emit
+`--background`, `--radius`, and so on.
+
+### Semantic tokens
+
+`defineSemanticTokens(conditions, groups)` adds tokens whose value depends on a
+condition. Values point at other tokens (`"colors.$ink-900"`), and the
+reference is kept in the CSS, so a theme only overrides what changes:
+
+```css
+:root {
+	--\31 ivw8mx: var(--\31 iwtwtw);
+}
+.dark {
+	--\31 ivw8mx: var(--\31 p00l0e);
+}
+```
+
+Components use `backgroundColor: "surface"` and never mention dark mode. The
+[themes guide](/design-system/themes/) covers multiple themes, scoped themes,
+and color palettes.
+
+<Aside type="tip" title="Bind roles, not palettes">
+	Binding `color` and `backgroundColor` to the `semantic` group, not to `colors`, is the most useful
+	rule a design system can enforce. Raw palette colors can't leak into components, so a re-theme is
+	a token change.
+</Aside>
+
+## Conditions
+
+`conditions` maps a name to a selector or at-rule. `&` is the element:
+
+```ts
+conditions: {
+	...presetConditions, // _hover, _focusVisible, _disabled, _dark, _before, …
+	md: "@media (min-width: 768px)",
+	_dark: "[data-theme=dark] &",
+	_open: "&[data-state=open]",
+	_supportsHover: ["@media (hover: hover)", "&:hover"], // nested: media, then selector
+}
+```
+
+Spread `presetConditions` from `yumcss/preset` to keep the standard
+interaction and pseudo-element names, then add your breakpoints and product
+states. Every key you add is typed in `css()` straight away.
+
+## Properties
+
+`properties` decides what authors may write. Each key is a CSS property:
+
+| Binding                                 | Accepts                                                                 |
+| --------------------------------------- | ----------------------------------------------------------------------- |
+| `true`                                  | The property's CSS keywords (`display: "flex"`, `position: "sticky"`)   |
+| `{ $tokens: "group" }`                  | Token names from that group, emitted as CSS variables                   |
+| `{ sm: "4px", md: "8px" }` (inline map) | Those names, emitted as literal values (no variable)                    |
+| `{ $tokens: "group", $strict: false }`  | Token names, plus the values the `config` type allows for that property |
+| `$all: true` (top-level key)            | Adds every property in `config`, without binding tokens                 |
+
+A property that isn't listed can't be used, except through
+[`$raw`](/css/escape-hatches/#unchecked-values-raw). Starting small is a
+feature: the property list is the API your design system offers.
+
+### Strictness
+
+`strict: true` (the default) means a bound property only accepts its tokens.
+That's what makes "no off-palette colors" enforceable. Open a single binding
+with `$strict: false` when a property needs a few free-form values next to
+its scale, and keep one-off values in `$raw`, where reviewers can see them.
+
+## Global styles, fonts, and keyframes
+
+The optional third argument of `define.preset()` holds document-level CSS,
+typed against your tokens:
+
+| Key         | Emits                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `globals`   | Flat `selector → declarations` rules (`body`, `:root`, `a`, `::selection`)            |
+| `keyframes` | Named `@keyframes`, with the name kept as written                                     |
+| `fontFaces` | `@font-face` rules (`family`, `src`, `weight`, `style`, `display`, `unicodeRange`, …) |
+
+```css
+@font-face {
+	font-family: Bricolage Grotesque;
+	src: url("/fonts/bricolage.woff2") format("woff2");
+	font-display: swap;
+}
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+body {
+	background-color: var(--\31 ivw8mx);
+	color: var(--\31 46r8y0);
+	font-family: var(--\31 1mfgfv);
+}
+```
+
+These are written by the build-time extractor only. Globals can't nest
+selectors or at-rules. For a reset or anything more involved, use a plain CSS
+file (see [resets](/design-system/built-in-presets/#resets-and-prose)).
+
+## Building on a built-in preset
+
+There is no `extend()`. Presets are plain objects, so you compose them by
+spreading the exported pieces:
+
+```ts
+import { define, type YumCSSProperties } from "yumcss/preset";
+import { tailwindConditions, tailwindProperties, tailwindTokens } from "yumcss/preset/tailwindcss";
+
+// Keep only the token groups: the catalog's helper methods aren't tokens.
+const { defineSemanticTokens, defineColorPalettes, ...tailwindGroups } = tailwindTokens;
+
+const tokens = define.tokens({
+	...tailwindGroups,
+	colors: { ...tailwindGroups.colors, "$brand-500": "#f2622e" },
+});
+
+const config: YumCSSProperties = {};
+
+export const preset = define.preset(
+	{ config, tokens },
+	{
+		conditions: { ...tailwindConditions, _dark: "[data-theme=dark] &" },
+		properties: tailwindProperties,
+	},
+);
+```
+
+## See your preset
+
+The [Inspector](/tools/inspector/) shows every token, how often it's used,
+which tokens are never used, and how semantic tokens reference each other.
+Designers can review the system without reading TypeScript.
+
+<Screenshot
+	src={inspectorTokens}
+	alt="Inspector token catalog with color swatches, token counts, and filter chips."
+/>
+
+<PlaygroundLink path="/design-preset" api="css" label="Design presets scenario" />

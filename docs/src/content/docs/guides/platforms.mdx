@@ -1,0 +1,86 @@
+---
+title: React Native, terminals & beyond
+description: Render the same design-vocabulary styles to React Native, OpenTUI terminal apps, and React Strict DOM.
+sidebar:
+  label: Other platforms
+  order: 3
+---
+
+YumCSS's style objects aren't tied to CSS. A **backend** turns the same
+design vocabulary into whatever the platform understands.
+
+| Import                        | Target                                                           | Output                                         |
+| ----------------------------- | ---------------------------------------------------------------- | ---------------------------------------------- |
+| `yumcss/css`, `yumcss/design` | Web                                                              | Atomic class names and an extracted stylesheet |
+| `yumcss/react-native`         | React Native / react-native-web                                  | Stable style objects for `style` props         |
+| `yumcss/opentui`              | Terminal UIs ([OpenTUI](https://github.com/sst/opentui))         | Terminal style objects, lengths in cells       |
+| `yumcss/react-strict-dom`     | [React Strict DOM](https://github.com/facebook/react-strict-dom) | `css.create()` styles for web and native       |
+
+## Write once, render everywhere
+
+Type shared styles against your preset with `DesignStyleObject`, then let each
+platform lower them:
+
+```ts title="shared-styles.ts"
+import type { DesignStyleObject } from "yumcss/design";
+import type { preset } from "./design-system/preset";
+
+type Styles = DesignStyleObject<typeof preset>;
+
+export const header: Styles = {
+	$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
+	$text: { color: "$white" },
+};
+
+export const status: Styles = {
+	$frame: { fill: "$gray-100" },
+	_dark: { $frame: { fill: "$gray-900" } },
+};
+```
+
+```tsx title="native/App.tsx"
+import { View } from "react-native";
+import { createDesignCss } from "yumcss/react-native";
+import { preset } from "../design-system/preset";
+import { header } from "../shared-styles";
+
+let isDark = false;
+const dss = createDesignCss(preset, { conditions: { dark: () => isDark } });
+
+export const Header = () => <View style={dss(header)} />;
+```
+
+- **React Native** has no selectors, so conditions are resolved at render
+  time through functions (`dark: () => isDark`), and `cx()` merges style
+  objects with the last one winning.
+- **OpenTUI** has the same API. Lengths are rounded to terminal cells, and
+  properties terminals can't do (fonts, for instance) are rejected loudly
+  instead of being dropped.
+- Keep shared modules to what all your targets support. Typography is
+  web/native only.
+
+## React Strict DOM
+
+`yumcss/react-strict-dom` exposes `createCss()` with RSD's `css.create()`
+shape, so one component file renders on web and native through React Strict
+DOM's own hosts:
+
+```tsx
+import { html } from "react-strict-dom";
+import { createCss } from "yumcss/react-strict-dom";
+
+const css = createCss();
+const styles = css.create({
+	card: { backgroundColor: "white", borderRadius: "8px", padding: "1rem" },
+	selected: { borderColor: "blue", borderWidth: "2px" },
+});
+
+export const Card = (props: { selected: boolean }) => (
+	<html.div style={[styles.card, props.selected && styles.selected]}>
+		React Strict DOM + YumCSS
+	</html.div>
+);
+```
+
+In the `.native.tsx` file, create it with
+`createCss({ platform: ReactStrictDomPlatform.Native })`.

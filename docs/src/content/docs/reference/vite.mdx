@@ -1,0 +1,54 @@
+---
+title: Vite plugin options
+description: Options for yumcssExtractVite, yumcssVite, stackFoldVite, and the shared engine context.
+sidebar:
+  label: Vite plugins
+  order: 2
+---
+
+`import { yumcssExtractVite, yumcssVite, stackFoldVite, createYumCSSEngineContext } from "yumcss/vite"`
+
+## `yumcssExtractVite(cssOrPreset, options?)`
+
+Compiles `css()` / `dss()` calls and serves the atomic stylesheet. The first
+argument is your css instance (preferred, because its options are inherited)
+or a preset.
+
+| Option                      | Default                                     | Effect                                                                                   |
+| --------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `cssSources`                | `["css", "design"]`                         | Import sources whose last segment marks a css instance module                            |
+| `include`                   | `/\.(?:[cm]?[jt]sx?\|vue\|svelte\|astro)$/` | Files to scan                                                                            |
+| `exclude`                   | `[/node_modules/, /dist/, /\.git/]`         | Files to skip                                                                            |
+| `virtualId`                 | `"yumcss:css"`                              | Stylesheet module id. Must be unique per plugin instance                                 |
+| `splitByRoute`              | none                                        | `[{ match: RegExp, name, html? }]`: per-route CSS chunks                                 |
+| `inlineCritical`            | none                                        | `true \| { capBytes }`: inline each route's CSS into its HTML (needs `html`)             |
+| `libraries`                 | none                                        | Packages exposing `yumcss.lib.json` to include                                           |
+| `className`                 | from the instance                           | `ClassNameStrategy`. Non-sheet strategies make the stylesheet empty                      |
+| `cascade`                   | from the instance                           | `"specificity" \| "layers" \| { mode: "layers", layer }`                                 |
+| `namespace`                 | `"pw"`                                      | Must match the instance                                                                  |
+| `tokenVariableNames`        | from the instance                           | `"authored"` to keep preset variable names                                               |
+| `engine`                    | none                                        | Shared `createYumCSSEngineContext({ preset })` (must use the same preset)                |
+| `transformDynamicClassName` | `false`                                     | Rewrite `className={css.class({ color: dynamic })}` into a `{ className, style }` spread |
+| `debug`                     | `false`                                     | Prepend a file:line origin manifest to the CSS (dev)                                     |
+| `root`                      | `process.cwd()`                             | Project root                                                                             |
+
+Virtual modules: `yumcss:css` (the stylesheet), `yumcss:css?route=<name>`
+(route chunks), `yumcss:css-manifest` (route → module id).
+
+## `yumcssVite(options?)`
+
+Folds literal `tw()` and static `cx()` calls before Tailwind scans.
+
+| Option           | Default       | Effect                                                                               |
+| ---------------- | ------------- | ------------------------------------------------------------------------------------ |
+| `twSources`      | basename `tw` | Imports that refer to your generated `tw` module                                     |
+| `cxSources`      | basename `cx` | Imports that refer to your `cx` module                                               |
+| `css`            | none          | `{ preset, engine?, className?, cssSources? }`: fold `css()` atoms inside `cx()`     |
+| `exclude`        | none          | `RegExp[]` of files to skip                                                          |
+| `onUnresolved`   | `"off"`       | `"warn" \| "error"` on folded classes outside your design system or arbitrary values |
+| `onTwCandidates` | none          | Callback receiving the finite set of classes from dynamic calls (for a safelist)     |
+
+## `stackFoldVite(options?)`
+
+Folds static `<Stack>` elements from `yumcss/stack/*` into plain elements
+with classes. Options: `engine`, `classAttribute`.

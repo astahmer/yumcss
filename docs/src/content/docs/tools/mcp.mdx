@@ -1,0 +1,43 @@
+---
+title: MCP server for AI agents
+description: Let coding agents inspect your styles, preview and validate migrations, and run the analyzer through the Model Context Protocol.
+sidebar:
+  label: MCP server
+  order: 7
+---
+
+`yumcss-analyze mcp` starts a [Model Context Protocol](https://modelcontextprotocol.io)
+server over stdio. Coding agents (Claude Code, Cursor, and others) can then
+use YumCSS's own analysis instead of guessing from source text.
+
+```sh
+claude mcp add yumcss -- npx yumcss-analyze mcp --root .
+```
+
+```json title=".mcp.json"
+{
+	"mcpServers": {
+		"yumcss": { "command": "npx", "args": ["yumcss-analyze", "mcp", "--root", "."] }
+	}
+}
+```
+
+## Tools
+
+| Tool                    | What the agent can do                                                           |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `inspect_project`       | Detect styling libraries, source files, and project evidence                    |
+| `analyze_project`       | Run the analyzer (folding and CSS) and return its JSON report                   |
+| `inspect_style_program` | Read the semantic program for source expressions: tokens, conditions, residuals |
+| `preview_migration`     | Preview a migration route without writing anything                              |
+| `compare_migrations`    | Compare several routes for the same files: code, residuals, validation          |
+| `validate_migration`    | Run read-only migration validation and adapter contract checks                  |
+| `apply_migration`       | Write a migration after conflict checks. Requires `confirm: true`               |
+| `benchmark_project`     | Measure scanning and migration throughput                                       |
+
+The server also exposes read-only **resources**: the adapter catalog, the API
+matrix, route proofs, the latest migration report, residual explanations, and
+the project's interop artifact.
+
+Writing files always needs explicit confirmation, so an agent can explore
+and propose a migration without changing your code.

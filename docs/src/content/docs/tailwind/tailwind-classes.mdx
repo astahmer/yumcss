@@ -1,0 +1,117 @@
+---
+title: Tailwind classes from css()
+description: Author with CSS property names and your preset, and emit real Tailwind utilities through a generated ClassNameStrategy.
+sidebar:
+  order: 3
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import adapterShot from "../../../assets/screenshots/playground-tailwind-adapter.png";
+
+Some teams want to write CSS (`backgroundColor`, `_hover`) but have to ship
+Tailwind classes, because the rest of the app, a design-system package, or a
+server-rendered template expects them. The **Tailwind adapter** is a
+[class-name strategy](/reference/class-name-strategies/). `css()` stays the
+same, and only its output changes:
+
+```ts
+css.class({
+	backgroundColor: "$blue-600",
+	color: "$white",
+	borderRadius: "lg",
+	_hover: { backgroundColor: "$blue-700" },
+});
+// atomic strategy  → "1418sn9 c0xeqe x87fs 12yp87z"
+// Tailwind adapter → "bg-brand text-white rounded-lg hover:bg-blue-700"
+```
+
+Tailwind compiles those classes as usual, and `yumcss:css` is empty.
+
+<Screenshot
+	src={adapterShot}
+	alt="Playground Basics scenario with the class-name adapter set to Tailwind."
+/>
+
+## How it maps
+
+The adapter reads a generated **bridge**: a table from (CSS property, resolved
+value) to the Tailwind utility that produces exactly that declaration.
+
+| `css()` input                                  | Output                |
+| ---------------------------------------------- | --------------------- |
+| `{ display: "flex" }`                          | `flex`                |
+| `{ borderRadius: "md" }`                       | `rounded-md`          |
+| `{ width: "3.5rem" }`                          | `w-14`                |
+| `{ _hover: { color: "$blue-400" } }`           | `hover:text-blue-400` |
+| `{ md: { flexDirection: "row" } }`             | `md:flex-row`         |
+| `{ padding: 16 }` (no utility with that value) | `[padding:16px]`      |
+
+- A value with no exact utility becomes an **arbitrary property**, so the
+  output is still correct, just less idiomatic.
+- A preset condition with no Tailwind variant becomes an arbitrary variant,
+  for example `[&:hover]:`.
+- Things Tailwind can't express **throw** instead of producing wrong CSS:
+  dynamic `$input` values, `firstThatWorks()`, or one key that sets several
+  properties.
+
+## Setup
+
+<Steps>
+
+1. **Make your preset the Tailwind theme.** The adapter only produces theme
+   utilities like `bg-brand-600` when Tailwind's theme contains the same token
+   values as your preset. Generate the theme from the preset, and the bridge
+   with it:
+
+   ```sh
+   pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src \
+     --tokens ./src/design-system/preset.ts \
+     --bridge --preset-import ./design-system/preset --preset-export preset
+   ```
+
+   ```css title="src/tailwind.css"
+   @import "tailwindcss";
+   @import "./yumcss-theme.css";
+   ```
+
+2. **Use the generated adapter.** `bridge.ts` exports a ready-made `twAdapter`:
+
+   ```ts title="src/design-system/css.ts"
+   import { createCss } from "yumcss/css";
+   import { twAdapter } from "../bridge";
+   import { preset } from "./preset";
+
+   export const css = createCss(preset, { className: twAdapter });
+   ```
+
+3. **Pass the same instance to the extractor** so literal calls are inlined
+   as Tailwind strings before Tailwind scans your files:
+
+   ```ts title="vite.config.ts"
+   import tailwindcss from "@tailwindcss/vite";
+   import { yumcssExtractVite } from "yumcss/vite";
+   import { css } from "./src/design-system/css";
+
+   export default defineConfig({
+   	plugins: [yumcssExtractVite(css), tailwindcss(), react()],
+   });
+   ```
+
+</Steps>
+
+<Aside type="caution" title="Use a preset whose values Tailwind knows">
+	The bridge matches **resolved values**. A preset whose tokens are not in Tailwind's theme (for
+	example the built-in `tailwindPreset`, whose colors compile to YumCSS variables) maps to arbitrary
+	properties that reference variables Tailwind never defines. Generate the theme from your preset
+	with `--tokens`, as in step 1.
+</Aside>
+
+<PlaygroundLink path="/basics" api="css" label="Try the adapter switch in the playground" />
+
+## Leaving Tailwind later
+
+Because the source is plain `css()`, dropping Tailwind is a one-line change:
+remove `className: twAdapter`, and the same calls produce atomic classes
+from YumCSS's own stylesheet. See [how extraction works](/css/extraction/).

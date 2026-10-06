@@ -16,7 +16,7 @@
 		".studio-history/**",
 		"apps/inspector/.studio-history/**",
 		"benchmarks/styling-size/snapshots/bundle-size.json",
-		"docs/src/content/docs/reference/size.md",
+		"docs/src/content/docs/contributing/size.md",
 		"**/dist/**",
 		"plans/evidence/**/*.json"
 	]

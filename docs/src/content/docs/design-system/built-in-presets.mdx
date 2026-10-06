@@ -1,0 +1,82 @@
+---
+title: Built-in presets, resets & prose
+description: Ready-made presets that mirror Tailwind, shadcn/ui, Chakra, and Panda, plus CSS resets and a prose stylesheet.
+sidebar:
+  label: Built-in presets
+  order: 3
+---
+
+You don't have to start from an empty preset. Each built-in preset is
+generated from the real package it mirrors, so the values match upstream
+exactly. None of them needs that package installed at runtime.
+
+| Import                      | Export(s)                                                                      | Use it when…                                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `yumcss/preset/tailwindcss` | `tailwindPreset`, `tailwindTokens`, `tailwindProperties`, `tailwindConditions` | You want Tailwind v4's palette (`$slate-700`), type scale, radii, shadows, and `sm`–`2xl` breakpoints with CSS property names |
+| `yumcss/preset/shadcn`      | `shadcnPreset`, `createShadcnPreset(options)`                                  | Your app is built on shadcn/ui and its role tokens (`$background`, `$foreground`, `$primary`, …)                              |
+| `yumcss/preset/chakra`      | `chakraPreset`, `chakraTokens`, …                                              | You're coming from Chakra v3. Includes its light/dark semantic tokens and color palettes                                      |
+| `yumcss/preset/panda`       | `pandaPreset`, …                                                               | You're coming from Panda CSS and want its token spelling (`"red.500"`) and conditions                                         |
+| `yumcss/preset/default`     | `defaultPreset`                                                                | You want a structural base (spacing, sizes, type scale, radii, shadows) and will bring your own colors                        |
+| `yumcss/preset/csstype`     | `csstypePreset`                                                                | You want every CSS property with raw values and no tokens                                                                     |
+
+```ts
+import { createCss } from "yumcss/css";
+import { tailwindPreset } from "yumcss/preset/tailwindcss";
+
+export const css = createCss(tailwindPreset);
+
+css.class({ color: "$slate-900", fontSize: "lg", borderRadius: "xl", md: { fontSize: "2xl" } });
+```
+
+Each preset exports its pieces (tokens, properties, conditions), so you can
+[build your own preset on top of one](/design-system/presets/#building-on-a-built-in-preset).
+
+## shadcn/ui
+
+`createShadcnPreset()` takes the same options as the shadcn "create" page
+(`baseColor`, `theme`, `radius`, `font`, …) and produces the matching role
+tokens, with light and dark values under `.dark &`:
+
+```ts
+import { createCss } from "yumcss/css";
+import { createShadcnPreset } from "yumcss/preset/shadcn";
+
+const preset = createShadcnPreset({ baseColor: "zinc", theme: "red" });
+
+export const css = createCss(preset, { tokenVariableNames: "authored" });
+
+css.class({ color: "$foreground", backgroundColor: "$background", borderRadius: "lg" });
+```
+
+With `tokenVariableNames: "authored"`, the CSS variables keep shadcn's names
+(`--foreground`, `--radius`, …). Existing shadcn CSS and components keep
+working next to YumCSS styles.
+
+## Resets and prose
+
+Resets and the prose stylesheet are plain CSS files. Import them once:
+
+```ts title="src/main.tsx"
+import "yumcss/reset/yumcss"; // or yumcss/reset/tailwindcss, yumcss/reset/panda
+import "yumcss/prose/tailwindcss";
+import "yumcss:css";
+```
+
+| Import                     | What it is                                                                                                 |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `yumcss/reset/yumcss`      | Structural baseline (box model, border defaults). Leaves typography, fonts, colors, and list markers alone |
+| `yumcss/reset/tailwindcss` | A port of Tailwind v4 Preflight                                                                            |
+| `yumcss/reset/panda`       | A port of Panda's preflight                                                                                |
+| `yumcss/prose/tailwindcss` | `@tailwindcss/typography`: `.prose`, `.not-prose`, `prose-sm`…`prose-2xl`, `prose-invert`, color variants  |
+
+Resets live in `@layer reset` and prose in `@layer prose`. If you use
+[`cascade: "layers"`](/css/escape-hatches/#overriding-third-party-css-cascade-modes),
+declare the order once, so your components always win:
+
+```css
+@layer reset, prose, yumcss;
+```
+
+The prose stylesheet keeps the `--tw-prose-*` variables, so you can point
+them at your tokens. It doesn't include element variants (`prose-a:…`); style
+those with nested selectors in `css()`.

@@ -1,0 +1,89 @@
+---
+title: Lint rules
+description: An Oxlint plugin that keeps style code on the build-time path and enforces token usage, with safe auto-fixes.
+sidebar:
+  order: 6
+---
+
+`@yumcss/lint-plugin` is an [Oxlint](https://oxc.rs/docs/guide/usage/linter)
+JavaScript plugin. It catches style code that would fall back to runtime or
+silently lose CSS, in your editor and in CI.
+
+It resolves the **real** YumCSS imports (aliases and namespaces included),
+so an unrelated local function named `css` or `cx` is never flagged.
+
+```sh
+pnpm add -D oxlint @yumcss/lint-plugin
+```
+
+```json title=".oxlintrc.json"
+{
+	"jsPlugins": ["@yumcss/lint-plugin"],
+	"rules": {
+		"yumcss-extraction/no-dynamic-values": "warn",
+		"yumcss-extraction/no-spreads": "warn",
+		"yumcss-extraction/no-dynamic-carrier-fallback": "error",
+		"yumcss-extraction/prefer-typed-css-values": "warn"
+	}
+}
+```
+
+Start with warnings while you adopt YumCSS, then turn the boundaries you care
+about into errors.
+
+## Rules
+
+### Build-time extraction
+
+| Rule                          | Flags                                                             | Auto-fix |
+| ----------------------------- | ----------------------------------------------------------------- | -------- |
+| `no-dynamic-values`           | Values that stay on the runtime path (no CSS will exist for them) |          |
+| `no-spreads`                  | Spread arguments the compiler can't fold                          |          |
+| `no-dynamic-carrier-fallback` | Dynamic JSX style carriers that can't be lowered at build time    |          |
+| `no-dynamic-keyframes`        | `css.keyframes()` bodies that aren't static                       |          |
+| `no-multiple-conditionals`    | `cx()` calls with several foldable conditionals                   |          |
+| `no-redundant-cx`             | A single static class string passed through `cx()`                |          |
+
+### Values and tokens
+
+| Rule                      | Flags                                                                   | Auto-fix                    |
+| ------------------------- | ----------------------------------------------------------------------- | --------------------------- |
+| `prefer-typed-css-values` | `$raw` values that are already valid typed values or preset tokens      | ✅ moves them out of `$raw` |
+| `no-dollar-raw`           | Any use of `$raw`                                                       |                             |
+| `no-arbitrary-values`     | Arbitrary class values such as `w-[13px]`                               |                             |
+| `design-tokens-only`      | Values outside an explicit policy (`allowedPrefixes` / `allowedValues`) |                             |
+
+### Props
+
+| Rule                         | Flags                                                                 | Auto-fix              |
+| ---------------------------- | --------------------------------------------------------------------- | --------------------- |
+| `no-conflicting-style-props` | Explicit `className` / `style` props that conflict with `css.props()` |                       |
+| `prefer-css-props-spread`    | Projecting only `.className` and dropping `style`                     | ✅ spreads the props  |
+| `prefer-css-map-in-props`    | `css.class()` strings passed to `css.props()` (not mergeable)         | ✅ uses a `css()` map |
+
+### Migrations
+
+| Rule                         | Flags                                                | Auto-fix              |
+| ---------------------------- | ---------------------------------------------------- | --------------------- |
+| `migration-skip-reason`      | `yumcss:migrate-skip` markers without an explanation |                       |
+| `no-stale-migration-skip`    | Skip markers on calls that are now static            | ✅ removes the marker |
+| `require-migration-residual` | Dynamic static-lane calls without a skip marker      | ✅ adds the marker    |
+
+## Custom css modules
+
+The plugin recognizes `css` instances imported from modules named `css` or
+`design`, like the Vite plugin. If your instance lives elsewhere, declare it:
+
+```json
+{
+	"settings": {
+		"yumcss-extraction": {
+			"cssModules": [{ "source": "@acme/design-system/styles", "exports": ["css"] }]
+		}
+	}
+}
+```
+
+`prefer-typed-css-values` reads token names from the preset that the `css`
+instance was created with. It reads preset modules statically and never
+runs your code.

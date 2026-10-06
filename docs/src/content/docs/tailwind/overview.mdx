@@ -1,0 +1,101 @@
+---
+title: Coming from Tailwind
+description: Three ways to bring a Tailwind project to YumCSS, from typed utilities that keep Tailwind in charge to a full move to css().
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+YumCSS does not ask you to give up Tailwind on day one. Pick how much of
+Tailwind you want to keep. All three options can live in the same codebase, so
+you can move one component at a time.
+
+<CardGrid>
+	<Card title="1. Typed Tailwind — tw()" icon="seti:css">
+		Tailwind still builds the stylesheet. You replace class strings with an object whose keys and
+		values come from **your** Tailwind theme, so typos become type errors. [Read the tw() guide
+		→](/tailwind/tw/)
+	</Card>
+	<Card title="2. css() that emits Tailwind classes" icon="random">
+		You write standard CSS properties with `css()`, and a generated adapter turns them into the
+		Tailwind utilities you already ship. [Tailwind classes from css()
+		→](/tailwind/tailwind-classes/)
+	</Card>
+	<Card title="3. Move to css()" icon="rocket">
+		YumCSS owns the stylesheet: typed CSS objects, your tokens, and atomic CSS extracted at build
+		time. Tailwind is removed. [Start with css() →](/css/overview/)
+	</Card>
+</CardGrid>
+
+## Which one should I pick?
+
+| You want…                                                        | Choose                                                                                |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Autocomplete and type errors without changing your build         | **`tw()`**                                                                            |
+| To write `backgroundColor`, not `bg`, but keep Tailwind's output | **`css()` with the Tailwind adapter**                                                 |
+| Your design tokens, not Tailwind's theme, to be the contract     | **`css()`** with [your own preset](/design-system/presets/)                           |
+| To convert thousands of existing `className` strings             | The [class-string codemod](/tailwind/migrating-class-strings/), then any of the above |
+
+## The same button, three ways
+
+```tsx title="tw() — Tailwind owns the CSS"
+<button
+	className={tw({
+		bg: "blue-600",
+		text: "white",
+		rounded: "lg",
+		px: "4",
+		py: "2",
+		hover: { bg: "blue-700" },
+	})}
+/>
+// → "bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700"
+```
+
+```tsx title="css() + Tailwind adapter — Tailwind classes, CSS property names"
+<button
+	className={css.class({
+		backgroundColor: "$blue-600",
+		color: "$white",
+		borderRadius: "lg",
+		_hover: { backgroundColor: "$blue-700" },
+	})}
+/>
+// → Tailwind utilities from the generated bridge, e.g. "bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+```
+
+```tsx title="css() — YumCSS owns the CSS"
+<button
+	className={css.class({
+		backgroundColor: "$blue-600",
+		color: "$white",
+		borderRadius: "lg",
+		_hover: { backgroundColor: "$blue-700" },
+	})}
+/>
+// → "1418sn9 c0xeqe x87fs 12yp87z" plus atomic rules in the extracted stylesheet
+```
+
+The last two calls are the same source. Only the class-name strategy changes,
+so going from option 2 to option 3 is a configuration change, not a rewrite.
+
+<PlaygroundLink path="/tw-compat" label="Compare the APIs in the playground" />
+
+## What stays the same
+
+- Your `tailwind.css` entry point and `@tailwindcss/vite` (options 1 and 2).
+- Tailwind's theme stays the source of utility names and values. YumCSS reads
+  it to generate types; it does not keep its own copy.
+- `cx()` can merge Tailwind classes with tailwind-merge's rules, so
+  `cx("px-4", "p-6")` gives `"p-6"`. See [composition](/css/composition/).
+
+## What changes
+
+- Class strings become objects, so a build step can read them. Static calls
+  are folded into plain strings at build time.
+- Dynamic values (`bg: color` where `color` is any string) are not visible to
+  Tailwind's scanner. YumCSS lists the possible values when it can and warns
+  when it can't. See [dynamic classes](/tailwind/tw/#dynamic-values-and-the-safelist).

@@ -1,0 +1,243 @@
+---
+title: Typed Tailwind with tw()
+description: Generate a tw() helper from your Tailwind theme, write utilities as typed objects, and fold them back into plain class strings at build time.
+sidebar:
+  label: tw()
+  order: 2
+---
+
+import { Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import playgroundTw from "../../../assets/screenshots/playground-tw.png";
+
+`tw()` is Tailwind with types. You keep `@import "tailwindcss"`, your theme,
+your plugins, and Tailwind's own build. YumCSS reads that setup and generates
+a `tw()` function whose keys and values match **your** project exactly.
+
+```tsx
+<button
+	className={tw({
+		bg: "blue-600",
+		text: "white",
+		rounded: "lg",
+		px: "4",
+		py: "2",
+		hover: { bg: "blue-700" },
+	})}
+/>
+// → "bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700"
+```
+
+Misspell a utility or use a color that isn't in your theme, and TypeScript
+flags it. At build time the call is replaced with the string above, so there's
+nothing left to run in the browser.
+
+<Screenshot
+	src={playgroundTw}
+	alt="Playground tw() scenario: a Button using tw() with the resulting class string bg-blue-500 text-white rounded-lg p-4 text-lg."
+/>
+
+## Setup
+
+<Steps>
+
+1. **Install**
+
+   ```sh
+   pnpm add yumcss
+   pnpm add -D @yumcss/codemod tailwindcss @tailwindcss/vite
+   ```
+
+2. **Generate the helper** from your Tailwind entry CSS:
+
+   ```sh
+   pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src
+   ```
+
+   Run it again whenever your theme or plugins change. A `predev` /
+   `prebuild` script is a good place for it.
+
+3. **Add the Vite plugin** before Tailwind's:
+
+   ```ts title="vite.config.ts"
+   import tailwindcss from "@tailwindcss/vite";
+   import react from "@vitejs/plugin-react";
+   import { defineConfig } from "vite";
+   import { yumcssVite } from "yumcss/vite";
+
+   export default defineConfig({
+   	plugins: [yumcssVite(), tailwindcss(), react()],
+   });
+   ```
+
+   `yumcssVite()` rewrites literal `tw()` calls into class strings **before**
+   Tailwind scans your files, so Tailwind sees ordinary utilities.
+
+4. **Use it**
+
+   ```tsx
+   import { tw } from "./tw";
+
+   export const Welcome = () => (
+   	<main className={tw({ minH: "screen", bg: "gray-50", p: "8" })}>Hello</main>
+   );
+   ```
+
+</Steps>
+
+### Generated files
+
+| File                                           | Imported by      | Purpose                                                            |
+| ---------------------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| `tw.ts`                                        | Your app         | The `tw()` function. Small: it only knows how to join variants     |
+| `types.d.ts`                                   | Your editor      | Every utility and variant from your theme, as types                |
+| `tw.runtime.ts`                                | The Vite plugin  | Full metadata (conflicts, tokens) used to fold calls at build time |
+| `tw.conflicts.ts`                              | Optional: `cx()` | Conflict data, if you want tailwind-merge-style merging at runtime |
+| `tw.build.ts`                                  | Tooling only     | Build metadata. Never import it from app code                      |
+| `yumcss.generated.json`, `yumcss.interop.json` | Tooling          | Hash manifest and metadata for checks and migrations               |
+
+Commit them, or generate them in CI. `yumcss-codemod tw verify` fails when
+they're stale.
+
+## Writing utilities
+
+Keys are Tailwind utility names in camelCase, and values are what comes after
+the dash:
+
+```ts
+tw({ bg: "sky-600", py: "6", minH: "screen" }); // bg-sky-600 py-6 min-h-screen
+tw({ relative: true, srOnly: true }); // relative sr-only
+tw({ flex: "col" }); // flex flex-col
+tw({ ring: ["1", "gray-900/5"] }); // ring-1 ring-gray-900/5
+tw({ "-translateX": "1/2", "-top": "4" }); // -translate-x-1/2 -top-4
+tw({ w: "[3.5rem]", bg: "[url(/grid.svg)]" }); // arbitrary values
+```
+
+When one prefix means several things (`text-lg` vs `text-white`), use the
+explicit sub-keys: `textSize`, `textColor`, `textAlign`, `bgColor`, `bgImage`,
+`borderColor`, `borderWidth`, `outlineColor`, `decorationColor`, …
+
+### Variants nest
+
+```ts
+tw({ hover: { bg: "sky-700" }, sm: { py: "12" } }); // hover:bg-sky-700 sm:py-12
+tw({ dark: { hover: { bg: "sky-700" } } }); // dark:hover:bg-sky-700
+tw({ group: { hover: { opacity: "100" } } }); // group-hover:opacity-100
+tw({ aria: { checked: { bg: "sky-600" } } }); // aria-checked:bg-sky-600
+tw({ data: { "[state=open]": { bg: "sky-600" } } }); // data-[state=open]:bg-sky-600
+tw({ max: { md: { hidden: true } } }); // max-md:hidden
+tw({ "@": { md: { flex: "row" } } }); // @md:flex @md:flex-row
+```
+
+Prefix variants (`group`, `peer`, `not`, `has`, `aria`, `data`, `supports`,
+`max`, `min`, …) must wrap another variant: `group: { hover: … }`.
+
+<Aside type="note">
+	The `group` / `peer` **marker** class itself (`className="group"`) is not a
+	utility, so `tw()` can't produce it. Write it as a plain string next to the
+	call: `cx("group", tw({ … }))`.
+</Aside>
+
+<PlaygroundLink path="/tw-compat" api="tw" label="tw() compat scenario" />
+
+## Conflicts
+
+When the Vite plugin folds a call, it uses your theme's conflict data, and the
+last key wins per CSS property:
+
+```ts
+tw({ px: "4", p: "6" }); // folded → "p-6"
+tw({ p: "6", px: "4" }); // folded → "p-6 px-4" (px refines p)
+tw({ p: "4", md: { p: "6" } }); // "p-4 md:p-6" (different variants don't conflict)
+```
+
+<Aside type="caution" title="Unfolded calls don't merge">
+	The runtime `tw()` in `tw.ts` is deliberately small and has no conflict data. A call the plugin
+	couldn't fold (a fully dynamic one) returns `"px-4 p-6"` for the first example. Don't rely on key
+	order to override values in dynamic calls: compose with `cx()` (below), or avoid writing
+	conflicting keys.
+</Aside>
+
+## Merging with `cx()`
+
+Pass the generated conflict data to `createCx()` and it merges Tailwind
+classes the way tailwind-merge does. A parity test checks this against
+tailwind-merge on real class lists:
+
+```ts title="src/cx.ts"
+import { createCx } from "yumcss/cx";
+import { __yumcssConflictConfig } from "./tw.conflicts";
+
+export const cx = createCx(__yumcssConflictConfig);
+```
+
+```ts
+cx("px-4 py-2", "p-6"); // "p-6"
+cx("text-red-500", "hover:text-blue-500", "text-slate-900"); // "hover:text-blue-500 text-slate-900"
+```
+
+Static `cx()` calls are also folded at build time. The conflict data only
+ships when a call really runs in the browser.
+
+## Dynamic values and the safelist
+
+Tailwind only generates CSS for class names it can see. YumCSS helps with
+that in two ways:
+
+- **Known sets** (ternaries, unions, constants) are expanded at build time,
+  and every possible class is passed to Tailwind.
+- **Open values** (`bg: color` where `color` is any string) can't be seen by
+  anyone. `yumcss-codemod tw scan` writes a safelist of every class it can
+  prove, and warns about the rest:
+
+  ```sh
+  pnpm exec yumcss-codemod tw scan ./src/tw.ts ./src ./src/yumcss.safelist.css
+  ```
+
+  ```css title="src/tailwind.css"
+  @import "tailwindcss";
+  @import "./yumcss.safelist.css";
+  ```
+
+For a truly open value (a user-picked color), set a CSS variable in `style`
+and use an arbitrary value (`bg: "[var(--swatch)]"`), or use
+[`css.vars()`](/css/dynamic-styles/#open-values-cssvars).
+
+## Use your preset as the Tailwind theme
+
+If you have a [YumCSS preset](/design-system/presets/), make it the source of
+truth for Tailwind too:
+
+```sh
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts
+```
+
+This writes `yumcss-theme.css`, an `@theme` block with your tokens, plus
+`.dark { … }` overrides for semantic tokens and `[data-theme=…]` scopes.
+Import it after Tailwind:
+
+```css title="src/tailwind.css"
+@import "tailwindcss";
+@import "./yumcss-theme.css";
+```
+
+Now `tw()` autocompletes **your** tokens, and the same preset drives `css()`.
+
+## Limits
+
+These are type errors or produce no CSS. The playground has a page for each:
+
+| Don't                         | Why                                         | Do                          |
+| ----------------------------- | ------------------------------------------- | --------------------------- |
+| `tw("bg-red-500 text-lg")`    | `tw()` takes an object, not a string        | `cx("bg-red-500 text-lg")`  |
+| `tw({ sm: "p-4" })`           | Emits `sm-p-4`, which Tailwind doesn't know | `tw({ sm: { p: "4" } })`    |
+| `import { tw } from "yumcss"` | Untyped, and doesn't know your variants     | Import the generated `./tw` |
+
+<PlaygroundLink path="/limits-strings" label="Limits scenarios" />
+
+## Other bundlers
+
+The same transform exists for Rollup, webpack, esbuild, Rspack, and others
+through `yumcss/unplugin`. Outside Vite, the generated `tw` module must be
+imported with a relative path to be folded. See [bundlers](/guides/bundlers/).

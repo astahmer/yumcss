@@ -1,0 +1,68 @@
+---
+title: Analyzer CLI
+description: Measure build-time folding, find runtime style calls and missing CSS, enforce CSS budgets, and report token governance in CI.
+sidebar:
+  order: 3
+---
+
+`yumcss-analyze` is the command-line version of the [Inspector](/tools/inspector/).
+It scans your sources and reports what YumCSS can fold at build time, what
+still runs in the browser, and where CSS could go missing. Use it locally and
+as a CI gate.
+
+```sh
+pnpm add -D @yumcss/analyze
+pnpm exec yumcss-analyze "src/**/*" --tw src/tw.ts
+```
+
+```text
+yumcss analyze — fold coverage
+
+file                                     cx full/part/runtime    tw folded
+src/examples/dynamic-app.tsx                            0/1/2        16/17
+    ^ src/examples/dynamic-app.tsx:194 — unknown runtime value
+    ^ src/examples/dynamic-app.tsx:202 — member expression value
+src/examples/typed-tw-app.tsx                           0/0/0        13/13
+
+cx(): 25% of 8 calls eliminated at build time (0 fully, 2 partially; 6 at runtime)
+tw(): 78/79 calls inlined
+
+css diagnostics:
+    ^ src/examples/dynamic-app.tsx:59:104 — missing-extraction: css.class has dynamic argument(s);
+      only literal style objects enter the generated stylesheet. Keep the style shape literal
+      for build-time extraction, or use css.vars for dynamic values and verify the runtime path.
+```
+
+Every line points to a file and position, with the reason and the fix.
+
+## Options
+
+| Option                                                             | Effect                                                                        |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `[...patterns]`                                                    | Files to analyze                                                              |
+| `--root <dir>`                                                     | Project root (default `.`)                                                    |
+| `--tw <path>`                                                      | Generated `tw` entry (default `src/tw.ts`)                                    |
+| `--css`                                                            | Include the CSS artifact report: size, rule shape, dead-CSS candidates        |
+| `--json`                                                           | Machine-readable output                                                       |
+| `--fail-over <bytes>`                                              | Exit non-zero when the CSS exceeds this size                                  |
+| `--budgets <path>`                                                 | Per-area CSS budget file                                                      |
+| `--governance --preset <module>`                                   | Token governance report: usage, dead tokens, policy violations                |
+| `--release-baseline`, `--release-current`, `--release-format dtcg` | Token release diff between two versions                                       |
+| `--github-annotations`                                             | Print diagnostics as GitHub workflow annotations, shown inline on the PR diff |
+
+## In CI
+
+```yaml title=".github/workflows/styles.yml"
+- run: pnpm exec yumcss-analyze "src/**/*" --css --fail-over 60000 --github-annotations
+```
+
+- `--fail-over` keeps the stylesheet from silently growing.
+- `--github-annotations` shows runtime-path and missing-CSS warnings on the
+  lines that caused them.
+
+## Related tools
+
+- [Compiler Preview](/tools/migration-preview/#compiler-preview): see each
+  file before and after the YumCSS transforms in your real Vite config.
+- [MCP server](/tools/mcp/): the same analysis, available to AI coding
+  agents.

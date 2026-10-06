@@ -1,0 +1,113 @@
+---
+title: Inspector
+description: A dashboard for your design system — token catalog, usage and dead tokens, token relationships, build-time folding, CSS budget, and history.
+sidebar:
+  order: 2
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import Screenshot from "../../../components/Screenshot.astro";
+import tokensShot from "../../../assets/screenshots/inspector-tokens.png";
+import usageShot from "../../../assets/screenshots/inspector-usage.png";
+import relationshipsShot from "../../../assets/screenshots/inspector-relationships.png";
+import buildShot from "../../../assets/screenshots/inspector-build.png";
+
+The Inspector is a design-system dashboard. It analyzes a project and
+answers the questions design-system teams ask every week: _Which tokens do we
+have? Which are used, and where? What can we delete? How much CSS do we ship,
+and how much styling still runs at runtime?_
+
+It's meant for **designers, design-system maintainers, and reviewers** as
+much as for engineers. Nothing in it requires reading code.
+
+## Tokens
+
+### Catalog
+
+Every color, semantic token, type style, spacing step, radius, utility, and
+CSS variable, grouped and searchable, with a copy button on each swatch.
+
+<Screenshot
+	src={tokensShot}
+	alt="Inspector token catalog showing token counts and a grid of color swatches with names and hex values."
+/>
+
+### Usage & cleanup
+
+Shows catalog coverage per token group, the most used ("hot") tokens, the
+tokens not seen in the scan, and the top properties, values, and conditions.
+Filter by activity or condition kind. Cleanup candidates get a safety label
+(_safe to remove_, _review required_, _not removable_). "Not observed" is
+evidence for a review, not an automatic removal.
+
+<Screenshot
+	src={usageShot}
+	alt="Inspector usage view with condition counts, catalog coverage per token group, and hot tokens."
+/>
+
+### Relationships
+
+Pick a token to see what it references and what references it, across
+semantic layers and theme scopes. It also reports cycles and missing
+references.
+
+<Screenshot
+	src={relationshipsShot}
+	alt="Inspector relationships view: --color-surface used by four theme scopes and referencing gray-50 and gray-900."
+/>
+
+## Build report
+
+How much of your styling YumCSS moved to build time, and what you ship:
+
+- **Build-time folding:** how many `cx()` calls were eliminated, and which
+  files still run style code in the browser.
+- **Stylesheet budget:** CSS size (raw and gzip), rule count, missing-CSS
+  warnings, dead-CSS candidates.
+- **CSS budget by prefix:** which conditions and selectors generate the most
+  rules.
+- **Per-file table and CSS-in-JS provenance:** where each rule comes from.
+
+<Screenshot
+	src={buildShot}
+	alt="Inspector build report with folding percentages, CSS budget in KB, and a bar chart of rules by selector prefix."
+/>
+
+## History
+
+With history recording on, each analysis is saved as a snapshot. The History
+tab lists runs and diffs them, so a pull request that adds 3 KB of CSS or 40
+new tokens is easy to spot.
+
+## Export
+
+The **export** menu downloads the token catalog as W3C design-token (DTCG)
+JSON, for Figma plugins, or as CSS. Release exports compare against a
+baseline, so you can publish a token changelog.
+
+## Deep links
+
+The URL keeps the view state, so you can link a reviewer straight to a
+finding: `#tokens/usage?tokenActivity=not-observed`,
+`#build?fold=runtime`, `#tokens/relationships?relationshipNode=--color-surface`.
+
+## Running it
+
+<Aside type="caution" title="Repository app">
+	The Inspector currently ships inside the YumCSS repository rather than as an installable package.
+	It analyzes a Tailwind-lane app with a generated `src/tw.ts`.
+</Aside>
+
+```sh
+pnpm install && pnpm build
+pnpm inspect # http://localhost:5173, analyzes examples/example
+
+# Point it at another project
+INSPECTOR_ROOT=/abs/path/to/repo INSPECTOR_APP=apps/web pnpm inspect
+
+# Record history snapshots
+INSPECTOR_HISTORY=1 pnpm inspect
+```
+
+The same analysis is available from the command line: see the
+[Analyzer](/tools/analyzer/).

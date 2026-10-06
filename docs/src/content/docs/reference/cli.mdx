@@ -1,0 +1,40 @@
+---
+title: CLI reference
+description: Every yumcss-codemod and @yumcss/analyze command.
+sidebar:
+  order: 4
+---
+
+Two packages ship command-line tools. Add `--help` to any command for its
+full flag list.
+
+```sh
+pnpm add -D @yumcss/codemod @yumcss/analyze
+```
+
+## `yumcss-codemod`
+
+| Command                                     | Does                                                                                                                                                             | Guide                                                                     |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `tw generate [css-entry] [out-dir]`         | Generate `tw()`, types, and metadata from your Tailwind setup. `--tokens <preset>` writes `yumcss-theme.css`, and `--bridge` writes `bridge.ts` with `twAdapter` | [tw()](/tailwind/tw/#setup)                                               |
+| `tw scan [tw-entry] [src-dir] [out-file]`   | Write a Tailwind `@source inline(…)` safelist for dynamic classes                                                                                                | [Safelist](/tailwind/tw/#dynamic-values-and-the-safelist)                 |
+| `tw prune [theme-css] [tw-entry] [src-dir]` | Drop unused tokens from the generated theme CSS                                                                                                                  |                                                                           |
+| `tw manifest [out-dir] [inputs…]`           | Refresh the hash manifest (after formatting generated files)                                                                                                     |                                                                           |
+| `tw verify [root]`                          | Fail when generated files are stale or over budget                                                                                                               |                                                                           |
+| `migrate [...patterns]`                     | Migrate between styling libraries (`--from`, `--to`, `--dry-run`, `--diff`, `--report`)                                                                          | [Migrating](/migrate/overview/)                                           |
+| `tokens <input>`                            | Convert token formats (`--from`, `--to`, `--allow-lossy`, `--validate`)                                                                                          | [Design tokens](/design-system/design-tokens/)                            |
+| `lib build [root] [out-file]`               | Build `yumcss.lib.json` for a published component library (`--check` in CI)                                                                                      | [Shipping a library](/components/component-library/#shipping-the-library) |
+| `css generate [root] [out-file]`            | Generate a concrete typed `css` facade from a preset (faster type-checking)                                                                                      |                                                                           |
+| `runtime generate [out-file]`               | Generate a runtime specialized to your preset                                                                                                                    |                                                                           |
+| `runtime explain <source-file>`             | Explain what runtime code a module keeps, and why                                                                                                                |                                                                           |
+| `polish sort [...patterns]`                 | Sort classes canonically (`--write`, `--diff`)                                                                                                                   |                                                                           |
+| `polish arbitrary [...patterns]`            | Report arbitrary values and suggest the nearest tokens                                                                                                           |                                                                           |
+
+## `@yumcss/analyze`
+
+| Command                                                 | Does                                                                     | Guide                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `yumcss-analyze [...patterns]`                          | Folding coverage, runtime sites, CSS diagnostics, budgets, governance    | [Analyzer](/tools/analyzer/)                                   |
+| `yumcss-analyze mcp [--root]`                           | MCP server for coding agents (stdio)                                     | [MCP](/tools/mcp/)                                             |
+| `yumcss-migration-preview [root] [--no-open]`           | Read-only web UI to try migrations on your project                       | [Migration Preview](/tools/migration-preview/)                 |
+| `yumcss-compiler-preview [root] [--config] [--no-open]` | Read-only web UI showing each file before and after your Vite transforms | [Compiler Preview](/tools/migration-preview/#compiler-preview) |

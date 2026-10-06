@@ -1,0 +1,139 @@
+---
+title: Composition & variants
+description: Merge styles with last-wins semantics using cx(), build variant maps, and accept className overrides safely.
+sidebar:
+  order: 4
+---
+
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import variantsShot from "../../../assets/screenshots/playground-variants.png";
+
+Atomic CSS has a classic problem: `class="p-4 p-6"` doesn't mean "the last one
+wins". The winner is whichever rule comes later in the stylesheet. YumCSS
+solves this by merging **before** the class string is built.
+
+## Within css(): arguments merge
+
+Every `css` call takes several style objects and resolves conflicts per
+property and per condition. The last value wins:
+
+```ts
+css.class({ color: "$slate-700", padding: 16 }, { color: "$blue-600" });
+// → color from the second object, padding from the first
+```
+
+## Across calls: `cx()`
+
+Once styles have become class strings (passed through props, mixed with a
+third-party class, …) you merge them with `cx()`. Create it once, next to
+your `css` instance:
+
+```ts title="src/cx.ts"
+import { createCx } from "yumcss/cx";
+import { css } from "./css";
+
+export const cx = createCx({ css });
+```
+
+`cx()` knows which property each YumCSS class sets, so the last one wins:
+
+```ts
+cx(css.class({ color: "$red-500" }), css.class({ color: "$blue-500" }));
+// → only the blue color class
+```
+
+It accepts strings, `css()` maps, `css.vars()` results, nested arrays, and
+`false` / `null` / `undefined`. Classes it doesn't recognize are kept in order
+and deduplicated, so you can pass any class through it.
+
+:::tip[Tailwind classes too]
+Pass the conflict data generated for your Tailwind theme and `cx()` also
+merges Tailwind utilities. It gives the same result as tailwind-merge, which
+a parity test checks. See [cx() with Tailwind](/tailwind/tw/#merging-with-cx).
+:::
+
+## Variants without a recipe API
+
+YumCSS has no `cva`/`recipe` function, and it doesn't need one. A variant is a
+map of classes generated at build time, and a component picks entries from it:
+
+```tsx
+import { css } from "./css";
+import { cx } from "./cx";
+
+const button = {
+	base: css.class({
+		display: "inline-flex",
+		alignItems: "center",
+		borderRadius: "md",
+		fontWeight: "medium",
+	}),
+	size: {
+		sm: css.class({ paddingInline: 8, height: 32 }),
+		md: css.class({ paddingInline: 16, height: 40 }),
+	},
+	tone: {
+		primary: css.class({
+			backgroundColor: "$blue-600",
+			color: "$white",
+			_hover: { backgroundColor: "$blue-700" },
+		}),
+		ghost: css.class({
+			backgroundColor: "transparent",
+			color: "$slate-900",
+			_hover: { backgroundColor: "$slate-100" },
+		}),
+	},
+} as const;
+
+type ButtonProps = {
+	size?: keyof typeof button.size;
+	tone?: keyof typeof button.tone;
+	className?: string;
+	children?: React.ReactNode;
+};
+
+export const Button = (props: ButtonProps) => (
+	<button
+		className={cx(
+			button.base,
+			button.size[props.size ?? "md"],
+			button.tone[props.tone ?? "primary"],
+			props.className,
+		)}
+	>
+		{props.children}
+	</button>
+);
+```
+
+Why this works well:
+
+- **Every variant is compiled at build time.** Picking one at runtime is a
+  property lookup.
+- **Prop types come from the map.** Add a size, and `size` accepts it.
+- **`props.className` goes last**, so a caller's override wins over the
+  component's defaults, property by property.
+
+Compound variants are plain code (`props.tone === "ghost" && props.size === "sm" ? … : …`),
+and the build handles those branches like any other known set. If your team
+prefers `cva`, it works fine on top of `css.class()`.
+
+<PlaygroundLink path="/variants" label="Variants with cx() scenario" />
+
+<Screenshot
+	src={variantsShot}
+	alt="Playground showing a button variant map built with css.class and cx, with size and tone controls."
+/>
+
+## Overriding a component from outside
+
+Accept a `className` (or a typed `styles` object, see
+[style props](/css/overview/#types-for-style-props)) and pass it **last** to
+`cx()`. Callers can then change anything without `!important` or specificity
+tricks:
+
+```tsx
+<Button className={css.class({ borderRadius: "full" })}>Rounded</Button>
+```

@@ -1,0 +1,254 @@
+---
+title: Styling with css()
+description: The core YumCSS API — typed CSS objects, checked against your preset, compiled to atomic CSS at build time.
+sidebar:
+  label: css() basics
+  order: 1
+---
+
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import playgroundCss from "../../../assets/screenshots/playground-css.png";
+
+`css()` is the API to start with. You write ordinary CSS properties as objects.
+TypeScript checks every key and value against your **preset** (your tokens,
+conditions, and allowed properties). At build time each declaration becomes
+one small, reusable class.
+
+```tsx
+import { css } from "./css";
+
+export const Card = () => (
+	<article
+		className={css.class({
+			display: "flex",
+			flexDirection: "column",
+			gap: 16,
+			padding: 24,
+			borderRadius: "xl",
+			backgroundColor: "$white",
+			_hover: { boxShadow: "lg" },
+			md: { flexDirection: "row" },
+		})}
+	/>
+);
+```
+
+<PlaygroundLink path="/basics" api="css" />
+
+## Create your css instance
+
+`createCss` takes a preset and returns a `css` function bound to it. Create it
+once and import it everywhere.
+
+```ts title="src/css.ts"
+import { createCss } from "yumcss/css";
+import { tailwindPreset } from "yumcss/preset/tailwindcss";
+
+export const css = createCss(tailwindPreset);
+```
+
+A preset is required: it is where the types come from. The
+[built-in presets](/design-system/built-in-presets/) are a good start.
+`tailwindPreset` has Tailwind v4's palette, type scale, radii, shadows, and
+breakpoints, and it does **not** need Tailwind installed. When the design is
+yours, [write your own preset](/design-system/presets/).
+
+## The three ways to call it
+
+| Call                   | Returns                            | Use it for                                                                            |
+| ---------------------- | ---------------------------------- | ------------------------------------------------------------------------------------- |
+| `css.class(...styles)` | `string` — space-separated classes | `className` / `class` props. This is the call you'll use most.                        |
+| `css(...styles)`       | `Record<key, className>`           | Style maps you want to merge later with [`cx()`](/css/composition/) or `css.props()`. |
+| `css.props(...inputs)` | `{ className, style }`             | Spreading onto an element: mixes compiled styles, runtime vars, and plain classes.    |
+
+All three accept several style objects. They are **deep-merged, and the last
+one wins** for each property, condition included:
+
+```ts
+const base = { padding: 16, color: "$slate-700", _hover: { color: "$slate-900" } } as const;
+const active = { color: "$blue-600", _hover: { color: "$blue-700" } } as const;
+
+css.class(base, isActive ? active : {});
+// isActive → color and :hover color come from `active`, padding from `base`
+```
+
+Pass `{}` for "no extra styles". The typed API doesn't accept `false` or
+`undefined` arguments.
+
+## Values: tokens first
+
+Each property in the preset is **bound** to a token group. Bound properties
+only accept that group's token names, so you can't use a color that isn't in
+the palette:
+
+```ts
+css.class({ color: "$blue-600" }); // ✅ token from the colors group
+css.class({ borderRadius: "xl" }); // ✅ token from the radii group
+css.class({ color: "#2563eb" }); // ❌ type error: not a token
+css.class({ colr: "$blue-600" }); // ❌ type error: unknown property
+```
+
+Properties that aren't bound to tokens (`display`, `position`,
+`flexDirection`, …) accept their normal CSS keywords. CSS-wide keywords
+(`inherit`, `initial`, `unset`, `revert`, `revert-layer`) are always allowed.
+
+<Aside type="caution" title="Numbers are pixels">
+	A number is always a pixel length: `padding: 16` is `16px`, even when the preset's scale also has
+	a `16` key. Named scale entries are strings: `padding: "px"` is `1px`, `width: "full"` is `100%`.
+	For a spacing scale your team can name (`"sm"`, `"md"`, …), [define it in your
+	preset](/design-system/presets/#tokens).
+</Aside>
+
+Unitless properties (`opacity`, `zIndex`, `flexGrow`, `lineHeight`,
+`fontWeight`, …) never get `px`. `null` sets a property back to `initial`.
+
+### When you need a value outside the scale
+
+You have three escape hatches. Pick the narrowest one:
+
+1. **`$raw`**: one-off values inside a typed call. They aren't checked, but you
+   can see them in review.
+
+   ```ts
+   css.class({ padding: 16, $raw: { gridTemplateColumns: "subgrid", color: "var(--brand-ink)" } });
+   ```
+
+2. **A looser property** in your preset: `{ $tokens: "colors", $strict: false }`
+   lets one property take raw values next to its tokens.
+
+3. **`createUnsafeCss()`** from `yumcss/unsafe/css`: no preset and no type
+   checks. Meant for code you're migrating, not new code.
+
+See [escape hatches](/css/escape-hatches/) for the details.
+
+## Conditions, selectors, and breakpoints
+
+Conditions come from your preset. With `tailwindPreset` you get `_hover`,
+`_focusVisible`, `_disabled`, `_dark`, `_before`, `sm`…`2xl`, and many more.
+Put them around a block, or on a single property:
+
+```ts
+css.class({
+	color: "$slate-700",
+	_hover: { color: "$slate-900" },
+	md: { fontSize: "lg" },
+	backgroundColor: { _dark: "$slate-900" },
+	"&[data-state=open]": { borderColor: "$blue-500" },
+	"@container (min-width: 28rem)": { flexDirection: "row" },
+});
+```
+
+The full syntax is in [conditions & selectors](/css/conditions/).
+
+## Where the CSS comes from
+
+`css.class()` only returns class names. The CSS is written at **build time** by
+the Vite plugin, which finds every `css()` call, compiles it to atomic rules,
+and serves them as one virtual stylesheet:
+
+<Tabs>
+	<TabItem label="vite.config.ts">
+
+```ts
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { yumcssExtractVite } from "yumcss/vite";
+import { css } from "./src/css";
+
+export default defineConfig({
+	plugins: [yumcssExtractVite(css), react()],
+});
+```
+
+    </TabItem>
+    <TabItem label="src/main.tsx">
+
+```ts
+import "yumcss:css";
+```
+
+    </TabItem>
+    <TabItem label="Output">
+
+```css
+/* Only the tokens you use become variables */
+:root {
+	--\31 gaqnhn: 0.75rem;
+}
+:root {
+	--\31 iwtwtw: #fff;
+}
+:root {
+	--ux1uu9: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+/* One rule per declaration, shared by every component */
+.\31 f29p40 {
+	display: flex;
+}
+.lh3u0m {
+	flex-direction: column;
+}
+.helpgx {
+	gap: 16px;
+}
+.\36 cjt53 {
+	padding: 24px;
+}
+.\31 4edf0f {
+	border-radius: var(--\31 gaqnhn);
+}
+.d660fb {
+	background-color: var(--\31 iwtwtw);
+}
+.dojbs2:is(:hover, [data-hover]) {
+	box-shadow: var(--ux1uu9);
+}
+@media (min-width: 768px) {
+	.\31 nmsz89 {
+		flex-direction: row;
+	}
+}
+```
+
+And the `className` in the bundle is a plain string:
+`"1f29p40 lh3u0m helpgx 6cjt53 14edf0f d660fb dojbs2 1nmsz89"`.
+
+    </TabItem>
+
+</Tabs>
+
+Literal calls are replaced by their class string, so the shipped JavaScript
+holds only strings. Two components that use `display: flex` share one rule,
+so the stylesheet grows with the number of distinct declarations, not with
+the number of components. More in [how extraction works](/css/extraction/).
+
+<Screenshot
+	src={playgroundCss}
+	alt="The YumCSS playground showing a Button component written with css.class, with a live preview, generated class string, and result panels."
+	caption="The playground compiles every scenario three ways and shows the generated classes, CSS, and IR."
+/>
+
+## Types for style props
+
+Use `AtomicStyleProps` to accept a style object in a component's props, checked
+against the same preset:
+
+```tsx
+import type { AtomicStyleProps } from "yumcss/css";
+import { css } from "./css";
+
+type BoxProps = { styles?: AtomicStyleProps<typeof css>; children: React.ReactNode };
+
+export const Box = (props: BoxProps) => (
+	<div className={css.class({ display: "flex", gap: 8 }, props.styles ?? {})}>{props.children}</div>
+);
+```
+
+## Next
+
+- [Conditions & selectors](/css/conditions/): responsive, states, nesting, container queries.
+- [Dynamic styles](/css/dynamic-styles/): values you only know at runtime.
+- [Composition](/css/composition/): `cx()`, variants, `css.props()`.
+- [Build a design system](/design-system/presets/): replace the starter preset with your own tokens.

@@ -1,0 +1,122 @@
+---
+title: Importing design tokens
+description: Convert W3C design tokens (DTCG), Tokens Studio, Style Dictionary, Panda, or StyleX tokens into a YumCSS preset, and export them back.
+sidebar:
+  order: 5
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+Design tokens often start in a design tool. `yumcss-codemod tokens` converts
+between token formats, including a YumCSS preset module, and it **tells you
+exactly what a conversion can't carry over** instead of dropping it silently.
+
+```sh
+pnpm add -D @yumcss/codemod
+pnpm exec yumcss-codemod tokens tokens.json --from figma --to preset --allow-lossy --out src/design-system/tokens.ts
+```
+
+## Supported formats
+
+| `--from` / `--to` | Format                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `dtcg`            | W3C Design Tokens Community Group format (2025.10): `$type` / `$value`                            |
+| `dtcg-resolver`   | DTCG with a Resolver document for sets and modes (`--resolver`, `--resolver-out`)                 |
+| `figma`           | Tokens Studio-style JSON (`value` / `type`: color, spacing, borderRadius, fontSizes, fontWeights) |
+| `sd`              | Style Dictionary                                                                                  |
+| `panda`           | Panda CSS token config                                                                            |
+| `stylex`          | StyleX `defineVars` tokens                                                                        |
+| `rootcss`         | `:root { --token: … }` custom properties                                                          |
+| `theme`           | A generic theme object                                                                            |
+| `preset`          | A YumCSS `define.tokens({ … })` module                                                            |
+
+## Example: Tokens Studio → preset
+
+<Steps>
+
+1. Export your tokens as JSON:
+
+   ```json title="tokens.json"
+   {
+   	"colors": {
+   		"brand": {
+   			"500": { "value": "#f2622e", "type": "color" },
+   			"600": { "value": "#d9481a", "type": "color" }
+   		},
+   		"ink": { "900": { "value": "#1d1916", "type": "color" } }
+   	},
+   	"spacing": {
+   		"sm": { "value": "8px", "type": "spacing" },
+   		"md": { "value": "16px", "type": "spacing" }
+   	},
+   	"radii": { "md": { "value": "8px", "type": "borderRadius" } }
+   }
+   ```
+
+2. Convert it:
+
+   ```sh
+   pnpm exec yumcss-codemod tokens tokens.json --from figma --to preset --allow-lossy
+   ```
+
+   ```ts title="Output"
+   import { define } from "yumcss/preset";
+
+   export const tokens = define.tokens({
+   	colors: {
+   		"brand-500": "#f2622e",
+   		"brand-600": "#d9481a",
+   		"ink-900": "#1d1916",
+   	},
+   	spacing: { sm: "8px", md: "16px" },
+   	radii: { md: "8px" },
+   });
+   ```
+
+3. Bind the groups in [your preset](/design-system/presets/): `colors` to the
+   color properties, `spacing` to padding/margin/gap, and so on. Conditions,
+   semantic tokens, and property bindings are your design system's decisions,
+   so the converter doesn't guess them.
+
+</Steps>
+
+## Fidelity reports
+
+Every conversion lists what the target format can't represent. Without
+`--allow-lossy`, a lossy conversion **fails** and prints the list:
+
+```text
+codemod tokens: exporting to preset would lose 12 token feature(s); pass --allow-lossy to continue
+  /colors/brand/500/type · Figma token type: Figma type was projected into the group name
+  /colors/brand/500 · hierarchy: nested source path is flattened into a delimited token name
+  /colors/brand-500 · path encoding: hyphenated path segments can collide with the target's flattened token names
+```
+
+Read the list before you pass `--allow-lossy`. Typical losses when going to a
+preset:
+
+- **Nested paths are flattened** with `-` (`brand/500` → `brand-500`).
+- **Type metadata is dropped**, because preset groups carry the meaning.
+- **DTCG colors** are written as CSS `color()` values (`color(srgb 0.949 0.384 0.18)`),
+  which keeps wide-gamut values exact.
+- **Group names are kept**. If your source uses `color`, rename it to match
+  your preset's group (for example `colors`, which
+  [design CSS](/design-system/design-css/#tokens) expects).
+
+Use `--validate` to check a file without converting, and
+`--report-format json` to use the report in CI.
+
+## Exporting tokens back to design tools
+
+- `yumcss-codemod tokens src/design-system/preset.ts --from preset --to dtcg --allow-lossy`
+  loads the module, finds the exported preset, and writes its tokens as W3C
+  design-token JSON for Figma plugins. Semantic layers and bindings stay in
+  the preset.
+- The [Inspector](/tools/inspector/) **export** menu downloads the current
+  token catalog as DTCG JSON or CSS.
+
+<Aside type="tip">
+	Keep one direction as the source of truth. If designers own the tokens, regenerate `tokens.ts` in
+	CI from the exported JSON and review the diff. If engineers own the preset, export DTCG for the
+	design file.
+</Aside>

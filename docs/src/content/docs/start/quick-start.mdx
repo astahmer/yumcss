@@ -1,0 +1,172 @@
+---
+title: Quick start
+description: Add YumCSS to a Vite app and ship your first typed, build-time-extracted component in five minutes.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+This guide adds YumCSS to an existing **Vite + React** app. Other frameworks
+and bundlers work the same way. See [bundlers & frameworks](/guides/bundlers/).
+
+<Aside type="tip" title="Just looking?">
+	The [playground](/tools/playground/) runs everything on this page in your browser, no install
+	needed.
+</Aside>
+
+<Tabs syncKey="lane">
+	<TabItem label="css() — recommended">
+
+<Steps>
+
+1. **Install**
+
+   ```sh
+   pnpm add yumcss
+   ```
+
+2. **Create your css instance.** Start with a built-in preset; you can
+   replace it with [your own](/design-system/presets/) later.
+
+   ```ts title="src/css.ts"
+   import { createCss } from "yumcss/css";
+   import { tailwindPreset } from "yumcss/preset/tailwindcss";
+
+   export const css = createCss(tailwindPreset);
+   ```
+
+3. **Add the Vite plugin**
+
+   ```ts title="vite.config.ts" ins={3,4,7}
+   import react from "@vitejs/plugin-react";
+   import { defineConfig } from "vite";
+   import { yumcssExtractVite } from "yumcss/vite";
+   import { css } from "./src/css";
+
+   export default defineConfig({
+   	plugins: [yumcssExtractVite(css), react()],
+   });
+   ```
+
+4. **Import the stylesheet once** in your entry file, and declare the
+   virtual module for TypeScript:
+
+   ```ts title="src/main.tsx"
+   import "yumcss:css";
+   ```
+
+   ```ts title="src/vite-env.d.ts"
+   declare module "yumcss:css";
+   ```
+
+5. **Style a component**
+
+   ```tsx title="src/card.tsx"
+   import { css } from "./css";
+
+   export const Card = (props: { title: string; children: React.ReactNode }) => (
+   	<article
+   		className={css.class({
+   			display: "flex",
+   			flexDirection: "column",
+   			gap: 12,
+   			padding: 24,
+   			borderRadius: "xl",
+   			backgroundColor: "$white",
+   			color: "$slate-700",
+   			boxShadow: "sm",
+   			_hover: { boxShadow: "lg" },
+   			md: { padding: 32 },
+   		})}
+   	>
+   		<h2 className={css.class({ fontSize: "lg", fontWeight: "semibold", color: "$slate-900" })}>
+   			{props.title}
+   		</h2>
+   		{props.children}
+   	</article>
+   );
+   ```
+
+6. **Run it.** `pnpm dev`. Every property, token, and condition above
+   autocompletes and is type-checked. In the production build, each
+   `css.class()` call becomes a plain string and the CSS is a single atomic
+   stylesheet.
+
+</Steps>
+
+<PlaygroundLink path="/basics" api="css" />
+
+    </TabItem>
+    <TabItem label="tw() — existing Tailwind app">
+
+<Steps>
+
+1. **Install**
+
+   ```sh
+   pnpm add yumcss
+   pnpm add -D @yumcss/codemod
+   ```
+
+   Your app already has `tailwindcss` and `@tailwindcss/vite`.
+
+2. **Generate a typed `tw()`** from your Tailwind entry:
+
+   ```sh
+   pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src
+   ```
+
+3. **Add the Vite plugin** before Tailwind's:
+
+   ```ts title="vite.config.ts" ins={4} "yumcssVite(), "
+   import tailwindcss from "@tailwindcss/vite";
+   import react from "@vitejs/plugin-react";
+   import { defineConfig } from "vite";
+   import { yumcssVite } from "yumcss/vite";
+
+   export default defineConfig({
+   	plugins: [yumcssVite(), tailwindcss(), react()],
+   });
+   ```
+
+4. **Use it**
+
+   ```tsx title="src/button.tsx"
+   import { tw } from "./tw";
+
+   export const Button = (props: React.ComponentProps<"button">) => (
+   	<button
+   		{...props}
+   		className={tw({
+   			rounded: "lg",
+   			bg: "blue-600",
+   			px: "4",
+   			py: "2",
+   			text: "white",
+   			hover: { bg: "blue-700" },
+   		})}
+   	/>
+   );
+   ```
+
+   Utilities and values come from **your** theme, and the build turns the
+   call back into `"rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"`.
+
+</Steps>
+
+Have a lot of existing `className="…"` strings? [Convert them with the codemod](/tailwind/migrating-class-strings/).
+
+<PlaygroundLink path="/tw-compat" api="tw" />
+
+    </TabItem>
+
+</Tabs>
+
+## Next steps
+
+- [css() basics](/css/overview/): values, tokens, merging, and escape hatches.
+- [Create a preset](/design-system/presets/): your own tokens instead of the starter preset.
+- [Composition & variants](/css/composition/): build reusable components.
+- [Inspector](/tools/inspector/): see your design system and what you ship.

@@ -1,0 +1,256 @@
+---
+title: Build a component library
+description: Structure a design-system package and a component package, write variants and component tokens, accept overrides, and ship prebuilt CSS.
+---
+
+import { Aside, FileTree, Steps } from "@astrojs/starlight/components";
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+
+A YumCSS component library is ordinary TypeScript: components call
+`css.class()`, and a build step turns those calls into strings and a
+stylesheet. This guide covers the decisions that matter once styles cross a
+package boundary.
+
+## Package layout
+
+Split the **design system** (tokens and rules) from the **components**
+(markup and behavior). Apps depend on both, and both depend on the same preset:
+
+<FileTree>
+
+- packages/
+  - design-system/ `@acme/design-system`
+    - src/preset.ts tokens, conditions, properties
+    - src/css.ts `export const css = createCss(preset)`
+    - src/cx.ts `export const cx = createCx({ css })`
+  - ui/ `@acme/ui`
+    - src/button.tsx
+    - src/card.tsx
+    - yumcss.lib.json generated: the library's CSS contract
+- apps/
+  - web/ imports `@acme/ui`, extracts CSS once
+
+</FileTree>
+
+Expose `css` and `cx` as subpaths (`@acme/design-system/css`,
+`@acme/design-system/cx`). The extractor recognizes css instances by the
+import's last segment (`css` or `design` by default), so these imports are
+picked up without configuration.
+
+One preset means one vocabulary, one set of CSS variables, and one atomic
+stylesheet across every package. `display: flex` used in `@acme/ui` and in the
+app is the same rule.
+
+## Components
+
+Write variants as maps of `css.class()` calls, and merge with `cx()` so the
+caller's `className` wins. The full pattern is in
+[composition & variants](/css/composition/#variants-without-a-recipe-api):
+
+```tsx title="packages/ui/src/button.tsx"
+import { css } from "@acme/design-system/css";
+import { cx } from "@acme/design-system/cx";
+
+const button = {
+	base: css.class({
+		display: "inline-flex",
+		alignItems: "center",
+		gap: "sm",
+		borderRadius: "md",
+		fontWeight: "medium",
+	}),
+	size: {
+		sm: css.class({ paddingInline: "sm", fontSize: "sm" }),
+		md: css.class({ paddingInline: "md", fontSize: "md" }),
+	},
+	tone: {
+		primary: css.class({
+			backgroundColor: "accent",
+			color: "onAccent",
+			_hover: { backgroundColor: "accentHover" },
+		}),
+		ghost: css.class({
+			backgroundColor: "transparent",
+			color: "text",
+			_hover: { backgroundColor: "subtle" },
+		}),
+	},
+} as const;
+
+export type ButtonProps = React.ComponentProps<"button"> & {
+	size?: keyof typeof button.size;
+	tone?: keyof typeof button.tone;
+};
+
+export const Button = ({ size = "md", tone = "primary", className, ...props }: ButtonProps) => (
+	<button {...props} className={cx(button.base, button.size[size], button.tone[tone], className)} />
+);
+```
+
+Guidelines:
+
+- **Export the variant keys as types** (`keyof typeof button.tone`), so adding
+  a variant updates the props.
+- **Put `className` last in `cx()`.** Overrides then win property by property,
+  with no specificity fights.
+- **Use semantic tokens** (`accent`, `text`), never raw palette colors, so
+  apps can re-theme without forking components.
+- **Keep styles static.** For values that come from props, use
+  [`css.vars()`](/css/dynamic-styles/), so the library ships no runtime CSS
+  injection.
+
+<PlaygroundLink path="/variants" label="Variants with cx() scenario" />
+
+## Component tokens
+
+Large systems add a third token layer: **component tokens**. Each component
+reads its own contract (`card.bg`, `card.border`), which points to semantic
+tokens, which point to raw values. A brand can then re-skin one component
+without touching the semantic layer:
+
+```ts title="packages/design-system/src/preset.ts"
+import { define, presetConditions, type YumCSSProperties } from "yumcss/preset";
+
+const raw = define.tokens({
+	colors: {
+		"$ink-50": "#faf8f6",
+		"$ink-200": "#e7e1da",
+		"$ink-700": "#433b35",
+		"$ink-900": "#1d1916",
+		$white: "#ffffff",
+	},
+	radii: { md: "8px", lg: "14px" },
+});
+
+const themes = { base: "", _dark: "[data-theme=dark] &" };
+
+const semantic = raw.defineSemanticTokens(themes, {
+	semantic: {
+		"bg.surface": { base: "colors.$white", _dark: "colors.$ink-900" },
+		"border.default": { base: "colors.$ink-200", _dark: "colors.$ink-700" },
+		"fg.default": { base: "colors.$ink-900", _dark: "colors.$ink-50" },
+	},
+});
+
+const tokens = semantic.defineSemanticTokens(themes, {
+	component: {
+		"card.bg": { base: "semantic.bg.surface" },
+		"card.border": { base: "semantic.border.default" },
+		"card.fg": { base: "semantic.fg.default" },
+	},
+});
+
+const config: YumCSSProperties = {};
+
+export const preset = define.preset(define.theme({ config, tokens }), {
+	conditions: { ...presetConditions, _dark: themes._dark },
+	properties: {
+		backgroundColor: { $tokens: "component" },
+		borderColor: { $tokens: "component" },
+		color: { $tokens: "component" },
+		borderRadius: { $tokens: "radii" },
+		borderStyle: true,
+		borderWidth: true,
+		padding: true,
+	},
+});
+```
+
+```ts title="packages/ui/src/card.tsx"
+import { css } from "@acme/design-system/css";
+
+export const card = css.class({
+	backgroundColor: "card.bg",
+	borderColor: "card.border",
+	color: "card.fg",
+	borderStyle: "solid",
+	borderWidth: 1,
+	borderRadius: "lg",
+	padding: 24,
+});
+```
+
+Every layer stays a CSS variable reference, so dark mode flows through all
+three layers with no component code:
+
+```css
+:root {
+	--u3kfrr: var(--uzzyoq);
+} /* card.bg → semantic.bg.surface */
+:root {
+	--uzzyoq: var(--\31 iwtwtw);
+} /* semantic.bg.surface → $white */
+[data-theme="dark"] {
+	--uzzyoq: var(--\31 p00l0e);
+} /* → $ink-900 */
+.\39 cgrrz {
+	background-color: var(--u3kfrr);
+}
+```
+
+<PlaygroundLink path="/component-tokens" api="css" label="Component token contracts scenario" />
+
+## Shipping the library
+
+Apps exclude `node_modules` from scanning, so a published library has to say
+which CSS it needs. YumCSS does this with a **library artifact**:
+`yumcss.lib.json` records the library's atoms together with the preset,
+namespace, and cascade mode they were compiled for.
+
+<Steps>
+
+1. **Build the artifact** in the library package:
+
+   ```sh
+   pnpm exec yumcss-codemod lib build . dist/yumcss.lib.json \
+     --preset-import @acme/design-system --preset-export preset \
+     --include "src/**/*.tsx"
+   ```
+
+   Add `--check` in CI to fail when it's stale.
+
+2. **Export it** from `package.json`:
+
+   ```json
+   {
+   	"name": "@acme/ui",
+   	"exports": {
+   		".": "./dist/index.js",
+   		"./yumcss.lib.json": "./dist/yumcss.lib.json"
+   	}
+   }
+   ```
+
+3. **Register it in the app**:
+
+   ```ts title="apps/web/vite.config.ts"
+   yumcssExtractVite(css, { libraries: ["@acme/ui"] });
+   ```
+
+</Steps>
+
+The app's build now emits the library's CSS in the same atomic stylesheet,
+deduplicated against the app's own rules. If the library was built for a
+different preset, namespace, or cascade mode, the build **fails** with an
+explanation, so mismatched CSS can't ship.
+
+<Aside type="note">
+	Library artifacts support the default atomic class-name strategy. A library that must emit
+	Tailwind classes should ship its styles as Tailwind source instead (see [Tailwind classes from
+	css()](/tailwind/tailwind-classes/)).
+</Aside>
+
+## Inside a monorepo
+
+When packages are linked from source (workspace packages that aren't built),
+you don't need the artifact. Make sure the app's extractor scans them:
+`exclude` defaults to `node_modules`, `dist`, and `.git`, so source files
+reached through a workspace symlink are scanned like the app's own.
+
+## Testing and review
+
+- **Types are the first test.** A token rename breaks every call site at
+  compile time.
+- The [Inspector](/tools/inspector/) shows which tokens each package uses and
+  which tokens are dead.
+- The [lint plugin](/tools/lint/) keeps components on the static path.
