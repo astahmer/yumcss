@@ -58,6 +58,7 @@ const SOURCE = Object.freeze({
 	css: "yumcss/css",
 	unsafeCss: "yumcss/unsafe/css",
 	design: "yumcss/design",
+	generatedCss: "yumcss/css/generated",
 });
 
 const API = Object.freeze({
@@ -67,6 +68,7 @@ const API = Object.freeze({
 	unsafeCssFactory: "createUnsafeCss",
 	designFactory: "createDesignCss",
 	style: "style",
+	generatedCssFactory: "createGeneratedCss",
 });
 
 const STYLE_METHOD = Object.freeze({
@@ -226,6 +228,7 @@ const apiFromImport = (
 	if (source === SOURCE.css && imported === API.cssFactory) return API.cssFactory;
 	if (source === SOURCE.unsafeCss && imported === API.unsafeCssFactory) return API.unsafeCssFactory;
 	if (source === SOURCE.design && imported === API.designFactory) return API.designFactory;
+	if (source === SOURCE.generatedCss && imported === API.generatedCssFactory) return API.cssFactory;
 	return undefined;
 };
 
@@ -454,7 +457,8 @@ const createApiResolver = (
 			source === SOURCE.core ||
 			source === SOURCE.css ||
 			source === SOURCE.unsafeCss ||
-			source === SOURCE.design;
+			source === SOURCE.design ||
+			source === SOURCE.generatedCss;
 		const localFactory =
 			isYumCSSSource || !includeUnconfiguredStyleFacades
 				? undefined

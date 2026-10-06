@@ -76,7 +76,7 @@ const DEFINE_BUILDERS = {
 	tokens: define.tokens,
 } as const;
 const TOKEN_CATALOG_BUILDERS = new Set(["defineColorPalettes", "defineSemanticTokens"]);
-const CSS_FACTORY_SOURCES = new Set(["yumcss", "yumcss/css"]);
+const CSS_FACTORY_SOURCES = new Set(["yumcss", "yumcss/css", "yumcss/css/generated"]);
 const CSS_FACTORY_NAMES = new Set(["createCss", "createGeneratedCss"]);
 const UNRESOLVED = Symbol("unresolved project value");
 const isDefineBuilderName = (name: string): name is keyof typeof DEFINE_BUILDERS =>
@@ -203,7 +203,7 @@ const moduleFromProgram = (filename: string, program: AstNode): ParsedModule => 
 };
 
 const candidateFiles = (path: string): readonly string[] => {
-	if (extname(path) !== "") return [path];
+	if (MODULE_EXTENSIONS.some((extension) => path.endsWith(extension))) return [path];
 	return [
 		path,
 		...MODULE_EXTENSIONS.map((extension) => `${path}${extension}`),

@@ -425,6 +425,52 @@ core.tw(theme.color);`,
 		);
 	});
 
+	test("resolves codemod-generated CSS facades through package import aliases", () => {
+		withProject(
+			{
+				"package.json": JSON.stringify({
+					imports: { "#app/*": "./src/*" },
+				}),
+				"src/preset.ts": "export const preset = {};",
+				"src/css.generated.ts": `import { createGeneratedCss } from "yumcss/css/generated";
+import type { CssFn } from "yumcss/css";
+import { preset } from "./preset";
+
+type GeneratedStyle = { color: "red" };
+type GeneratedDynamicStyle = { color: string };
+type GeneratedCss = CssFn<GeneratedStyle, GeneratedDynamicStyle>;
+
+export const css: GeneratedCss = /* @__PURE__ */ createGeneratedCss<
+	GeneratedStyle,
+	GeneratedDynamicStyle
+>(preset);`,
+				"src/accordion.tsx": `import { css } from "#app/css.generated";
+import * as generated from "#app/css.generated";
+import { createGeneratedCss } from "yumcss/css/generated";
+
+const [color, setColor] = useState("fg" as const);
+const direct = createGeneratedCss(preset);
+css({ color });
+css.class({ color });
+generated.css({ color });
+generated.css.class({ color });
+direct({ color });`,
+			},
+			(directory) => {
+				const filename = resolve(directory, "src/accordion.tsx");
+				const source = readFileSync(filename, "utf8");
+				const reports = runRule("no-dynamic-values", source, [], {}, filename);
+				expect(reports.map(({ data }) => data.name)).toEqual([
+					"css",
+					"css.class",
+					"generated.css",
+					"generated.css.class",
+					"direct",
+				]);
+			},
+		);
+	});
+
 	test("ignores unrelated exports reached through package imports aliases", () => {
 		withProject(
 			{
