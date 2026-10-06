@@ -277,11 +277,10 @@ import { define, type YumCSSProperties } from "yumcss/preset";
 import { tailwindConditions, tailwindProperties, tailwindTokens } from "yumcss/preset/tailwindcss";
 
 // Keep only the token groups: the catalog's helper methods aren't tokens.
-const { defineSemanticTokens, defineColorPalettes, ...tailwindGroups } = tailwindTokens;
 
 const tokens = define.tokens({
-	...tailwindGroups,
-	colors: { ...tailwindGroups.colors, "$brand-500": "#f2622e" },
+	...tailwindTokens,
+	colors: { ...tailwindTokens.colors, "$brand-500": "#f2622e" },
 });
 
 const config: YumCSSProperties = {};

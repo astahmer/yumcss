@@ -165,7 +165,7 @@ export interface CssFn<
 	 * const props = css.props(button);
 	 * ```
 	 */
-	(...styles: Array<TStyles>): CompiledStyles;
+	(...styles: Array<TStyles | false | null | undefined>): CompiledStyles;
 	/**
 	 * Compile style objects into one class string. Use this projection when the
 	 * host already wants a class string; the callable `css(...)` form is the
@@ -176,7 +176,7 @@ export interface CssFn<
 	 * const className = css.class({ color: "slategray", padding: 12 });
 	 * ```
 	 */
-	class: (...styles: Array<TStyles>) => string;
+	class: (...styles: Array<TStyles | false | null | undefined>) => string;
 	/**
 	 * Encode runtime values as structural classes plus inline custom properties.
 	 * The carrier is consumed by `.props` or `cx.vars`; use `.class` for styles
@@ -310,4 +310,4 @@ export interface CssFn<
  */
 export type AtomicStyleProps<
 	TCss extends Pick<CssFn<never>, "class"> = Pick<CssFn<StyleObject>, "class">,
-> = Parameters<TCss["class"]>[0];
+> = NonNullable<Exclude<Parameters<TCss["class"]>[0], false>>;

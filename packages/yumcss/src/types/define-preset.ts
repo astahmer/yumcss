@@ -2,7 +2,6 @@ import type {
 	AnyConditions,
 	AnyTokens,
 	AnySemanticTokens,
-	AnySimpleTokens,
 	ColorPaletteDefinitions,
 	CssPreset,
 	DefinePresetOptions,
@@ -291,8 +290,13 @@ const createTokenCatalog = <T extends AnyTokens>(tokens: T): TokenCatalog<T> => 
  * @category tokens
  * @since 0.1.0
  */
-export const tokens = <T extends AnySimpleTokens>(tokens: T): TokenCatalog<T> =>
-	createTokenCatalog(tokens);
+export const tokens = <T extends AnyTokens>(
+	tokens: T & {
+		[Key in keyof T]: Key extends "defineSemanticTokens" | "defineColorPalettes"
+			? T[Key]
+			: Record<string, string>;
+	},
+): TokenCatalog<T> => createTokenCatalog(tokens);
 
 /**
  * Preserve a condition map as typed preset metadata.
