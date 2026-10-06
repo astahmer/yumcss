@@ -7,7 +7,7 @@ runtime residuals, official-loader failures remain visible, and evidence labels
 distinguish host-backed checks from in-process results. Framework-native
 behavior remains owned by its host integration; this plan does not claim
 universal framework support. See the
-[implementation status](../docs/src/content/docs/reference/implementation-status.md#plan-audit)
+[implementation status](../docs/src/content/docs/contributing/implementation-status.md#plan-audit)
 for the current scope.
 
 ## Goal

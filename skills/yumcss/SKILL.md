@@ -96,9 +96,9 @@ description: Work with YumCSS's typed styling APIs in this repository. Use when 
 
 ## Useful docs
 
-- `docs/src/content/docs/getting-started.md`
-- `docs/src/content/docs/api/tw.md`
-- `docs/src/content/docs/api/css.md` / `api/design-css.md` / `api/cx.md`
-- `docs/src/content/docs/api/presets.md` / `api/theming.md`
-- `docs/src/content/docs/tooling/codegen.md`
-- `docs/src/content/docs/tooling/vite-plugins.md`
+- `docs/src/content/docs/start/quick-start.mdx`
+- `docs/src/content/docs/tailwind/tw.mdx`
+- `docs/src/content/docs/css/overview.mdx` / `design-system/design-css.mdx` / `css/composition.mdx`
+- `docs/src/content/docs/design-system/presets.mdx` / `design-system/themes.mdx`
+- `docs/src/content/docs/reference/cli.mdx`
+- `docs/src/content/docs/reference/vite.mdx`

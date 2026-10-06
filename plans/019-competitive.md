@@ -210,4 +210,4 @@ distribution, hosted SaaS — pipeline products, not inspector features.
   current inspector/analyzer tests and workflows.
 - Remaining competitive ideas are optional product polish or integrations,
   not gaps in the CSS-in-JS pivot boundary. Current evidence and public
-  behavior are summarized in `docs/src/content/docs/tooling/workflows.md`.
+  behavior are summarized in `docs/src/content/docs/tools/playground.mdx`.

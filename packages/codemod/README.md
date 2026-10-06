@@ -31,7 +31,7 @@ The small `tw.ts` entry does not import the optional `tw.runtime.ts` conflict
 catalog; plain generated `tw()` and `cx()` usage therefore do not pull it into
 the browser bundle. Import the catalog explicitly only when arbitrary runtime
 Tailwind strings need exact conflict merging. The build-only artifact is never
-imported by runtime bindings. The main [migration guide](../../docs/src/content/docs/guides/migrations.md)
+imported by runtime bindings. The main [migration guide](../../docs/src/content/docs/migrate/overview.mdx)
 explains how to choose a route and handle dynamic behavior.
 
 ## What the tool promises

@@ -24,7 +24,7 @@ Start with `createCss(preset)` for new YumCSS code. The generated `tw()`
 helper is the compatibility lane for applications that already use Tailwind
 or specifically want its utility ecosystem.
 
-The [Getting started guide](../../docs/src/content/docs/getting-started.md)
+The [Getting started guide](../../docs/src/content/docs/start/quick-start.mdx)
 is the canonical Vite setup. The [documentation directory](../../docs/) has
 the complete guides and API reference.
 
@@ -44,7 +44,7 @@ the default app path.
 
 Optional ecosystem presets are also available for Tailwind CSS, Chakra UI,
 Panda CSS, and shadcn/ui. Their generated package surfaces are experimental;
-see the [preset reference](../../docs/src/content/docs/api/presets.md) for
+see the [preset reference](../../docs/src/content/docs/design-system/presets.mdx) for
 their scope and evidence.
 
 ## A small example
@@ -83,8 +83,9 @@ CSS.
 
 ## Learn more
 
-- [Getting started](../../docs/src/content/docs/getting-started.md)
-- [Build your first Tailwind app](../../docs/src/content/docs/guides/basic.md)
-- [The css() API](../../docs/src/content/docs/api/css.md)
-- [Design-system styles](../../docs/src/content/docs/api/design-css.md)
-- [Runtime and SSR boundaries](../../docs/src/content/docs/guides/component-library.md)
+- [Getting started](../../docs/src/content/docs/start/quick-start.mdx)
+- [Build your first Tailwind app](../../docs/src/content/docs/tailwind/tw.mdx)
+- [The css() API](../../docs/src/content/docs/css/overview.mdx)
+- [Design-system styles](../../docs/src/content/docs/design-system/design-css.mdx)
+- [Build a component library](../../docs/src/content/docs/components/component-library.mdx)
+- [SSR & streaming](../../docs/src/content/docs/guides/ssr.mdx)

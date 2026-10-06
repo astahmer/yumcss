@@ -71,6 +71,6 @@ description: Migrate styling code onto YumCSS with packages/codemod. Use when co
 ## Useful docs
 
 - `packages/codemod/README.md`
-- `docs/src/content/docs/tooling/codemod.md`
-- `docs/src/content/docs/guides/migrations.md`
-- `docs/src/content/docs/getting-started.md` (codegen commands)
+- `docs/src/content/docs/migrate/overview.mdx`
+- `docs/src/content/docs/tailwind/migrating-class-strings.mdx`
+- `docs/src/content/docs/reference/cli.mdx` (codegen commands)

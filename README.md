@@ -10,17 +10,17 @@ escape hatch.
 
 ## Start here
 
-| Your task                             | Guide                                                                  |
-| ------------------------------------- | ---------------------------------------------------------------------- |
-| Write typed CSS objects               | [Getting started](./docs/src/content/docs/getting-started.md)          |
-| Build shared tokens and themes        | [Design-system guide](./docs/src/content/docs/guides/design-system.md) |
-| Keep Tailwind and add typed utilities | [Tailwind guide](./docs/src/content/docs/api/tw.md)                    |
-| Combine styles from different sources | [Composition guide](./docs/src/content/docs/api/cx.md)                 |
-| Evaluate a migration                  | [Migration guide](./docs/src/content/docs/guides/migrations.md)        |
+| Your task                             | Guide                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------ |
+| Write typed CSS objects               | [Getting started](./docs/src/content/docs/start/quick-start.mdx)         |
+| Build shared tokens and themes        | [Design-system guide](./docs/src/content/docs/design-system/presets.mdx) |
+| Keep Tailwind and add typed utilities | [Tailwind guide](./docs/src/content/docs/tailwind/tw.mdx)                |
+| Combine styles from different sources | [Composition guide](./docs/src/content/docs/css/composition.mdx)         |
+| Evaluate a migration                  | [Migration guide](./docs/src/content/docs/migrate/overview.mdx)          |
 
 The getting-started guide is the canonical setup and example source. It assumes
-an existing Vite app; use the [multi-bundler guide](./docs/src/content/docs/tooling/multi-bundler.md)
-for other bundlers. The [preset reference](./docs/src/content/docs/api/presets.md)
+an existing Vite app; use the [multi-bundler guide](./docs/src/content/docs/guides/bundlers.mdx)
+for other bundlers. The [preset reference](./docs/src/content/docs/design-system/presets.mdx)
 lists the core and optional ecosystem presets.
 
 ## See it in action
@@ -32,27 +32,27 @@ optional workflows, not required setup.
 <table>
   <tr>
     <td width="50%">
-      <img src="docs/assets/showcase/playground-variants-dark.png" alt="YumCSS playground showing typed variants and a live preview" />
+      <img src="docs/src/assets/screenshots/playground-css.png" alt="YumCSS playground showing a css() button with a live preview and result panels" />
     </td>
     <td width="50%">
-      <img src="docs/assets/showcase/playground-tokens-light.png" alt="YumCSS playground showing raw, semantic, and component tokens" />
+      <img src="docs/src/assets/screenshots/playground-migrate.png" alt="YumCSS playground migration lab converting styled-components to YumCSS" />
     </td>
   </tr>
   <tr>
     <td><strong>Playground</strong><br />Change a typed example and inspect the rendered result.</td>
-    <td><strong>Token layers</strong><br />See token references resolve in a real preview.</td>
+    <td><strong>Migration lab</strong><br />Run real migration adapters and read the residual report.</td>
   </tr>
   <tr>
     <td width="50%">
-      <img src="docs/assets/showcase/inspector-design-system.png" alt="YumCSS inspector showing typed unions and token swatches" />
+      <img src="docs/src/assets/screenshots/inspector-tokens.png" alt="YumCSS Inspector token catalog with swatches and counts" />
     </td>
     <td width="50%">
-      <img src="docs/assets/showcase/analyzer-coverage.png" alt="YumCSS analyzer showing extraction coverage, CSS budget, and missing CSS warnings" />
+      <img src="docs/src/assets/screenshots/inspector-build.png" alt="YumCSS Inspector build report with folding coverage and CSS budget" />
     </td>
   </tr>
   <tr>
     <td><strong>Inspector</strong><br />Browse tokens, utilities, and generated mappings.</td>
-    <td><strong>Analyzer</strong><br />Measure extraction, stylesheet shape, CSS size, and missing CSS.</td>
+    <td><strong>Build report</strong><br />Measure extraction, stylesheet shape, CSS size, and missing CSS.</td>
   </tr>
 </table>
 
@@ -72,15 +72,15 @@ generated code, residuals, and evidence before editing files.
 - **Migration tools:** preview registered source-to-target routes and preserve
   unsupported behavior as typed residuals.
 
-The [CSS API](./docs/src/content/docs/api/css.md), [design API](./docs/src/content/docs/api/design-css.md),
-[Tailwind API](./docs/src/content/docs/api/tw.md), and [composition API](./docs/src/content/docs/api/cx.md)
+The [CSS API](./docs/src/content/docs/css/overview.mdx), [design API](./docs/src/content/docs/design-system/design-css.mdx),
+[Tailwind API](./docs/src/content/docs/tailwind/tw.mdx), and [composition API](./docs/src/content/docs/css/composition.mdx)
 show each lane in detail.
 
 YumCSS is static-first, not universal compilation. Dynamic values use
 explicit runtime carriers or Tailwind safelists. Globals, complex selectors,
 and framework-owned behavior stay with authored CSS or the host integration
 when YumCSS cannot prove a safe representation. See
-[current limitations](./docs/src/content/docs/reference/current-limitations-and-criticism.md).
+[current limitations](./docs/src/content/docs/contributing/limitations.md).
 
 ## Repository tools
 
@@ -93,18 +93,20 @@ pnpm run analyze
 pnpm run migration-preview
 ```
 
-The [tooling guide](./docs/src/content/docs/tooling/workflows.md) explains what
-each tool checks.
+The [tools section](./docs/src/content/docs/tools/) explains what each tool
+shows, with screenshots.
 
 ## Documentation
 
-- [Getting started](./docs/src/content/docs/getting-started.md)
-- [API references](./docs/src/content/docs/api/)
-- [Guides](./docs/src/content/docs/guides/)
-- [Migration adapters](./docs/src/content/docs/interop/css-in-js-adapters.md)
-- [Tooling](./docs/src/content/docs/tooling/)
-- [Implementation status](./docs/src/content/docs/reference/implementation-status.md)
-- [Current limitations](./docs/src/content/docs/reference/current-limitations-and-criticism.md)
+- [Getting started](./docs/src/content/docs/start/quick-start.mdx)
+- [Styling with css()](./docs/src/content/docs/css/)
+- [Design systems](./docs/src/content/docs/design-system/)
+- [Coming from Tailwind](./docs/src/content/docs/tailwind/)
+- [API reference](./docs/src/content/docs/reference/)
+- [Migration adapters](./docs/src/content/docs/migrate/overview.mdx)
+- [Tools](./docs/src/content/docs/tools/)
+- [Implementation status](./docs/src/content/docs/contributing/implementation-status.md)
+- [Current limitations](./docs/src/content/docs/contributing/limitations.md)
 
 ## Work on YumCSS
 

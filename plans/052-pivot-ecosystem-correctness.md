@@ -6,7 +6,7 @@ YumCSS is intended to be the pivot library that makes migration between CSS-in-J
 
 The audit confirms that YumCSS solves the central criticism of CSS-in-JS—runtime cost, lock-in, and weak portability—well for static styling, but not every ecosystem-specific limitation yet.
 
-The current evidence is documented in the [official API matrix](../docs/src/content/docs/interop/official-api-matrix.md) and [architecture contracts](../docs/src/content/docs/contributing/architecture.md). There are 32 registered adapters.
+The current evidence is documented in the [official API matrix](../docs/src/content/docs/contributing/api-matrix.md) and [architecture contracts](../docs/src/content/docs/contributing/architecture.md). There are 32 registered adapters.
 
 This plan preserves the audit findings nearly verbatim, then turns each remaining boundary into an implementation and proof obligation. It does not promise universal compatibility where the source library owns behavior outside styling, such as React Native platform layout or component-library interaction behavior.
 

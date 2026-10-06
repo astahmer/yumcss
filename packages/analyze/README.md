@@ -65,7 +65,7 @@ write to the project; use `yumcss-codemod migrate` when you are ready to
 review a real diff.
 
 For a visual explanation of the reports, start with the
-[tooling workflows guide](../../docs/src/content/docs/tooling/workflows.md).
+[tooling workflows guide](../../docs/src/content/docs/tools/playground.mdx).
 
 ## Compiler Preview
 

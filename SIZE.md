@@ -2,7 +2,7 @@
 
 This root file is a GitHub-friendly pointer. The canonical, current size
 record and comparison table live in
-[the reference documentation](docs/src/content/docs/reference/size.md).
+[the reference documentation](docs/src/content/docs/contributing/size.md).
 
 The compact typecheck and bundle-size ranking is in
 [`PERF.md`](PERF.md); it is regenerated from the committed snapshots.

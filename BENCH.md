@@ -68,7 +68,7 @@ the load caveat above applies.
   resolving css() atoms through the registry and merging across engines.
   Both engines memoize repeated identical inputs the same way.
 - **yumcss `css()`/`tw()` trade per-call speed for a much smaller shipped
-  runtime** ([canonical size reference](docs/src/content/docs/reference/size.md)) — and for literal calls the vite plugins
+  runtime** ([canonical size reference](docs/src/content/docs/contributing/size.md)) — and for literal calls the vite plugins
   hoist the entire cost to build time, making the per-call number irrelevant
   in real apps.
 - Every value here is **one call, cold-ish**: no memoization of the input
@@ -173,7 +173,7 @@ dynamic or unsupported calls.
 
 ## Current runtime size record — 2026-09-12
 
-The canonical table is [the reference size page](docs/src/content/docs/reference/size.md);
+The canonical table is [the reference size page](docs/src/content/docs/contributing/size.md);
 the exact record is the committed `runtime-size.json.snap` and the hard
 ceilings are in `runtime-budget.json`. The current primary entries are:
 
