@@ -22,10 +22,10 @@ test("createCss JSDoc examples use the preset for token references", () => {
 
 test("CssFn JSDoc examples cover groups and runtime inputs", () => {
 	const css = createUnsafeCss();
-	const composed = css({ display: "flex", padding: 8 }, { padding: 12 });
+	const composed = css({ display: "flex", padding: "8px" }, { padding: "12px" });
 	const styles = css.group({
-		card: { borderRadius: 8, padding: 16 },
-		gap: (value: number) => ({ gap: value }),
+		card: { borderRadius: "8px", padding: "16px" },
+		gap: (value: string) => ({ gap: value }),
 	});
 	const banners = css.group({
 		banner: {
@@ -40,7 +40,7 @@ test("CssFn JSDoc examples cover groups and runtime inputs", () => {
 		style: Record<string, string> | undefined;
 		[key: string]: unknown;
 	}>();
-	expect(css.props(styles.card, styles.gap(12))).type.toBe<{
+	expect(css.props(styles.card, styles.gap("12px"))).type.toBe<{
 		className: string | undefined;
 		style: Record<string, string> | undefined;
 		[key: string]: unknown;

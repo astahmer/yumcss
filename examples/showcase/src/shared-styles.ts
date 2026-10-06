@@ -33,6 +33,6 @@ export const status: Styles = {
 };
 
 export const body: Styles = {
-	$frame: { corners: "md", pad: 6 },
+	$frame: { corners: "md", pad: "6px" },
 	$text: { color: "$gray-700" },
 };

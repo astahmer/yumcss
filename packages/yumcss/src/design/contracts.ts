@@ -29,17 +29,18 @@ export const isDesignModuleKey = (key: string): key is DesignModuleKey =>
 export const createTokenLookup =
 	(tokens: AnyTokens | undefined): TokenLookup =>
 	(group, value) => {
-		if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
+		if (typeof value === "number" && !Number.isFinite(value)) return "";
+		const name = String(value);
 		const groupTokens = tokens?.[group];
-		if (typeof groupTokens === "function") return value;
-		if (groupTokens !== undefined && Object.hasOwn(groupTokens, value)) {
-			const tokenValue = groupTokens[value];
+		if (typeof groupTokens === "function") return name;
+		if (groupTokens !== undefined && Object.hasOwn(groupTokens, name)) {
+			const tokenValue = groupTokens[name];
 			return typeof tokenValue === "string" ||
 				(typeof tokenValue === "number" && Number.isFinite(tokenValue))
 				? String(tokenValue)
 				: "";
 		}
-		const canonical = canonicalTokenName(value);
+		const canonical = canonicalTokenName(name);
 		if (groupTokens !== undefined && Object.hasOwn(groupTokens, canonical)) {
 			const tokenValue = groupTokens[canonical];
 			return typeof tokenValue === "string" ||
@@ -54,5 +55,5 @@ export const createTokenLookup =
 				? String(tokenValue)
 				: "";
 		}
-		return value;
+		return name;
 	};

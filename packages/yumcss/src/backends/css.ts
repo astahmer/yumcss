@@ -62,7 +62,10 @@ export const isColorProperty = (property: string): boolean => colorProperties.ha
  * chain (custom class or null) followed by the hashed atomic fallback —
  * so outputs stay byte-identical with pre-extraction builds.
  */
-export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
+export function createCssBackend(
+	options: CssBackendOptions = {},
+	normalizeValue = normalizeFirstThatWorks,
+): CssBackend {
 	const hashFn = options.hashFn ?? createHashFn(options.debug ?? false);
 	const strategy: ClassNameStrategy | undefined = options.className;
 	const sheetBacked = strategy?.sheetBacked === true;
@@ -77,7 +80,7 @@ export function createCssBackend(options: CssBackendOptions = {}): CssBackend {
 				"yumcss: firstThatWorks requires the atomic stylesheet or a sheet-backed class-name strategy.",
 			);
 		}
-		const rawValue = normalizeFirstThatWorks(property, value);
+		const rawValue = normalizeValue(property, value);
 		let values = declarations.get(orderedKey);
 		if (values === undefined) {
 			values = new Map();

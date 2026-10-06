@@ -149,7 +149,7 @@ test("keeps authored aliases literal by default", () => {
 	);
 	const css = createUnsafeCss({ debug: true });
 	const output = createStylesheet(preset, { debug: true }).generate([
-		css.raw({ bg: "red", px: 2, minH: 10 } as never),
+		css.raw({ bg: "red", px: "2", minH: "10" } as never),
 	]);
 
 	expect(output).toContain("bg:red");

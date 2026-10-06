@@ -15,7 +15,7 @@ export function App({ dark = false }: AppProps) {
 	const dss = createDesignCss(examplePreset, { conditions: { dark: () => dark } });
 
 	return (
-		<box style={{ ...dss({ $frame: { pad: 2 } }), width: 46, height: 12 }}>
+		<box style={{ ...dss({ $frame: { pad: "2px" } }), width: 46, height: 12 }}>
 			<box data-name="header" style={dss(header)}>
 				<text>tui header</text>
 			</box>

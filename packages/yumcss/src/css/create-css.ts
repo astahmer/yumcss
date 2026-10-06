@@ -159,7 +159,7 @@ export interface CssFn<
 	 * @example
 	 * ```ts
 	 * const button = css(
-	 *   { display: "flex", padding: 8 },
+	 *   { display: "flex", padding: "8px" },
 	 *   isPrimary ? { backgroundColor: "royalblue" } : {},
 	 * );
 	 * const props = css.props(button);
@@ -173,7 +173,7 @@ export interface CssFn<
 	 *
 	 * @example
 	 * ```ts
-	 * const className = css.class({ color: "slategray", padding: 12 });
+	 * const className = css.class({ color: "slategray", padding: "12px" });
 	 * ```
 	 */
 	class: (...styles: Array<TStyles | false | null | undefined>) => string;
@@ -196,7 +196,7 @@ export interface CssFn<
 	 *
 	 * @example
 	 * ```ts
-	 * const style = css.raw({ color: "red" }, { padding: 8 });
+	 * const style = css.raw({ color: "red" }, { padding: "8px" });
 	 * ```
 	 */
 	raw: (...styles: Array<TRawStyles>) => StyleObject;
@@ -207,8 +207,8 @@ export interface CssFn<
 	 *
 	 * @example
 	 * ```ts
-	 * const base = css({ display: "flex", padding: 8 });
-	 * const override = css({ padding: 12 });
+	 * const base = css({ display: "flex", padding: "8px" });
+	 * const override = css({ padding: "12px" });
 	 * const props = css.props(base, override);
 	 * ```
 	 */
@@ -221,11 +221,11 @@ export interface CssFn<
 	 * @example
 	 * ```ts
 	 * const styles = css.group({
-	 *   card: { borderRadius: 8, padding: 16 },
-	 *   gap: (value: number) => ({ gap: value }),
+	 *   card: { borderRadius: "8px", padding: "16px" },
+	 *   gap: (value: string) => ({ gap: value }),
 	 * });
 	 *
-	 * css.props(styles.card, styles.gap(12));
+	 * css.props(styles.card, styles.gap("12px"));
 	 * ```
 	 */
 	group: <
@@ -300,7 +300,7 @@ export interface CssFn<
  * const css = createCss(examplePreset);
  * const style: AtomicStyleProps<typeof css> = {
  *   backgroundColor: "$blue-500",
- *   padding: 8,
+ *   padding: "8px",
  * };
  * ```
  *

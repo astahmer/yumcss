@@ -30,7 +30,7 @@ test("default preset retains the stock token-aware property contract", () => {
 	]);
 
 	expect(output).toContain("color:#e53e3e");
-	expect(output).toContain("padding:4px");
+	expect(output).toContain("padding:1rem");
 });
 
 test("default preset resolves CSS-wide color keywords and leaves colors authored", () => {

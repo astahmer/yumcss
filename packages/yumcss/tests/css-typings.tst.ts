@@ -142,7 +142,7 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 			: never;
 	}[keyof YumCSSProperties];
 
-	type ExampleStyle = Parameters<typeof css.class>[0];
+	type ExampleStyle = AtomicStyleProps<typeof css>;
 	type ExampleDisplay = NonNullish<ExampleStyle["display"]>;
 
 	const strictPreset = define.preset(
@@ -157,7 +157,7 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 		},
 	);
 	const strictCss = createCss(strictPreset);
-	type StrictStyle = Parameters<typeof strictCss.class>[0];
+	type StrictStyle = AtomicStyleProps<typeof strictCss>;
 	type StrictDisplay = NonNullish<StrictStyle["display"]>;
 	expect(strictCss.class({ display: "flex", _hover: { display: "grid" } })).type.toBe<string>();
 
@@ -173,7 +173,7 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 		},
 	);
 	const openStrictCss = createCss(openStrictPreset);
-	type OpenStrictStyle = Parameters<typeof openStrictCss.class>[0];
+	type OpenStrictStyle = AtomicStyleProps<typeof openStrictCss>;
 	type OpenStrictDisplay = NonNullish<OpenStrictStyle["display"]>;
 	expect(openStrictCss.class({ display: "block" })).type.toBe<string>();
 
@@ -189,7 +189,7 @@ test("curated CSS values stay literal unions for editor suggestions", () => {
 test("YumCSSProperties exposes a curated CSS contract with an explicit csstype escape hatch", () => {
 	const common: YumCSSProperties = {
 		display: "flex",
-		padding: 16,
+		padding: 0,
 		alignItems: "center",
 		backgroundColor: "transparent",
 		fontWeight: "bold",

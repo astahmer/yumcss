@@ -6,7 +6,7 @@ export const CARD_BASE = dss.class({
 	$frame: {
 		w: "28rem",
 		corners: "xl",
-		border: { color: "$gray-200", width: 1 },
+		border: { color: "$gray-200", width: "1px" },
 		pad: 24,
 	},
 });

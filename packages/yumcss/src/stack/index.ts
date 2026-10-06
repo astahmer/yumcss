@@ -12,7 +12,6 @@
  * → justify) so folded output is byte-stable across runs.
  */
 import type { StyleObject } from "../types/typings.ts";
-import type { CssFn } from "../css/create-css.ts";
 import { forEachResponsiveLeaf, isResponsiveObject, type ResponsiveValue } from "./responsive.ts";
 
 export type StackDirection = "row" | "column" | "row-reverse" | "column-reverse";
@@ -49,7 +48,7 @@ export interface StackStyle extends StyleObject {
  * `never` keeps any typed `CssFn` assignable; the runtime `.class` method is
  * open and receives the fixed Stack declarations through the factory boundary.
  */
-export type StackClassCompiler = Pick<CssFn<never>, "class">;
+export type StackClassCompiler = { class: (...styles: never[]) => string };
 
 /** Configured prop-to-class function shared by all renderer adapters. */
 export type StackClassName = (props: StackProps) => string;

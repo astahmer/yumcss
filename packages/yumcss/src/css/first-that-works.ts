@@ -68,9 +68,13 @@ export const isEncodedFirstThatWorks = (value: unknown): value is FirstThatWorks
 export const isCompilableCssValue = (value: unknown): value is string | number =>
 	isSafeCssValue(value) || isEncodedFirstThatWorks(value);
 
-export const normalizeFirstThatWorks = (property: string, value: string | number): string => {
-	if (typeof value !== "string") return normalizeCssValue(property, value);
+export const normalizeFirstThatWorks = (
+	property: string,
+	value: string | number,
+	normalize: (property: string, value: string | number) => string = normalizeCssValue,
+): string => {
+	if (typeof value !== "string") return normalize(property, value);
 	const values = decodeFirstThatWorks(value);
-	if (values === undefined) return normalizeCssValue(property, value);
-	return encodeFirstThatWorks(values.map((entry) => normalizeCssValue(property, entry)));
+	if (values === undefined) return normalize(property, value);
+	return encodeFirstThatWorks(values.map((entry) => normalize(property, entry)));
 };

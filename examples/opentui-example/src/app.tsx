@@ -47,7 +47,7 @@ export function App({ dark = false }: AppProps) {
 				<text>status: {dark ? "dark theme active" : "light theme active"}</text>
 			</box>
 
-			<box style={{ ...dss({ $frame: { border: { width: 1, color: "$blue-500" } } }), gap: 1 }}>
+			<box style={{ ...dss({ $frame: { border: { width: "1px", color: "$blue-500" } } }), gap: 1 }}>
 				<text>bordered section (border shorthand)</text>
 			</box>
 

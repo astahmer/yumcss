@@ -136,7 +136,7 @@ stack means "pack to the end, align to the top".
 Design CSS reads tokens from fixed group names, the ones a design tool
 exports: `colors`, `spacing`, `radii`, `fonts`, `fontSizes`, `fontWeights`,
 `lineHeights`, `letterSpacings`. Name your preset's groups like this and every
-field autocompletes. A plain number is pixels.
+field autocompletes. Numeric token keys select preset values. Other lengths require explicit units; zero stays valid without a unit.
 
 <Aside type="caution" title="Themes in design CSS">
 	Design CSS writes token **values** into the CSS (`#d9481a`), not CSS

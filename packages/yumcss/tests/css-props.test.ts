@@ -140,7 +140,7 @@ test("css with dynamic styles", () => {
 		buttonColor: {
 			$input: {
 				bg: {} as "blue" | "red",
-				fontSize: {} as 5 | 10,
+				fontSize: {} as "5px" | "10px",
 			},
 			display: "flex",
 			fontSize: css.input("fontSize"),
@@ -151,7 +151,7 @@ test("css with dynamic styles", () => {
 		},
 	});
 
-	expect(styles.buttonColor({ bg: "blue", fontSize: 10 })).toMatchInlineSnapshot(`
+	expect(styles.buttonColor({ bg: "blue", fontSize: "10px" })).toMatchInlineSnapshot(`
 		{
 		  "compiled": {
 		    "_hover__backgroundColor": "_hover__backgroundColor__var(--bgHover)",
@@ -169,9 +169,9 @@ test("css with dynamic styles", () => {
 
 	expect(
 		css.props(
-			css({ display: "block", padding: 4 }),
+			css({ display: "block", padding: "4px" }),
 			styles.rounded,
-			styles.buttonColor({ bg: "blue", fontSize: 10 }),
+			styles.buttonColor({ bg: "blue", fontSize: "10px" }),
 		),
 	).toMatchInlineSnapshot(`
 		{
@@ -183,6 +183,6 @@ test("css with dynamic styles", () => {
 		}
 	`);
 
-	const projected = css.props(styles.buttonColor({ bg: "blue", fontSize: 10 }));
+	const projected = css.props(styles.buttonColor({ bg: "blue", fontSize: "10px" }));
 	expect(typeof projected.style?.hasOwnProperty).toBe("function");
 });

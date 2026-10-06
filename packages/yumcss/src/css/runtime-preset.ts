@@ -13,6 +13,7 @@ import {
 	type RuntimeCssAttachment,
 	type RuntimeCssFunction,
 } from "./runtime-base.ts";
+import { createPresetValueNormalizer } from "./preset-value-normalization.ts";
 import { createRuntimeTokenResolver } from "./runtime-token-resolver.ts";
 
 export type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
@@ -31,9 +32,12 @@ const createRuntimeValueResolver = (
 	debug: boolean,
 	tokenVariableNames: CreateCssOptions["tokenVariableNames"],
 ) => {
+	const normalizeValue = createPresetValueNormalizer(preset);
 	const resolveToken = createRuntimeTokenResolver(preset, debug, tokenVariableNames);
-	return (property: string, value: string) =>
-		runtimeTokenName.test(value) ? resolveToken(property, value) : value;
+	return (property: string, value: string | number) => {
+		const normalized = normalizeValue(property, value);
+		return runtimeTokenName.test(normalized) ? resolveToken(property, normalized) : normalized;
+	};
 };
 
 export const createPresetCssRuntime = (
@@ -54,6 +58,7 @@ export const createPresetCssRuntime = (
 			if (cssPropertyFromKey(key, preset.conditions) === "colorPalette")
 				validateColorPaletteValue(preset, value);
 		},
+		createPresetValueNormalizer(preset),
 	);
 	attachCssFactoryMetadata(css, {
 		kind: CssFactoryKind.Css,

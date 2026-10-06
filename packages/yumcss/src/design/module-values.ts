@@ -4,9 +4,12 @@ import type { TokenLookup } from "./contracts.ts";
 export const toLength =
 	(token: TokenLookup, group: string) =>
 	(value: string | number): string => {
-		if (typeof value === "number") return Number.isFinite(value) ? `${value}px` : "";
-		if (typeof value !== "string" || value.length === 0) return "";
+		if (value === "" || (typeof value === "number" && !Number.isFinite(value))) return "";
 		const resolved = token(group, value);
-		if (resolved !== value) return resolved;
-		return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+		if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(resolved) && Number(resolved) !== 0) {
+			throw new Error(
+				`yumcss: '${group}: ${value}' requires an explicit CSS unit or a preset token.`,
+			);
+		}
+		return resolved;
 	};

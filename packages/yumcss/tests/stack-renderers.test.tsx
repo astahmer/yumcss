@@ -22,7 +22,7 @@ const stackInput = {
 const configuredCss = createUnsafeCss({
 	className: createNamedAtomsStrategy("app"),
 });
-const configuredInput = { ...stackInput, gap: 4, padding: "1rem" };
+const configuredInput = { ...stackInput, gap: "4px", padding: "1rem" };
 const configuredClassName =
 	"app-display-flex app-flexDirection-column app-gap-4px app-padding-1rem " +
 	"app-alignItems-center app-justifyContent-space-between";

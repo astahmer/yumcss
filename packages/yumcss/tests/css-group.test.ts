@@ -14,7 +14,7 @@ test("css group", () => {
 			$input: {
 				bg: {} as "blue" | "red",
 				bgHover: {} as string,
-				space: {} as 5 | 10,
+				space: {} as "5px" | "10px",
 			},
 			display: "flex",
 			margin: css.input("space"),
@@ -48,7 +48,7 @@ test("css group", () => {
 			styles.header,
 			styles.body,
 			styles.footer,
-			styles.dynamic({ bg: "blue", bgHover: "", space: 10 }),
+			styles.dynamic({ bg: "blue", bgHover: "", space: "10px" }),
 			css({
 				color: "$red-700",
 				_hover: {
@@ -91,9 +91,9 @@ test("compiled groups expose the StyleX host interop marker without polluting pr
 
 test("css group function values can be passed directly to props", () => {
 	const css = createUnsafeCss();
-	const styles = css.group({ item: ((padding: number) => ({ padding })) as any });
+	const styles = css.group({ item: (padding: string) => ({ padding }) });
 
-	const result = css.props((styles.item as any)(8));
+	const result = css.props(styles.item("8px"));
 
 	expect(result.className).toContain("pw-padding");
 	expect(result.style).toEqual({ "--pw-c-padding": "8px" });
@@ -102,7 +102,7 @@ test("css group function values can be passed directly to props", () => {
 test("css group preserves null reset declarations for composed styles", () => {
 	const css = createUnsafeCss({ debug: true });
 	const styles = css.group({
-		base: css.class({ borderTopWidth: 1 }),
+		base: css.class({ borderTopWidth: "1px" }),
 		withoutBorder: css.class({ borderTopWidth: null }),
 	});
 

@@ -1,3 +1,4 @@
+import type { StandardProperties } from "csstype";
 /** CSS-wide keywords accepted by every property. */
 export type CssWideValue = "inherit" | "initial" | "revert" | "revert-layer" | "unset";
 
@@ -217,7 +218,10 @@ type YumCSSIntrinsicPropertyValues = YumCSSColorPropertyValues & {
 
 /** CSS-wide, numeric, and property-aware intrinsic values for a CSS property. */
 export type YumCSSPropertyValue<TPropertyName extends string> =
-	| YumCSSCssValue
+	| CssWideValue
+	| (TPropertyName extends keyof StandardProperties
+			? Extract<StandardProperties[TPropertyName], number>
+			: never)
 	| (TPropertyName extends keyof YumCSSIntrinsicPropertyValues
 			? YumCSSIntrinsicPropertyValues[TPropertyName]
 			: never);

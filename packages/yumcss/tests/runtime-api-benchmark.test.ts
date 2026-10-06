@@ -155,7 +155,7 @@ const twConfigured = createTw({
 		text: { "*": ["color"] },
 	},
 });
-const unsafeGroup = cssUnsafe.group({ gap: (value: number) => ({ gap: value }) });
+const unsafeGroup = cssUnsafe.group({ gap: (value: string) => ({ gap: value }) });
 const unsafeInputGroup = cssUnsafe.group({
 	banner: {
 		$input: {} as { readonly color: string },
@@ -199,19 +199,19 @@ const generatedStyles = {
 } satisfies Parameters<typeof cssGenerated.class>[0];
 const unsafeStyles = {
 	display: "flex",
-	padding: 8,
+	padding: "8px",
 	color: "tomato",
 	_hover: { color: "blue" },
 } satisfies Parameters<typeof cssUnsafe.class>[0];
 const designStyles = {
-	$frame: { fill: "$blue-500", corners: "md", pad: [4, 8] },
-	$layout: { flow: "stackY", gap: 4, align: "center" },
+	$frame: { fill: "$blue-500", corners: "md", pad: ["4px", "8px"] },
+	$layout: { flow: "stackY", gap: "4px", align: "center" },
 	$text: { size: "lg", weight: "bold", color: "$gray-900" },
 } satisfies Parameters<typeof dss.class>[0];
 const runtimeStyles = {
 	color: "$blue-500",
 	padding: 12,
-	_hover: { color: "$red-500", margin: 8 },
+	_hover: { color: "$red-500", margin: "8px" },
 } satisfies Parameters<typeof cssRuntime.class>[0];
 const twStyles = {
 	display: "flex",
@@ -250,8 +250,8 @@ const nativeCx = createReactNativeCx();
 const openTuiDss = createOpenTuiDesignCss(examplePreset);
 const openTuiCx = createOpenTuiCx();
 const platformDesignStyles = {
-	$frame: { fill: "$blue-500", corners: "md", pad: [4, 8] },
-	$layout: { flow: "stackY", gap: 4, align: "center" },
+	$frame: { fill: "$blue-500", corners: "md", pad: ["4px", "8px"] },
+	$layout: { flow: "stackY", gap: "4px", align: "center" },
 } satisfies Parameters<typeof nativeDss>[0];
 const rsdCss = createReactStrictDomCss();
 const rsdNativeCss = createReactStrictDomCss({ platform: ReactStrictDomPlatform.Native });
@@ -277,7 +277,7 @@ const twAdapter = createTwAdapter({
 	bridge: { color: { "#2563eb": "text-blue-600" } },
 	preset: examplePreset,
 });
-const stylesheet = createStylesheet(examplePreset);
+const stylesheet = createStylesheet(defaultPreset);
 const hostRegistry = createHostStyleRegistry();
 const compatibility = createYumCSSLibCompatibility(examplePreset);
 const sourceDocument = {
@@ -402,14 +402,14 @@ const SCENARIOS: readonly RuntimeScenarioDefinition[] = [
 		category: "css",
 		description: "open CSS raw merge projection",
 		iterations: 50_000,
-		run: () => void cssUnsafe.raw(unsafeStyles, { padding: 12 }),
+		run: () => void cssUnsafe.raw(unsafeStyles, { padding: "12px" }),
 	},
 	{
 		name: "css.unsafe.group",
 		category: "css",
 		description: "open CSS parameterized group member",
 		iterations: 30_000,
-		run: () => void unsafeGroup.gap(12),
+		run: () => void unsafeGroup.gap("12px"),
 	},
 	{
 		name: "css.unsafe.input",
@@ -619,14 +619,24 @@ const SCENARIOS: readonly RuntimeScenarioDefinition[] = [
 		category: "platform",
 		description: "OpenTUI design style object",
 		iterations: 30_000,
-		run: () => void openTuiDss(platformDesignStyles),
+		run: () =>
+			void openTuiDss({
+				$frame: { fill: "$blue-500", pad: [4, 8] },
+				$layout: { flow: "stackY", gap: 4, align: "center" },
+			}),
 	},
 	{
 		name: "opentui.cx",
 		category: "platform",
 		description: "OpenTUI style-object composition",
 		iterations: 100_000,
-		run: () => void openTuiCx(openTuiDss(platformDesignStyles)),
+		run: () =>
+			void openTuiCx(
+				openTuiDss({
+					$frame: { fill: "$blue-500", pad: [4, 8] },
+					$layout: { flow: "stackY", gap: 4, align: "center" },
+				}),
+			),
 	},
 	{
 		name: "react-strict-dom.css",

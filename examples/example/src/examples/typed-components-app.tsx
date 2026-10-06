@@ -30,6 +30,7 @@ const Stack = createStack(css);
 function Panel({ children, className, style, xcss, ...styleProps }: PanelProps) {
 	const generated = css.props(
 		/* yumcss:migrate-skip (residual: component styles resolve from runtime caller props) */ css(
+			// oxlint-disable-next-line yumcss-extraction/no-dynamic-values -- Component callers supply runtime style props.
 			styleProps,
 		),
 		xcss,

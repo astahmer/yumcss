@@ -244,7 +244,7 @@ function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): Css
 		}
 	}) as CssFn<StyleObject>;
 	Object.assign(flushed, original);
-	flushed.class = (...styles: Array<StyleObject>) => {
+	flushed.class = (...styles: Array<StyleObject | false | null | undefined>) => {
 		try {
 			return original.class(...styles);
 		} finally {

@@ -39,7 +39,7 @@ export function App() {
 	// cx merge: conflicting backgroundColors — the later style wins (#3182ce).
 	// Module constants keep the build-time extractor happy; the cx call itself
 	// still exercises the runtime merge path.
-	const mergeBase = dss({ $frame: { fill: "$gray-100", pad: 2 } });
+	const mergeBase = dss({ $frame: { fill: "$gray-100", pad: "2px" } });
 	const mergeOverlay = dss({ $frame: { fill: "$blue-500" } });
 	const merged = cx(mergeBase, mergeOverlay);
 

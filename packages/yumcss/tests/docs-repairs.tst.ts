@@ -18,7 +18,7 @@ test("CSS composition accepts conditional objects without widening its vocabular
 	expect(css.class).type.not.toBeCallableWith({ padding: "missing-token" });
 	expect<AtomicStyleProps<typeof css>>().type.not.toBeAssignableFrom<false>();
 	const dss = createDesignCss(tailwindPreset);
-	expect(dss.class(false, { $frame: { pad: 4 } }, undefined)).type.toBe<string>();
+	expect(dss.class(false, { $frame: { pad: "1rem" } }, undefined)).type.toBe<string>();
 });
 
 test("raw token catalogs can be spread and extended without stripping composers", () => {

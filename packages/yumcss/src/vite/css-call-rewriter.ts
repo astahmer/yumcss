@@ -1,8 +1,8 @@
 import { toOxcNode } from "../oxc-node.ts";
-import { createUnsafeCss } from "../unsafe/css.ts";
+import { createGeneratedCss } from "../css/create-css.ts";
 import { cssPropertyFromKey, isEmptyCondition } from "../backends/css.ts";
 import { isLiteralKeyframeBody } from "../css/keyframes.ts";
-import { normalizeCssValue } from "../css/value-normalization.ts";
+import { isUnitlessCssProperty } from "../css/value-normalization.ts";
 import { createTokenVariableName } from "../css/token-variable-names.ts";
 import { createVarCompiler } from "../css/var-compiler.ts";
 import { tokenNameAliases } from "../lib/token-path.ts";
@@ -67,7 +67,7 @@ interface DirectVarDescriptor {
 	readonly sourceName: string;
 	readonly className: string;
 	readonly customProperty: string;
-	readonly addsPixels: boolean;
+	readonly requiresUnit: boolean;
 	readonly tokenMap: Readonly<Record<string, string>> | undefined;
 	readonly tokenMapName: string | undefined;
 }
@@ -120,7 +120,7 @@ const directVarDescriptor = (
 		sourceName: property,
 		className: atom.cls,
 		customProperty,
-		addsPixels: normalizeCssValue(cssProperty, 1) === "1px",
+		requiresUnit: !isUnitlessCssProperty(cssProperty),
 		tokenMap: resolveTokens
 			? tokenMapForProperty(preset, cssProperty, tokenVariableNames)
 			: undefined,
@@ -178,7 +178,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
 		this.varKeys.clear();
 		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
-		const engine = createUnsafeCss({
+		const engine = createGeneratedCss<StyleObject>(this.preset, {
 			conditions: this.preset.conditions,
 			className: this.className,
 			namespace: this.namespace,
@@ -657,10 +657,17 @@ const renderDirectCarrier = (
 		const resolved =
 			descriptor.tokenMapName === undefined
 				? valueName
-				: `typeof ${valueName} === "string" && typeof ${descriptor.tokenMapName}[${valueName}] === "string" ? ${descriptor.tokenMapName}[${valueName}] : ${valueName}`;
-		const normalized = `typeof ${valueName} === "number" ? String(${valueName})${descriptor.addsPixels ? ' + "px"' : ""} : ${resolved}`;
+				: `typeof ${descriptor.tokenMapName}[String(${valueName})] === "string" ? ${descriptor.tokenMapName}[String(${valueName})] : ${valueName}`;
+		const resolvedName = `resolved${index}`;
+		const normalized = `String(${resolvedName})`;
 		const safe = `typeof ${valueName} === "string" ? ${valueName}.length > 0 && !${valueName}.includes("\\u0000") : Number.isFinite(${valueName})`;
 		lines.push(`\tif (${safe}) {`);
+		lines.push(`\t\tconst ${resolvedName} = ${resolved};`);
+		if (descriptor.requiresUnit) {
+			lines.push(
+				`\t\tif (typeof ${resolvedName} === "number" && ${resolvedName} !== 0) throw new Error("yumcss: dynamic length requires an explicit CSS unit or a preset token.");`,
+			);
+		}
 		lines.push(`\t\tclassNames.push(${JSON.stringify(descriptor.className)});`);
 		lines.push(`\t\tstyle[${JSON.stringify(descriptor.customProperty)}] = ${normalized};`);
 		lines.push("\t\thasStyle = true;");

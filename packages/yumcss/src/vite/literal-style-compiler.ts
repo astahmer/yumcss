@@ -1,12 +1,9 @@
+import { createPresetValueNormalizer } from "../css/preset-value-normalization.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { AtomRegistry } from "../css/atoms.ts";
 import { cssPropertyFromKey } from "../backends/css.ts";
-import {
-	isCompilableCssValue,
-	isEncodedFirstThatWorks,
-	normalizeFirstThatWorks,
-} from "../css/first-that-works.ts";
+import { isCompilableCssValue, isEncodedFirstThatWorks } from "../css/first-that-works.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssPreset } from "./css-extract.ts";
@@ -38,9 +35,11 @@ class YumCSSLiteralStyleCompiler implements LiteralStyleCompiler {
 	private className;
 	private hashFn;
 	private emptyCondition;
+	private normalizeValue;
 
 	constructor(options: LiteralStyleCompilerOptions) {
 		this.options = options;
+		this.normalizeValue = createPresetValueNormalizer(options.preset);
 		this.className = options.className;
 		this.hashFn = createHashFn(options.debug === true);
 		this.emptyCondition = Object.keys(options.preset.conditions).find(
@@ -68,7 +67,7 @@ class YumCSSLiteralStyleCompiler implements LiteralStyleCompiler {
 					.toSorted(),
 			);
 			const property = cssPropertyFromKey(orderedKey, this.options.preset.conditions);
-			merged.set(orderedKey, normalizeFirstThatWorks(property, rawValue));
+			merged.set(orderedKey, this.normalizeValue(property, rawValue));
 		}
 
 		const classes: string[] = [];
@@ -111,6 +110,7 @@ class YumCSSLiteralStyleCompiler implements LiteralStyleCompiler {
 
 	refresh(options: LiteralStyleCompilerOptions): void {
 		this.options = options;
+		this.normalizeValue = createPresetValueNormalizer(options.preset);
 		this.className = options.className;
 		this.hashFn = createHashFn(options.debug === true);
 		this.emptyCondition = Object.keys(options.preset.conditions).find(

@@ -145,7 +145,7 @@ describe("css.vars — encoding", () => {
 	});
 
 	test("multi-object inputs keep last-value-wins flattening", () => {
-		const out = css.vars({ color: "red" }, { color: "blue", padding: 4 });
+		const out = css.vars({ color: "red" }, { color: "blue", padding: "4px" });
 		expect(out.class).toBe("pw-color pw-padding");
 		expect(out.style).toEqual({ "--pw-c-color": "blue", "--pw-c-padding": "4px" });
 	});

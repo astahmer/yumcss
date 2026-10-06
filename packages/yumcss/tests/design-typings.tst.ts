@@ -17,7 +17,7 @@ test("design dss() accepts the three modules with token values", () => {
 		dss({
 			$frame: {
 				w: "20",
-				h: 40,
+				h: "40px",
 				corners: "lg",
 				fill: "$blue-500",
 				pad: [4, 8],
@@ -58,7 +58,7 @@ test("values come from the design tokens, with raw escapes for lengths", () => {
 		dss({
 			$frame: {
 				fill: "success",
-				corners: [8, "lg", 12, "full"],
+				corners: ["8px", "lg", "12px", "full"],
 				w: "50%",
 			},
 			$text: { weight: "semibold", font: "sans", spacing: { line: 1.5 } },

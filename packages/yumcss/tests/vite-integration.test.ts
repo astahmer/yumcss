@@ -88,7 +88,7 @@ export const mainClasses = tw({
 export const headingClasses = tw({ text: "gray-900" });
 export const buttonClasses = dss.class({
 	$frame: { fill: "$blue-500", corners: "md" },
-	$layout: { flow: "stackX", gap: "2" },
+	$layout: { flow: "stackX", gap: "2px" },
 	$text: { color: "$white", size: "sm" },
 });
 // Mixed tw-string + css-atom merge call: folds entirely at build time

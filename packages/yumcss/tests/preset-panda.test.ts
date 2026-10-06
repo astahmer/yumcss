@@ -588,7 +588,7 @@ describe("panda preset runtime resolution", () => {
 			height: "full",
 		});
 
-		expect(atomic).toContain("padding:4px");
+		expect(atomic).toContain("padding:var(--");
 		expect(atomic).toContain("color:var(--");
 		expect(atomic).toContain("background-color:var(--");
 		expect(atomic).toContain("gap:var(--");
@@ -618,8 +618,8 @@ describe("panda preset runtime resolution", () => {
 		expect(atomicOf({ zIndex: "docked" })).toContain("z-index:10");
 		expect(atomicOf({ opacity: "50" })).toContain("opacity:50");
 		expect(atomicOf({ borderWidth: "2px" })).toContain("border-width:2px");
-		expect(atomicOf({ outlineOffset: 2 })).toContain("outline-offset:2px");
-		expect(atomicOf({ margin: 4 })).toContain("margin:4px");
+		expect(atomicOf({ outlineOffset: 2 })).toBe(atomicOf({ outlineOffset: "2" }));
+		expect(atomicOf({ margin: 4 })).toBe(atomicOf({ margin: "4" }));
 	});
 
 	test("the bound shorthands reach their scale and preserve the raw escape", () => {
@@ -629,7 +629,7 @@ describe("panda preset runtime resolution", () => {
 			"animation:spin 1s linear infinite",
 		);
 		expect(atomicOf({ scrollbarWidth: "thin" })).toContain("scrollbar-width:thin");
-		expect(atomicOf({ padding: 4 })).toContain("padding:4px");
+		expect(atomicOf({ padding: 4 })).toContain("padding:var(--");
 		expect(atomicOf({ padding: "1.5" })).toContain("padding:var(--");
 	});
 

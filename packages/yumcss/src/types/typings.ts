@@ -410,10 +410,14 @@ export interface CssConfigReturn<
  * -----------------------------------------------------------------------------*/
 
 type AuthoredValueName = string | number;
+type AuthoredTokenName<Key> = Key extends number
+	? Key | `${Key}`
+	: Key extends `${infer Numeric extends number}`
+		? Key | Numeric
+		: Key;
 
-type ExplicitTokenNames<Value> = Extract<
-	Exclude<keyof Value, "$strict" | "$tokens">,
-	AuthoredValueName
+type ExplicitTokenNames<Value> = AuthoredTokenName<
+	Extract<Exclude<keyof Value, "$strict" | "$tokens">, AuthoredValueName>
 >;
 
 type ColorPaletteConfig<TPreset> = TPreset extends { colorPalettes: infer TColorPalettes }
@@ -508,7 +512,9 @@ type InferPropValues<TTokens extends AnyTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
 }
 	? TTokenName extends TokenGroupKey<TTokens>
-		? Extract<keyof TokenGroup<TTokens, TTokenName>, AuthoredValueName> | ExplicitTokenNames<Value>
+		?
+				| AuthoredTokenName<Extract<keyof TokenGroup<TTokens, TTokenName>, AuthoredValueName>>
+				| ExplicitTokenNames<Value>
 		: ExplicitTokenNames<Value>
 	: ExplicitTokenNames<Value>;
 

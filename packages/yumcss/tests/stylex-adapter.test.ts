@@ -8,7 +8,7 @@ describe("StyleX class-name adapter", () => {
 	test("emits StyleX-shaped atomic names for static declarations", () => {
 		const adapter = createStyleXAdapter();
 		const css = createUnsafeCss({ className: adapter });
-		const result = css.class({ color: "red", margin: 8 });
+		const result = css.class({ color: "red", margin: "8px" });
 
 		expect(result).toMatchInlineSnapshot(`"x1e2nbdu xkib98w"`);
 		expect(result).toMatch(/^x[a-z0-9]+ x[a-z0-9]+$/u);

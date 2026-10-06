@@ -28,7 +28,7 @@ test("resolve $frame — the box", () => {
 			{
 				$frame: {
 					w: "20",
-					h: 40,
+					h: "40px",
 					corners: "lg",
 					fill: "$blue-500",
 					pad: [4, 8],
@@ -63,8 +63,8 @@ test("resolve $frame — corners, border, blur and axis padding", () => {
 			{
 				$frame: {
 					corners: ["none", "full", "xl", "sm"],
-					border: { color: "$red-300", width: 2, style: "dashed" },
-					blurBg: 8,
+					border: { color: "$red-300", width: "2px", style: "dashed" },
+					blurBg: "8px",
 					padX: "16",
 					padY: 12,
 				},
@@ -80,15 +80,9 @@ test("resolve $frame — corners, border, blur and axis padding", () => {
 	});
 });
 
-test("numeric strings fall back to px when they are not tokens", () => {
-	expect(
-		resolveDesignStyle({ $frame: { w: "40" }, $layout: { flow: "stackX", gap: "6" } }, tokens),
-	).toEqual({
-		width: "40px",
-		display: "flex",
-		flexDirection: "row",
-		gap: "6px",
-	});
+test("numeric strings without tokens require explicit units", () => {
+	expect(() => resolveDesignStyle({ $frame: { w: "40" } }, tokens)).toThrow("explicit CSS unit");
+	expect(() => resolveDesignStyle({ $layout: { gap: "6" } }, tokens)).toThrow("explicit CSS unit");
 });
 
 test("resolve $layout — stack flows, align and gaps", () => {

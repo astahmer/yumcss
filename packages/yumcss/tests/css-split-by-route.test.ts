@@ -28,12 +28,12 @@ const makeProject = (): string => {
 		"src/routes/user/user.tsx": `
 			import { css } from "../design";
 			export const b = css.class({ $layout: { flow: "stackY" }, $frame: { h: "12" } });
-			export const sharedLater = css.class({ $frame: { w: "26" } });
+			export const sharedLater = css.class({ $frame: { w: "26px" } });
 			export const spin = css.keyframes({ to: { opacity: 1 }, from: { opacity: 0 } });
 		`,
 		"src/routes/reports/reports.tsx": `
 			import { css } from "../../design";
-			export const sharedLater = css.class({ $frame: { w: "26" } });
+			export const sharedLater = css.class({ $frame: { w: "26px" } });
 		`,
 		"src/common.ts": `
 			import { css } from "./design";
@@ -118,7 +118,7 @@ describe("splitByRoute", () => {
 		const dir = makeProject();
 		const stackFile = join(dir, "src/routes/admin/stack.tsx");
 		const stackSource =
-			'import { Stack } from "yumcss/stack/react"; export const stack = <Stack gap={4} />;';
+			'import { Stack } from "yumcss/stack/react"; export const stack = <Stack gap="4px" />;';
 		writeFileSync(stackFile, stackSource);
 		try {
 			const engine = createYumCSSEngineContext({

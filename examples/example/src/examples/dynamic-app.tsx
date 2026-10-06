@@ -60,7 +60,7 @@ function CompilerCarrierExamples({ accent }: { accent: string }) {
 						{
 							color: accent,
 							backgroundColor: "white",
-							padding: 8,
+							padding: "8px",
 							borderRadius: "md",
 						},
 					)
@@ -74,7 +74,7 @@ function CompilerCarrierExamples({ accent }: { accent: string }) {
 						{
 							color: "white",
 							backgroundColor: accent,
-							padding: 8,
+							padding: "8px",
 							borderRadius: "md",
 						},
 					)

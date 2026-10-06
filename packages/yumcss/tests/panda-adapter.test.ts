@@ -96,6 +96,6 @@ describe("Panda class-name adapter", () => {
 	test("integrates with the css() engine", () => {
 		const adapter = createPandaAdapter({ propClasses });
 		const css = createUnsafeCss({ className: adapter });
-		expect(css.class({ color: "red.500", margin: 8 })).toBe("text-red.500 m-8px");
+		expect(css.class({ color: "red.500", margin: "8px" })).toBe("text-red.500 m-8px");
 	});
 });

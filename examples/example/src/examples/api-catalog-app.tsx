@@ -62,7 +62,7 @@ const composedClassName = catalogCx(
 	"caller-class",
 );
 const designClassName = dss.class({
-	$frame: { fill: "$blue-50", pad: 2, corners: "md" },
+	$frame: { fill: "$blue-50", pad: "2px", corners: "md" },
 	$text: { color: "$blue-700", size: "sm" },
 });
 

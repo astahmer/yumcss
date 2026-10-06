@@ -30,7 +30,9 @@ describe("firstThatWorks", () => {
 
 		stylesheet.process([css.raw({ marginTop: chain })]);
 
-		expect(stylesheet.gen.atomic()).toContain("margin-top:4px;margin-top:8px");
+		expect(stylesheet.gen.atomic()).toContain(
+			"margin-top:var(--spacing__4);margin-top:var(--spacing__8)",
+		);
 	});
 
 	test("resolves each fallback through the preset token catalog", () => {

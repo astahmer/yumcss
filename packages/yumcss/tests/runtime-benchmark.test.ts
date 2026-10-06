@@ -82,27 +82,27 @@ test("runtime throughput stays within the recorded evidence band", async () => {
 		text: "white",
 	};
 	const nestedStyles = {
-		_hover: { color: "red", padding: 4 },
-		md: { color: "blue", margin: 8 },
+		_hover: { color: "red", padding: "4px" },
+		md: { color: "blue", margin: "8px" },
 	};
 	const mergeStyles = {
 		color: "red",
-		padding: 4,
+		padding: "4px",
 		_hover: { backgroundColor: "black" },
 	};
 	const mergeOverrides = {
 		color: "blue",
-		gap: 8,
+		gap: "8px",
 		_hover: { color: "white" },
 	};
 	const mergeState = {
 		backgroundColor: "white",
-		_hover: { padding: 12 },
+		_hover: { padding: "12px" },
 	};
 	const runtimeStyles = {
 		color: "$blue-500",
 		padding: 12,
-		_hover: { color: "$red-500", margin: 8 },
+		_hover: { color: "$red-500", margin: "8px" },
 	};
 	const runtimeRule = { id: "benchmark-rule", css: ".benchmark-rule{color:red}", priority: 0 };
 	const nestedCxInputs = ["flex", "items-center"] as const;

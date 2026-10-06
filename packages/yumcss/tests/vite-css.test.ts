@@ -649,7 +649,7 @@ test("yumcssExtractVite with className serves empty CSS and inlines calls", () =
 test("configured Stack folding feeds the shared sheet-backed CSS lane", () => {
 	const dir = makeProject({
 		"src/app.tsx":
-			'import { Stack } from "yumcss/stack/react"; export const app = <Stack direction="column" gap={4} />;',
+			'import { Stack } from "yumcss/stack/react"; export const app = <Stack direction="column" gap="4px" />;',
 	});
 	try {
 		const engine = createYumCSSEngineContext({
@@ -1522,7 +1522,7 @@ test("dynamic className rewriting is opt-in and host-aware", () => {
 	const code = `
 		import { css } from "./design";
 		const color = getColor();
-		export const App = () => <button className={css.class({ color: color, padding: 8 })} />;
+		export const App = () => <button className={css.class({ color: color, padding: "8px" })} />;
 	`;
 	const unchanged = extract().inline(code, "app.tsx", new Set(["css"]));
 	expect(unchanged.inlined).toBe(0);
@@ -1598,7 +1598,7 @@ test("explicit vars props lower to one direct host carrier", () => {
 	const code = `
 		import { css } from "./design";
 		const color = getColor();
-		const props = css.props(css.vars({ color, padding: 4 }), "card");
+		const props = css.props(css.vars({ color, padding: "4px" }), "card");
 		export const App = () => <div {...props} />;
 	`;
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
@@ -1618,12 +1618,12 @@ test("firstThatWorks aliases stay on the runtime path", () => {
 		import { css } from "./design";
 		const displayFallback = firstThatWorks("flex", "block");
 		const color = getColor();
-		export const App = () => <div {...css({ padding: 4, color, display: displayFallback })} />;
+		export const App = () => <div {...css({ padding: "4px", color, display: displayFallback })} />;
 	`;
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
 
 	expect(result.inlined).toBe(0);
-	expect(result.code).toContain("css({ padding: 4, color, display: displayFallback })");
+	expect(result.code).toContain('css({ padding: "4px", color, display: displayFallback })');
 	expect(result.code).not.toContain("css.props(css.vars");
 	expect(result.code).not.toContain("__yumcss_direct_token_map");
 });
@@ -1679,7 +1679,7 @@ test("mixed dynamic values inside a raw subtree use the direct carrier", () => {
 		const shade = getShade();
 		export const App = () => (
 			<div {...css({
-				padding: 2,
+				padding: "2px",
 				$raw: {
 					borderStyle: "solid",
 					borderColor: shade,
@@ -1718,7 +1718,7 @@ test("unknown raw subtrees keep the conservative carrier path", () => {
 		import { css } from "./design";
 		const shade = getShade();
 		const raw = getRawStyles();
-		export const App = () => <div {...css({ padding: 2, color: shade, $raw: raw })} />;
+		export const App = () => <div {...css({ padding: "2px", color: shade, $raw: raw })} />;
 	`;
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
 
@@ -1732,7 +1732,7 @@ test("inlines local constants in JSX carriers and extracts their CSS", () => {
 		export const App = () => {
 			const color = "red";
 			const shade = getShade();
-			return <div {...css({ color, padding: 4, backgroundColor: shade })} />;
+			return <div {...css({ color, padding: "4px", backgroundColor: shade })} />;
 		};
 	`;
 	const result = inline().inline(code, "app.tsx", new Set(["css"]));
@@ -1745,7 +1745,7 @@ test("inlines local constants in JSX carriers and extracts their CSS", () => {
 	expect(result.code).not.toContain('style["--pw-c-padding"]');
 
 	expect(extract().extractStyles(code, "app.tsx", new Set(["css"]))).toEqual(
-		expect.arrayContaining([{ color: "red", padding: 4 }]),
+		expect.arrayContaining([{ color: "red", padding: "4px" }]),
 	);
 });
 
@@ -1816,7 +1816,7 @@ test("scope-aware CSS inlining respects module constants, shadowing, and TDZ", (
 test("direct carriers fold proven spreads and literal computed keys", () => {
 	const code = `
 		import { css } from "./design";
-		const base = { padding: 4 };
+		const base = { padding: "4px" };
 		const shade = getShade();
 		export const App = () => <div {...css({ ...base, ["backgroundColor"]: shade })} />;
 	`;

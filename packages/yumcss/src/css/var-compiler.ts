@@ -49,7 +49,7 @@ export interface VarCompiler {
 	): { atoms: Array<VarAtom>; style: Record<string, string> };
 }
 
-type RuntimeValueResolver = (property: string, value: string) => string;
+type RuntimeValueResolver = (property: string, value: string | number) => string;
 
 const selectorHash = createHashFn(false);
 
@@ -145,9 +145,7 @@ class DefaultVarCompiler implements VarCompiler {
 			const property = singleKey;
 			const prop = dashCase(property);
 			const value =
-				typeof raw === "string" && this.resolveRuntimeValue !== undefined
-					? this.resolveRuntimeValue(property, raw)
-					: raw;
+				this.resolveRuntimeValue !== undefined ? this.resolveRuntimeValue(property, raw) : raw;
 			return {
 				atoms: [{ cls: `${this.prefix}${prop}`, keys: [singleKey] }],
 				style: { [this.baseCustomProp(prop)]: runtimeValue(prop, value) },
@@ -162,9 +160,7 @@ class DefaultVarCompiler implements VarCompiler {
 				const property = key;
 				const prop = dashCase(property);
 				const value =
-					typeof raw === "string" && this.resolveRuntimeValue !== undefined
-						? this.resolveRuntimeValue(property, raw)
-						: raw;
+					this.resolveRuntimeValue !== undefined ? this.resolveRuntimeValue(property, raw) : raw;
 				atoms.push({ cls: `${this.prefix}${prop}`, keys: [key] });
 				style[this.baseCustomProp(prop)] = runtimeValue(prop, value);
 				continue;
@@ -172,9 +168,7 @@ class DefaultVarCompiler implements VarCompiler {
 			const { canonical, conditions, property, prop } = this.splitKey(key);
 			if (!prop) continue;
 			const value =
-				typeof raw === "string" && this.resolveRuntimeValue !== undefined
-					? this.resolveRuntimeValue(property, raw)
-					: raw;
+				this.resolveRuntimeValue !== undefined ? this.resolveRuntimeValue(property, raw) : raw;
 			atoms.push({ cls: this.classFor(key), keys: [canonical] });
 			style[this.customPropFor(prop, conditions)] = runtimeValue(prop, value);
 		}

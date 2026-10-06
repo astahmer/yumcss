@@ -324,7 +324,7 @@ describe("tailwindcss preset runtime resolution", () => {
 		sheet.process([css.raw({ color: "$slate-700", backgroundColor: "$white", padding: 4 })]);
 
 		const atomic = sheet.gen.atomic();
-		expect(atomic).toContain("padding:4px");
+		expect(atomic).toContain("padding:1rem");
 		expect(atomic).toContain("color:var(--");
 		expect(atomic).not.toContain("oklch(37.2% 0.044 257.287)");
 

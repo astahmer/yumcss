@@ -448,7 +448,7 @@ describe("chakra preset runtime resolution", () => {
 		sheet.process([css.raw({ color: "$gray.700", backgroundColor: "$bg", padding: 4 })]);
 
 		const atomic = sheet.gen.atomic();
-		expect(atomic).toContain("padding:4px");
+		expect(atomic).toContain("padding:var(--");
 		expect(atomic).toContain("color:var(--");
 		expect(atomic).toContain("background-color:var(--");
 		expect(atomic).not.toContain("#3f3f46");
@@ -534,10 +534,13 @@ describe("chakra preset runtime resolution", () => {
 	});
 
 	test("Chakra reads its logical scroll forms as raw lengths only", () => {
-		expect(atomicOf({ scrollMargin: 4 })).toContain("scroll-margin:4px");
+		expect(atomicOf({ scrollMargin: 4 })).toBe(atomicOf({ scrollMargin: "4" }));
 		expect(atomicOf({ scrollMargin: "4" })).toContain("scroll-margin:var(--");
 
-		const logical = atomicOf({ scrollMarginInline: 4, scrollPaddingInlineStart: 4 } as never);
+		const logical = atomicOf({
+			scrollMarginInline: "4px",
+			scrollPaddingInlineStart: "4px",
+		} as never);
 		expect(logical).toContain("scroll-margin-inline:4px");
 		expect(logical).toContain("scroll-padding-inline-start:4px");
 		expect(logical).not.toContain("var(--");

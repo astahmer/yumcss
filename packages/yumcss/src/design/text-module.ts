@@ -1,3 +1,4 @@
+import { normalizeCssValue } from "../css/value-normalization.ts";
 import type { StyleObject } from "../types/typings.ts";
 import type { DesignModuleAdapter, TokenLookup } from "./contracts.ts";
 import { toLength } from "./module-values.ts";
@@ -67,8 +68,8 @@ const resolveText = (props: Record<string, unknown>, token: TokenLookup): StyleO
 					type: string;
 					style?: string;
 					color?: string;
-					thickness?: number | "auto";
-					offset?: number | "auto";
+					thickness?: string | number;
+					offset?: string | number;
 			  };
 		if (typeof decoration === "string") {
 			if (DECORATION_LINES.has(decoration))
@@ -88,19 +89,20 @@ const resolveText = (props: Record<string, unknown>, token: TokenLookup): StyleO
 			}
 			if (decoration.thickness !== undefined) {
 				if (
-					decoration.thickness === "auto" ||
+					typeof decoration.thickness === "string" ||
 					(typeof decoration.thickness === "number" && Number.isFinite(decoration.thickness))
 				)
-					out.textDecorationThickness =
-						decoration.thickness === "auto" ? "auto" : `${decoration.thickness}px`;
+					out.textDecorationThickness = normalizeCssValue(
+						"textDecorationThickness",
+						decoration.thickness,
+					);
 			}
 			if (decoration.offset !== undefined) {
 				if (
-					decoration.offset === "auto" ||
+					typeof decoration.offset === "string" ||
 					(typeof decoration.offset === "number" && Number.isFinite(decoration.offset))
 				)
-					out.textUnderlineOffset =
-						decoration.offset === "auto" ? "auto" : `${decoration.offset}px`;
+					out.textUnderlineOffset = normalizeCssValue("textUnderlineOffset", decoration.offset);
 			}
 		}
 	}

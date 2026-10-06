@@ -29,7 +29,15 @@ type TokenNames<TTokens, TGroup extends string> = [TokenGroup<TTokens, TGroup>] 
  * (`{ base, _dark }`) are consumed through their generated `@theme`
  * utilities instead — they are not direct design-fill spellings.
  */
-type StringValuedKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
+type StringValuedKeys<T> = {
+	[K in keyof T]: T[K] extends string
+		? K extends number
+			? K | `${K}`
+			: K extends `${infer Numeric extends number}`
+				? K | Numeric
+				: K
+		: never;
+}[keyof T];
 
 /**
  * Token names of a group, falling back to a raw `string` when the preset has
@@ -45,18 +53,18 @@ type TokensOr<TTokens, TGroup extends string, TFallback> = [TokenNames<TTokens, 
 type ColorValue<TTokens> = TokensOr<TTokens, "colors", string>;
 
 /**
- * Token names, a px number, or any open length (`"50%"`, `"calc(...)"`).
+ * Token names, an explicit CSS length, or any open length (`"50%"`, `"calc(...)"`).
  * Numeric tokens (spacing steps like `20`) are usable as numbers.
  */
-type SpaceValue<TTokens> = TokensOr<TTokens, "spacing", string> | number | (string & {});
+type SpaceValue<TTokens> = TokensOr<TTokens, "spacing", string> | 0 | (string & {});
 
-/** Token names or a px number (Figma-style corner radius). */
-type RadiusValue<TTokens> = TokensOr<TTokens, "radii", string> | number;
+/** Token names or an explicit CSS length (Figma-style corner radius). */
+type RadiusValue<TTokens> = TokensOr<TTokens, "radii", string> | 0 | (string & {});
 
 /** Font-family names are an open set: token names or any string. */
 type FontValue<TTokens> = TokensOr<TTokens, "fonts", string> | (string & {});
 
-type FontSizeValue<TTokens> = TokensOr<TTokens, "fontSizes", string> | number | (string & {});
+type FontSizeValue<TTokens> = TokensOr<TTokens, "fontSizes", string> | 0 | (string & {});
 
 type FontWeightValue<TTokens> =
 	| TokensOr<TTokens, "fontWeights", never>
@@ -79,10 +87,7 @@ type FontWeightValue<TTokens> =
 
 type LineHeightValue<TTokens> = TokensOr<TTokens, "lineHeights", string> | number | (string & {});
 
-type LetterSpacingValue<TTokens> =
-	| TokensOr<TTokens, "letterSpacings", string>
-	| number
-	| (string & {});
+type LetterSpacingValue<TTokens> = TokensOr<TTokens, "letterSpacings", string> | 0 | (string & {});
 
 type AxisValue<T> = T | [T, T] | [T, T, T] | [T, T, T, T];
 
@@ -100,7 +105,7 @@ type BorderValue<TTokens> =
 	| ColorValue<TTokens>
 	| {
 			color: ColorValue<TTokens>;
-			width?: number | string;
+			width?: 0 | string;
 			style?: "solid" | "dashed" | "dotted" | "double" | "none";
 	  };
 
@@ -108,9 +113,9 @@ type OverflowValue = "show" | "clip" | "scroll" | "scroll-hidden";
 
 /** The box — how the element itself looks. */
 interface FrameProps<TTokens extends AnyTokens> {
-	/** Width. Spacing token, px number, or any length. */
+	/** Width. Spacing token, explicit CSS length, or any length. */
 	w?: SpaceValue<TTokens>;
-	/** Height. Spacing token, px number, or any length. */
+	/** Height. Spacing token, explicit CSS length, or any length. */
 	h?: SpaceValue<TTokens>;
 	/** Corner radius. One value or Figma order: top-left, top-right, bottom-right, bottom-left. */
 	corners?: CornerValue<TTokens>;
@@ -118,8 +123,8 @@ interface FrameProps<TTokens extends AnyTokens> {
 	fill?: FillValue<TTokens>;
 	/** Border: a color token (1px solid), or { color, width, style }. */
 	border?: BorderValue<TTokens>;
-	/** Backdrop blur in px (Figma "background blur"). */
-	blurBg?: number;
+	/** Backdrop blur with explicit CSS units (Figma "background blur"). */
+	blurBg?: 0 | string;
 	/** Padding. One value or [top, right, bottom, left]. */
 	pad?: PadValue<TTokens>;
 	/** Horizontal padding (padding-inline). */
@@ -165,8 +170,8 @@ type DecorationValue<TTokens> =
 			type: "underline" | "strikethrough";
 			style?: "solid" | "double" | "dotted" | "dashed" | "wavy";
 			color?: ColorValue<TTokens>;
-			thickness?: number | "auto";
-			offset?: number | "auto";
+			thickness?: 0 | string;
+			offset?: 0 | string;
 	  };
 
 type SpacingValue<TTokens> =
@@ -174,7 +179,7 @@ type SpacingValue<TTokens> =
 	| {
 			/** Line height. A unitless number is a multiplier, like CSS. */
 			line?: LineHeightValue<TTokens>;
-			/** Letter spacing (px number or token). */
+			/** Letter spacing (explicit CSS length or token). */
 			letter?: LetterSpacingValue<TTokens>;
 	  };
 
@@ -190,7 +195,7 @@ interface TextProps<TTokens extends AnyTokens> {
 	font?: FontValue<TTokens>;
 	/** Font weight (token, 100-900, or named). */
 	weight?: FontWeightValue<TTokens>;
-	/** Font size (token, px number, or any length). */
+	/** Font size (token, explicit CSS length, or any length). */
 	size?: FontSizeValue<TTokens>;
 	/** Text alignment. */
 	align?: "left" | "center" | "right" | "justify";

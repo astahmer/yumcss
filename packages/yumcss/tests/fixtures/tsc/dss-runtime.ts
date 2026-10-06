@@ -9,7 +9,7 @@ const compiled = dss(
 	{ $layout: { flow: "stackY", gap: 4 }, $text: { color: "$gray-900" } },
 	{ _dark: { $frame: { fill: "$gray-900" } } },
 );
-const className = dss.class({ $frame: { fill: "$blue-600", pad: 6 } });
+const className = dss.class({ $frame: { fill: "$blue-600", pad: "6px" } });
 const variables = dss.vars({ $raw: { color: "var(--runtime-color)" } });
 const props = dss.props(compiled, variables);
 

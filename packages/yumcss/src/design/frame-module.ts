@@ -2,15 +2,6 @@ import type { StyleObject } from "../types/typings.ts";
 import type { DesignModuleAdapter, TokenLookup } from "./contracts.ts";
 import { toLength } from "./module-values.ts";
 
-/**
- * A length that becomes `px` when numeric, otherwise a token name or raw
- * length ("50%", "calc(...)"). Numeric strings that aren't tokens are
- * treated as px too — designers write "6", not `6`.
- */
-/* ---------------------------------------------------------------------------
- * $frame — the box
- * -------------------------------------------------------------------------*/
-
 const OVERFLOW: Record<string, string> = {
 	show: "visible",
 	clip: "hidden",
@@ -67,7 +58,7 @@ const toBorder = (
 		(typeof border.style !== "string" || !BORDER_STYLES.has(border.style))
 	)
 		return "";
-	const width = toSize((border.width ?? 1) as string | number);
+	const width = toSize((border.width ?? "1px") as string | number);
 	const color = token("colors", border.color);
 	if (width === "" || color === "") return "";
 	return `${width} ${border.style ?? "solid"} ${color}`;
@@ -99,8 +90,8 @@ const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): Style
 		}
 	}
 	if (props.border !== undefined) out.border = toBorder(props.border, token, toSize);
-	if (typeof props.blurBg === "number" && Number.isFinite(props.blurBg) && props.blurBg >= 0)
-		out.backdropFilter = `blur(${props.blurBg}px)`;
+	if (typeof props.blurBg === "string" || props.blurBg === 0)
+		out.backdropFilter = `blur(${toSize(props.blurBg)})`;
 	if (props.pad !== undefined) {
 		out.padding = toSpacingList(props.pad as never, toSize);
 	}

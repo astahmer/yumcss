@@ -12,13 +12,13 @@ export function DesignApp() {
 			className={dss.class({
 				$frame: {
 					w: "100%",
-					pad: [6, 8],
+					pad: ["6px", 8],
 					corners: "xl",
 					fill: "$white",
 					border: "$gray-200",
 					opacity: 95,
 				},
-				$layout: { flow: "stackY", gap: 6 },
+				$layout: { flow: "stackY", gap: "6px" },
 				$text: { color: "$gray-900" },
 			})}
 		>
@@ -31,19 +31,19 @@ export function DesignApp() {
 				type="button"
 				className={dss.class({
 					$frame: {
-						pad: [2, 4],
+						pad: ["2px", 4],
 						corners: "md",
 						fill: "$blue-600",
-						border: { color: "$blue-700", width: 1 },
+						border: { color: "$blue-700", width: "1px" },
 					},
-					$layout: { flow: "stackX", align: "center", gap: 2 },
+					$layout: { flow: "stackX", align: "center", gap: "2px" },
 					$text: { size: "sm", weight: "semibold", color: "$white" },
 					_hover: { $frame: { fill: "$blue-500" } },
 				})}
 			>
 				Design button
 			</button>
-			<div className={dss.class({ $layout: { flow: "stackX", gap: 2 } })}>
+			<div className={dss.class({ $layout: { flow: "stackX", gap: "2px" } })}>
 				<span className={dss.class({ $text: { size: "xs", color: "$gray-500" } })}>hover it:</span>
 				<span
 					className={dss.class({

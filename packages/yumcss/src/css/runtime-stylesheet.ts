@@ -1,3 +1,4 @@
+import { createPresetValueNormalizer } from "./preset-value-normalization.ts";
 import { pairs } from "../lib/utils.ts";
 import {
 	canonicalStyleKey,
@@ -22,12 +23,7 @@ import {
 	assertColorPaletteConfigured,
 } from "./color-palette-validation.ts";
 import { buildRuntimeColorPaletteMaps } from "./runtime-color-palettes.ts";
-import {
-	decodeFirstThatWorks,
-	isCompilableCssValue,
-	normalizeFirstThatWorks,
-} from "./first-that-works.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
+import { decodeFirstThatWorks, isCompilableCssValue } from "./first-that-works.ts";
 import {
 	createConditionsBucket,
 	decodeAtomicPath,
@@ -97,6 +93,7 @@ export const createRuntimeStylesheet = (
 		return sort ? parts.sort() : parts;
 	};
 
+	const normalizeValue = createPresetValueNormalizer(preset);
 	const tokenMaps = buildRuntimeTokenMaps(preset, debug, options.tokenVariableNames);
 	const colorPaletteMaps =
 		preset.colorPalettes === undefined
@@ -231,7 +228,7 @@ export const createRuntimeStylesheet = (
 				throw new Error("yumcss: firstThatWorks cannot be used with the colorPalette selector.");
 			}
 			const declaration = fallbackValues
-				.map((value) => normalizeCssValue(property, value))
+				.map((value) => normalizeValue(property, value))
 				.toReversed()
 				.map((value) => {
 					const colorPaletteValue = isColorProperty(property)
@@ -291,7 +288,7 @@ export const createRuntimeStylesheet = (
 			if (!isCompilableCssValue(value)) continue;
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
-			processNormalizedStyle(orderedKey, normalizeFirstThatWorks(property, value), localCache);
+			processNormalizedStyle(orderedKey, normalizeValue(property, value), localCache);
 		}
 		return localCache;
 	};

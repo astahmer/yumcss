@@ -88,7 +88,7 @@ test("createStackClassName delegates layout declarations to the supplied CSS com
 	});
 	const className = createStackClassName(css)({
 		direction: "column",
-		gap: 4,
+		gap: "4px",
 		padding: "1rem",
 		align: "center",
 		justify: "between",
@@ -119,7 +119,7 @@ test("createStackClassName also delegates to the Tailwind class strategy", () =>
 	expect(
 		createStackClassName(css)({
 			direction: "column",
-			gap: 4,
+			gap: "4px",
 			padding: "1rem",
 			align: "center",
 			justify: "between",
@@ -219,7 +219,7 @@ describe("foldStackElements — vite fold pass", () => {
 			},
 		});
 		const source = "/src/configured-stack.tsx";
-		const input = `<Stack direction="column" gap={4} align="center" />`;
+		const input = `<Stack direction="column" gap="4px" align="center" />`;
 		const out = foldStackElements(input, source, { engine });
 
 		expect(out).toEqual({
@@ -248,7 +248,7 @@ describe("foldStackElements — vite fold pass", () => {
 			},
 		});
 		const source = "/src/responsive-stack.tsx";
-		const input = `<Stack direction={{ base: "column", md: "row" }} gap={{ md: 4 }} />`;
+		const input = `<Stack direction={{ base: "column", md: "row" }} gap={{ md: "4px" }} />`;
 		const out = foldStackElements(input, source, { engine });
 
 		expect(out.folded).toBe(1);
@@ -274,7 +274,7 @@ describe("foldStackElements — vite fold pass", () => {
 			},
 		});
 		const source = "/src/refused-stack.tsx";
-		const input = `<Stack gap={4} />`;
+		const input = `<Stack gap="4px" />`;
 
 		expect(foldStackElements(input, source, { engine })).toEqual({ code: input, folded: 0 });
 		expect(engine.preparedStyles.has(source)).toBe(false);
@@ -285,7 +285,7 @@ describe("foldStackElements — vite fold pass", () => {
 		const source = "/src/hmr-stack.tsx";
 		const plugin = stackFoldVite({ engine });
 
-		plugin.transform(`<Stack gap={4} />`, source);
+		plugin.transform(`<Stack gap="4px" />`, source);
 		expect(engine.preparedStyles.has(source)).toBe(true);
 
 		plugin.handleHotUpdate({ file: source, modules: [] });
@@ -295,7 +295,7 @@ describe("foldStackElements — vite fold pass", () => {
 	test("the Stack fold hook ignores Vite query modules", () => {
 		const plugin = stackFoldVite();
 
-		expect(plugin.transform("<Stack gap={4} />", "/src/app.tsx?raw")).toBeNull();
+		expect(plugin.transform('<Stack gap="4px" />', "/src/app.tsx?raw")).toBeNull();
 	});
 
 	test("direct Stack folding normalizes query-bearing source ids", () => {
@@ -342,7 +342,7 @@ describe("foldStackElements — vite fold pass", () => {
 			className: createNamedAtomsStrategy("app"),
 		});
 		const transformed = stackFoldVite({ engine }).transform(
-			`<Stack direction={{ base: "column", md: "row" }} gap={4} />`,
+			`<Stack direction={{ base: "column", md: "row" }} gap="4px" />`,
 			source,
 		);
 

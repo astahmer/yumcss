@@ -81,7 +81,7 @@ export interface RuntimeCssContext {
 	readonly flatten: (style: StyleObject) => FlatStyles;
 	readonly expandRaw: (style: StyleObject) => StyleObject;
 	readonly assign: (...styles: Array<StyleObject>) => StyleObject;
-	readonly resolveRuntimeValue?: (property: string, value: string) => string;
+	readonly resolveRuntimeValue?: (property: string, value: string | number) => string;
 }
 
 /** One independently replaceable method installation for the CSS runtime. */
@@ -101,10 +101,11 @@ const normalizeStyleInput = (style: unknown): StyleObject => {
 export function createCssRuntime(
 	backendOptions: CreateCssOptions = {},
 	attachments: readonly RuntimeCssAttachment[] = [],
-	resolveRuntimeValue?: (property: string, value: string) => string,
+	resolveRuntimeValue?: (property: string, value: string | number) => string,
 	validateValue?: (key: string, value: unknown) => void,
+	normalizeValue?: (property: string, value: string | number) => string,
 ): RuntimeCssFunction {
-	const backend = createCssBackend(backendOptions);
+	const backend = createCssBackend(backendOptions, normalizeValue);
 	const atoms = backend.atoms;
 	const validate = (key: string, value: unknown): void => {
 		validateValue?.(key, value);

@@ -15,9 +15,9 @@ test("design dss() accepts the three modules with token values", () => {
 		$frame: {
 			fill: "$green-500",
 			corners: "md",
-			pad: 2,
+			pad: "2px",
 		},
-		$layout: { align: "center", gap: 1 },
+		$layout: { align: "center", gap: "1px" },
 		$text: { size: "sm", color: "$gray-700" },
 	});
 });

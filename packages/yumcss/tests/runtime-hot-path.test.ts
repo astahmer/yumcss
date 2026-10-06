@@ -15,7 +15,7 @@ describe("runtime hot paths", () => {
 	test("flat CSS styles preserve numeric and string declarations", () => {
 		const css = createUnsafeCss({ debug: true });
 
-		expect(css({ color: "red", padding: 4, fontWeight: 700 })).toMatchObject({
+		expect(css({ color: "red", padding: "4px", fontWeight: 700 })).toMatchObject({
 			color: "color__red",
 			padding: "padding__4px",
 			fontWeight: "fontWeight__700",
@@ -25,7 +25,7 @@ describe("runtime hot paths", () => {
 	test("callable CSS composes authored objects before atom generation", () => {
 		const css = createUnsafeCss({ debug: true });
 
-		expect(css({ color: "red", padding: 4 }, { color: "blue", gap: 8 })).toMatchObject({
+		expect(css({ color: "red", padding: "4px" }, { color: "blue", gap: "8px" })).toMatchObject({
 			color: "color__blue",
 			padding: "padding__4px",
 			gap: "gap__8px",
@@ -35,7 +35,7 @@ describe("runtime hot paths", () => {
 	test("class projection preserves flat and nested declaration order", () => {
 		const css = createUnsafeCss({ debug: true });
 
-		expect(css.class({ color: "red", padding: 4 })).toBe("color__red padding__4px");
+		expect(css.class({ color: "red", padding: "4px" })).toBe("color__red padding__4px");
 		expect(css.class({ _hover: { color: "red" } }, { color: "blue" })).toBe(
 			"_hover__color__red color__blue",
 		);
@@ -47,10 +47,10 @@ describe("runtime hot paths", () => {
 		expect(
 			css({
 				borderTopWidth: null,
-				_hover: { color: null, padding: 2 },
+				_hover: { color: null, padding: "2px" },
 			}),
 		).toMatchObject({
-			borderTopWidth: "borderTopWidth__0px",
+			borderTopWidth: "borderTopWidth__0",
 			_hover__color: "_hover__color__initial",
 			_hover__padding: "_hover__padding__2px",
 		});

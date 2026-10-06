@@ -1,3 +1,4 @@
+import { createPresetValueNormalizer } from "./preset-value-normalization.ts";
 import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler, varConditionPart } from "./var-compiler.ts";
@@ -34,12 +35,7 @@ import {
 	type RuleSerializerPolicy,
 	type StylesheetOrderingPolicy,
 } from "./stylesheet-policies.ts";
-import {
-	decodeFirstThatWorks,
-	isCompilableCssValue,
-	normalizeFirstThatWorks,
-} from "./first-that-works.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
+import { decodeFirstThatWorks, isCompilableCssValue } from "./first-that-works.ts";
 import { normalizeCssVariables, serializeCssPropertySyntax } from "./css-variables.ts";
 import { createTokenVariableName } from "./token-variable-names.ts";
 import { expandRawStyle } from "./raw.ts";
@@ -170,6 +166,7 @@ export const createStylesheet = (
 	const keyframesCache = new Map<string, Rule>();
 	let presetWebCache: string | undefined;
 
+	const normalizeValue = createPresetValueNormalizer(preset);
 	const tokenMaps = buildTokenMaps(preset, debug, options.tokenVariableNames);
 	const colorPaletteMaps = buildColorPaletteMaps(preset, tokenMaps.flatTokens, debug);
 	const usedTokenPaths = new Set<string>();
@@ -276,7 +273,7 @@ export const createStylesheet = (
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
 			const orderedKey = canonicalStyleKey(key, preset.conditions);
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
-			const normalizedValue = normalizeFirstThatWorks(property, rawValue);
+			const normalizedValue = normalizeValue(property, rawValue);
 			processNormalizedStyle(orderedKey, normalizedValue, localCache);
 		}
 
@@ -330,7 +327,7 @@ export const createStylesheet = (
 		if (fallbackValues === undefined)
 			return resolveDeclaration(property, normalizedValue, rawProperty);
 		return fallbackValues
-			.map((value) => normalizeCssValue(property, value))
+			.map((value) => normalizeValue(property, value))
 			.toReversed()
 			.map((value) => resolveDeclaration(property, value, rawProperty))
 			.join(";");
@@ -340,7 +337,7 @@ export const createStylesheet = (
 		const cssProperty = cssPropertyFromKey(property, preset.conditions);
 		if (cssProperty === "colorPalette")
 			throw new Error("yumcss: preset.web declarations cannot use colorPalette");
-		return resolveDeclarations(cssProperty, normalizeFirstThatWorks(cssProperty, value), property);
+		return resolveDeclarations(cssProperty, normalizeValue(cssProperty, value), property);
 	};
 
 	const processNormalizedStyle = (
@@ -433,7 +430,7 @@ export const createStylesheet = (
 			const property = cssPropertyFromKey(orderedKey, preset.conditions);
 			processNormalizedStyle(
 				orderedKey,
-				normalizeFirstThatWorks(property, value),
+				normalizeValue(property, value),
 				localCache,
 				preparedClassName,
 			);
@@ -472,9 +469,7 @@ export const createStylesheet = (
 				const value = flat[flatKey]!;
 				if (!isCompilableCssValue(value)) continue;
 				const property = cssPropertyFromKey(flatKey, preset.conditions);
-				resolved.push(
-					resolveDeclarations(property, normalizeFirstThatWorks(property, value), property),
-				);
+				resolved.push(resolveDeclarations(property, normalizeValue(property, value), property));
 			}
 			steps.push(`${step}{${resolved.join(";")}}`);
 		}

@@ -74,7 +74,7 @@ test("design CssFn keeps the same projections with design-vocabulary inputs", ()
 	const compiledDesign = designCss({ $frame: { fill: "$blue-500", pad: 4 } });
 	const groups = designCss.group({
 		card: { $frame: { corners: "lg" } },
-		pad: (value: number) => ({ $frame: { pad: value } }),
+		pad: (value: string) => ({ $frame: { pad: value } }),
 	});
 
 	expect(compiledDesign).type.toBe<Record<string, string>>();
@@ -86,7 +86,7 @@ test("design CssFn keeps the same projections with design-vocabulary inputs", ()
 	}>();
 	expect(designCss.props(compiledDesign)).type.toBe<PropsResult>();
 	expect(groups.card).type.toBe<Record<string, string>>();
-	expect(groups.pad).type.toBeCallableWith(8);
+	expect(groups.pad).type.toBeCallableWith("8px");
 });
 
 test("runtime CSS carries typed authoring plus a live RuntimeSheet", () => {

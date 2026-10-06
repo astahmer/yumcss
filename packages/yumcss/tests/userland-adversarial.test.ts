@@ -178,7 +178,7 @@ describe("userland adversarial contracts", () => {
 	});
 
 	test("empty CSS values fail closed across static and stylesheet paths", () => {
-		const style = { color: "", padding: 4 } as never;
+		const style = { color: "", padding: "4px" } as never;
 		const css = createUnsafeCss({ debug: true });
 		const sheet = createStylesheet(
 			{
@@ -244,7 +244,7 @@ describe("userland adversarial contracts", () => {
 	test("css props flatten nested and cyclic carriers safely", () => {
 		const css = createUnsafeCss();
 		const colorClass = css.class({ color: "red" });
-		const paddingClass = css.class({ padding: 4 });
+		const paddingClass = css.class({ padding: "4px" });
 		const shared: unknown[] = [colorClass];
 		const nested: unknown[] = [shared, [paddingClass], shared];
 		nested.push(nested);
@@ -539,7 +539,7 @@ describe("userland adversarial contracts", () => {
 		const css = createUnsafeCss({ debug: true });
 		const groups = css.group({
 			button: {
-				padding: 4,
+				padding: "4px",
 				content: Symbol("unsupported"),
 				opacity: Number.NaN,
 			} as never,
@@ -659,7 +659,7 @@ describe("userland adversarial contracts", () => {
 			tokens: {},
 		} as never;
 		const css = createUnsafeCss({ conditions });
-		const styles = css.raw({ default: { color: "red" }, root: { padding: 4 } } as never);
+		const styles = css.raw({ default: { color: "red" }, root: { padding: "4px" } } as never);
 
 		expect(() => createStylesheet(preset).generate([styles])).not.toThrow();
 		const staticOutput = createStylesheet(preset).generate([styles]);
@@ -670,7 +670,7 @@ describe("userland adversarial contracts", () => {
 		expect(staticOutput).not.toContain("root__");
 
 		const runtime = createRuntimeCss(preset, { sheetOptions: { autoMount: false } });
-		runtime.class({ default: { color: "red" }, root: { padding: 4 } } as never);
+		runtime.class({ default: { color: "red" }, root: { padding: "4px" } } as never);
 		expect(runtime.sheet.css()).toContain("color:red");
 		expect(runtime.sheet.css()).toContain("padding:4px");
 	});
@@ -700,7 +700,7 @@ describe("userland adversarial contracts", () => {
 
 	test("inherited style properties are not compiled as authored declarations", () => {
 		const inherited = { color: "red" };
-		const style = Object.assign(Object.create(inherited), { padding: 4 }) as never;
+		const style = Object.assign(Object.create(inherited), { padding: "4px" }) as never;
 		const css = createUnsafeCss({ debug: true });
 
 		expect(css(style)).toEqual({ padding: "padding__4px" });
