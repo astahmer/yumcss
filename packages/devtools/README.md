@@ -1,4 +1,4 @@
-# yumcss-devtools
+# @yumcss/devtools
 
 Use the DevTools dock when you are asking “why did this style produce this
 CSS?” It keeps the answer next to the running Vite app: source transforms,
@@ -8,20 +8,20 @@ It is development-only and read-only. Add it to a Vite config:
 
 ```ts
 import { DevTools } from "@vitejs/devtools";
-import { yumcssDevtools } from "yumcss-devtools";
+import { yumcssDevtools } from "@yumcss/devtools";
 
 export default {
 	plugins: [DevTools(), yumcssDevtools()],
 };
 ```
 
-`yumcss-devtools` adds one Vite DevTools dock for inspecting the evidence produced by YumCSS's existing compiler, scanner, analyzer, and migration services.
+`@yumcss/devtools` adds one Vite DevTools dock for inspecting the evidence produced by YumCSS's existing compiler, scanner, analyzer, and migration services.
 
 Install the Vite DevTools host and add both plugins to a development Vite config:
 
 ```ts
 import { DevTools } from "@vitejs/devtools";
-import { yumcssDevtools } from "yumcss-devtools";
+import { yumcssDevtools } from "@yumcss/devtools";
 
 export default {
 	plugins: [DevTools(), yumcssDevtools()],
