@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { parseSync } from "oxc-parser";
@@ -384,6 +384,59 @@ const element = <div {...css.props({ color: "red" })} className="custom" />;`;
 		expect(dynamicReports).toHaveLength(1);
 		expect(dynamicReports[0]?.data).toEqual({ bad: "member expression value", name: "css.class" });
 		expect(propReports.map(({ data }) => data.prop)).toEqual(["className"]);
+	});
+
+	test("resolves verified YumCSS exports through package imports aliases", () => {
+		withProject(
+			{
+				"package.json": JSON.stringify({
+					imports: { "#app/*": "./src/*" },
+				}),
+				"src/css.ts": `import { createCss } from "yumcss/css";
+export const css = createCss();`,
+				"src/styles.ts": `export { css } from "./css";`,
+				"src/core.ts": `export { tw } from "yumcss";`,
+				"src/accordion.tsx": `import { css } from "#app/css";
+import * as styles from "#app/styles";
+import { tw as utility } from "#app/core";
+import * as core from "#app/core";
+const [color, setColor] = useState("fg" as const);
+css.class({ color });
+styles.css.class({ color });
+utility(theme.color);
+core.tw(theme.color);`,
+			},
+			(directory) => {
+				const filename = resolve(directory, "src/accordion.tsx");
+				const source = readFileSync(filename, "utf8");
+				const reports = runRule("no-dynamic-values", source, [], {}, filename);
+				expect(reports).toHaveLength(4);
+				expect(reports.map(({ data }) => data.name)).toEqual([
+					"css.class",
+					"styles.css.class",
+					"utility",
+					"core.tw",
+				]);
+			},
+		);
+	});
+
+	test("ignores unrelated exports reached through package imports aliases", () => {
+		withProject(
+			{
+				"package.json": JSON.stringify({
+					imports: { "#app/*": "./src/*" },
+				}),
+				"src/css.ts": `export const css = (styles: object) => styles;`,
+				"src/accordion.tsx": `import { css } from "#app/css";
+css({ color: theme.color });`,
+			},
+			(directory) => {
+				const filename = resolve(directory, "src/accordion.tsx");
+				const source = readFileSync(filename, "utf8");
+				expect(runRule("no-dynamic-values", source, [], {}, filename)).toEqual([]);
+			},
+		);
 	});
 
 	test("limits arbitrary-value checks to class-string lanes", () => {

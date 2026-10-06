@@ -26,7 +26,20 @@ type ParsedModule = {
 	readonly jsonValue?: unknown;
 };
 
+export type ProjectApiImportResolution =
+	| { readonly kind: "import"; readonly source: string; readonly imported: string }
+	| { readonly kind: "css-instance" }
+	| { readonly kind: "namespace"; readonly source: string };
+
 const MODULE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
+type PackageImports = Readonly<Record<string, unknown>>;
+type PackageImportsCacheEntry = {
+	readonly mtimeMs: number;
+	readonly size: number;
+	readonly imports: PackageImports | undefined;
+};
+
+const packageImportsCache = new Map<string, PackageImportsCacheEntry>();
 const DEFINE_BUILDERS = {
 	conditions: define.conditions,
 	properties: define.properties,
@@ -174,7 +187,147 @@ const candidateFiles = (path: string): readonly string[] => {
 const existingModuleFile = (path: string): string | undefined =>
 	candidateFiles(path).find((candidate) => existsSync(candidate));
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
+
+const nearestPackageJson = (from: string): string | undefined => {
+	let directory = dirname(from);
+	while (true) {
+		const filename = resolve(directory, "package.json");
+		if (existsSync(filename)) return filename;
+		const parent = dirname(directory);
+		if (parent === directory) return undefined;
+		directory = parent;
+	}
+};
+
+const importsForPackage = (packageJson: string): PackageImports | undefined => {
+	let stats: ReturnType<typeof statSync>;
+	try {
+		stats = statSync(packageJson);
+	} catch {
+		return undefined;
+	}
+	const cached = packageImportsCache.get(packageJson);
+	if (cached !== undefined && cached.mtimeMs === stats.mtimeMs && cached.size === stats.size)
+		return cached.imports;
+	let imports: PackageImports | undefined;
+	try {
+		const manifest: unknown = JSON.parse(readFileSync(packageJson, "utf8"));
+		if (isRecord(manifest) && isRecord(manifest.imports)) imports = manifest.imports;
+	} catch {
+		imports = undefined;
+	}
+	packageImportsCache.set(packageJson, { mtimeMs: stats.mtimeMs, size: stats.size, imports });
+	return imports;
+};
+
+const targetForImport = (value: unknown): string | undefined => {
+	if (typeof value === "string") return value;
+	if (Array.isArray(value)) {
+		for (const candidate of value) {
+			const target = targetForImport(candidate);
+			if (target !== undefined) return target;
+		}
+		return undefined;
+	}
+	if (!isRecord(value)) return undefined;
+	const activeConditions = new Set(["node-addons", "node", "import", "default"]);
+	for (const [condition, candidate] of Object.entries(value)) {
+		if (!activeConditions.has(condition)) continue;
+		return targetForImport(candidate);
+	}
+	return undefined;
+};
+
+const importMapTarget = (
+	imports: PackageImports,
+	source: string,
+): { readonly target: string; readonly substitution?: string } | undefined => {
+	if (Object.hasOwn(imports, source)) {
+		const target = targetForImport(imports[source]);
+		return target === undefined ? undefined : { target };
+	}
+	const patterns = Object.keys(imports)
+		.map((key) => {
+			const wildcard = key.indexOf("*");
+			if (wildcard < 0 || key.indexOf("*", wildcard + 1) >= 0) return undefined;
+			const prefix = key.slice(0, wildcard);
+			const suffix = key.slice(wildcard + 1);
+			if (!source.startsWith(prefix) || !source.endsWith(suffix)) return undefined;
+			if (source.length < prefix.length + suffix.length) return undefined;
+			return { key, prefix, suffix };
+		})
+		.filter(
+			(pattern): pattern is { key: string; prefix: string; suffix: string } =>
+				pattern !== undefined,
+		)
+		.toSorted(
+			(left, right) =>
+				right.prefix.length - left.prefix.length || right.suffix.length - left.suffix.length,
+		);
+	const pattern = patterns[0];
+	if (pattern === undefined) return undefined;
+	const target = targetForImport(imports[pattern.key]);
+	if (target === undefined) return undefined;
+	return {
+		target,
+		substitution: source.slice(pattern.prefix.length, source.length - pattern.suffix.length),
+	};
+};
+
+const packageImportTarget = (
+	from: string,
+	source: string,
+	seen: ReadonlySet<string> = new Set(),
+): { readonly packageJson: string; readonly target: string } | undefined => {
+	if (!source.startsWith("#") || source === "#") return undefined;
+	const packageJson = nearestPackageJson(from);
+	if (packageJson === undefined) return undefined;
+	const key = `${packageJson}\u0000${source}`;
+	if (seen.has(key)) return undefined;
+	const imports = importsForPackage(packageJson);
+	if (imports === undefined) return undefined;
+	const entry = importMapTarget(imports, source);
+	if (entry === undefined) return undefined;
+	const target =
+		entry.substitution === undefined
+			? entry.target
+			: entry.target.replaceAll("*", entry.substitution);
+	if (target.startsWith("#")) {
+		const nextSeen = new Set(seen);
+		nextSeen.add(key);
+		return packageImportTarget(packageJson, target, nextSeen);
+	}
+	if (target.startsWith("./")) {
+		const packageRoot = dirname(packageJson);
+		const resolvedTarget = resolve(packageRoot, target);
+		const relativeTarget = relative(packageRoot, resolvedTarget);
+		if (
+			isAbsolute(relativeTarget) ||
+			relativeTarget === ".." ||
+			relativeTarget.startsWith(`..${sep}`) ||
+			relativeTarget.split(sep).includes("node_modules")
+		)
+			return undefined;
+	}
+	if (target.startsWith("../") || target.startsWith("/") || target === "." || target === "..")
+		return undefined;
+	return { packageJson, target };
+};
+
 const resolveModuleFile = (from: string, source: string): string | undefined => {
+	if (source.startsWith("#")) {
+		const mapped = packageImportTarget(from, source);
+		if (mapped === undefined) return undefined;
+		if (mapped.target.startsWith("./"))
+			return existingModuleFile(resolve(dirname(mapped.packageJson), mapped.target));
+		try {
+			return existingModuleFile(createRequire(mapped.packageJson).resolve(mapped.target));
+		} catch {
+			return undefined;
+		}
+	}
 	if (source.startsWith(".") || isAbsolute(source))
 		return existingModuleFile(resolve(dirname(from), source));
 	try {
@@ -251,6 +404,106 @@ class ProjectPresetGraph {
 
 	#key(module: ParsedModule, name: string): string {
 		return `${module.filename}\u0000${name}`;
+	}
+
+	#apiExportForImport(
+		from: ParsedModule,
+		source: string,
+		imported: string,
+		stack: ReadonlySet<string>,
+	): ProjectApiImportResolution | undefined {
+		if (source.startsWith("#")) {
+			const mapped = packageImportTarget(from.filename, source);
+			if (mapped === undefined) return undefined;
+			if (!mapped.target.startsWith("./"))
+				return { kind: "import", source: mapped.target, imported };
+		}
+		if (!source.startsWith("#") && !source.startsWith(".") && !isAbsolute(source))
+			return { kind: "import", source, imported };
+		const module = this.#moduleForImport(from, source);
+		if (module === undefined) return undefined;
+		if (imported === "*") return { kind: "namespace", source };
+		return this.#apiExport(module, imported, stack);
+	}
+
+	#apiExport(
+		module: ParsedModule,
+		name: string,
+		stack: ReadonlySet<string>,
+	): ProjectApiImportResolution | undefined {
+		const key = this.#key(module, `api-export:${name}`);
+		if (stack.has(key)) return undefined;
+		const nextStack = new Set(stack);
+		nextStack.add(key);
+		const binding = module.exports.get(name);
+		if (binding !== undefined) {
+			if ("local" in binding) return this.#apiBinding(module, binding.local, nextStack);
+			if ("expression" in binding)
+				return this.#apiExpression(module, binding.expression, nextStack);
+			if ("namespaceSource" in binding)
+				return { kind: "namespace", source: binding.namespaceSource };
+			return this.#apiExportForImport(module, binding.source, binding.imported, nextStack);
+		}
+		for (const source of module.exportAll) {
+			const resolved = this.#apiExportForImport(module, source, name, nextStack);
+			if (resolved !== undefined) return resolved;
+		}
+		return undefined;
+	}
+
+	#apiBinding(
+		module: ParsedModule,
+		name: string,
+		stack: ReadonlySet<string>,
+	): ProjectApiImportResolution | undefined {
+		const key = this.#key(module, `api-binding:${name}`);
+		if (stack.has(key)) return undefined;
+		const nextStack = new Set(stack);
+		nextStack.add(key);
+		const imported = module.imports.get(name);
+		if (imported !== undefined) {
+			if (imported.imported === "*") return { kind: "namespace", source: imported.source };
+			return this.#apiExportForImport(module, imported.source, imported.imported, nextStack);
+		}
+		const initializer = module.variables.get(name);
+		return initializer === undefined
+			? undefined
+			: this.#apiExpression(module, initializer, nextStack);
+	}
+
+	#apiExpression(
+		module: ParsedModule,
+		expression: AstNode,
+		stack: ReadonlySet<string>,
+	): ProjectApiImportResolution | undefined {
+		if (
+			expression.type === NodeKind.TSAsExpression ||
+			expression.type === NodeKind.TSTypeAssertion ||
+			expression.type === NodeKind.ParenthesizedExpression ||
+			expression.type === NodeKind.ChainExpression
+		) {
+			const wrapped = expression.expression ?? expression.argument;
+			return isNode(wrapped) ? this.#apiExpression(module, wrapped, stack) : undefined;
+		}
+		if (expression.type === NodeKind.Identifier && typeof expression.name === "string")
+			return this.#apiBinding(module, expression.name, stack);
+		if (expression.type === NodeKind.CallExpression && isNode(expression.callee))
+			return this.#factoryKindForExpression(module, expression.callee) === "css"
+				? { kind: "css-instance" }
+				: undefined;
+		const path = expressionPath(expression);
+		if (path.length !== 2) return undefined;
+		const root = path[0];
+		const member = path[1];
+		if (root === undefined || member === undefined) return undefined;
+		const imported = module.imports.get(root);
+		return imported?.imported === "*"
+			? this.#apiExportForImport(module, imported.source, member, stack)
+			: undefined;
+	}
+
+	resolveApiImport(source: string, imported: string): ProjectApiImportResolution | undefined {
+		return this.#apiExportForImport(this.#root, source, imported, new Set());
 	}
 
 	#isCompilerDefineImport(binding: ModuleImport): boolean {
@@ -501,7 +754,20 @@ class ProjectPresetGraph {
 		if (imported !== undefined) {
 			if (CSS_FACTORY_SOURCES.has(imported.source) && CSS_FACTORY_NAMES.has(imported.imported))
 				return "css";
-			if (imported.imported === "*") return undefined;
+			if (imported.imported !== "*") {
+				const resolved = this.#apiExportForImport(
+					module,
+					imported.source,
+					imported.imported,
+					nextStack,
+				);
+				if (
+					resolved?.kind === "import" &&
+					CSS_FACTORY_SOURCES.has(resolved.source) &&
+					CSS_FACTORY_NAMES.has(resolved.imported)
+				)
+					return "css";
+			}
 		}
 		const initializer = module.variables.get(name);
 		if (initializer?.type === NodeKind.Identifier && typeof initializer.name === "string")
@@ -518,9 +784,11 @@ class ProjectPresetGraph {
 		const member = path[1];
 		if (root === undefined || member === undefined) return undefined;
 		const imported = module.imports.get(root);
-		return imported?.imported === "*" &&
-			CSS_FACTORY_SOURCES.has(imported.source) &&
-			CSS_FACTORY_NAMES.has(member)
+		if (imported?.imported !== "*") return undefined;
+		const resolved = this.#apiExportForImport(module, imported.source, member, new Set());
+		return resolved?.kind === "import" &&
+			CSS_FACTORY_SOURCES.has(resolved.source) &&
+			CSS_FACTORY_NAMES.has(resolved.imported)
 			? "css"
 			: undefined;
 	}
@@ -646,4 +914,16 @@ export const createProjectTokenVocabularyResolver = (options: {
 	const module = moduleFromProgram(filename, options.program);
 	const graph = new ProjectPresetGraph(module);
 	return (styleBinding) => graph.forStyleBinding(styleBinding);
+};
+
+export const createProjectApiImportResolver = (options: {
+	readonly filename?: string;
+	readonly cwd?: string;
+	readonly program: AstNode;
+}): ((source: string, imported: string) => ProjectApiImportResolution | undefined) => {
+	if (options.filename === undefined || options.filename.startsWith("<")) return () => undefined;
+	const filename = resolve(options.cwd ?? process.cwd(), options.filename);
+	const module = moduleFromProgram(filename, options.program);
+	const graph = new ProjectPresetGraph(module);
+	return (source, imported) => graph.resolveApiImport(source, imported);
 };

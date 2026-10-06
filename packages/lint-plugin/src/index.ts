@@ -26,7 +26,9 @@
 
 import { NodeKind } from "./ast-node-kind.ts";
 import {
+	createProjectApiImportResolver,
 	createProjectTokenVocabularyResolver,
+	type ProjectApiImportResolution,
 	styleBindingPathForCall,
 } from "./project-token-vocabulary.ts";
 import { cssPropertiesMayConflict, isTypedCssStringValue } from "./typed-css-values.ts";
@@ -368,12 +370,17 @@ const cssModuleExportsCacheKey = (cssModuleExports: CssModuleExports): string =>
 const createApiResolver = (
 	program: AstNode,
 	cssModuleExports: CssModuleExports = new Map(),
+	project?: RuleContext,
 	options: ApiResolverOptions = {},
 ): ApiResolver => {
 	const includeUnconfiguredStyleFacades = options.includeUnconfiguredStyleFacades ?? true;
+	const filename = project?.physicalFilename ?? project?.filename;
+	const cwd = project?.cwd;
 	const cacheKey = JSON.stringify([
 		cssModuleExportsCacheKey(cssModuleExports),
 		includeUnconfiguredStyleFacades,
+		filename,
+		cwd,
 	]);
 	const cached = apiResolverCache.get(program)?.get(cacheKey);
 	if (cached !== undefined) return cached;
@@ -383,8 +390,44 @@ const createApiResolver = (
 	const localNamespaces = new Map<string, string>();
 	const factories = new Map<string, string>();
 	const instances = new Map<string, string>();
+	const projectExportCache = new Map<string, ProjectApiImportResolution | undefined>();
+	let projectImportResolver:
+		| ((source: string, imported: string) => ProjectApiImportResolution | undefined)
+		| undefined;
+	let projectImportResolverCreated = false;
 	const staticBindings = new Set<string>();
 	const shadowedCalls = new WeakSet<AstNode>();
+
+	const projectExport = (
+		source: string,
+		imported: string,
+	): ProjectApiImportResolution | undefined => {
+		if (
+			filename === undefined ||
+			(!source.startsWith("#") && !source.startsWith(".") && !source.startsWith("/"))
+		)
+			return undefined;
+		const key = `${source}\u0000${imported}`;
+		if (projectExportCache.has(key)) return projectExportCache.get(key);
+		if (!projectImportResolverCreated) {
+			projectImportResolver = createProjectApiImportResolver({
+				program,
+				filename,
+				...(cwd === undefined ? {} : { cwd }),
+			});
+			projectImportResolverCreated = true;
+		}
+		const resolved = projectImportResolver?.(source, imported);
+		projectExportCache.set(key, resolved);
+		return resolved;
+	};
+
+	const apiForProjectImport = (
+		resolution: ProjectApiImportResolution | undefined,
+	): string | undefined =>
+		resolution?.kind === "import"
+			? apiFromImport(resolution.source, resolution.imported)
+			: undefined;
 
 	const registerImport = (node: AstNode): void => {
 		if (node.importKind === IMPORT_KIND.type) return;
@@ -400,7 +443,16 @@ const createApiResolver = (
 			isYumCSSSource || !includeUnconfiguredStyleFacades
 				? undefined
 				: conventionalStyleModuleFactory(source);
-		if (!isYumCSSSource && configuredCssExports === undefined && localFactory === undefined) return;
+		const canResolveProjectModule =
+			filename !== undefined &&
+			(source.startsWith("#") || source.startsWith(".") || source.startsWith("/"));
+		if (
+			!isYumCSSSource &&
+			configuredCssExports === undefined &&
+			localFactory === undefined &&
+			!canResolveProjectModule
+		)
+			return;
 		for (const specifier of node.specifiers ?? []) {
 			if (specifier.importKind === IMPORT_KIND.type) continue;
 			if (specifier.type === NodeKind.ImportNamespaceSpecifier) {
@@ -409,9 +461,17 @@ const createApiResolver = (
 				continue;
 			}
 			const imported = importedName(specifier);
-			const api = apiFromImport(source, imported);
+			const projectResolution =
+				!isYumCSSSource && configuredCssExports === undefined && imported !== undefined
+					? projectExport(source, imported)
+					: undefined;
+			const api = apiForProjectImport(projectResolution) ?? apiFromImport(source, imported);
 			if (api === API.cssFactory || api === API.unsafeCssFactory || api === API.designFactory)
 				factories.set(specifier.local.name, api);
+			else if (projectResolution?.kind === "css-instance")
+				instances.set(specifier.local.name, API.cssFactory);
+			else if (projectResolution?.kind === "namespace")
+				namespaces.set(specifier.local.name, projectResolution.source);
 			else if (imported !== undefined && configuredCssExports?.has(imported))
 				instances.set(specifier.local.name, API.cssFactory);
 			else if (
@@ -432,7 +492,9 @@ const createApiResolver = (
 			const object = expression.object.name;
 			const namespace = namespaces.get(object);
 			if (namespace !== undefined) {
-				const api = apiFromImport(namespace, property);
+				const api =
+					apiFromImport(namespace, property) ??
+					apiForProjectImport(projectExport(namespace, property));
 				if (api !== undefined) return api;
 				if (localNamespaces.has(object)) return API.style;
 			}
@@ -441,10 +503,17 @@ const createApiResolver = (
 		if (
 			expression.object?.type === NodeKind.MemberExpression &&
 			expression.object.object?.type === NodeKind.Identifier &&
-			localNamespaces.has(expression.object.object.name) &&
 			STYLE_METHODS.has(property)
-		)
-			return API.style;
+		) {
+			const namespaceName = expression.object.object.name;
+			const namespace = namespaces.get(namespaceName);
+			const exported = memberName(expression.object);
+			const projectInstance =
+				namespace !== undefined &&
+				exported !== undefined &&
+				projectExport(namespace, exported)?.kind === "css-instance";
+			if (localNamespaces.has(namespaceName) || projectInstance) return API.style;
+		}
 		return undefined;
 	};
 
@@ -556,7 +625,19 @@ const createApiResolver = (
 				? (instances.get(calleeObject.name) ?? localNamespaces.get(calleeObject.name))
 				: calleeObject?.type === NodeKind.MemberExpression &&
 					  calleeObject.object?.type === NodeKind.Identifier
-					? localNamespaces.get(calleeObject.object.name)
+					? (() => {
+							const namespaceName = calleeObject.object.name;
+							const exported = memberName(calleeObject);
+							const namespace = namespaces.get(namespaceName);
+							return (
+								localNamespaces.get(namespaceName) ??
+								(namespace !== undefined &&
+								exported !== undefined &&
+								projectExport(namespace, exported)?.kind === "css-instance"
+									? API.cssFactory
+									: undefined)
+							);
+						})()
 					: undefined;
 		return {
 			kind,
@@ -911,7 +992,7 @@ const withResolver = (
 	let literalAnalysis: LiteralScopeAnalysis | undefined;
 	return {
 		Program(node) {
-			resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+			resolver = createApiResolver(node, configuredCssModuleExportsForContext(context), context);
 			literalAnalysis = options.useLiteralScopes ? createLiteralScopeAnalysis(node) : undefined;
 		},
 		CallExpression(node) {
@@ -980,7 +1061,11 @@ const carrierTarget = (
 };
 
 const reportCarrierResiduals = (program: AstNode, context: RuleContext): void => {
-	const resolver = createApiResolver(program, configuredCssModuleExportsForContext(context));
+	const resolver = createApiResolver(
+		program,
+		configuredCssModuleExportsForContext(context),
+		context,
+	);
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const fallbackNames = firstThatWorksImports(program);
 	const fallbackValueNames = findCssFallbackValueNames(program, fallbackNames);
@@ -1075,7 +1160,7 @@ const migrationAnalysis = (program: AstNode, context: RuleContext): CallAnalysis
 	const cacheKey = cssModuleExportsCacheKey(cssModuleExports);
 	const cached = migrationAnalysisCache.get(program)?.get(cacheKey);
 	if (cached !== undefined) return cached;
-	const resolver = createApiResolver(program, cssModuleExports);
+	const resolver = createApiResolver(program, cssModuleExports, context);
 	const literalAnalysis = createLiteralScopeAnalysis(program);
 	const calls: CallAnalysis[] = [];
 	walkNode(program, (node) => {
@@ -1505,7 +1590,11 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+					const resolver = createApiResolver(
+						node,
+						configuredCssModuleExportsForContext(context),
+						context,
+					);
 					const literalAnalysis = createLiteralScopeAnalysis(node);
 					walkWithAncestors(node, (current) => {
 						if (current.type !== NodeKind.CallExpression) return;
@@ -1581,6 +1670,7 @@ const rules: Record<string, RuleDefinition> = {
 					const resolver = createApiResolver(
 						program,
 						configuredCssModuleExportsForContext(context),
+						context,
 					);
 					const literalAnalysis = createLiteralScopeAnalysis(program);
 					const reported = new Set<AstNode>();
@@ -1850,9 +1940,12 @@ const rules: Record<string, RuleDefinition> = {
 			return {
 				Program(node) {
 					program = node;
-					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context), {
-						includeUnconfiguredStyleFacades: false,
-					});
+					resolver = createApiResolver(
+						node,
+						configuredCssModuleExportsForContext(context),
+						context,
+						{ includeUnconfiguredStyleFacades: false },
+					);
 				},
 				CallExpression(node) {
 					const currentResolver = resolver;
@@ -1905,7 +1998,11 @@ const rules: Record<string, RuleDefinition> = {
 			return {
 				Program(node) {
 					program = node;
-					resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+					resolver = createApiResolver(
+						node,
+						configuredCssModuleExportsForContext(context),
+						context,
+					);
 				},
 				CallExpression(node) {
 					const api = resolver?.resolve(node);
@@ -2031,7 +2128,11 @@ const rules: Record<string, RuleDefinition> = {
 		create(context) {
 			return {
 				Program(node) {
-					const resolver = createApiResolver(node, configuredCssModuleExportsForContext(context));
+					const resolver = createApiResolver(
+						node,
+						configuredCssModuleExportsForContext(context),
+						context,
+					);
 					walkNode(node, (opening) => {
 						if (opening.type !== NodeKind.JSXOpeningElement) return;
 						let stylePropsSpread = false;
@@ -2075,6 +2176,7 @@ const rules: Record<string, RuleDefinition> = {
 					const resolver = createApiResolver(
 						program,
 						configuredCssModuleExportsForContext(context),
+						context,
 					);
 					walkWithAncestors(program, (attribute, ancestors) => {
 						if (
