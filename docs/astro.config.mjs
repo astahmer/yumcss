@@ -2,16 +2,10 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import starlightLinksValidator from "starlight-links-validator";
 
-const normalizeBase = (value) => {
-	const path = value ?? "/";
-	return `/${path}`.replace(/\/+/g, "/").replace(/([^/])$/, "$1/");
-};
-
-const base = normalizeBase(process.env.DOCS_BASE ?? process.env.ASTRO_BASE);
-const site = process.env.SITE_URL;
+const site = process.env.SITE_URL ?? "https://yumcss-docs.astahmer.workers.dev";
 
 export default defineConfig({
-	base,
+	base: "/",
 	site,
 	integrations: [
 		starlight({

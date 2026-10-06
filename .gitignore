@@ -22,3 +22,9 @@ apps/playground/e2e/.studio-features-gen/
 playwright-report/
 test-results/
 .tmp-codemod*
+
+# local infrastructure state and credentials
+/.alchemy
+.env
+.env.*
+!.env.example

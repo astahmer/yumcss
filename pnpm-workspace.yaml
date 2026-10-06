@@ -13,6 +13,7 @@ allowBuilds:
   fsevents: false
   msgpackr-extract: true
   sharp: true
+  workerd: true
 minimumReleaseAgeExclude:
   - "@stylexjs/stylex@0.19.1"
   - next-yak@9.10.0

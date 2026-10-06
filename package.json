@@ -91,7 +91,10 @@
 		"release:publish": "bash scripts/release/publish-all.sh",
 		"pivot:proof:installed:targets": "nub --conditions yumcss scripts/verify-codemod-installed-targets.ts",
 		"pivot:proof:installed:targets:check": "nub scripts/check-codemod-installed-targets.ts",
-		"check:fix": "pnpm run lint:fix && pnpm run format:fix"
+		"check:fix": "pnpm run lint:fix && pnpm run format:fix",
+		"sites:plan": "pnpm exec alchemy plan --stage production",
+		"sites:deploy": "pnpm run sites:build && pnpm exec alchemy deploy --stage production --yes",
+		"sites:build": "pnpm --filter yumcss run build && pnpm --filter @yumcss/codemod run build"
 	},
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",
@@ -105,6 +108,7 @@
 		"@unocss/core": "66.10.0",
 		"@yumcss/codemod": "workspace:*",
 		"@yumcss/example-preset": "workspace:*",
+		"alchemy": "2.0.0-beta.74",
 		"cac": "7.0.0",
 		"effect": "4.0.0-beta.107",
 		"emilint": "github:astahmer/emilint#fc30c1711a958b6c896e9d070dd5d71e6b21584e",

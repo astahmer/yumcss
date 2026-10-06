@@ -10,7 +10,7 @@ pnpm --filter yumcss-docs build   # also validates every internal link
 | Variable                | Effect                                                                       |
 | ----------------------- | ---------------------------------------------------------------------------- |
 | `PUBLIC_PLAYGROUND_URL` | Where "Open in the playground" links point (default `http://localhost:5173`) |
-| `SITE_URL`, `DOCS_BASE` | Deployed origin and sub-path                                                 |
+| `SITE_URL`              | Deployed origin (the site is served at `/`)                                  |
 
 ## Writing pages
 
@@ -42,3 +42,20 @@ pnpm --filter yumcss-docs screenshots
 ```
 
 Set `ONLY=playground-css,inspector-tokens` to recapture specific shots.
+
+## Hosting
+
+- [Documentation](https://yumcss-docs.astahmer.workers.dev)
+- [Playground](https://yumcss-playground.astahmer.workers.dev)
+
+Docs and playground are separate Cloudflare Workers with static assets, managed by
+`alchemy.run.ts`. Existing local Cloudflare OAuth credentials are supported.
+
+```sh
+pnpm run sites:plan
+pnpm run sites:deploy
+```
+
+The playground deploys first; its URL is injected into the docs build. Docs use
+the origin root so internal links, search, and screenshot assets share one base.
+The playground uses SPA fallback; docs preserve real 404 pages.
