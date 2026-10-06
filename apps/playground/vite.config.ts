@@ -37,6 +37,11 @@ export default defineConfig({
 		conditions: ["yumcss"],
 		alias: [
 			{
+				// Oxc's browser entry imports this undeclared dependency across pnpm's isolated package boundary.
+				find: /^@oxc-parser\/binding-wasm32-wasi$/,
+				replacement: join(wasiBindingDir, "parser.wasi-browser.js"),
+			},
+			{
 				find: "@oxc-parser/binding-wasm32-wasi/wasi-worker-browser.mjs",
 				replacement: join(wasiBindingDir, "wasi-worker-browser.mjs"),
 			},
