@@ -214,6 +214,85 @@ const removeAtPath = (group: TokenGroup, segments: readonly string[]): TokenGrou
 		: { ...group, children: { ...group.children, [name]: nextChild } };
 };
 
+const normalizeDtcgNames = (root: TokenGroup): { root: TokenGroup; losses: TokenFormatLoss[] } => {
+	const losses: TokenFormatLoss[] = [];
+	const paths = new Map<string, string>();
+	const visit = (
+		group: TokenGroup,
+		source: readonly string[],
+		target: readonly string[],
+	): TokenGroup => {
+		const children: Record<string, TokenNode> = {};
+		for (const [name, child] of Object.entries(group.children)) {
+			const preferred = name.replace(/^\$+/, "").replaceAll(".", "-") || "token";
+			const normalized = uniqueName(children, preferred);
+			const sourcePath = [...source, name];
+			const targetPath = [...target, normalized];
+			paths.set(sourcePath.join("."), targetPath.join("."));
+			const pointer = (segments: readonly string[]) =>
+				"#/" +
+				segments.map((segment) => segment.replaceAll("~", "~0").replaceAll("/", "~1")).join("/");
+			paths.set(pointer(sourcePath), pointer(targetPath));
+			if (normalized !== name)
+				losses.push({
+					path: `/${sourcePath.join("/")}`,
+					feature: "token name",
+					reason: `DTCG name '${name}' is represented as '${normalized}'`,
+				});
+			children[normalized] = child.kind === "group" ? visit(child, sourcePath, targetPath) : child;
+		}
+		return { ...group, children };
+	};
+	const renamed = visit(root, [], []);
+	const rewriteReference = (reference: string): string => {
+		if (reference.startsWith("{") && reference.endsWith("}"))
+			return `{${paths.get(reference.slice(1, -1)) ?? reference.slice(1, -1)}}`;
+		if (!reference.startsWith("#/")) return paths.get(reference) ?? reference;
+		const segments = reference.split("/");
+		for (let length = segments.length; length > 1; length--) {
+			const target = paths.get(segments.slice(0, length).join("/"));
+			if (target !== undefined) return [target, ...segments.slice(length)].join("/");
+		}
+		return reference;
+	};
+	const rewriteValue = (value: TokenValue): TokenValue => {
+		if (value.kind === "reference") {
+			const target = rewriteReference(value.target);
+			return { ...value, target, authored: value.syntax === "curly" ? `{${target}}` : target };
+		}
+		if (value.kind === "array") return { ...value, items: value.items.map(rewriteValue) };
+		if (value.kind === "object")
+			return {
+				...value,
+				entries: Object.fromEntries(
+					Object.entries(value.entries).map(([key, entry]) => [key, rewriteValue(entry)]),
+				),
+			};
+		return value;
+	};
+	const rewrite = (group: TokenGroup): TokenGroup => ({
+		...group,
+		...(group.extends === undefined
+			? {}
+			: {
+					extends:
+						typeof group.extends === "string"
+							? rewriteReference(group.extends)
+							: group.extends.map(rewriteReference),
+				}),
+		...(group.root === undefined
+			? {}
+			: { root: { ...group.root, value: rewriteValue(group.root.value) } }),
+		children: Object.fromEntries(
+			Object.entries(group.children).map(([name, child]) => [
+				name,
+				child.kind === "group" ? rewrite(child) : { ...child, value: rewriteValue(child.value) },
+			]),
+		),
+	});
+	return { root: rewrite(renamed), losses };
+};
+
 const validatedProjection = (
 	input: TokenDocument,
 ): {
@@ -221,8 +300,9 @@ const validatedProjection = (
 	readonly text: string;
 	readonly losses: readonly TokenFormatLoss[];
 } => {
-	let document = input;
-	const losses: TokenFormatLoss[] = [];
+	const normalized = normalizeDtcgNames(input.root);
+	let document = createTokenDocument({ ...input, root: normalized.root });
+	const losses: TokenFormatLoss[] = [...normalized.losses];
 	const maximumAttempts = 1 + JSON.stringify(input.root).length;
 	for (let attempt = 0; attempt < maximumAttempts; attempt++) {
 		const text = serializeDtcgTokenDocument(document);

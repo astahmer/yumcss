@@ -454,6 +454,13 @@ const isPackageSpecifier = (path: string): boolean =>
 export const findPresetTokens = (
 	module: Record<string, unknown>,
 ): Record<string, Record<string, string>> | undefined => {
+	const exportedTokens = module.tokens;
+	if (
+		typeof exportedTokens === "object" &&
+		exportedTokens !== null &&
+		!Array.isArray(exportedTokens)
+	)
+		return exportedTokens as Record<string, Record<string, string>>;
 	for (const value of Object.values(module)) {
 		if (typeof value !== "object" || value === null) continue;
 		const tokens = (value as { tokens?: unknown }).tokens;

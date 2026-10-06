@@ -15,11 +15,24 @@ const read = async (path: string) => {
 	const tokens: ScalarTokenImport = {};
 	const losses: TokenFormatLoss[] = [];
 	for (const [group, value] of Object.entries(raw)) {
+		if (typeof value === "function") continue;
 		const values: Record<string, string> = {};
 		flattenNestedWithLosses(value, [], values, losses);
 		tokens[group] = values;
 	}
-	return scalarImportToDocument(TokenFormatId.Preset, tokens, path, losses);
+	const document = scalarImportToDocument(TokenFormatId.Preset, tokens, path, losses);
+	return {
+		...document,
+		root: {
+			...document.root,
+			children: Object.fromEntries(
+				Object.entries(document.root.children).map(([name, group]) => [
+					name,
+					{ ...group, type: "string" },
+				]),
+			),
+		},
+	};
 };
 
 export const presetTokenFormat: TokenFormatAdapter = {
