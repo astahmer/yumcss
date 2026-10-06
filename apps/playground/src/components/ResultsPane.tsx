@@ -24,7 +24,7 @@ import type { PlaygroundTailwindResolver } from "../lib/tailwind-default-resolve
 import { explainPreview } from "../lib/preview-explanation.ts";
 import { css as uiCss } from "../ui-css.ts";
 import { useTheme } from "../theme.tsx";
-import type { PlaygroundColorToken } from "../ui-theme.ts";
+import { cx } from "../cx.ts";
 
 function CopyButton(props: { text: string; title?: string }) {
 	const [copied, setCopied] = useState(false);
@@ -159,7 +159,7 @@ function FoldSection(props: { fold: string; note: string }) {
 function EvidenceList(props: {
 	label: string;
 	values: readonly string[];
-	tone: PlaygroundColorToken;
+	tone: "success" | "warning";
 }) {
 	return (
 		<div
@@ -174,15 +174,18 @@ function EvidenceList(props: {
 			{props.values.map((value) => (
 				<span
 					key={value}
-					className={uiCss.class({
-						border: "1px solid",
-						borderColor: props.tone,
-						borderRadius: "4px",
-						padding: "2px 6px",
-						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-						fontSize: "10px",
-						color: props.tone,
-					})}
+					className={cx(
+						uiCss.class({
+							border: "1px solid",
+							borderRadius: "4px",
+							padding: "2px 6px",
+							fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+							fontSize: "10px",
+						}),
+						props.tone === "success"
+							? uiCss.class({ borderColor: "success", color: "success" })
+							: uiCss.class({ borderColor: "warning", color: "warning" }),
+					)}
 				>
 					{value}
 				</span>

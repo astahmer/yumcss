@@ -1201,11 +1201,9 @@ function DesignSystemView(props: {
 									render: (row) => (
 										<span
 											{...uiCss.props(
-												uiCss.vars(
-													row.kind === "letter spacing"
-														? { letterSpacing: row.value }
-														: { lineHeight: row.value },
-												),
+												row.kind === "letter spacing"
+													? uiCss.vars({ letterSpacing: row.value })
+													: uiCss.vars({ lineHeight: row.value }),
 											)}
 										>
 											Hamburgefonstiv 0123
