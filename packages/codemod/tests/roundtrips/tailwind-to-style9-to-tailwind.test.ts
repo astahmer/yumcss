@@ -42,7 +42,7 @@ test("tailwind -> style9 -> tailwind: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> style9 round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("tailwind -> style9 -> tailwind: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tailwind -> style9 -> tailwind: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> style9 | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

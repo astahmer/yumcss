@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 function project(): string {
-	const root = mkdtempSync(join(tmpdir(), "pandwind-theme-crawl-"));
+	const root = mkdtempSync(join(tmpdir(), "yumcss-theme-crawl-"));
 	roots.push(root);
 	return root;
 }

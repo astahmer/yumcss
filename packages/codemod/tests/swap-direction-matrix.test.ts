@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { SWAP_REGISTRY, runSwap, SwapSourceId } from "../src/swap/index.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 
 const appDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const meta = loadMetaFromSources({
@@ -227,7 +227,7 @@ describe("flat SwapIR source/target matrix", () => {
 		for (const target of targets) {
 			const result = migrate(source, SwapSourceId.Tw, target);
 			expect(result.skippedByMarker, `tw -> ${target}`).toBe(1);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 			expect(result.code).toContain("totallyUnknownUtility");
 			expect(result.unmappedTokens.length + result.skippedByMarker).toBeGreaterThan(0);
 		}

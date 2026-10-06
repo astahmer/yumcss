@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 const createProject = (): string => {
-	const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-"));
+	const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-"));
 	mkdirSync(join(root, "src"));
 	mkdirSync(join(root, "dist"));
 	writeFileSync(

@@ -20,7 +20,7 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import {

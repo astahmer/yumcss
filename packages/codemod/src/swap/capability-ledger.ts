@@ -11,7 +11,7 @@ import {
 import { StyleDialectRoleTag } from "./style-systems.ts";
 
 /** Versioned registry-derived ledger for adapter claims and their proof debt. */
-export const ADAPTER_CAPABILITY_LEDGER_SCHEMA = "pandwind.adapter-capability-ledger/1" as const;
+export const ADAPTER_CAPABILITY_LEDGER_SCHEMA = "yumcss.adapter-capability-ledger/1" as const;
 
 export interface AdapterCapabilityLedgerProof {
 	readonly required: readonly RealRepositoryProofDimension[];

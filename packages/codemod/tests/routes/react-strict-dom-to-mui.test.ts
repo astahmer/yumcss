@@ -38,10 +38,10 @@ test("react-strict-dom -> mui: migrates concrete react-strict-dom syntax to mui"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-strict-dom -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("react-strict-dom -> mui: migrates concrete react-strict-dom syntax to mui"
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -94,7 +94,7 @@ test("react-strict-dom -> mui: carries a documented secondary react-strict-dom A
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -147,7 +147,7 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -183,7 +183,7 @@ test("react-strict-dom -> mui: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -231,7 +231,7 @@ test("react-strict-dom -> mui: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -276,7 +276,7 @@ test("react-strict-dom -> mui: preserves malformed concrete react-strict-dom inp
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",

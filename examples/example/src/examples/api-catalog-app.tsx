@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
-import { createCx } from "pandwind/cx";
+import { createCx } from "yumcss/cx";
 import { css, relaxedCss, runtimeCss, untypedCss } from "../css";
 import { dss } from "../design";
 import { tw } from "../tw";
@@ -66,22 +66,22 @@ const designClassName = dss.class({
 	$text: { color: "$blue-700", size: "sm" },
 });
 
-const setupCode = `import { createCss } from "pandwind/css";
-import { createUnsafeCss } from "pandwind/unsafe/css";
-import { define } from "pandwind/preset";
+const setupCode = `import { createCss } from "yumcss/css";
+import { createUnsafeCss } from "yumcss/unsafe/css";
+import { define } from "yumcss/preset";
 
 const preset = define.preset(theme, { conditions, properties });
 const css = createCss(preset);
 const openCss = createUnsafeCss();`;
 
-const buildCode = `import { pandwindCssVite } from "pandwind/vite";
+const buildCode = `import { yumcssExtractVite } from "yumcss/vite";
 
 export default defineConfig({
-  plugins: [pandwindCssVite(preset)],
+  plugins: [yumcssExtractVite(preset)],
 });
 
 // main.tsx
-import "pandwind:css";`;
+import "yumcss:css";`;
 
 type ApiCardProps = PropsWithChildren<{
 	name: string;
@@ -139,7 +139,7 @@ export function ApiCatalogApp() {
 		}),
 	);
 	const runtimeClass =
-		/* pandwind:migrate-skip (residual: runtime CSS registers the current accent value on demand) */ runtimeCss.class(
+		/* yumcss:migrate-skip (residual: runtime CSS registers the current accent value on demand) */ runtimeCss.class(
 			{
 				outlineColor: accent,
 			},
@@ -158,7 +158,7 @@ export function ApiCatalogApp() {
 		>
 			<header className={tw({ flex: "col", gap: "2" })}>
 				<h2 className={tw({ textSize: "xl", font: "bold", textColor: "gray-900" })}>
-					Pandwind API catalog
+					YumCSS API catalog
 				</h2>
 				<p className={tw({ maxW: "2xl", textSize: "sm", textColor: "gray-600" })}>
 					These are executable examples, not an inventory. The code block is the call shape and the
@@ -245,7 +245,7 @@ export function ApiCatalogApp() {
 				<ApiCard
 					name="createUnsafeCss() + input()"
 					call={`css.group({ button: { $input, padding: css.input("padding") } })`}
-					detail="a typed input group keeps its class stable; pandwindCssVite extracts its structural var rules"
+					detail="a typed input group keeps its class stable; yumcssExtractVite extracts its structural var rules"
 				>
 					<label className={tw({ flex: "col", gap: "2", textSize: "sm" })}>
 						Runtime padding: {runtimePadding}px
@@ -313,7 +313,7 @@ export function ApiCatalogApp() {
 				</ApiCard>
 
 				<ApiCard
-					name="pandwindCssVite()"
+					name="yumcssExtractVite()"
 					call={buildCode}
 					detail="extract literal css() calls into the generated stylesheet at build time"
 				>

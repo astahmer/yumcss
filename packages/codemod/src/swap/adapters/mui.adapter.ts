@@ -594,7 +594,7 @@ function muiTransforms(
 					if (resolved !== undefined) return { kind: "literal", value: resolved };
 				}
 				const fallback = defaultMuiSystemValue(property, value, theme);
-				return targetId === CodemodAdapterId.Pandwind
+				return targetId === CodemodAdapterId.YumCSS
 					? recoverSourceToken(fallback, property, muiTokenGroup, catalog)
 					: fallback;
 			},
@@ -1179,7 +1179,7 @@ export function createMuiAdapter(
 		sourceModules: [],
 		sourceModuleMatchers: [isMuiSourceModule],
 		sourceModulesToRemove: (targetId) =>
-			targetId === CodemodAdapterId.Pandwind ? ["@mui/system", "@mui/material"] : [],
+			targetId === CodemodAdapterId.YumCSS ? ["@mui/system", "@mui/material"] : [],
 		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 		...(moduleLoader === undefined
 			? {}
@@ -1418,7 +1418,7 @@ export function createMuiAdapter(
 						return {
 							...match,
 							program:
-								context.targetId === CodemodAdapterId.Pandwind
+								context.targetId === CodemodAdapterId.YumCSS
 									? canonicalizeSourceHost(program, MUI_SOURCE_COMPONENTS, "MUI")
 									: program,
 						};

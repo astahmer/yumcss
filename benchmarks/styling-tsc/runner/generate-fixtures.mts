@@ -5,8 +5,8 @@ const benchmarkRoot = resolve(import.meta.dirname, "..");
 const generatedRoot = resolve(benchmarkRoot, ".generated");
 
 export const libraries = [
-	"pandwind",
-	"pandwind-generated",
+	"yumcss",
+	"yumcss-generated",
 	"panda",
 	"stylex",
 	"sprinkles",
@@ -75,7 +75,7 @@ const extraSpacingTokens = (count: number): readonly (readonly [string, string])
 		(_, index) => [`catalog-${String(index).padStart(3, "0")}`, `${index + 1}px`] as const,
 	);
 
-export const pandwindTokenNames = (catalogCount: number) => ({
+export const yumcssTokenNames = (catalogCount: number) => ({
 	colors: [...colorTokens, ...extraColorTokens(catalogCount)].map(([name]) => name),
 	spacing: [...spacingTokens, ...extraSpacingTokens(catalogCount)].map(([name]) => name),
 	radii: radiiTokens.map(([name]) => name),
@@ -87,10 +87,10 @@ const entries = (items: readonly (readonly [string, string])[]): string =>
 const objectEntries = (items: readonly (readonly [string, string])[]): string =>
 	items.map(([key, value]) => `\t${quote(key)}: ${quote(value)},`).join("\n");
 
-export const generatePandwindPresetSource = (catalogCount: number): string => {
+export const generateYumCSSPresetSource = (catalogCount: number): string => {
 	const colors = [...colorTokens, ...extraColorTokens(catalogCount)];
 	const spacing = [...spacingTokens, ...extraSpacingTokens(catalogCount)];
-	return `import { define, type PandwindProperties } from "pandwind/preset";
+	return `import { define, type YumCSSProperties } from "yumcss/preset";
 
 const conditions = define.conditions({
 \tbase: "",
@@ -135,7 +135,7 @@ const properties = define.properties({
 \tborderRadius: { $tokens: "radii", $strictness: "inherits" },
 });
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 const theme = define.theme({ config: cssConfig, tokens: semanticTokens });
 
 export const preset = define.preset(theme, {
@@ -147,13 +147,13 @@ export const preset = define.preset(theme, {
 `;
 };
 
-type PandwindAppOptions = {
+type YumCSSAppOptions = {
 	readonly includeRaw?: boolean;
 	readonly includeColorPalette?: boolean;
 	readonly includeCxVars?: boolean;
 };
 
-export const pandwindApp = (componentCount: number, options: PandwindAppOptions = {}): string => {
+export const yumcssApp = (componentCount: number, options: YumCSSAppOptions = {}): string => {
 	const styles = Array.from({ length: componentCount }, (_, index) => {
 		const padding = ["1", "2", "4", "6", "8"][index % 5]!;
 		const useColorPalette = options.includeColorPalette === true && index % 4 === 0;
@@ -191,7 +191,7 @@ ${colorPalette}\t\tcolor: ${quote(color)},
 			: "";
 	const composedVarsWorkload = options.includeCxVars === true ? "\tcomposedVars,\n" : "";
 
-	return `import { createCx } from "pandwind/cx";
+	return `import { createCx } from "yumcss/cx";
 import { css } from "./styles.ts";
 
 type RuntimeButtonInput = { backgroundColor: string; padding: string };
@@ -231,13 +231,13 @@ ${composedVarsWorkload}${rawWorkload}\tcomponentStyles,
 `;
 };
 
-export const pandwindStyles = (): string => `import { createCss } from "pandwind/css";
+export const yumcssStyles = (): string => `import { createCss } from "yumcss/css";
 import { preset } from "./preset.ts";
 
 export const css = createCss(preset);
 `;
 
-const pandwindGeneratedStyles = (): string => `export { css } from "./css.generated.ts";
+const yumcssGeneratedStyles = (): string => `export { css } from "./css.generated.ts";
 `;
 
 const pandaTokens = (catalogCount: number): string => {
@@ -1029,19 +1029,19 @@ export const generateFixtures = (): void => {
 			writeFile(projectRoot, "tsconfig.json", tsconfig());
 
 			switch (library) {
-				case "pandwind":
-				case "pandwind-generated":
+				case "yumcss":
+				case "yumcss-generated":
 					writeFile(
 						projectRoot,
 						"src/preset.ts",
-						generatePandwindPresetSource(options.catalogCount),
+						generateYumCSSPresetSource(options.catalogCount),
 					);
 					writeFile(
 						projectRoot,
 						"src/styles.ts",
-						library === "pandwind" ? pandwindStyles() : pandwindGeneratedStyles(),
+						library === "yumcss" ? yumcssStyles() : yumcssGeneratedStyles(),
 					);
-					writeFile(projectRoot, "src/app.ts", pandwindApp(options.componentCount));
+					writeFile(projectRoot, "src/app.ts", yumcssApp(options.componentCount));
 					break;
 				case "panda":
 					writeFile(projectRoot, "panda.config.ts", pandaTokens(options.catalogCount));

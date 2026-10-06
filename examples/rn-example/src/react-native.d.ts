@@ -4,7 +4,7 @@
  * "react-native" (real RN app shape); vite resolves them to
  * react-native-web at runtime. Only the surface this app consumes is
  * declared — styles stay `unknown`-permissive because validating their
- * SHAPE is pandwind's job, asserted end-to-end by test/e2e.mjs.
+ * SHAPE is yumcss's job, asserted end-to-end by test/e2e.mjs.
  */
 declare module "react-dom/client" {
 	import type { ReactNode } from "react";

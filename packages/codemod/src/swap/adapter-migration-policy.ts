@@ -108,7 +108,7 @@ export function normalizeSourceCssBinding(
 	return withSourceAlias.replace(/\bcss(?=\s*[.(])/gu, "sourceCss");
 }
 
-/** Keep an unrelated imported `css` binding from colliding with Pandwind's target binding. */
+/** Keep an unrelated imported `css` binding from colliding with YumCSS's target binding. */
 export function normalizeForeignCssBinding(
 	code: string,
 	modules: readonly string[],

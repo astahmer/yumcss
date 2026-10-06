@@ -42,7 +42,7 @@ test("tamagui -> mantine -> tamagui: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("tamagui -> mantine -> tamagui: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
+		// yumcss:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
 		export const Card = (props) => <View {...props} style={{ ...{ color: "red", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -143,7 +143,7 @@ test("tamagui -> mantine -> tamagui: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> mantine | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> mantine | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -182,7 +182,7 @@ test("tamagui -> mantine -> tamagui: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> mantine | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> mantine | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -262,7 +262,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
+		// yumcss:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
 		export const Card = (props) => <View {...props} style={{ ...{ color: "#2563eb", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -339,7 +339,7 @@ test("tamagui -> mantine -> tamagui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
+		// yumcss:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
 		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -431,7 +431,7 @@ test("tamagui -> mantine -> tamagui: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		// pandwind:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
+		// yumcss:migrate-skip (route: mantine -> tamagui | parse-residual: dynamic | available: residual)
 		export const Card = (props) => <View {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "$4" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 0,

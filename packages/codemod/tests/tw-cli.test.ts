@@ -3,7 +3,7 @@ import { TwCommand, createTwCli, parseTwCommand, type TwCliHandlers } from "../s
 
 const cwd = "/fixture/project";
 
-describe("pandwind-codemod tw command router", () => {
+describe("yumcss-codemod tw command router", () => {
 	test("parses the complete generate command", () => {
 		const command = parseTwCommand(
 			[
@@ -71,12 +71,12 @@ describe("pandwind-codemod tw command router", () => {
 			    "base": "/fixture/project",
 			    "command": "prune",
 			    "srcDir": "/fixture/project/src",
-			    "themeCss": "/fixture/project/src/pandwind-theme.css",
+			    "themeCss": "/fixture/project/src/yumcss-theme.css",
 			    "twEntry": "/fixture/project/src/tw.ts",
 			  },
 			  "scan": {
 			    "command": "scan",
-			    "outFile": "/fixture/project/src/pandwind.safelist.css",
+			    "outFile": "/fixture/project/src/yumcss.safelist.css",
 			    "srcDir": "/fixture/project/src",
 			    "twEntry": "/fixture/project/src/tw.ts",
 			  },
@@ -95,7 +95,7 @@ describe("pandwind-codemod tw command router", () => {
 		expect(verify).toEqual({
 			command: TwCommand.Verify,
 			root: cwd,
-			manifest: `${cwd}/src/pandwind.generated.json`,
+			manifest: `${cwd}/src/yumcss.generated.json`,
 			report: false,
 		});
 	});
@@ -141,7 +141,7 @@ describe("pandwind-codemod tw command router", () => {
 
 	test("fails closed for malformed command lines", () => {
 		expect(() => parseTwCommand(["unknown"], cwd)).toThrow(
-			"pandwind-codemod tw: unknown command 'unknown'",
+			"yumcss-codemod tw: unknown command 'unknown'",
 		);
 		expect(() => parseTwCommand([TwCommand.Generate, "--tokens"], cwd)).toThrow(
 			"option `--tokens <module>` value is missing",

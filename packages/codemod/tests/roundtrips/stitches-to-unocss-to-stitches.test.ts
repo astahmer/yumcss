@@ -42,7 +42,7 @@ test("stitches -> unocss -> stitches: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("stitches -> unocss -> stitches: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -127,7 +127,7 @@ test("stitches -> unocss -> stitches: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> unocss | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> unocss | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,7 +164,7 @@ test("stitches -> unocss -> stitches: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> unocss | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> unocss | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

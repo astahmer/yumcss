@@ -42,7 +42,7 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("goober -> tamagui -> goober: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -173,7 +173,7 @@ test("goober -> tamagui -> goober: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 0,
@@ -276,7 +276,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -349,7 +349,7 @@ test("goober -> tamagui -> goober: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -437,7 +437,7 @@ test("goober -> tamagui -> goober: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

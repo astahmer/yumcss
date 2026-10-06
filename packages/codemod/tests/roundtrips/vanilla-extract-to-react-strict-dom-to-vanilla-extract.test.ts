@@ -42,7 +42,7 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actio
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: retains the docume
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],

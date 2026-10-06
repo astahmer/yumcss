@@ -8,7 +8,7 @@ if (!root) throw new Error("Missing #root element");
 
 createRoot(root).render(
 	<StrictMode>
-		<h1>pandwind showcase — one source, three targets</h1>
+		<h1>yumcss showcase — one source, three targets</h1>
 		<section data-testid="web-section">
 			<h2>web (atomic css classes)</h2>
 			<ShowcaseWeb />

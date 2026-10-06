@@ -28,18 +28,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build publishable packages
-        run: pnpm --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin run build
+        run: pnpm --filter yumcss --filter @yumcss/codemod --filter @yumcss/analyze --filter @yumcss/devtools --filter @yumcss/lint-plugin run build
 
       # The runtime-size regression gate (three layers: hard budgets,
-      # tolerance guard, exact snapshot) runs inside `pandwind test`.
+      # tolerance guard, exact snapshot) runs inside `yumcss test`.
       - name: Test (includes runtime-size gate)
-        run: pnpm --filter pandwind run test
+        run: pnpm --filter yumcss run test
 
       - name: Codemod, analyzer, and DevTools tests
-        run: pnpm --filter pandwind-codemod run test && pnpm --filter pandwind-analyze run test && pnpm --filter pandwind-devtools run test
+        run: pnpm --filter @yumcss/codemod run test && pnpm --filter @yumcss/analyze run test && pnpm --filter @yumcss/devtools run test
 
       - name: Type tests (tstyche)
-        run: pnpm --filter pandwind run test:types
+        run: pnpm --filter yumcss run test:types
 
       - name: Typecheck
         run: pnpm run typecheck
@@ -84,5 +84,5 @@ jobs:
         with:
           node-version: 24
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter pandwind --filter pandwind-codemod --filter pandwind-analyze --filter pandwind-devtools --filter @pandwind/lint-plugin run build
-      - run: npx pkg-pr-new publish './packages/pandwind' './packages/codemod' './packages/analyze' './packages/devtools' './packages/lint-plugin'
+      - run: pnpm --filter yumcss --filter @yumcss/codemod --filter @yumcss/analyze --filter @yumcss/devtools --filter @yumcss/lint-plugin run build
+      - run: npx pkg-pr-new publish './packages/yumcss' './packages/codemod' './packages/analyze' './packages/devtools' './packages/lint-plugin'

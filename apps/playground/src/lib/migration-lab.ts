@@ -2,7 +2,7 @@ import {
 	CodemodAdapterId,
 	createBrowserCodemodCatalog,
 	findMigrationRouteProof,
-	PANDWIND_API_DIALECTS,
+	YUMCSS_API_DIALECTS,
 	runAdapterMigration,
 	type AdapterCapabilityReport,
 	type AdapterDependencies,
@@ -10,8 +10,8 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 	type TailwindUtilityResolver,
-} from "pandwind-codemod/swap/browser";
-import { officialApiCases, officialApiFamilyCases } from "pandwind-codemod/swap/official-api-cases";
+} from "@yumcss/codemod/swap/browser";
+import { officialApiCases, officialApiFamilyCases } from "@yumcss/codemod/swap/official-api-cases";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 import { createPlaygroundTailwindResolver } from "./tailwind-default-resolver.ts";
 
@@ -105,7 +105,7 @@ const card = css({
 	color: "red.500",
 	padding: "4",
 });`,
-	[CodemodAdapterId.Pandwind]: `import { createUnsafeCss } from "pandwind/unsafe/css";
+	[CodemodAdapterId.YumCSS]: `import { createUnsafeCss } from "yumcss/unsafe/css";
 
 const css = createUnsafeCss();
 const card = css.class({ color: "red", padding: "1rem" });`,
@@ -332,13 +332,13 @@ function endpointFor(adapter: StyleAdapter, role: "source" | "target"): Migratio
 	};
 }
 
-function pandwindApiEndpoint(
+function yumcssApiEndpoint(
 	registry: ReturnType<typeof createBrowserCodemodCatalog>["registry"],
-	api: (typeof PANDWIND_API_DIALECTS)[number],
+	api: (typeof YUMCSS_API_DIALECTS)[number],
 ): MigrationLabEndpoint {
-	const route = `${CodemodAdapterId.Pandwind}/${api.dialect}`;
+	const route = `${CodemodAdapterId.YumCSS}/${api.dialect}`;
 	const adapter = registry.getDialect(route);
-	if (adapter === undefined) throw new Error(`missing Pandwind API target: ${route}`);
+	if (adapter === undefined) throw new Error(`missing YumCSS API target: ${route}`);
 	return { ...endpointFor(adapter, "target"), id: route, label: api.label };
 }
 
@@ -368,13 +368,13 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 			target: endpointFor(adapter, "target"),
 			adapter,
 		}));
-	const pandwindTargets = PANDWIND_API_DIALECTS.map((api) =>
-		pandwindApiEndpoint(catalog.registry, api),
+	const yumcssTargets = YUMCSS_API_DIALECTS.map((api) =>
+		yumcssApiEndpoint(catalog.registry, api),
 	);
 	return {
 		ready: options.ready ?? Promise.resolve(),
 		sources: endpoints.map(({ source }) => source),
-		targets: [...endpoints.map(({ target }) => target), ...pandwindTargets],
+		targets: [...endpoints.map(({ target }) => target), ...yumcssTargets],
 		sampleFor: (id) =>
 			SAMPLE_SOURCES[id as CodemodAdapterId] ??
 			`// No built-in sample yet for ${id}. Paste a source file to try this adapter.`,

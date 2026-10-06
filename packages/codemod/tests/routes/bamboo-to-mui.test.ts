@@ -38,10 +38,10 @@ test("bamboo -> mui: migrates concrete bamboo syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "bamboo -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("bamboo -> mui: migrates concrete bamboo syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("bamboo -> mui: carries a documented secondary bamboo API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("bamboo -> mui: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("bamboo -> mui: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("bamboo -> mui: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("bamboo -> mui: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 0,

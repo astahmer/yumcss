@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
-import "pandwind:css";
-import "pandwind:ui-css";
+import "yumcss:css";
+import "yumcss:ui-css";
 import { router } from "./router.tsx";
 
 const rootEl = document.getElementById("root");

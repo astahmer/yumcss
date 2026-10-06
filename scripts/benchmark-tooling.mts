@@ -14,8 +14,8 @@ import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { analyzeSource, loadTwConfig } from "../packages/analyze/src/analyze.ts";
 import { runAdapterMigration } from "../packages/codemod/src/swap/adapter-migration.ts";
-import { createSourceWorkspace } from "../packages/pandwind/src/source-workspace.ts";
-import { createInlineTwPluginCore } from "../packages/pandwind/src/vite/index.ts";
+import { createSourceWorkspace } from "../packages/yumcss/src/source-workspace.ts";
+import { createInlineTwPluginCore } from "../packages/yumcss/src/vite/index.ts";
 
 type Options = {
 	files: number;
@@ -101,7 +101,7 @@ async function measure<T>(
 }
 
 function createRepository(fileCount: number): Repository {
-	const root = mkdtempSync(join(tmpdir(), "pandwind-tooling-benchmark-"));
+	const root = mkdtempSync(join(tmpdir(), "yumcss-tooling-benchmark-"));
 	let inputBytes = 0;
 	const files: Array<{ path: string; source: string }> = [];
 	for (let index = 0; index < fileCount; index += 1) {
@@ -196,7 +196,7 @@ async function benchmarkCodemod(repository: Repository): Promise<Measurement> {
 		for (const file of sources) {
 			const result = runAdapterMigration(file.source, {
 				from: "styled-components",
-				to: "pandwind",
+				to: "yumcss",
 				file: file.path,
 			});
 			latest += result.converted;

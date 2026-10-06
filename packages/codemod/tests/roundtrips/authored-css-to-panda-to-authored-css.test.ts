@@ -42,7 +42,7 @@ test("authored-css -> panda -> authored-css: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "authored-css -> panda round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("authored-css -> panda -> authored-css: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("authored-css -> panda -> authored-css: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("authored-css -> panda -> authored-css: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -168,7 +168,7 @@ test("authored-css -> panda -> authored-css: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -218,7 +218,7 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -252,7 +252,7 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -267,7 +267,7 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -301,7 +301,7 @@ test("authored-css -> panda -> authored-css: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -331,7 +331,7 @@ test("authored-css -> panda -> authored-css: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -365,7 +365,7 @@ test("authored-css -> panda -> authored-css: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

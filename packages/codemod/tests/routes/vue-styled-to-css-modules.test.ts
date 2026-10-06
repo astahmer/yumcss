@@ -38,10 +38,10 @@ test("vue-styled -> css-modules: migrates concrete vue-styled syntax to css-modu
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vue-styled -> css-modules happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("vue-styled -> css-modules: migrates concrete vue-styled syntax to css-modu
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("vue-styled -> css-modules: carries a documented secondary vue-styled API e
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("vue-styled -> css-modules: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("vue-styled -> css-modules: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("vue-styled -> css-modules: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("vue-styled -> css-modules: preserves malformed concrete vue-styled input",
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: vue-styled -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,

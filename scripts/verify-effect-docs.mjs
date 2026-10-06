@@ -206,9 +206,9 @@ const browserSnapshot = async (browser, url, route, options = {}) => {
 	});
 	await page.goto(new URL(route, url).href, { waitUntil: "networkidle", timeout: 30_000 });
 	await page.evaluate(() => {
-		if (document.querySelector("style[data-pandwind-proof-freeze]")) return;
+		if (document.querySelector("style[data-yumcss-proof-freeze]")) return;
 		const style = document.createElement("style");
-		style.dataset.pandwindProofFreeze = "";
+		style.dataset.yumcssProofFreeze = "";
 		style.textContent =
 			"*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important;}";
 		document.head.append(style);

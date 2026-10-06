@@ -42,7 +42,7 @@ test("fela -> tamagui -> fela: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -90,7 +90,7 @@ test("fela -> tamagui -> fela: preserves an actionable concrete round trip", asy
 		    "code": "import { createRenderer } from "fela";
 		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "red" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
 		    "converted": 0,
@@ -284,7 +284,7 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		      "code": "import { createRenderer } from "fela";
 		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -361,7 +361,7 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		      "code": "import { createRenderer } from "fela";
 		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -453,7 +453,7 @@ test("fela -> tamagui -> fela: resolves token values across both concrete legs",
 		    "code": "import { createRenderer } from "fela";
 		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

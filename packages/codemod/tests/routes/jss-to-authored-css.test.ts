@@ -38,10 +38,10 @@ test("jss -> authored-css: migrates concrete jss syntax to authored-css", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "jss -> authored-css happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("jss -> authored-css: migrates concrete jss syntax to authored-css", () => 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("jss -> authored-css: carries a documented secondary jss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("jss -> authored-css: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("jss -> authored-css: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("jss -> authored-css: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("jss -> authored-css: preserves malformed concrete jss input", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 0,

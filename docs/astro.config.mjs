@@ -14,29 +14,29 @@ export default defineConfig({
 	site,
 	integrations: [
 		starlight({
-			title: "pandwind",
+			title: "yumcss",
 			description:
 				"Typed style objects that keep Tailwind and CSS familiar while moving known work to build time.",
 			favicon: "favicon.svg",
 			social: [
 				{
 					icon: "github",
-					label: "pandwind on GitHub",
-					href: "https://github.com/astahmer/pandwind",
+					label: "yumcss on GitHub",
+					href: "https://github.com/astahmer/yumcss",
 				},
 			],
 			editLink: {
-				baseUrl: "https://github.com/astahmer/pandwind/edit/main/docs/",
+				baseUrl: "https://github.com/astahmer/yumcss/edit/main/docs/",
 			},
 			customCss: ["./src/styles/custom.css"],
 			tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 3 },
 			sidebar: [
 				{
 					label: "Start here",
-					items: ["getting-started", "why-pandwind"],
+					items: ["getting-started", "why-yumcss"],
 				},
 				{
-					label: "Build with pandwind",
+					label: "Build with yumcss",
 					items: [
 						"guides/basic",
 						"guides/design-system",
@@ -69,7 +69,7 @@ export default defineConfig({
 							items: ["api/resets"],
 						},
 						{
-							label: "Prose stylesheets — pandwind/prose",
+							label: "Prose stylesheets — yumcss/prose",
 							items: ["api/prose"],
 						},
 						{

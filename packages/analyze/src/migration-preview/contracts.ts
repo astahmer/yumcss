@@ -1,7 +1,7 @@
-import type { SourceDocument, SourceScanResult } from "pandwind/source";
+import type { SourceDocument, SourceScanResult } from "yumcss/source";
 
-export const MIGRATION_PREVIEW_SESSION_SCHEMA = "pandwind.migration-preview-session/1" as const;
-export const MIGRATION_PREVIEW_SNAPSHOT_SCHEMA = "pandwind.migration-preview-snapshot/1" as const;
+export const MIGRATION_PREVIEW_SESSION_SCHEMA = "yumcss.migration-preview-session/1" as const;
+export const MIGRATION_PREVIEW_SNAPSHOT_SCHEMA = "yumcss.migration-preview-snapshot/1" as const;
 
 export const MIGRATION_PREVIEW_EXECUTION_LANE = {
 	InProcess: "in-process",

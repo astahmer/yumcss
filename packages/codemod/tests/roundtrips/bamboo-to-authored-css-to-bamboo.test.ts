@@ -42,7 +42,7 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "bamboo -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("bamboo -> authored-css -> bamboo: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("bamboo -> authored-css -> bamboo: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("bamboo -> authored-css -> bamboo: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("bamboo -> authored-css -> bamboo: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("bamboo -> authored-css -> bamboo: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("bamboo -> authored-css -> bamboo: resolves token values across both concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

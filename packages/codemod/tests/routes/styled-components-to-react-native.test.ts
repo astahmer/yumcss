@@ -38,10 +38,10 @@ test("styled-components -> react-native: migrates concrete styled-components syn
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "styled-components -> react-native happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("styled-components -> react-native: migrates concrete styled-components syn
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -96,7 +96,7 @@ test("styled-components -> react-native: carries a documented secondary styled-c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -152,7 +152,7 @@ test("styled-components -> react-native: loads concrete theme and project contex
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("styled-components -> react-native: loads concrete theme and project contex
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -240,7 +240,7 @@ test("styled-components -> react-native: resolves concrete token values with pro
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("styled-components -> react-native: preserves malformed concrete styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,

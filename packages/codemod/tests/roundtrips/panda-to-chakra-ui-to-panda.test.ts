@@ -44,7 +44,7 @@ test("panda -> chakra-ui -> panda: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("panda -> chakra-ui -> panda: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> chakra-ui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("panda -> chakra-ui -> panda: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> chakra-ui | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -104,33 +104,33 @@ const prepareWorktree = (worktree: string, commit: string): void => {
 	}
 	// The package manager's linked workspace dependency points at the active
 	// checkout. Replace only the temporary codemod link so its source-pass
-	// benchmark resolves the historical pandwind package too.
+	// benchmark resolves the historical yumcss package too.
 	const codemodNodeModules = join(worktree, "packages", "codemod", "node_modules");
-	const pandwindNodeModules = join(worktree, "packages", "pandwind", "node_modules");
+	const yumcssNodeModules = join(worktree, "packages", "yumcss", "node_modules");
 	mkdirSync(codemodNodeModules, { recursive: true });
-	mkdirSync(pandwindNodeModules, { recursive: true });
+	mkdirSync(yumcssNodeModules, { recursive: true });
 	const currentCodemodNodeModules = join(ROOT, "packages", "codemod", "node_modules");
 	if (existsSync(currentCodemodNodeModules)) {
 		for (const dependency of readdirSync(currentCodemodNodeModules)) {
-			if (dependency === "pandwind") continue;
+			if (dependency === "yumcss") continue;
 			const target = join(codemodNodeModules, dependency);
 			if (!existsSync(target)) {
 				symlinkSync(join(currentCodemodNodeModules, dependency), target, "dir");
 			}
 		}
 	}
-	const currentPandwindNodeModules = join(ROOT, "packages", "pandwind", "node_modules");
-	if (existsSync(currentPandwindNodeModules)) {
-		for (const dependency of readdirSync(currentPandwindNodeModules)) {
-			const target = join(pandwindNodeModules, dependency);
+	const currentYumCSSNodeModules = join(ROOT, "packages", "yumcss", "node_modules");
+	if (existsSync(currentYumCSSNodeModules)) {
+		for (const dependency of readdirSync(currentYumCSSNodeModules)) {
+			const target = join(yumcssNodeModules, dependency);
 			if (!existsSync(target)) {
-				symlinkSync(join(currentPandwindNodeModules, dependency), target, "dir");
+				symlinkSync(join(currentYumCSSNodeModules, dependency), target, "dir");
 			}
 		}
 	}
-	const historicalPandwind = join(codemodNodeModules, "pandwind");
-	if (!existsSync(historicalPandwind)) {
-		symlinkSync(join(worktree, "packages", "pandwind"), historicalPandwind, "dir");
+	const historicalYumCSS = join(codemodNodeModules, "yumcss");
+	if (!existsSync(historicalYumCSS)) {
+		symlinkSync(join(worktree, "packages", "yumcss"), historicalYumCSS, "dir");
 	}
 	// Older points in this window still import the direct `flattie` dependency
 	// that the current branch intentionally removed. Reuse the already pinned
@@ -139,7 +139,7 @@ const prepareWorktree = (worktree: string, commit: string): void => {
 	const flattieStoreEntry = existsSync(pnpmStore)
 		? readdirSync(pnpmStore).find((entry) => entry.startsWith("flattie@"))
 		: undefined;
-	const historicalFlattie = join(pandwindNodeModules, "flattie");
+	const historicalFlattie = join(yumcssNodeModules, "flattie");
 	if (flattieStoreEntry !== undefined && !existsSync(historicalFlattie)) {
 		symlinkSync(
 			join(pnpmStore, flattieStoreEntry, "node_modules", "flattie"),
@@ -164,18 +164,18 @@ const runRevision = async (worktree: string): Promise<BenchmarkResult> => {
 	// These are deliberately resolved inside the isolated historical worktree;
 	// using today's package exports here would benchmark the current tip rather
 	// than the revision named by the benchmark record.
-	const cssModule = await importFrom(worktree, "packages/pandwind/src/css/create-css.ts");
-	const presetPath = existsSync(join(worktree, "examples/pandwind-example-preset/src/index.ts"))
-		? "examples/pandwind-example-preset/src/index.ts"
-		: "packages/pandwind/src/preset/example-preset.ts";
+	const cssModule = await importFrom(worktree, "packages/yumcss/src/css/create-css.ts");
+	const presetPath = existsSync(join(worktree, "examples/yumcss-example-preset/src/index.ts"))
+		? "examples/yumcss-example-preset/src/index.ts"
+		: "packages/yumcss/src/preset/example-preset.ts";
 	const presetModule = await importFrom(worktree, presetPath);
 	const stylesheetModule = await importFrom(
 		worktree,
-		"packages/pandwind/src/css/create-stylesheet.ts",
+		"packages/yumcss/src/css/create-stylesheet.ts",
 	);
-	const twModule = await importFrom(worktree, "packages/pandwind/src/tw/compile.ts");
-	const cxModule = await importFrom(worktree, "packages/pandwind/src/cx/index.ts");
-	const prunerModule = await importFrom(worktree, "packages/pandwind/src/vite/runtime-pruner.ts");
+	const twModule = await importFrom(worktree, "packages/yumcss/src/tw/compile.ts");
+	const cxModule = await importFrom(worktree, "packages/yumcss/src/cx/index.ts");
+	const prunerModule = await importFrom(worktree, "packages/yumcss/src/vite/runtime-pruner.ts");
 	const sourcePassModule = await importFrom(worktree, "packages/codemod/src/source-pass-utils.ts");
 	const engineModule = await importFrom(worktree, "packages/codemod/src/swap/engine.ts");
 
@@ -234,8 +234,8 @@ const runRevision = async (worktree: string): Promise<BenchmarkResult> => {
 		bg: "blue-600",
 		text: "white",
 	};
-	const source = `import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red" });`;
-	const file = join(worktree, "packages/pandwind/tests/fixtures/perf-history.ts");
+	const source = `import { createCss } from "yumcss/css";\nconst css = createCss();\nexport const card = css.class({ color: "red" });`;
+	const file = join(worktree, "packages/yumcss/tests/fixtures/perf-history.ts");
 
 	return {
 		"css-call": benchmark(() => css.class(cssStyle), 40_000),
@@ -255,7 +255,7 @@ const runRevision = async (worktree: string): Promise<BenchmarkResult> => {
 const main = async (): Promise<void> => {
 	console.log(JSON.stringify({ machine: process.platform, node: process.version }));
 	for (const revision of REVISIONS) {
-		const worktree = join(tmpdir(), `pandwind-perf-history-${revision.commit.slice(0, 12)}`);
+		const worktree = join(tmpdir(), `yumcss-perf-history-${revision.commit.slice(0, 12)}`);
 		try {
 			prepareWorktree(worktree, revision.commit);
 			const result = await runRevision(worktree);

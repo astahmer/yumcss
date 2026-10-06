@@ -73,7 +73,7 @@ export interface ExamplePreview {
 }
 
 export interface ExampleVariant {
-	/** The Pandwind API demonstrated by this variant. */
+	/** The YumCSS API demonstrated by this variant. */
 	api: PlaygroundApi;
 	/** Label shown in the API selector. */
 	label: string;
@@ -90,7 +90,7 @@ export interface ExampleDef {
 	blurb: string;
 	/**
 	 * Scenario group shown in the nav. "core" examples are the happy paths;
-	 * "limits" examples document what pandwind genuinely cannot handle.
+	 * "limits" examples document what yumcss genuinely cannot handle.
 	 */
 	group: "core" | "limits";
 	/**
@@ -154,11 +154,11 @@ const makeSelectControl = (
 	description,
 });
 
-const TW_IMPORT = 'import { tw } from "pandwind";';
+const TW_IMPORT = 'import { tw } from "yumcss";';
 
 const TW_CX_IMPORT = [
 	TW_IMPORT,
-	'import { createCx } from "pandwind/cx";',
+	'import { createCx } from "yumcss/cx";',
 	"",
 	"const cx = createCx();",
 ].join("\n");
@@ -167,7 +167,7 @@ export const EXAMPLES: readonly ExampleDef[] = [
 	{
 		path: "/basics",
 		title: "Basics",
-		blurb: "the same styling intent expressed through each Pandwind API",
+		blurb: "the same styling intent expressed through each YumCSS API",
 		group: "core",
 		note: `Select an API to see the same button styles expressed through typed tw(), declaration-first css(), or design-system dss(). The APIs share one preset, while each lane keeps its own class-name strategy.`,
 		preview: makePreview(
@@ -227,8 +227,8 @@ export default <Button tone="primary" size="lg" />`,
 				label: "css()",
 				files: oneFile(
 					"Example.tsx",
-					`import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+					`import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
@@ -256,8 +256,8 @@ export default <Button tone="primary" size="lg" />`,
 				label: "dss",
 				files: oneFile(
 					"Example.tsx",
-					`import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "@pandwind/example-preset";
+					`import { createDesignCss } from "yumcss/design";
+import { examplePreset } from "@yumcss/example-preset";
 
 const dss = createDesignCss(examplePreset);
 
@@ -316,8 +316,8 @@ export default <Button tone="primary" size="lg" />`,
 			TW_CX_IMPORT +
 				`
 
-import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
@@ -376,8 +376,8 @@ export default <Alert tone="danger" color="#fef08a" />`,
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
-			`import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
@@ -535,8 +535,8 @@ export default <Card title="Container-aware card" />`,
 		),
 		variants: oneVariant(
 			PlaygroundApi.Css,
-			`import { createRuntimeCss } from "pandwind/css/runtime";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createRuntimeCss } from "yumcss/css/runtime";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createRuntimeCss(examplePreset);
 
@@ -667,7 +667,7 @@ export default <Action tone="primary" />`,
 				files: [
 					{
 						name: "Example.tsx",
-						code: `import { createCss } from "pandwind/css";
+						code: `import { createCss } from "yumcss/css";
 import { componentTokens, tokenPreset } from "./tokens.ts";
 
 const css = createCss(tokenPreset);
@@ -696,7 +696,7 @@ export default <TokenCard />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { define } from "pandwind/preset";
+						code: `import { define } from "yumcss/preset";
 
 const rawTokens = define.tokens({
 	colors: {
@@ -780,7 +780,7 @@ export const tokenPreset = define.preset(
 				files: [
 					{
 						name: "Example.tsx",
-						code: `import { createCss } from "pandwind/css";
+						code: `import { createCss } from "yumcss/css";
 import { tokenPreset } from "./tokens.ts";
 
 const css = createCss(tokenPreset);
@@ -813,7 +813,7 @@ export default <EmptyState />`,
 					},
 					{
 						name: "tokens.ts",
-						code: `import { define } from "pandwind/preset";
+						code: `import { define } from "yumcss/preset";
 
 const rawTokens = define.tokens({
 	colors: {
@@ -928,8 +928,8 @@ export const tokenPreset = define.preset(
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
-			`import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
@@ -991,8 +991,8 @@ export default (
 				files: [
 					{
 						name: "Example.tsx",
-						code: `import { createDesignCss } from "pandwind/design";
-import { define } from "pandwind/preset";
+						code: `import { createDesignCss } from "yumcss/design";
+import { define } from "yumcss/preset";
 import { brandTokens } from "./brand.ts";
 
 const brand = define.preset(
@@ -1026,7 +1026,7 @@ export default <Button active={true} />`,
 					},
 					{
 						name: "brand.ts",
-						code: `import { define } from "pandwind/preset";
+						code: `import { define } from "yumcss/preset";
 
 export const brandTokens = define.tokens({
 	colors: { "$brand-500": "#4c51bf", "$brand-600": "#3730a3" },
@@ -1041,7 +1041,7 @@ export const brandTokens = define.tokens({
 		title: "Variants with cx()",
 		blurb: "external variant maps over statically generated classes",
 		group: "core",
-		note: "Pandwind does not ship a recipe API: each css.class() call stays statically authored, while cx() composes the selected class strings at runtime. This is the extractable CVA-style pattern.",
+		note: "YumCSS does not ship a recipe API: each css.class() call stays statically authored, while cx() composes the selected class strings at runtime. This is the extractable CVA-style pattern.",
 		preview: makePreview(
 			"button",
 			"Variant button",
@@ -1069,9 +1069,9 @@ export const brandTokens = define.tokens({
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
-			`import { createCss } from "pandwind/css";
-import { createCx } from "pandwind/cx";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createCss } from "yumcss/css";
+import { createCx } from "yumcss/cx";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 const cx = createCx({ css });
@@ -1127,8 +1127,8 @@ export default <Button size="lg" tone="brand" />`,
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
-			`import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
@@ -1317,8 +1317,8 @@ export default <InvalidVariant />`,
 		variants: oneVariant(
 			PlaygroundApi.Css,
 			"Example.tsx",
-			`import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+			`import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 

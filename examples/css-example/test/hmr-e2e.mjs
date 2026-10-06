@@ -22,17 +22,17 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import { examplePreset } from "@pandwind/example-preset";
-import { createDesignCss } from "pandwind/design";
-import { pandwindCssVite } from "pandwind/vite";
+import { examplePreset } from "@yumcss/example-preset";
+import { createDesignCss } from "yumcss/design";
+import { yumcssExtractVite } from "yumcss/vite";
 
-const root = realpathSync(mkdtempSync(join(tmpdir(), "pandwind-vite-hmr-")));
+const root = realpathSync(mkdtempSync(join(tmpdir(), "yumcss-vite-hmr-")));
 const entry = join(root, "src/app.tsx");
 const browserRoot = new URL("../node_modules/", import.meta.url);
 const requireFromExample = createRequire(browserRoot);
 const chromium = requireFromExample("playwright-core").chromium;
-const pandwindPackageRoot = new URL("../../../packages/pandwind/", import.meta.url).pathname;
-const examplePresetRoot = new URL("../../../examples/pandwind-example-preset/", import.meta.url)
+const yumcssPackageRoot = new URL("../../../packages/yumcss/", import.meta.url).pathname;
+const examplePresetRoot = new URL("../../../examples/yumcss-example-preset/", import.meta.url)
 	.pathname;
 const reactRoot = dirname(requireFromExample.resolve("react"));
 const reactDomRoot = dirname(requireFromExample.resolve("react-dom"));
@@ -67,8 +67,8 @@ const writeFixture = (color) => {
 	writeFileSync(
 		join(root, "src/css.ts"),
 		[
-			'import { createDesignCss } from "pandwind/design";',
-			'import { examplePreset } from "@pandwind/example-preset";',
+			'import { createDesignCss } from "yumcss/design";',
+			'import { examplePreset } from "@yumcss/example-preset";',
 			'import { blue500 } from "./theme-token";',
 			'const preset = { ...examplePreset, tokens: { ...examplePreset.tokens, colors: { ...examplePreset.tokens.colors, "$blue-500": blue500 } } };',
 			"export const css = createDesignCss(preset);",
@@ -79,7 +79,7 @@ const writeFixture = (color) => {
 		[
 			'import { createRoot } from "react-dom/client";',
 			'import { App } from "./app";',
-			'import "pandwind:css";',
+			'import "yumcss:css";',
 			'createRoot(document.getElementById("root")).render(<App />);',
 		].join("\n"),
 	);
@@ -103,14 +103,14 @@ let server;
 let browser;
 try {
 	mkdirSync(join(root, "node_modules"), { recursive: true });
-	symlinkSync(pandwindPackageRoot, join(root, "node_modules/pandwind"), "dir");
-	mkdirSync(join(root, "node_modules/@pandwind"), { recursive: true });
-	symlinkSync(examplePresetRoot, join(root, "node_modules/@pandwind/example-preset"), "dir");
+	symlinkSync(yumcssPackageRoot, join(root, "node_modules/yumcss"), "dir");
+	mkdirSync(join(root, "node_modules/@yumcss"), { recursive: true });
+	symlinkSync(examplePresetRoot, join(root, "node_modules/@yumcss/example-preset"), "dir");
 	writeFixture("#3182CE");
 	const css = createDesignCss(hmrPreset);
 	server = await createServer({
 		root,
-		plugins: [pandwindCssVite(css, { root }), react()],
+		plugins: [yumcssExtractVite(css, { root }), react()],
 		resolve: {
 			alias: [
 				{ find: "react-dom", replacement: reactDomRoot },
@@ -121,7 +121,7 @@ try {
 			host: "127.0.0.1",
 			port: 0,
 			strictPort: false,
-			fs: { allow: [root, pandwindPackageRoot, examplePresetRoot, reactRoot, reactDomRoot] },
+			fs: { allow: [root, yumcssPackageRoot, examplePresetRoot, reactRoot, reactDomRoot] },
 		},
 	});
 	await server.listen();

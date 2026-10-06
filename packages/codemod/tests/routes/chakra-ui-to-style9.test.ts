@@ -40,10 +40,10 @@ test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", async 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "chakra-ui -> style9 happy");
 	expectExplicitResidualEvidence(result);
@@ -98,7 +98,7 @@ test("chakra-ui -> style9: carries a documented secondary chakra-ui API explicit
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> style9 | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> style9 | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,

@@ -1,5 +1,5 @@
 /**
- * Measure a checked-in Pandwind workload and compare it with compiler evidence.
+ * Measure a checked-in YumCSS workload and compare it with compiler evidence.
  * Instantiation counts are the primary regression signal; memory and check time
  * use wider noise-tolerant bounds.
  *
@@ -17,15 +17,15 @@ import { writePerformanceSummary } from "./render-performance-summary.mts";
 const ROOT = resolve(import.meta.dirname, "..");
 const TSC_ARGUMENTS = ["exec", "tsc", "--noEmit", "--extendedDiagnostics", "--pretty", "false"];
 const BENCHMARKS = {
-	pandwind: {
-		packageName: "pandwind",
-		project: "packages/pandwind/tsconfig.json",
-		snapshot: resolve(ROOT, "plans/evidence/pandwind-tsc.json"),
+	yumcss: {
+		packageName: "yumcss",
+		project: "packages/yumcss/tsconfig.json",
+		snapshot: resolve(ROOT, "plans/evidence/yumcss-tsc.json"),
 	},
 	example: {
 		packageName: "example",
 		project: "examples/example/tsconfig.json",
-		snapshot: resolve(ROOT, "plans/evidence/pandwind-example-tsc.json"),
+		snapshot: resolve(ROOT, "plans/evidence/yumcss-example-tsc.json"),
 	},
 } as const;
 
@@ -38,7 +38,7 @@ type TscMetrics = {
 };
 
 type Snapshot = {
-	schema: "pandwind.tsc-performance/1";
+	schema: "yumcss.tsc-performance/1";
 	project: string;
 	command: string;
 	samples: number;
@@ -71,10 +71,10 @@ const textOption = (name: string, fallback: string): string => {
 
 const samples = option("--samples", 7);
 const update = process.argv.includes("--update");
-const targetName = textOption("--target", "pandwind");
+const targetName = textOption("--target", "yumcss");
 const target = Object.entries(BENCHMARKS).find(([name]) => name === targetName)?.[1];
 if (target === undefined) {
-	throw new Error(`unknown TSC benchmark target ${targetName}; choose pandwind or example`);
+	throw new Error(`unknown TSC benchmark target ${targetName}; choose yumcss or example`);
 }
 const tscArguments = ["--filter", target.packageName, ...TSC_ARGUMENTS];
 const command = `pnpm --filter ${target.packageName} ${TSC_ARGUMENTS.join(" ")}`;
@@ -124,7 +124,7 @@ const measure = (): TscMetrics => {
 
 const measured = measure();
 const nextSnapshot: Snapshot = {
-	schema: "pandwind.tsc-performance/1",
+	schema: "yumcss.tsc-performance/1",
 	project: target.project,
 	command,
 	samples,

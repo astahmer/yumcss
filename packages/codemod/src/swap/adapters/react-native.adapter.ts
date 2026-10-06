@@ -615,13 +615,13 @@ const reactNativeAdapter = makeExtraAdapter({
 				};
 			const component =
 				attrsExpression === undefined
-					? `((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(${style})`
-					: `((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => { const attrs: Partial<ViewProps> = ${attrsValue}; return <View {...props} {...attrs} ref={ref} style={[style, props.style, attrs.style]} />; }))(${style})`;
+					? `((style: NonNullable<ViewProps["style"]>) => __yumcssForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(${style})`
+					: `((style: NonNullable<ViewProps["style"]>) => __yumcssForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => { const attrs: Partial<ViewProps> = ${attrsValue}; return <View {...props} {...attrs} ref={ref} style={[style, props.style, attrs.style]} />; }))(${style})`;
 			return {
 				text: component,
 				semantic: reactNativeProgram(program),
 				imports: [
-					'import { forwardRef as __pandwindForwardRef, type ComponentRef } from "react";',
+					'import { forwardRef as __yumcssForwardRef, type ComponentRef } from "react";',
 					'import { StyleSheet, View, type ViewProps } from "react-native";',
 				],
 				residuals: [],

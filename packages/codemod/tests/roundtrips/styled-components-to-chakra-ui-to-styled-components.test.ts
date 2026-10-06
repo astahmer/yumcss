@@ -44,7 +44,7 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);

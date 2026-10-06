@@ -42,7 +42,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -91,7 +91,7 @@ test("styled-components -> react-native -> styled-components: preserves an actio
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -120,7 +120,7 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,7 +158,7 @@ test("styled-components -> react-native -> styled-components: retains the docume
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +203,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,7 +241,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,7 +295,7 @@ test("styled-components -> react-native -> styled-components: preserves concrete
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -326,7 +326,7 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("styled-components -> react-native -> styled-components: resolves token val
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

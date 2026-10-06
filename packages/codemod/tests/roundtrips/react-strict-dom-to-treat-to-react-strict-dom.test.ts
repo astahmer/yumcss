@@ -42,7 +42,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> treat round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -91,7 +91,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves an actionable con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -121,7 +121,7 @@ test("react-strict-dom -> treat -> react-strict-dom: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,7 +158,7 @@ test("react-strict-dom -> treat -> react-strict-dom: retains the documented seco
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +203,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -241,7 +241,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves concrete theme an
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -258,7 +258,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -296,7 +296,7 @@ test("react-strict-dom -> treat -> react-strict-dom: preserves concrete theme an
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -328,7 +328,7 @@ test("react-strict-dom -> treat -> react-strict-dom: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -366,7 +366,7 @@ test("react-strict-dom -> treat -> react-strict-dom: resolves token values acros
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> treat | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,

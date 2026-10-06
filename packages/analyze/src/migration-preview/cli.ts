@@ -36,7 +36,7 @@ const runMigrationPreview = async (root: string, shouldOpen: boolean): Promise<v
 	});
 	const server = await createMigrationPreviewServer({ session });
 	await session.open({ root });
-	console.log(`Pandwind Migration Preview: ${server.address.url}`);
+	console.log(`YumCSS Migration Preview: ${server.address.url}`);
 	if (shouldOpen) openInBrowser(server.address.url);
 	const close = async (): Promise<void> => {
 		await server.close();
@@ -47,19 +47,19 @@ const runMigrationPreview = async (root: string, shouldOpen: boolean): Promise<v
 };
 
 const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<void> => {
-	const cli = cac("pandwind-migration-preview");
+	const cli = cac("yumcss-migration-preview");
 	const command = cli.command("[root]", "Preview a project migration without changing its files");
 	command.option("--no-open", "Start the server without opening a browser");
 	cli.help();
 	try {
-		cli.parse(["node", "pandwind-migration-preview", ...argv], { run: false });
+		cli.parse(["node", "yumcss-migration-preview", ...argv], { run: false });
 		if (cli.matchedCommand === undefined) return;
 		validateCommand(cli.matchedCommand);
 		const root = resolve(cli.args[0] ?? process.cwd());
 		await runMigrationPreview(root, cli.options.open !== false);
 	} catch (error) {
 		console.error(
-			`pandwind migration preview: ${error instanceof Error ? error.message : String(error)}`,
+			`yumcss migration preview: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		cli.outputHelp();
 		process.exitCode = 1;

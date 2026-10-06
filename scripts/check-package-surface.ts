@@ -31,7 +31,7 @@ interface SurfaceRecord {
 }
 
 interface SurfaceInventory {
-	readonly schema: "pandwind.package-surface/1";
+	readonly schema: "yumcss.package-surface/1";
 	readonly records: readonly SurfaceRecord[];
 }
 
@@ -40,7 +40,7 @@ function readJson<T>(path: string): T {
 }
 
 const inventory = readJson<SurfaceInventory>(inventoryPath);
-if (inventory.schema !== "pandwind.package-surface/1") {
+if (inventory.schema !== "yumcss.package-surface/1") {
 	throw new Error(`unsupported package surface schema in ${inventoryPath}`);
 }
 
@@ -68,10 +68,10 @@ for (const { directory, manifest } of manifests) {
 		const key = `${manifest.name}:${exportPath}`;
 		expected.set(key, { packageName: manifest.name, exportPath });
 	}
-	if (manifest.name === "pandwind") {
+	if (manifest.name === "yumcss") {
 		for (const dependency of buildDependencies) {
 			if (dependency in (manifest.dependencies ?? {})) {
-				failures.push(`pandwind: build dependency ${dependency} leaked into runtime dependencies`);
+				failures.push(`yumcss: build dependency ${dependency} leaked into runtime dependencies`);
 			}
 		}
 	}

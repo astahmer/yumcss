@@ -42,7 +42,7 @@ test("sass -> emotion -> sass: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "sass -> emotion round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("sass -> emotion -> sass: preserves an actionable concrete round trip", asy
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("sass -> emotion -> sass: preserves an actionable concrete round trip", asy
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("sass -> emotion -> sass: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		    "converted": 0,
@@ -153,7 +153,7 @@ test("sass -> emotion -> sass: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		    "converted": 0,
@@ -198,7 +198,7 @@ test("sass -> emotion -> sass: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("sass -> emotion -> sass: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("sass -> emotion -> sass: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -281,7 +281,7 @@ test("sass -> emotion -> sass: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("sass -> emotion -> sass: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -345,7 +345,7 @@ test("sass -> emotion -> sass: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

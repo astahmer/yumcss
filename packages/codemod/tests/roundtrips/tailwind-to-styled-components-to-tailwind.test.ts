@@ -42,7 +42,7 @@ test("tailwind -> styled-components -> tailwind: preserves an actionable concret
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("tailwind -> styled-components -> tailwind: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -139,7 +139,7 @@ test("tailwind -> styled-components -> tailwind: retains the documented secondar
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -173,7 +173,7 @@ test("tailwind -> styled-components -> tailwind: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> styled-components | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("tailwind -> styled-components -> tailwind: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#f97316", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -325,7 +325,7 @@ test("tailwind -> styled-components -> tailwind: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -414,7 +414,7 @@ test("tailwind -> styled-components -> tailwind: resolves token values across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

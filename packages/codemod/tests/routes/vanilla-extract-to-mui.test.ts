@@ -38,10 +38,10 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("vanilla-extract -> mui: migrates concrete vanilla-extract syntax to mui", 
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("vanilla-extract -> mui: carries a documented secondary vanilla-extract API
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("vanilla-extract -> mui: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("vanilla-extract -> mui: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("vanilla-extract -> mui: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("vanilla-extract -> mui: preserves malformed concrete vanilla-extract input
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 0,

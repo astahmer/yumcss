@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
-	buildPandwindInteropArtifact,
-	parsePandwindInteropArtifact,
+	buildYumCSSInteropArtifact,
+	parseYumCSSInteropArtifact,
 } from "../src/tw/interop-artifact.ts";
 import { parseDtcgTokenDocument } from "../src/swap/token-document.ts";
 
@@ -14,18 +14,18 @@ interface WindUtilities {
 `;
 
 const tw = `
-import { createTw } from "pandwind/tw";
-const __pandwindConfig = {
+import { createTw } from "yumcss/tw";
+const __yumcssConfig = {
 \tvariants: { hover: { join: ":" } },
 \tconflicts: { bg: { "blue-500": ["background-color"] } },
 \tcompose: ["shadow"],
 };
-export const tw = createTw(__pandwindConfig);
+export const tw = createTw(__yumcssConfig);
 `;
 
-describe("pandwind interop artifact", () => {
+describe("yumcss interop artifact", () => {
 	test("captures generated utility, variant, conflict, bridge and theme metadata", () => {
-		const artifact = buildPandwindInteropArtifact({
+		const artifact = buildYumCSSInteropArtifact({
 			typesDts: types,
 			twTs: tw,
 			themeBlock:
@@ -33,7 +33,7 @@ describe("pandwind interop artifact", () => {
 			bridge: { "background-color": { "#3182ce": "bg-blue-500" } },
 		});
 
-		expect(artifact.schema).toBe("pandwind.interop/1");
+		expect(artifact.schema).toBe("yumcss.interop/1");
 		expect(artifact.utilities).toEqual([
 			{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
 			{ key: "textColor", base: "text", valueType: "BgColorValue" },
@@ -58,13 +58,13 @@ describe("pandwind interop artifact", () => {
 				},
 			}),
 		);
-		const artifact = buildPandwindInteropArtifact({
+		const artifact = buildYumCSSInteropArtifact({
 			typesDts: types,
 			twTs: tw,
 			tokenDocument: document,
 			tokenSource: "./tokens.ts",
 		});
-		const parsed = parsePandwindInteropArtifact(JSON.parse(JSON.stringify(artifact)));
+		const parsed = parseYumCSSInteropArtifact(JSON.parse(JSON.stringify(artifact)));
 
 		expect(parsed.tokens).toMatchObject({
 			state: "available",
@@ -84,17 +84,17 @@ describe("pandwind interop artifact", () => {
 	});
 
 	test("uses the root schema for tokens and rejects unsupported schema envelopes", () => {
-		const artifact = buildPandwindInteropArtifact({ typesDts: types, twTs: tw });
+		const artifact = buildYumCSSInteropArtifact({ typesDts: types, twTs: tw });
 
 		expect(artifact.tokens).not.toHaveProperty("schema");
 		expect(() =>
-			parsePandwindInteropArtifact({ ...artifact, schema: "pandwind.interop/future" }),
-		).toThrow("invalid pandwind.interop/1 artifact");
+			parseYumCSSInteropArtifact({ ...artifact, schema: "yumcss.interop/future" }),
+		).toThrow("invalid yumcss.interop/1 artifact");
 		expect(() =>
-			parsePandwindInteropArtifact({
+			parseYumCSSInteropArtifact({
 				...artifact,
 				tokens: { ...artifact.tokens, schema: "unexpected" },
 			}),
-		).toThrow("invalid pandwind.interop/1 artifact");
+		).toThrow("invalid yumcss.interop/1 artifact");
 	});
 });

@@ -2,19 +2,19 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
-import type { CssCascade } from "pandwind/css";
-import { type CssConfigReturn } from "pandwind/types/typings";
+import type { CssCascade } from "yumcss/css";
+import { type CssConfigReturn } from "yumcss/types/typings";
 import {
-	PANDWIND_LIB_GENERATOR,
-	PANDWIND_LIB_SCHEMA,
-	validatePandwindLibArtifact,
-	type PandwindLibArtifact,
-} from "pandwind/vite/lib-artifact";
+	YUMCSS_LIB_GENERATOR,
+	YUMCSS_LIB_SCHEMA,
+	validateYumCSSLibArtifact,
+	type YumCSSLibArtifact,
+} from "yumcss/vite/lib-artifact";
 import {
 	NODE_PROJECT_MODULE_LOADER,
 	type ProjectModuleLoader,
 } from "../swap/project-module-loader.ts";
-import { buildPandwindLib } from "./build.ts";
+import { buildYumCSSLib } from "./build.ts";
 
 export const LibCommand = {
 	Build: "build",
@@ -78,11 +78,11 @@ const parseCascade = (
 ): CssCascade | undefined => {
 	if (mode === undefined && layer === undefined) return undefined;
 	if (mode === "specificity" && layer !== undefined)
-		throw new Error("pandwind-codemod lib: --cascade-layer requires --cascade layers");
+		throw new Error("yumcss-codemod lib: --cascade-layer requires --cascade layers");
 	if (mode !== "layers" && layer !== undefined)
-		throw new Error("pandwind-codemod lib: --cascade-layer requires --cascade layers");
+		throw new Error("yumcss-codemod lib: --cascade-layer requires --cascade layers");
 	if (mode === undefined || (mode !== "specificity" && mode !== "layers"))
-		throw new Error(`pandwind-codemod lib: unsupported cascade '${mode}'`);
+		throw new Error(`yumcss-codemod lib: unsupported cascade '${mode}'`);
 	return layer === undefined ? mode : { mode: "layers", layer };
 };
 
@@ -99,10 +99,10 @@ const generateCommand = (
 	return {
 		command: LibCommand.Build,
 		root,
-		outFile: resolve(root, positionals[1] ?? "dist/pandwind.lib.json"),
+		outFile: resolve(root, positionals[1] ?? "dist/yumcss.lib.json"),
 		sourcePatterns: optionStrings(options, "include", ["**/*"]),
 		cssSources: optionStrings(options, "cssSource", ["css", "design"]),
-		presetImport: optionString(options, "presetImport") ?? "pandwind/preset/default",
+		presetImport: optionString(options, "presetImport") ?? "yumcss/preset/default",
 		presetExport: optionString(options, "presetExport") ?? "defaultPreset",
 		...(optionString(options, "namespace") === undefined
 			? {}
@@ -116,7 +116,7 @@ const configureBuild = (command: Command): void => {
 	command
 		.option("--include <pattern>", "Source glob to scan; repeat for multiple globs")
 		.option("--css-source <source>", "CSS module import matcher; repeat for multiple matchers")
-		.option("--preset-import <module>", "Module that exports the Pandwind preset")
+		.option("--preset-import <module>", "Module that exports the YumCSS preset")
 		.option("--preset-export <name>", "Preset export name")
 		.option("--namespace <name>", "Dynamic-value namespace; defaults to pw")
 		.option("--cascade <mode>", "Compatibility mode: specificity or layers")
@@ -125,10 +125,10 @@ const configureBuild = (command: Command): void => {
 };
 
 const createLibCliApp = (handlers: LibCliHandlers, cwd: string): CAC => {
-	const cli = cac("pandwind-codemod lib");
+	const cli = cac("yumcss-codemod lib");
 	const build = cli.command(
 		"build [root] [out-file]",
-		"Build a publishable Pandwind design-system artifact",
+		"Build a publishable YumCSS design-system artifact",
 	);
 	configureBuild(build);
 	build.action((...actionArgs: Array<unknown>) => {
@@ -146,10 +146,10 @@ export const parseLibCommand = (
 ): LibCommandInvocation => {
 	const effectiveArgv = argv.length === 0 ? [LibCommand.Build] : [...argv];
 	const cli = createLibCliApp({ build: async () => {} }, cwd);
-	cli.parse(["node", "pandwind-codemod lib", ...effectiveArgv], { run: false });
+	cli.parse(["node", "yumcss-codemod lib", ...effectiveArgv], { run: false });
 	if (cli.matchedCommand === undefined)
 		throw new Error(
-			`pandwind-codemod lib: unknown command '${effectiveArgv[0] ?? ""}'. Expected build`,
+			`yumcss-codemod lib: unknown command '${effectiveArgv[0] ?? ""}'. Expected build`,
 		);
 	cli.matchedCommand.checkUnknownOptions();
 	cli.matchedCommand.checkOptionValue();
@@ -182,25 +182,25 @@ const loadPreset = async (
 			);
 	if (module === undefined) {
 		throw new Error(
-			`pandwind-codemod lib build: could not load preset module ${command.presetImport} from ${command.root}`,
+			`yumcss-codemod lib build: could not load preset module ${command.presetImport} from ${command.root}`,
 		);
 	}
 	const preset = command.presetExport === "default" ? module.default : module[command.presetExport];
 	if (!isPreset(preset)) {
 		throw new Error(
-			`pandwind-codemod lib build: export ${command.presetExport} from ${command.presetImport} is not a Pandwind preset`,
+			`yumcss-codemod lib build: export ${command.presetExport} from ${command.presetImport} is not a YumCSS preset`,
 		);
 	}
 	return preset;
 };
 
-const artifactSource = (artifact: PandwindLibArtifact): string =>
+const artifactSource = (artifact: YumCSSLibArtifact): string =>
 	`${JSON.stringify(artifact, null, "\t")}\n`;
 
 const isGeneratedLibArtifact = (value: unknown): boolean =>
 	isRecord(value) &&
-	value.schema === PANDWIND_LIB_SCHEMA &&
-	value.generator === PANDWIND_LIB_GENERATOR;
+	value.schema === YUMCSS_LIB_SCHEMA &&
+	value.generator === YUMCSS_LIB_GENERATOR;
 
 const defaultHandlers = (dependencies: LibCliDependencies): LibCliHandlers => ({
 	async build(command) {
@@ -208,7 +208,7 @@ const defaultHandlers = (dependencies: LibCliDependencies): LibCliHandlers => ({
 			command,
 			dependencies.moduleLoader ?? NODE_PROJECT_MODULE_LOADER,
 		);
-		const result = buildPandwindLib({
+		const result = buildYumCSSLib({
 			root: command.root,
 			preset,
 			sourcePatterns: command.sourcePatterns,
@@ -219,12 +219,12 @@ const defaultHandlers = (dependencies: LibCliDependencies): LibCliHandlers => ({
 		const source = artifactSource(result.artifact);
 		if (command.check) {
 			if (!existsSync(command.outFile))
-				throw new Error(`generated Pandwind lib artifact is missing: ${command.outFile}`);
+				throw new Error(`generated YumCSS lib artifact is missing: ${command.outFile}`);
 			if (readFileSync(command.outFile, "utf8") !== source)
 				throw new Error(
-					`generated Pandwind lib artifact is stale: ${command.outFile}; run pandwind-codemod lib build to refresh it`,
+					`generated YumCSS lib artifact is stale: ${command.outFile}; run yumcss-codemod lib build to refresh it`,
 				);
-			console.log(`pandwind: lib artifact is up to date (${command.outFile})`);
+			console.log(`yumcss: lib artifact is up to date (${command.outFile})`);
 			return;
 		}
 		if (existsSync(command.outFile)) {
@@ -234,13 +234,13 @@ const defaultHandlers = (dependencies: LibCliDependencies): LibCliHandlers => ({
 			} catch {
 				throw new Error(`refusing to overwrite non-generated file ${command.outFile}`);
 			}
-			if (!isGeneratedLibArtifact(current) && !validatePandwindLibArtifact(current).valid)
+			if (!isGeneratedLibArtifact(current) && !validateYumCSSLibArtifact(current).valid)
 				throw new Error(`refusing to overwrite non-generated file ${command.outFile}`);
 		}
 		mkdirSync(dirname(command.outFile), { recursive: true });
 		writeFileSync(command.outFile, source);
 		console.log(
-			`pandwind: wrote lib artifact ${command.outFile} (${result.files.length} source file(s), ${result.artifact.rules.atomic.length + result.artifact.rules.vars.length} rule(s))`,
+			`yumcss: wrote lib artifact ${command.outFile} (${result.files.length} source file(s), ${result.artifact.rules.atomic.length + result.artifact.rules.vars.length} rule(s))`,
 		);
 	},
 });
@@ -258,10 +258,10 @@ class DefaultLibCli implements LibCli {
 		const cli = createLibCliApp(this.handlers, this.cwd);
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [LibCommand.Build] : [...argv];
-		cli.parse(["node", "pandwind-codemod lib", ...effectiveArgv], { run: false });
+		cli.parse(["node", "yumcss-codemod lib", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
-			throw new Error(`pandwind-codemod lib: unknown command '${argv[0] ?? ""}'. Expected build`);
+			throw new Error(`yumcss-codemod lib: unknown command '${argv[0] ?? ""}'. Expected build`);
 		}
 		await cli.runMatchedCommand();
 	}

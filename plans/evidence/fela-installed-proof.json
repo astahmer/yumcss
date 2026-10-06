@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"reference": {
 		"repository": "https://github.com/rofrischmann/fela",
 		"commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "fela",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -34,7 +34,7 @@
 			"targetBytes": 119,
 			"differences": []
 		},
-		"targetUsesPandwind": true
+		"targetUsesYumCSS": true
 	},
 	"checks": {
 		"sourceTypecheck": true,

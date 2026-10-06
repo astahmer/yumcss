@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createPandaAdapter,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createUnoCssAdapter,
 	createUnoCssResolverFromCss,
@@ -66,14 +66,14 @@ async function migrate(
 	projectFiles: Readonly<Record<string, string>>,
 	candidates: string[][],
 ) {
-	const target = createPandwindAdapter({ moduleLoader: null });
+	const target = createYumCSSAdapter({ moduleLoader: null });
 	const configFile = Object.keys(projectFiles).find((candidate) =>
 		/(?:^|[\\/])(?:uno|unocss)\.config\.(?:[cm]?js|[cm]?ts)$/u.test(candidate),
 	);
 	if (configFile === undefined) throw new Error("UnoCSS test project requires a config file");
 	return runAdapterMigrationAsync(source, {
 		from: CodemodAdapterId.UnoCSS,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file,
 		root,
 		readFile: (path) => projectFiles[path],
@@ -107,13 +107,13 @@ describe("UnoCSS official extraction context", () => {
 		const source = '<div className="[display:flex]" />';
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file,
 			mode: "safe",
 			readFile: () => undefined,
 			adapterRegistry: createStyleAdapterRegistry([
 				createUnoCssAdapter({ moduleLoader: null }),
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 		});
 
@@ -129,7 +129,7 @@ describe("UnoCSS official extraction context", () => {
 		);
 		expect(result.code).toContain(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			"// yumcss:migrate-skip (route: unocss -> yumcss | parse-residual: unknown-utility | available: named-map, residual)
 			<div className="[display:flex]" />"
 		`);
 	});
@@ -153,7 +153,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('borderWidth: "2px"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const classes = "badge-brand";
 			export const App = () => <div data-x={classes}  className={css.class({ borderWidth: "2px" })}/>;"
@@ -176,7 +176,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toContain('display: "flex"');
 		expect(result.validations.every(({ valid }) => valid)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			<div className={css.class({ "@media (min-width: 48rem)": { display: "flex" } })}/>"
 		`);
@@ -200,7 +200,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toContain('"@media (min-width: 48rem)"');
 		expect(result.code).toContain('backgroundColor: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { _hover: { color: "#fff" } } })}/>;"
 		`);
@@ -219,7 +219,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			<div className={css.class({ borderWidth: "2px" })}/>"
 		`);
@@ -251,7 +251,7 @@ describe("UnoCSS official extraction context", () => {
 		const uno = createUnoCssAdapter({ moduleLoader: loader });
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file,
 			root,
 			readFile: (path) =>
@@ -259,7 +259,7 @@ describe("UnoCSS official extraction context", () => {
 			listFiles: () => [`${root}/uno.config.ts`, cssFile],
 			adapterRegistry: createStyleAdapterRegistry([
 				uno,
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 		});
 
@@ -274,7 +274,7 @@ describe("UnoCSS official extraction context", () => {
 		);
 		expect(result.code).toContain(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			"// yumcss:migrate-skip (route: unocss -> yumcss | parse-residual: unknown-utility | available: named-map, residual)
 			export const App = () => <div className="brand bg-brand [display:flex]" />;"
 		`);
 	});
@@ -327,7 +327,7 @@ describe("UnoCSS official extraction context", () => {
 		);
 		expect(result.code).toContain(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
+			"// yumcss:migrate-skip (route: panda -> unocss | lowering-residual: configuration, validation)
 			import { css } from "styled-system/css"; export const card = css({ color: "red" });"
 		`);
 	});

@@ -42,7 +42,7 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -91,7 +91,7 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -120,7 +120,7 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -158,7 +158,7 @@ test("solid-styled -> react-native -> solid-styled: retains the documented secon
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +203,7 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,7 +241,7 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -295,7 +295,7 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -326,7 +326,7 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("solid-styled -> react-native -> solid-styled: resolves token values across
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

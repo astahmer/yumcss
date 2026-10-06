@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.adapter-reference-proof/1",
+  "schema": "yumcss.adapter-reference-proof/1",
   "execution": "adapter-program",
   "generatedAt": "deterministic",
   "excluded": {

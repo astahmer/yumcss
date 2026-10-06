@@ -1,5 +1,5 @@
 {
-	"name": "pandwind-analyze",
+	"name": "@yumcss/analyze",
 	"version": "0.1.0",
 	"keywords": [
 		"analysis",
@@ -11,13 +11,13 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/astahmer/pandwind.git",
+		"url": "git+https://github.com/astahmer/yumcss.git",
 		"directory": "packages/analyze"
 	},
 	"bin": {
-		"pandwind-analyze": "./dist/cli.js",
-		"pandwind-compiler-preview": "./dist/compiler-preview/cli.js",
-		"pandwind-migration-preview": "./dist/migration-preview/cli.js"
+		"yumcss-analyze": "./dist/cli.js",
+		"yumcss-compiler-preview": "./dist/compiler-preview/cli.js",
+		"yumcss-migration-preview": "./dist/migration-preview/cli.js"
 	},
 	"files": [
 		"dist",
@@ -27,49 +27,49 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"pandwind": "./src/cli.ts",
+			"yumcss": "./src/cli.ts",
 			"types": "./dist/cli.d.ts",
 			"import": "./dist/cli.js",
 			"default": "./dist/cli.js"
 		},
 		"./collect": {
-			"pandwind": "./src/collect/index.ts",
+			"yumcss": "./src/collect/index.ts",
 			"types": "./dist/collect/index.d.ts",
 			"import": "./dist/collect/index.js",
 			"default": "./dist/collect/index.js"
 		},
 		"./collect/browser": {
-			"pandwind": "./src/collect/browser.ts",
+			"yumcss": "./src/collect/browser.ts",
 			"types": "./dist/collect/browser.d.ts",
 			"import": "./dist/collect/browser.js",
 			"default": "./dist/collect/browser.js"
 		},
 		"./governance": {
-			"pandwind": "./src/governance/index.ts",
+			"yumcss": "./src/governance/index.ts",
 			"types": "./dist/governance/index.d.ts",
 			"import": "./dist/governance/index.js",
 			"default": "./dist/governance/index.js"
 		},
 		"./governance/browser": {
-			"pandwind": "./src/governance/browser.ts",
+			"yumcss": "./src/governance/browser.ts",
 			"types": "./dist/governance/browser.d.ts",
 			"import": "./dist/governance/browser.js",
 			"default": "./dist/governance/browser.js"
 		},
 		"./migration-preview": {
-			"pandwind": "./src/migration-preview/index.ts",
+			"yumcss": "./src/migration-preview/index.ts",
 			"types": "./dist/migration-preview/index.d.ts",
 			"import": "./dist/migration-preview/index.js",
 			"default": "./dist/migration-preview/index.js"
 		},
 		"./mcp": {
-			"pandwind": "./src/mcp/server.ts",
+			"yumcss": "./src/mcp/server.ts",
 			"types": "./dist/mcp/server.d.ts",
 			"import": "./dist/mcp/server.js",
 			"default": "./dist/mcp/server.js"
 		},
 		"./mcp/http": {
-			"pandwind": "./src/mcp/http.ts",
+			"yumcss": "./src/mcp/http.ts",
 			"types": "./dist/mcp/http.d.ts",
 			"import": "./dist/mcp/http.js",
 			"default": "./dist/mcp/http.js"
@@ -99,13 +99,13 @@
 		"@tailwindcss/node": "4.3.3",
 		"cac": "7.0.0",
 		"hono": "4.13.5",
-		"pandwind": "workspace:*",
-		"pandwind-codemod": "workspace:*",
+		"yumcss": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
 		"postcss": "8.5.28",
 		"zod": "4.5.4"
 	},
 	"devDependencies": {
-		"@pandwind/example-preset": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
 		"@pierre/diffs": "1.4.3",
 		"@types/node": "26.4.1",
 		"@vitest/coverage-v8": "5.0.0",

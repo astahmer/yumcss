@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
 import {
@@ -18,7 +18,7 @@ import {
 } from "./route-spec-support.ts";
 
 const catalog = createBuiltinCodemodCatalog();
-const pandwind = CodemodAdapterId.Pandwind;
+const yumcss = CodemodAdapterId.YumCSS;
 const globalStylesheetSources = new Set<string>([
 	CodemodAdapterId.AuthoredCss,
 	CodemodAdapterId.Sass,
@@ -149,7 +149,7 @@ const migrateToAsync = (
 
 describe("bidirectional registered adapter matrix", () => {
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"lowers %s to Pandwind with a valid semantic result",
+		"lowers %s to YumCSS with a valid semantic result",
 		async (adapterId) => {
 			const fixture = fixtureFor(adapterId);
 			const result =
@@ -157,12 +157,12 @@ describe("bidirectional registered adapter matrix", () => {
 					? await migrateToAsync(
 							fixture.source,
 							adapterId,
-							pandwind,
+							yumcss,
 							fixture.file,
 							sourceSemantic(adapterId),
 						)
-					: migrateTo(fixture.source, adapterId, pandwind, fixture.file, sourceSemantic(adapterId));
-			if (adapterId === pandwind) {
+					: migrateTo(fixture.source, adapterId, yumcss, fixture.file, sourceSemantic(adapterId));
+			if (adapterId === yumcss) {
 				expect(result.code).toBe(fixture.source);
 				expect(result.changed).toBe(false);
 				expect(result.skipped).toBe(0);
@@ -174,7 +174,7 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.residuals).toEqual(
 					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 				);
-				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain("yumcss:migrate-skip");
 				expect(result.code.endsWith(fixture.source)).toBe(true);
 				return;
 			}
@@ -194,7 +194,7 @@ describe("bidirectional registered adapter matrix", () => {
 			}
 			expect(
 				result.residuals,
-				`${adapterId} -> ${pandwind}: ${JSON.stringify(result.residuals)}`,
+				`${adapterId} -> ${yumcss}: ${JSON.stringify(result.residuals)}`,
 			).toEqual([]);
 			expect(result.converted, `${adapterId} was not converted`).toBeGreaterThan(0);
 			expect(result.skipped, `${adapterId} was skipped`).toBe(0);
@@ -203,7 +203,7 @@ describe("bidirectional registered adapter matrix", () => {
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"emits a valid Pandwind source to %s",
+		"emits a valid YumCSS source to %s",
 		(targetId) => {
 			const targetFile =
 				targetId === CodemodAdapterId.Treat
@@ -212,13 +212,13 @@ describe("bidirectional registered adapter matrix", () => {
 						? "Card.css.ts"
 						: "Card.tsx";
 			const result = migrateTo(
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 					'const card = css.class({ color: "red", padding: "1rem" });',
-				pandwind,
+				yumcss,
 				targetId,
 				targetFile,
 			);
-			if (targetId === pandwind) {
+			if (targetId === yumcss) {
 				expect(result.changed).toBe(false);
 				expect(result.skipped).toBe(0);
 				return;
@@ -234,7 +234,7 @@ describe("bidirectional registered adapter matrix", () => {
 						}),
 					]),
 				);
-				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain("yumcss:migrate-skip");
 				expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
 				return;
 			}
@@ -242,7 +242,7 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.converted + result.skipped).toBeGreaterThan(0);
 				expect(result.skipped).toBeGreaterThan(0);
 				expect(result.residuals.length).toBeGreaterThan(0);
-				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain("yumcss:migrate-skip");
 				return;
 			}
 			if (targetId === CodemodAdapterId.UnoCSS) {
@@ -266,14 +266,14 @@ describe("bidirectional registered adapter matrix", () => {
 				expect(result.generatedFiles).toHaveLength(1);
 				expect(result.generatedFiles[0]?.content).toContain("color: red");
 				expect(result.generatedFiles[0]?.content).toContain("padding: 1rem");
-				expect(result.code).not.toContain("pandwind:migrate-skip");
+				expect(result.code).not.toContain("yumcss:migrate-skip");
 				expect(result.code).not.toContain("css.class");
 				expect(result.validations.every((validation) => validation.valid)).toBe(true);
 				return;
 			}
 			expect(
 				result.residuals,
-				`${pandwind} -> ${targetId}: ${JSON.stringify(result.residuals)}`,
+				`${yumcss} -> ${targetId}: ${JSON.stringify(result.residuals)}`,
 			).toEqual([]);
 			expect(result.converted, `${targetId} was not converted`).toBeGreaterThan(0);
 			expect(result.skipped, `${targetId} was skipped`).toBe(0);
@@ -285,13 +285,13 @@ describe("bidirectional registered adapter matrix", () => {
 		"does not silently drop a dynamic value when targeting %s",
 		(targetId) => {
 			const result = migrateTo(
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 					"const card = css.class({ color: theme.foreground });",
-				pandwind,
+				yumcss,
 				targetId,
 				"DynamicCard.tsx",
 			);
-			if (targetId === pandwind) {
+			if (targetId === yumcss) {
 				expect(result.code).toContain("theme.foreground");
 				expect(result.changed).toBe(false);
 				expect(result.residuals).toEqual([]);
@@ -374,7 +374,7 @@ describe("bidirectional registered adapter matrix", () => {
 						result.residuals.length,
 						`${sourceAdapter.id} -> ${targetAdapter.id} skipped without residuals`,
 					).toBeGreaterThan(0);
-				if (result.code.includes("pandwind:migrate-skip")) {
+				if (result.code.includes("yumcss:migrate-skip")) {
 					expect(result.code).toMatch(
 						/(capability-blocked|parse-residual|lowering-residual|host-rewrite-required|configuration-residual)/,
 					);
@@ -432,13 +432,13 @@ describe("composed cross-ecosystem routes", () => {
 					residual.hint?.includes("named-rules: named style rule: button"),
 				),
 			).toBe(true);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 			expect(result.code).toContain(
 				'const styles = StyleSheet.create({ button: { color: "red" } });',
 			);
 			expect(result.code).toMatchInlineSnapshot(`
 				"import { StyleSheet } from "aphrodite";
-				// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: button | available: static, residual)
+				// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: button | available: static, residual)
 				const styles = StyleSheet.create({ button: { color: "red" } });"
 			`);
 			return;
@@ -447,7 +447,7 @@ describe("composed cross-ecosystem routes", () => {
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			expect(result.skipped).toBeGreaterThan(0);
 			expect(result.residuals.length).toBeGreaterThan(0);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 			return;
 		}
 		expect(result.residuals, `${CodemodAdapterId.Aphrodite} -> ${targetId}`).toEqual([]);
@@ -463,7 +463,7 @@ describe("composed cross-ecosystem routes", () => {
 		)
 		.map((adapter) => adapter.id);
 	const inlineClassTargets: ReadonlySet<string> = new Set([
-		CodemodAdapterId.Pandwind,
+		CodemodAdapterId.YumCSS,
 		CodemodAdapterId.Emotion,
 	]);
 	const sidecarClassTargets: ReadonlyMap<string, string> = new Map([
@@ -513,10 +513,10 @@ describe("composed cross-ecosystem routes", () => {
 				return;
 			}
 			expect(result.code).toContain("export const App = () => <Card />;");
-			expect(result.code).toContain("__pandwindCardForwardRef");
+			expect(result.code).toContain("__yumcssCardForwardRef");
 			const sidecarImport = sidecarClassTargets.get(targetId);
 			if (sidecarImport !== undefined) {
-				expect(result.code).toContain("__pandwindCardCreateElement");
+				expect(result.code).toContain("__yumcssCardCreateElement");
 				expect(result.code).toContain("as?: As");
 				expect(result.code).toContain(JSON.stringify(sidecarImport));
 				expect(result.generatedFiles).toHaveLength(
@@ -567,7 +567,7 @@ describe("composed cross-ecosystem routes", () => {
 			      "Card.module.css",
 			      "Card.module.css.map",
 			    ],
-			    "import": "import __pandwindCardStyles from "./Card.module.css";",
+			    "import": "import __yumcssCardStyles from "./Card.module.css";",
 			    "target": "css-modules",
 			  },
 			  {
@@ -588,14 +588,14 @@ describe("composed cross-ecosystem routes", () => {
 			    "files": [
 			      "Card.styles.treat.ts",
 			    ],
-			    "import": "import { __pandwindCardStyles } from "./Card.styles.treat";",
+			    "import": "import { __yumcssCardStyles } from "./Card.styles.treat";",
 			    "target": "treat",
 			  },
 			  {
 			    "files": [
 			      "Card.styles.css.ts",
 			    ],
-			    "import": "import { __pandwindCardStyles } from "./Card.styles.css.ts";",
+			    "import": "import { __yumcssCardStyles } from "./Card.styles.css.ts";",
 			    "target": "vanilla-extract",
 			  },
 			]
@@ -622,7 +622,7 @@ describe("composed cross-ecosystem routes", () => {
 				content: expect.stringContaining('style({ color: "red" })'),
 			}),
 		]);
-		expect(result.code).toContain("__pandwindCardCreateElement");
+		expect(result.code).toContain("__yumcssCardCreateElement");
 		expect(result.code).toContain("<Card />");
 	});
 
@@ -646,9 +646,9 @@ describe("composed cross-ecosystem routes", () => {
 			residuals: result.residuals,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-			import type { JSX as __pandwindCardJSX } from "solid-js";
-			const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
+			  "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+			import type { JSX as __yumcssCardJSX } from "solid-js";
+			const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
 			export const App = () => <Card />;",
 			  "converted": 1,
 			  "residuals": [],
@@ -704,12 +704,12 @@ describe("composed cross-ecosystem routes", () => {
 		tokens: examplePreset.tokens,
 	});
 
-	test("Chakra UI -> Pandwind -> Tailwind completes without residuals", async () => {
+	test("Chakra UI -> YumCSS -> Tailwind completes without residuals", async () => {
 		const chakra = await migrateToAsync(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const Card = () => <Box color="red" padding="1rem" />;',
 			CodemodAdapterId.ChakraUi,
-			pandwind,
+			yumcss,
 			"Card.tsx",
 			sourceSemantic(CodemodAdapterId.ChakraUi),
 		);
@@ -726,8 +726,8 @@ describe("composed cross-ecosystem routes", () => {
 		expect(tailwind.code).toContain("[color:red]");
 	});
 
-	test("Tailwind dialect -> Pandwind -> Chakra UI completes without residuals", () => {
-		const pandwindSource = runSwap(
+	test("Tailwind dialect -> YumCSS -> Chakra UI completes without residuals", () => {
+		const yumcssSource = runSwap(
 			'import { css } from "./design.ts";\n' +
 				'const card = tw({ bgColor: "blue-500", textSize: "lg" });',
 			meta,
@@ -738,8 +738,8 @@ describe("composed cross-ecosystem routes", () => {
 				metaDir: "examples/example/src",
 			},
 		);
-		const chakra = migrateTo(pandwindSource.code, pandwind, CodemodAdapterId.ChakraUi, "Card.tsx");
-		expect(pandwindSource.converted).toBe(1);
+		const chakra = migrateTo(yumcssSource.code, yumcss, CodemodAdapterId.ChakraUi, "Card.tsx");
+		expect(yumcssSource.converted).toBe(1);
 		expect(chakra.residuals).toEqual([]);
 		expect(chakra.converted).toBe(1);
 		expect(chakra.validations.every((validation) => validation.valid)).toBe(true);

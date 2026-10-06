@@ -38,10 +38,10 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("tokenami -> mui: migrates concrete tokenami syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("tokenami -> mui: carries a documented secondary tokenami API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -149,7 +149,7 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tokenami -> mui: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("tokenami -> mui: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -275,7 +275,7 @@ test("tokenami -> mui: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,

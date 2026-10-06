@@ -42,7 +42,7 @@ test("unocss -> style9 -> unocss: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> style9 round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> style9 -> unocss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import style9 from "style9";
 		export const App = () => <div className={style9(style9.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("unocss -> style9 -> unocss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import style9 from "style9";
 		export const App = () => <div className={style9(style9.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 0,

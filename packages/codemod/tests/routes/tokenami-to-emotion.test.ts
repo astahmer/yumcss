@@ -38,10 +38,10 @@ test("tokenami -> emotion: migrates concrete tokenami syntax to emotion", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> emotion happy");
 	expectExplicitResidualEvidence(result);
@@ -92,7 +92,7 @@ test("tokenami -> emotion: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> emotion | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> emotion | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],

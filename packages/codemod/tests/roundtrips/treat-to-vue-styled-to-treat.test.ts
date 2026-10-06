@@ -42,7 +42,7 @@ test("treat -> vue-styled -> treat: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "treat -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("treat -> vue-styled -> treat: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -176,7 +176,7 @@ test("treat -> vue-styled -> treat: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -280,7 +280,7 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -355,7 +355,7 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -445,7 +445,7 @@ test("treat -> vue-styled -> treat: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> treat | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

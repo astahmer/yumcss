@@ -25,7 +25,7 @@ function isUnavailableModule(error: unknown): boolean {
 }
 
 async function importBundledProjectFile<T>(file: string): Promise<T | undefined> {
-	const temporaryDirectory = mkdtempSync(join(dirname(file), ".pandwind-codemod-"));
+	const temporaryDirectory = mkdtempSync(join(dirname(file), ".yumcss-codemod-"));
 	try {
 		const outputFile = join(temporaryDirectory, "module.mjs");
 		await build({
@@ -106,7 +106,7 @@ function resolvePackage(
 	return undefined;
 }
 
-/** Node implementation that resolves packages from the migrated project, not Pandwind itself. */
+/** Node implementation that resolves packages from the migrated project, not YumCSS itself. */
 export class NodeProjectModuleLoader implements ProjectModuleLoader {
 	async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
 		try {

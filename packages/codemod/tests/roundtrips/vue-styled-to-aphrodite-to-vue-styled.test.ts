@@ -42,7 +42,7 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("vue-styled -> aphrodite -> vue-styled: retains the documented secondary AP
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -287,7 +287,7 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -364,7 +364,7 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -456,7 +456,7 @@ test("vue-styled -> aphrodite -> vue-styled: resolves token values across both c
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],

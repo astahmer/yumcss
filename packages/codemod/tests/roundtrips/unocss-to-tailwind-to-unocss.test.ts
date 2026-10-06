@@ -42,7 +42,7 @@ test("unocss -> tailwind -> unocss: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("unocss -> tailwind -> unocss: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("unocss -> tailwind -> unocss: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const App = () => <div className={"hover:[background-color:black] [@media_(min-width:_48rem)]:[display:flex]"}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -42,7 +42,7 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("unocss -> tamagui -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { display: "flex", alignItems: "center", gap: "1rem" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -161,7 +161,7 @@ test("unocss -> tamagui -> unocss: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",

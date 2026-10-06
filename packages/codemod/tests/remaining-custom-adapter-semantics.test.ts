@@ -10,7 +10,7 @@ const catalog = createBuiltinCodemodCatalog();
 function migrate(source: string, from: CodemodAdapterId, file = "src/Card.tsx") {
 	return runAdapterMigration(source, {
 		from,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file,
 		mode: "safe",
 		readFile: () => undefined,
@@ -34,7 +34,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).not.toContain("$colors$brand");
 		expect(result.code).toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "#123456", padding: "0.5rem" });"
 		`);
@@ -61,7 +61,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createStitches } from "@stitches/react";
 			const { css } = createStitches({ theme: { colors: { brand: "#123456" } } });
-			// pandwind:migrate-skip (route: stitches -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: stitches -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const card = css({ color: "$colors$missing" });"
 		`);
 	});
@@ -81,7 +81,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			{
 			  "input": "import { css } from "@tokenami/css";
 			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_4)" });",
-			  "output": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "output": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "var(--color_brand)", padding: "var(--spacing_4)" });",
 			  "residuals": [],
@@ -105,9 +105,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain('color: "var(--brand)"');
 		expect(result.code).not.toContain("var(brand)");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--brand", value: "#123456" }] }]), { "brand": "var(--brand)" });
@@ -130,7 +130,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain('const accent = "--pw-accent"');
 		expect(result.code).toContain('color: "var(--pw-accent)"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const accent = "--pw-accent";
 			export const card = css.class({ color: "var(--pw-accent)", "--pw-accent": "#123456" });"
@@ -153,17 +153,17 @@ describe("remaining adapter-owned custom semantics", () => {
 			expect.objectContaining({ kind: "configuration", text: "createThemeContract(" }),
 			expect.objectContaining({ kind: "configuration", text: "createTheme(" }),
 		]);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("createThemeContract");
 		expect(result.code).toContain("createTheme(contract");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createTheme, createThemeContract } from "@vanilla-extract/css";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: vanilla-extract -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const contract = createThemeContract({ colors: { brand: null } });
-			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: vanilla-extract -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const theme = createTheme(contract, { colors: { brand: "#123456" } });
 			export const card = runtimeCss.class({ color: contract.colors.brand });"
 		`);
@@ -188,12 +188,12 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("<ThemeProvider");
 		expect(result.code).toContain("theme.colors.brand");
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			"// yumcss:migrate-skip (route: emotion -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "@emotion/react";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.vars({ color: theme.colors.brand });
-			// pandwind:migrate-skip (route: emotion -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: emotion -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			export const App = () => <ThemeProvider theme={theme}><div /></ThemeProvider>;"
 		`);
 	});
@@ -211,8 +211,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("(theme) => theme.colors.brand");
 		expect(result.code).toContain("runtimeCss.group");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			"import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const useStyles = { "card": runtimeCss.group({ color: (theme) => theme.colors.brand }) };"
 		`);
@@ -234,7 +234,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createTheme } from "@mui/material";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const theme = createTheme({ palette: { primary: { main: "#123456" } } });
 			export const App = () => <div {...css.props(css.vars({ color: theme.palette.primary.main }))} />;"
@@ -257,7 +257,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createTheme } from "@mantine/core";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const theme = createTheme({ colors: { brand: ["#123456"] } });
 			export const App = () => <div {...css.props(css.vars({ backgroundColor: theme.colors.brand[0] }))} />;"
@@ -277,10 +277,10 @@ describe("remaining adapter-owned custom semantics", () => {
 		]);
 		expect(result.code).toContain("createTheme");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			"import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			// pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: treat -> yumcss | parse-residual: configuration | available: named-map, residual)
 			import { createTheme } from "treat"; export const theme = createTheme({ color: "#123456" }); export const card = runtimeCss.class({ color: theme.color });"
 		`);
 	});
@@ -298,9 +298,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		]);
 		expect(result.code).toContain("createRenderer");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			// pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: fela -> yumcss | parse-residual: configuration | available: named-map, residual)
 			import { createRenderer } from "fela"; const renderer = createRenderer({ plugins: [myPlugin] }); export const card = css.class({ color: "red" });"
 		`);
 	});
@@ -318,21 +318,21 @@ describe("remaining adapter-owned custom semantics", () => {
 		]);
 		expect(result.code).toContain("setup(React.createElement)");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			// pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: goober -> yumcss | parse-residual: configuration | available: named-map, residual)
 			import { setup } from "goober"; setup(React.createElement); export const card = css.vars({ color: theme.colors.brand });"
 		`);
 	});
 
-	test("emits Panda cva for a Pandwind recipe carrier", () => {
+	test("emits Panda cva for a YumCSS recipe carrier", () => {
 		const result = runAdapterMigration(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
-				'import { createRecipe } from "pandwind/recipe";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
+				'import { createRecipe } from "yumcss/recipe";\n' +
 				"const css = createUnsafeCss();\n" +
 				'export const button = createRecipe(css, { base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
 			{
-				from: CodemodAdapterId.Pandwind,
+				from: CodemodAdapterId.YumCSS,
 				to: CodemodAdapterId.Panda,
 				file: "src/button.ts",
 				mode: "safe",
@@ -355,14 +355,14 @@ describe("remaining adapter-owned custom semantics", () => {
 		`);
 	});
 
-	test("emits Panda sva for a Pandwind slot-recipe carrier", () => {
+	test("emits Panda sva for a YumCSS slot-recipe carrier", () => {
 		const result = runAdapterMigration(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
-				'import { createSlotRecipe } from "pandwind/recipe";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
+				'import { createSlotRecipe } from "yumcss/recipe";\n' +
 				"const css = createUnsafeCss();\n" +
 				'export const card = createSlotRecipe(css, { slots: { root: { color: "red" }, label: {} }, slotVariants: { size: { sm: { root: { padding: "2" } } } } });',
 			{
-				from: CodemodAdapterId.Pandwind,
+				from: CodemodAdapterId.YumCSS,
 				to: CodemodAdapterId.Panda,
 				file: "src/card.ts",
 				mode: "safe",

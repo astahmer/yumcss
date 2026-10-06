@@ -1,11 +1,12 @@
 /**
  * Prove the pinned Tokenami button API through an installed project boundary.
  * The source uses Tokenami's published css.compose runtime and generated sheet;
- * the target is the normal Pandwind atomic carrier.
+ * the target is the normal YumCSS atomic carrier.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -26,8 +27,8 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const tokenamiReferenceRoot = createReferenceWorkspace().path("tokenami");
 const referenceCommit = "29cf3b97ef14b22421734113f37b7b29e73f35e0";
 const referencePath = "examples/nextjs/src/components/button.tsx";
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@radix-ui/colors": "3.0.0",
 	"@tokenami/config": "0.0.101",
@@ -38,7 +39,7 @@ const versions = {
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	tokenami: "0.0.101",
@@ -82,11 +83,11 @@ export default defineConfig({ plugins: [react()] });
 `;
 
 const targetViteConfig = `import react from "@vitejs/plugin-react-swc";
-import { pandwindCssVite } from "pandwind/vite";
-import { defaultPreset } from "pandwind/preset/default";
+import { yumcssExtractVite } from "yumcss/vite";
+import { defaultPreset } from "yumcss/preset/default";
 import { defineConfig } from "vite";
 
-export default defineConfig({ plugins: [pandwindCssVite(defaultPreset, { root: "." }), react()] });
+export default defineConfig({ plugins: [yumcssExtractVite(defaultPreset, { root: "." }), react()] });
 `;
 
 const tokenamiConfig = `import designSystemConfig from "@tokenami/ds";
@@ -126,7 +127,7 @@ interface TokenamiInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Tokenami;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly referenceCommit: string;
 	readonly referencePath: string;
@@ -186,7 +187,7 @@ const assertPinnedReference = (): void => {
 };
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-tokenami-target" : "tokenami-installed-source",
+	name: target ? "yumcss-tokenami-target" : "tokenami-installed-source",
 	private: true,
 	type: "module",
 	scripts: {
@@ -203,7 +204,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 				"@tokenami/config": versions["@tokenami/config"],
 				"@tokenami/css": versions["@tokenami/css"],
 				"@tokenami/ds": versions["@tokenami/ds"],
-				pandwind: versions.pandwind,
+				yumcss: versions.yumcss,
 				react: versions.react,
 				"react-dom": versions["react-dom"],
 			}
@@ -279,7 +280,7 @@ const proofIsComplete = (report: TokenamiInstalledProof): boolean =>
 export async function runTokenamiInstalledProof(): Promise<TokenamiInstalledProof> {
 	assertPinnedReference();
 	return withInstalledProofProject(
-		"pandwind-tokenami-installed-",
+		"yumcss-tokenami-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			writeFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -298,13 +299,13 @@ export async function runTokenamiInstalledProof(): Promise<TokenamiInstalledProo
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						CodemodAdapterId.Tokenami,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -343,7 +344,7 @@ export async function runTokenamiInstalledProof(): Promise<TokenamiInstalledProo
 				markup.replace(/\s+class="[^"]*"/gu, "").replace(/\s+style="[^"]*"/gu, "");
 			const report: TokenamiInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Tokenami, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Tokenami, to: CodemodAdapterId.YumCSS },
 				referenceCommit,
 				referencePath,
 				fixture: {
@@ -352,8 +353,8 @@ export async function runTokenamiInstalledProof(): Promise<TokenamiInstalledProo
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@tokenami/css"),
-					targetPackage: versions.pandwind,
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
@@ -377,7 +378,7 @@ export async function runTokenamiInstalledProof(): Promise<TokenamiInstalledProo
 				css: {
 					sourceBytes: Buffer.byteLength(sourceCss),
 					targetBytes: Buffer.byteLength(generatedCss(targetRoot)),
-					note: "Tokenami source bytes are generated by the official Tokenami CLI from the pinned css.compose API; the target uses Pandwind atomic CSS. The values are diagnostic output-size measurements, not a universal stylesheet budget.",
+					note: "Tokenami source bytes are generated by the official Tokenami CLI from the pinned css.compose API; the target uses YumCSS atomic CSS. The values are diagnostic output-size measurements, not a universal stylesheet budget.",
 				},
 			};
 			if (!proofIsComplete(report))

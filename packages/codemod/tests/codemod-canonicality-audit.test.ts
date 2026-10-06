@@ -20,7 +20,7 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
 		expectedOutput:
 			'import { css } from "styled-system/css";\n' +
-			"// pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
+			"// yumcss:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
 			'export const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
 	};
 	const result = pandaToLinaria.run({ source: fixture.input, file: "styles.ts" });
@@ -28,7 +28,7 @@ test("A1 preserves unresolved Panda token references with a configuration residu
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> linaria | parse-residual: configuration | available: named-map, residual)
 		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
 		  "input": "import { css } from "styled-system/css";
 		export const card = css({ color: "red.300", _hover: { color: "blue.300" } });",
@@ -56,7 +56,7 @@ test("A2 preserves unresolved Mantine theme values with a configuration residual
 			'export const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"// pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
+			"// yumcss:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)\n" +
 			'export const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
 	};
 	const result = mantineToLinaria.run({
@@ -68,7 +68,7 @@ test("A2 preserves unresolved Mantine theme values with a configuration residual
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> linaria | parse-residual: configuration | available: named-map, residual)
 		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="blue.6" mx="auto" maw={400} />;",
@@ -130,13 +130,13 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 		expectedOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)\n" +
+			"// yumcss:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)\n" +
 			'export const App = () => <Box c="brand.0" mx="auto" maw={400} />;',
 	};
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "expectedOutput": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
@@ -163,7 +163,7 @@ test("A2 preserves Mantine source props when target validation rejects emitted C
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: mantine -> unocss | lowering-residual: configuration, validation)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -224,11 +224,11 @@ export const App = () => <Box c="#123456" />;`,
 			'export const App = () => <Box className={css({ color: "#123456" })}/>;',
 		chakraOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
+			"// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
 			'export const App = () => <Box c="#123456" />;',
 		muiOutput:
 			'import { Box } from "@mantine/core";\n' +
-			"// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
+			"// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)\n" +
 			'export const App = () => <Box c="#123456" />;',
 	};
 	const options = {
@@ -243,7 +243,7 @@ export const App = () => <Box c="#123456" />;`,
 	expect(fixture).toMatchInlineSnapshot(`
 		{
 		  "chakraOutput": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="#123456" />;",
 		  "emotionOutput": "import { Box } from "@mantine/core";
 		import { css } from "@emotion/css";
@@ -251,7 +251,7 @@ export const App = () => <Box c="#123456" />;`,
 		  "input": "import { Box } from "@mantine/core";
 		export const App = () => <Box c="#123456" />;",
 		  "muiOutput": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="#123456" />;",
 		}
 	`);

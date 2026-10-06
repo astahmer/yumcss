@@ -38,10 +38,10 @@ test("react-strict-dom -> bamboo: migrates concrete react-strict-dom syntax to b
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-strict-dom -> bamboo happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("react-strict-dom -> bamboo: carries a documented secondary react-strict-do
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> bamboo | capability-blocked: keyframes: keyframes rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> bamboo | capability-blocked: keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -1,12 +1,13 @@
 /**
- * Prove a bounded UnoCSS -> Pandwind project migration with the real CLI and
+ * Prove a bounded UnoCSS -> YumCSS project migration with the real CLI and
  * installed UnoCSS generator output. The fixture covers a custom color token,
  * spacing utilities, a pseudo-condition, generated project support, and the
  * source/target build boundary.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -23,15 +24,15 @@ import {
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@types/node": "26.4.1",
 	"@types/react": "19.2.18",
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "7.0.2",
@@ -89,7 +90,7 @@ interface UnoCssInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.UnoCSS;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
@@ -102,7 +103,7 @@ interface UnoCssInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
@@ -133,7 +134,7 @@ function proofIsComplete(report: UnoCssInstalledProof): boolean {
 		report.migration.residuals === 0 &&
 		report.migration.canonical.checked &&
 		report.migration.canonical.equal &&
-		report.migration.targetUsesPandwind &&
+		report.migration.targetUsesYumCSS &&
 		report.migration.customTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
 		report.migration.generatedVitePresetImportIsExplicit &&
@@ -146,7 +147,7 @@ function proofIsComplete(report: UnoCssInstalledProof): boolean {
 	);
 }
 
-function packageJson(includePandwind: boolean): Record<string, unknown> {
+function packageJson(includeYumCSS: boolean): Record<string, unknown> {
 	return {
 		private: true,
 		type: "module",
@@ -157,7 +158,7 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 		},
 		dependencies: {
 			unocss: versions.unocss,
-			...(includePandwind ? { pandwind: versions.pandwind } : {}),
+			...(includeYumCSS ? { yumcss: versions.yumcss } : {}),
 			react: versions.react,
 			"react-dom": versions["react-dom"],
 		},
@@ -166,16 +167,16 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 			"@types/react": versions["@types/react"],
 			"@types/react-dom": versions["@types/react-dom"],
 			"@vitejs/plugin-react-swc": versions["@vitejs/plugin-react-swc"],
-			...(includePandwind ? { "oxc-parser": versions["oxc-parser"] } : {}),
+			...(includeYumCSS ? { "oxc-parser": versions["oxc-parser"] } : {}),
 			typescript: versions.typescript,
 			vite: versions.vite,
 		},
 	};
 }
 
-function createFixture(root: string, includePandwind: boolean): void {
+function createFixture(root: string, includeYumCSS: boolean): void {
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(includePandwind));
+	writeJson(join(root, "package.json"), packageJson(includeYumCSS));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
 	writeFileSync(join(root, "uno.config.ts"), unoConfig);
 	writeFileSync(join(root, "vite.config.ts"), sourceViteConfig);
@@ -199,7 +200,7 @@ function createFixture(root: string, includePandwind: boolean): void {
 
 async function main(): Promise<void> {
 	await withInstalledProofProject(
-		"pandwind-unocss-installed-",
+		"yumcss-unocss-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -212,13 +213,13 @@ async function main(): Promise<void> {
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						"packages/codemod/src/cli.ts",
 						"migrate",
 						"--from",
 						CodemodAdapterId.UnoCSS,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -234,7 +235,7 @@ async function main(): Promise<void> {
 			const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
 			const targetMain = readFileSync(join(targetRoot, "src/main.tsx"), "utf8");
 			const viteConfig = readFileSync(join(targetRoot, "vite.config.ts"), "utf8");
-			const preset = readFileSync(join(targetRoot, "pandwind/preset.ts"), "utf8");
+			const preset = readFileSync(join(targetRoot, "yumcss/preset.ts"), "utf8");
 			const sourceCss = generatedCss(sourceRoot);
 			const sourceSsr = await renderInstalledServer(sourceRoot);
 			writeIndex(sourceRoot, sourceSsr.markup, sourceCss);
@@ -255,22 +256,22 @@ async function main(): Promise<void> {
 			const targetCss = generatedCss(targetRoot);
 			const report: UnoCssInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.UnoCSS, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.UnoCSS, to: CodemodAdapterId.YumCSS },
 				fixture: { files: ["uno.config.ts", "src/App.tsx", "vite.config.ts"], isolated: true },
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "unocss"),
-					targetPackage: `file:${pandwindPackageRoot}`,
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: normalizeInstalledTargetPackage(`file:${yumcssPackageRoot}`, repositoryRoot),
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 					customTokenPreserved:
 						preset.includes("123456") &&
 						(migratedApp.includes('"$brand"') || migratedApp.includes('"brand"')),
 					sourceStylesheetImportRemoved: !targetMain.includes("virtual:uno.css"),
-					generatedVitePresetImportIsExplicit: viteConfig.includes("./pandwind/preset.ts"),
-					generatedVitePluginPresent: viteConfig.includes("pandwindCssVite"),
+					generatedVitePresetImportIsExplicit: viteConfig.includes("./yumcss/preset.ts"),
+					generatedVitePluginPresent: viteConfig.includes("yumcssExtractVite"),
 				},
 				checks: {
 					sourceTypecheck: true,

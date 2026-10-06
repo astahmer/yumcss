@@ -42,7 +42,7 @@ test("tamagui -> aphrodite -> tamagui: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -92,7 +92,7 @@ test("tamagui -> aphrodite -> tamagui: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = css(StyleSheet.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
@@ -143,7 +143,7 @@ test("tamagui -> aphrodite -> tamagui: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> aphrodite | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> aphrodite | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tamagui -> aphrodite -> tamagui: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> aphrodite | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> aphrodite | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -268,7 +268,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
@@ -345,7 +345,7 @@ test("tamagui -> aphrodite -> tamagui: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
@@ -437,7 +437,7 @@ test("tamagui -> aphrodite -> tamagui: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,

@@ -58,7 +58,7 @@ describe("Tamagui adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tamagui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.tsx",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -71,12 +71,12 @@ describe("Tamagui adapter", () => {
 		expect(result.code).toContain('import { View } from "@tamagui/core";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { View } from "@tamagui/core";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: (View), style: css.class({ color: "red", padding: 16 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: (View), style: css.class({ color: "red", padding: 16 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 		`);
 	});
 
@@ -88,7 +88,7 @@ describe("Tamagui adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tamagui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "components.tsx",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -96,10 +96,10 @@ describe("Tamagui adapter", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code.match(/const __pandwindSlot\s*=/gu)).toHaveLength(1);
-		expect(result.code.match(/__pandwindSlot\(/gu)).toHaveLength(2);
-		expect(result.code).toContain("export const Card = __pandwindSlot(");
-		expect(result.code).toContain("export const Panel = __pandwindSlot(");
+		expect(result.code.match(/const __yumcssSlot\s*=/gu)).toHaveLength(1);
+		expect(result.code.match(/__yumcssSlot\(/gu)).toHaveLength(2);
+		expect(result.code).toContain("export const Card = __yumcssSlot(");
+		expect(result.code).toContain("export const Panel = __yumcssSlot(");
 		expect(result.code).not.toContain("export const Card = (() =>");
 	});
 
@@ -107,7 +107,7 @@ describe("Tamagui adapter", () => {
 		const migrate = (file: string, source: string) =>
 			runAdapterMigration(source, {
 				from: CodemodAdapterId.Tamagui,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file,
 				root: "/project",
 				mode: "safe",
@@ -122,24 +122,24 @@ describe("Tamagui adapter", () => {
 			'import { View, styled } from "@tamagui/core";\nexport const Panel = styled(View, { padding: 16 });',
 		);
 
-		expect(card.code).toContain('import { __pandwindSlot } from "../__pandwind/slot";');
-		expect(panel.code).toContain('import { __pandwindSlot } from "../../__pandwind/slot";');
-		expect(card.code).not.toContain("const __pandwindSlot =");
-		expect(panel.code).not.toContain("const __pandwindSlot =");
+		expect(card.code).toContain('import { __yumcssSlot } from "../__yumcss/slot";');
+		expect(panel.code).toContain('import { __yumcssSlot } from "../../__yumcss/slot";');
+		expect(card.code).not.toContain("const __yumcssSlot =");
+		expect(panel.code).not.toContain("const __yumcssSlot =");
 		expect(card.code).toContain(
-			'__pandwindSlot({ defaultComponent: (View), style: css.class({ color: "red" }),',
+			'__yumcssSlot({ defaultComponent: (View), style: css.class({ color: "red" }),',
 		);
 		expect(panel.code).toContain(
-			"__pandwindSlot({ defaultComponent: (View), style: css.class({ padding: 16 }),",
+			"__yumcssSlot({ defaultComponent: (View), style: css.class({ padding: 16 }),",
 		);
 		expect(card.generatedFiles).toEqual(panel.generatedFiles);
 		expect(card.generatedFiles).toHaveLength(1);
 		expect(card.generatedFiles[0]).toMatchObject({
-			path: "__pandwind/slot.tsx",
+			path: "__yumcss/slot.tsx",
 			purpose: "shared static component slot helper",
 		});
 		expect(card.generatedFiles[0]?.content).toContain(
-			"export const __pandwindSlot = <DefaultComponent extends ElementType",
+			"export const __yumcssSlot = <DefaultComponent extends ElementType",
 		);
 	});
 
@@ -150,7 +150,7 @@ describe("Tamagui adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tamagui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.tsx",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -165,7 +165,7 @@ describe("Tamagui adapter", () => {
 			{
 			  "changed": true,
 			  "code": "import { View, styled } from "tamagui";
-			// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
+			// yumcss:migrate-skip (route: tamagui -> yumcss | parse-residual: function-dynamic | available: named-map, residual)
 			export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 			  "converted": 0,
 			  "dependencies": [
@@ -173,7 +173,7 @@ describe("Tamagui adapter", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -202,7 +202,7 @@ describe("Tamagui adapter", () => {
 			        ],
 			        "rules": [],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "tamagui",
 			          "end": 113,
@@ -236,7 +236,7 @@ describe("Tamagui adapter", () => {
 			  ],
 			  "reports": [
 			    {
-			      "adapter": "pandwind",
+			      "adapter": "yumcss",
 			      "blockers": [],
 			      "convertible": true,
 			      "exact": [
@@ -275,7 +275,7 @@ describe("Tamagui adapter", () => {
 		const source = 'const styled = (value: unknown) => value; styled({ color: "red" });';
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tamagui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "unrelated.ts",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -294,13 +294,13 @@ describe("Tamagui adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tamagui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "tamagui.config.ts",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});
 
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
@@ -313,7 +313,7 @@ describe("Tamagui adapter", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: configuration)
+			  "code": "// yumcss:migrate-skip (route: tamagui -> yumcss | parse-residual: configuration)
 			import { createTamagui, createTokens } from "tamagui";
 			const tokens = createTokens({ color: { brand: "#07c" } });
 			export const config = createTamagui({ tokens });",
@@ -323,7 +323,7 @@ describe("Tamagui adapter", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },

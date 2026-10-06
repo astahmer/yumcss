@@ -31,14 +31,14 @@ const pandaProofRegistry = createStyleAdapterRegistry([
 			},
 		},
 	}),
-	createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!,
+	createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!,
 ]);
 
 async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResult> {
 	if (api.adapter === CodemodAdapterId.Panda && api.name === "generated styled JSX style props")
 		return runAdapterMigrationAsync(api.source, {
 			from: api.adapter,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: api.file ?? "App.tsx",
 			root: "/project",
 			adapterRegistry: pandaProofRegistry,
@@ -47,7 +47,7 @@ async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResu
 		});
 	return runAdapterMigration(api.source, {
 		from: api.adapter,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: api.file ?? "App.tsx",
 		...(api.adapter === CodemodAdapterId.CssModules
 			? { root: "/project", readFile: () => undefined, listFiles: () => [] }
@@ -59,9 +59,9 @@ async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResu
 
 function withoutMigrationMarkers(code: string): string {
 	return code
-		.replace(/^[ \t]*\/\/ pandwind:migrate-skip[^\n]*\r?\n/gmu, "")
-		.replace(/^[ \t]*\/\* pandwind:migrate-skip[^\n]*\*\/[ \t]*\r?\n/gmu, "")
-		.replace(/^[ \t]*<!-- pandwind:migrate-skip[^\n]*-->[ \t]*\r?\n/gmu, "");
+		.replace(/^[ \t]*\/\/ yumcss:migrate-skip[^\n]*\r?\n/gmu, "")
+		.replace(/^[ \t]*\/\* yumcss:migrate-skip[^\n]*\*\/[ \t]*\r?\n/gmu, "")
+		.replace(/^[ \t]*<!-- yumcss:migrate-skip[^\n]*-->[ \t]*\r?\n/gmu, "");
 }
 
 function normalizeSource(code: string): string {
@@ -140,8 +140,8 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain('<div as="a"');
 				}
 				if (api.adapter === CodemodAdapterId.Mui && api.name === "styled component") {
-					expect(result.code).toContain("const __pandwindSlot =");
-					expect(result.code).toContain("export const Card = __pandwindSlot(");
+					expect(result.code).toContain("const __yumcssSlot =");
+					expect(result.code).toContain("export const Card = __yumcssSlot(");
 					expect(result.code).not.toContain("export const Card = css.class");
 				}
 				if (api.adapter === CodemodAdapterId.StyledComponents && api.name === "styled attrs") {
@@ -155,15 +155,15 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain("<Global");
 				}
 				if (api.name === "styled component" && api.adapter === CodemodAdapterId.Stitches) {
-					expect(result.code).toContain("const __pandwindSlot =");
-					expect(result.code).toContain("export const Card = __pandwindSlot(");
+					expect(result.code).toContain("const __yumcssSlot =");
+					expect(result.code).toContain("export const Card = __yumcssSlot(");
 					expect(result.code).toContain(
 						'classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx',
 					);
 				}
 				if (api.name === "styled tagged template" && api.adapter === CodemodAdapterId.Goober) {
 					expect(result.code).toContain("css.class");
-					expect(result.code).not.toContain("pandwind:migrate-skip");
+					expect(result.code).not.toContain("yumcss:migrate-skip");
 				}
 				if (
 					(api.name === "cva recipe" && api.adapter === CodemodAdapterId.Panda) ||
@@ -179,12 +179,12 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain("migrate-skip");
 				}
 				if (api.name === "generated styled component" && api.adapter === CodemodAdapterId.Panda) {
-					expect(result.code).toContain("__pandwindSlot");
+					expect(result.code).toContain("__yumcssSlot");
 					expect(result.code).toContain('defaultComponent: "div"');
 					expect(result.code).not.toContain("migrate-skip");
 				}
 				if (api.name === "createComponent" && api.adapter === CodemodAdapterId.Fela) {
-					expect(result.code).toContain("__pandwindSlot");
+					expect(result.code).toContain("__yumcssSlot");
 					expect(result.code).toContain('defaultComponent: "button"');
 					expect(result.code).not.toContain("createComponent");
 				}
@@ -232,7 +232,7 @@ describe("official adapter API families", () => {
 			{
 			  "aphrodite/array composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = css.vars({ card: [{ color: "red" }, { padding: 8 }] });",
 			    "converted": 1,
@@ -267,8 +267,8 @@ describe("official adapter API families", () => {
 			  },
 			  "aphrodite/font-face array value": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
 			    "converted": 1,
@@ -303,7 +303,7 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/at-rules": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			@media (prefers-color-scheme: dark) {
 			  .card { color: white; }
 			}
@@ -357,7 +357,7 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/multi-rule stylesheet": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; }
 			.title { font-weight: 600; }",
 			    "converted": 0,
@@ -406,7 +406,7 @@ describe("official adapter API families", () => {
 			  },
 			  "authored-css/non-class selectors": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			:root { --brand: red; }
 			[data-theme="dark"] .card { color: white; }",
 			    "converted": 0,
@@ -469,7 +469,7 @@ describe("official adapter API families", () => {
 			  },
 			  "bamboo/styled-system object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ display: "flex", gap: "4" });",
 			    "converted": 1,
@@ -518,7 +518,7 @@ describe("official adapter API families", () => {
 			  "chakra-ui/recipe usage": {
 			    "changed": true,
 			    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			const buttonRecipe = defineRecipe({ base: { color: "red" } });
 			export const button = useRecipe({ recipe: buttonRecipe });",
 			    "converted": 0,
@@ -564,7 +564,7 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/CSS prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
@@ -599,7 +599,7 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/ClassNames aliased composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
@@ -634,7 +634,7 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/ClassNames composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
@@ -671,7 +671,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { ClassNames } from "@compiled/react";
 			const color = "red";
-			// pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: component | available: named-map, residual)
+			// yumcss:migrate-skip (route: compiled -> yumcss | parse-residual: component | available: named-map, residual)
 			export const Card = () => <ClassNames>{({ css }) => <button className={css({ color })} />}</ClassNames>;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -704,7 +704,7 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/cssMap": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const colors = { "red": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -739,8 +739,8 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -775,12 +775,12 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -813,7 +813,7 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/composes": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "primary": css.class({ color: "red", fontWeight: "600" }) };
 			export default styles;",
@@ -868,7 +868,7 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/global pseudo and descendant selectors": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			:global(.footer) { color: gray; }",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -902,7 +902,7 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/local pseudo selector": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ _hover: { color: "red" } }) };
 			export default styles;",
@@ -938,7 +938,7 @@ describe("official adapter API families", () => {
 			  },
 			  "css-modules/named class map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "1rem" }), "title": css.class({ fontWeight: "600" }) };
 			export default styles;",
@@ -993,8 +993,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/Global component": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const App = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
@@ -1029,7 +1029,7 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/css prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
@@ -1064,8 +1064,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/injectGlobal tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			() => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
@@ -1100,8 +1100,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/keyframes object": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -1136,12 +1136,12 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/styled component object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1174,7 +1174,7 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/tagged css template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -1209,12 +1209,12 @@ describe("official adapter API families", () => {
 			  },
 			  "fela/createComponent": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1249,7 +1249,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { createRenderer } from "fela";
 			const plugin = (element) => element;
-			// pandwind:migrate-skip (route: fela -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: fela -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const renderer = createRenderer({ plugins: [plugin] });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1282,7 +1282,7 @@ describe("official adapter API families", () => {
 			  },
 			  "goober/css tagged template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -1319,7 +1319,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import React from "react";
 			import { setup } from "goober";
-			// pandwind:migrate-skip (route: goober -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: goober -> yumcss | parse-residual: configuration | available: named-map, residual)
 			setup(React.createElement);",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1352,12 +1352,12 @@ describe("official adapter API families", () => {
 			  },
 			  "goober/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1390,7 +1390,7 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/createRule named map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const rule = css.class({ color: "red" });",
 			    "converted": 1,
@@ -1425,7 +1425,7 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/createStyleSheet named map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const sheet = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -1460,7 +1460,7 @@ describe("official adapter API families", () => {
 			  },
 			  "jss/imperative applyTo": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const sheet = { "card": css.class({ color: "red" }) };
 
@@ -1497,7 +1497,7 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less mixin call": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.shadow() { box-shadow: 0 1px 2px black; }
 			.card { .shadow(); color: red; }",
 			    "converted": 0,
@@ -1545,7 +1545,7 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less plain rules": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; }
 			.title { font-weight: 600; }",
 			    "converted": 0,
@@ -1594,7 +1594,7 @@ describe("official adapter API families", () => {
 			  },
 			  "less/less variables and nesting": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			@brand: red;
 			.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
@@ -1633,7 +1633,7 @@ describe("official adapter API families", () => {
 			  },
 			  "linaria/css prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button css={css.class({ color: "red" })} />;",
 			    "converted": 1,
@@ -1668,12 +1668,12 @@ describe("official adapter API families", () => {
 			  },
 			  "linaria/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1706,9 +1706,9 @@ describe("official adapter API families", () => {
 			  },
 			  "mantine/MantineProvider context": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: mantine -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			import { MantineProvider } from "@mantine/core";
-			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: mantine -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			export const App = () => <MantineProvider theme={{ colors: { brand: ["red"] } }}><div /></MantineProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1760,7 +1760,7 @@ describe("official adapter API families", () => {
 			  "mantine/classNames API": {
 			    "changed": true,
 			    "code": "import { Button } from "@mantine/core";
-			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
+			// yumcss:migrate-skip (route: mantine -> yumcss | parse-residual: host-framework | available: named-map, residual)
 			export const App = () => <Button classNames={{ root: "button-root" }} />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1794,7 +1794,7 @@ describe("official adapter API families", () => {
 			  "mantine/styles API": {
 			    "changed": true,
 			    "code": "import { Button } from "@mantine/core";
-			// pandwind:migrate-skip (route: mantine -> pandwind | parse-residual: host-framework | available: named-map, residual)
+			// yumcss:migrate-skip (route: mantine -> yumcss | parse-residual: host-framework | available: named-map, residual)
 			export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1827,9 +1827,9 @@ describe("official adapter API families", () => {
 			  },
 			  "mui/ThemeProvider context": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "@mui/material";
-			// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			export const App = () => <ThemeProvider theme={{ palette: { primary: { main: "red" } } }}><div /></ThemeProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1880,12 +1880,12 @@ describe("official adapter API families", () => {
 			  },
 			  "mui/styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: 8 }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: 8 }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -1919,7 +1919,7 @@ describe("official adapter API families", () => {
 			  "mui/theme callback": {
 			    "changed": true,
 			    "code": "import { styled } from "@mui/system";
-			// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			export const Card = styled("div")(({ theme }) => ({ color: theme.palette.primary.main }));",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1952,7 +1952,7 @@ describe("official adapter API families", () => {
 			  },
 			  "next-yak/CSS prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = () => <button className={css.class({ color: "red" })}/>;",
 			    "converted": 1,
@@ -1987,12 +1987,12 @@ describe("official adapter API families", () => {
 			  },
 			  "next-yak/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2025,14 +2025,14 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/cva recipe": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createRecipe as __pandwindcreateRecipe } from "./__pandwind/recipe";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
-			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
+			export const button = __yumcsscreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
 			      {
-			        "path": "__pandwind/recipe.ts",
+			        "path": "__yumcss/recipe.ts",
 			        "purpose": "shared recipe runtime used by migrated source",
 			      },
 			    ],
@@ -2090,7 +2090,7 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled JSX style props": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Button = () => <button className={css.class({ color: "red" })} />;",
 			    "converted": 1,
@@ -2125,12 +2125,12 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-jifjss", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2176,14 +2176,14 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/sva slot recipe": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createSlotRecipe as __pandwindcreateSlotRecipe } from "./__pandwind/recipe";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createSlotRecipe as __yumcsscreateSlotRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
-			export const card = __pandwindcreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
+			export const card = __yumcsscreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
 			    "converted": 1,
 			    "generatedFiles": [
 			      {
-			        "path": "__pandwind/recipe.ts",
+			        "path": "__yumcss/recipe.ts",
 			        "purpose": "shared recipe runtime used by migrated source",
 			      },
 			    ],
@@ -2227,9 +2227,9 @@ describe("official adapter API families", () => {
 			    "skipped": 0,
 			    "validations": [],
 			  },
-			  "pandwind/css.group named map": {
+			  "yumcss/css.group named map": {
 			    "changed": false,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 0,
@@ -2243,7 +2243,7 @@ describe("official adapter API families", () => {
 			  "react-native/Platform.select context": {
 			    "changed": true,
 			    "code": "import { Platform } from "react-native";
-			// pandwind:migrate-skip (route: react-native -> pandwind | parse-residual: framework-semantics | available: named-map, residual)
+			// yumcss:migrate-skip (route: react-native -> yumcss | parse-residual: framework-semantics | available: named-map, residual)
 			export const style = Platform.select({ ios: { padding: 8 }, android: { padding: 4 } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -2276,7 +2276,7 @@ describe("official adapter API families", () => {
 			  },
 			  "react-native/StyleSheet named map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 			    "converted": 1,
@@ -2312,7 +2312,7 @@ describe("official adapter API families", () => {
 			  "react-native/inline style array": {
 			    "changed": true,
 			    "code": "import { View } from "react-native";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <View {...css.props(css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }))} />;",
 			    "converted": 1,
@@ -2349,7 +2349,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import { compat } from "react-strict-dom";
 			import { Text } from "react-native";
-			// pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: capability | available: named-map, residual)
+			// yumcss:migrate-skip (route: react-strict-dom -> yumcss | parse-residual: capability | available: named-map, residual)
 			export const Label = () => <compat.native as="text">{(props) => <Text {...props} />}</compat.native>;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -2383,7 +2383,7 @@ describe("official adapter API families", () => {
 			  "react-strict-dom/css.createTheme context": {
 			    "changed": true,
 			    "code": "import { css } from "react-strict-dom";
-			// pandwind:migrate-skip (route: react-strict-dom -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: react-strict-dom -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const theme = css.createTheme({ accent: "red" });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -2416,8 +2416,8 @@ describe("official adapter API families", () => {
 			  },
 			  "react-strict-dom/css.defineVars": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
@@ -2452,8 +2452,8 @@ describe("official adapter API families", () => {
 			  },
 			  "react-strict-dom/css.keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -2488,7 +2488,7 @@ describe("official adapter API families", () => {
 			  },
 			  "sass/scss mixins": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			@mixin flex($gap) { display: flex; gap: $gap; }
 			.card { @include flex(1rem); }",
 			    "converted": 0,
@@ -2527,7 +2527,7 @@ describe("official adapter API families", () => {
 			  },
 			  "sass/scss module use": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			@use "sass:math";
 			.card { padding: 1rem; }",
 			    "converted": 0,
@@ -2567,7 +2567,7 @@ describe("official adapter API families", () => {
 			  },
 			  "sass/scss variables and nesting": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			$brand: red;
 			.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 			    "converted": 0,
@@ -2606,9 +2606,9 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/prop callback": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2641,12 +2641,12 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2691,8 +2691,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/globalCss": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const reset = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
@@ -2727,8 +2727,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -2763,12 +2763,12 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -2801,15 +2801,15 @@ describe("official adapter API families", () => {
 			  },
 			  "stitches/variants": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createRecipe as __pandwindcreateRecipe } from "./__pandwind/recipe";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
 
-			export const button = __pandwindcreateRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
+			export const button = __yumcsscreateRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
 			      {
-			        "path": "__pandwind/recipe.ts",
+			        "path": "__yumcss/recipe.ts",
 			        "purpose": "shared recipe runtime used by migrated source",
 			      },
 			    ],
@@ -2843,8 +2843,8 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/named style map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
@@ -2880,8 +2880,8 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/style9 call composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
 			const styles = css.group({ card: { color: "red" } });
@@ -2918,9 +2918,9 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/ThemeProvider context": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: styled-components -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "styled-components";
-			// pandwind:migrate-skip (route: styled-components -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: styled-components -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			export const App = () => <ThemeProvider theme={{ colors: { brand: "red" } }}><div /></ThemeProvider>;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -2971,8 +2971,8 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/createGlobalStyle tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const Global = () => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
 			    "converted": 1,
@@ -3007,8 +3007,8 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/keyframes tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })();",
 			    "converted": 1,
@@ -3043,12 +3043,12 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/polymorphic as": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });
 			export const App = () => <Card as="a" href="/docs" />;",
 			    "converted": 1,
 			    "generatedFiles": [],
@@ -3082,12 +3082,12 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/styled attrs": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Button = __pandwindSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1f4hbee", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: ({ type: "button", "aria-label": "Save" }), joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Button = __yumcssSlot({ defaultComponent: "button", style: css.class({ color: "red" }), stableClass: "pw-1f4hbee", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: ({ type: "button", "aria-label": "Save" }), joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3120,13 +3120,13 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/styled component subject": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
 			const Link = (props: { href: string }) => <a {...props} />;
-			export const Card = __pandwindSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
+			export const Card = __yumcssSlot({ defaultComponent: (Link), style: css.class({ color: "red" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3159,12 +3159,12 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/styled tagged template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3197,9 +3197,9 @@ describe("official adapter API families", () => {
 			  },
 			  "styled-components/theme callback": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (({ theme }) => theme.colors.brand)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3232,7 +3232,7 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -3269,7 +3269,7 @@ describe("official adapter API families", () => {
 			    "changed": true,
 			    "code": "import * as stylex from "@stylexjs/stylex";
 			import { vars } from "./vars";
-			// pandwind:migrate-skip (route: stylex -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: stylex -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const theme = stylex.createTheme(vars, { accent: "blue" });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3302,8 +3302,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/defineVars": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const theme = (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--accent", value: "red" }] }]), { "accent": "var(--accent)" });",
 			    "converted": 1,
@@ -3338,8 +3338,8 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -3374,7 +3374,7 @@ describe("official adapter API families", () => {
 			  },
 			  "stylex/props host projection": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
@@ -3410,7 +3410,7 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/arbitrary utility": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			    "code": "// yumcss:migrate-skip (route: tailwind -> yumcss | lowering-residual: capability, validation)
 			export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3434,7 +3434,7 @@ describe("official adapter API families", () => {
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "hint": "condition is not declared by the YumCSS preset or project condition catalog",
 			        "kind": "capability",
 			        "preserved": undefined,
 			      },
@@ -3472,7 +3472,7 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/custom variant candidate": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | lowering-residual: capability, validation)
+			    "code": "// yumcss:migrate-skip (route: tailwind -> yumcss | lowering-residual: capability, validation)
 			export const App = () => <div className="[&[data-state=active]]:[color:red]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3496,7 +3496,7 @@ describe("official adapter API families", () => {
 			    ],
 			    "residuals": [
 			      {
-			        "hint": "condition is not declared by the Pandwind preset or project condition catalog",
+			        "hint": "condition is not declared by the YumCSS preset or project condition catalog",
 			        "kind": "capability",
 			        "preserved": undefined,
 			      },
@@ -3519,7 +3519,7 @@ describe("official adapter API families", () => {
 			  },
 			  "tailwind/unknown project utility": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: tailwind -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: tailwind -> yumcss | parse-residual: unknown-utility | available: named-map, residual)
 			export const App = () => <div className="btn-primary" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3552,7 +3552,7 @@ describe("official adapter API families", () => {
 			  },
 			  "tamagui/createTamagui config": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: configuration)
+			    "code": "// yumcss:migrate-skip (route: tamagui -> yumcss | parse-residual: configuration)
 			import { createTamagui, createTokens } from "tamagui";
 			export const config = createTamagui({ tokens: createTokens({ color: { red: "#ff0000" } }) });",
 			    "converted": 0,
@@ -3582,7 +3582,7 @@ describe("official adapter API families", () => {
 			  "tamagui/styled theme callback": {
 			    "changed": true,
 			    "code": "import { styled, View } from "tamagui";
-			// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
+			// yumcss:migrate-skip (route: tamagui -> yumcss | parse-residual: function-dynamic | available: named-map, residual)
 			export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3615,7 +3615,7 @@ describe("official adapter API families", () => {
 			  },
 			  "tokenami/alias and custom property selector": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ "--card-color": "red", "&[data-state=active]": { color: "var(---, var(--card-color))" } });",
 			    "converted": 1,
@@ -3663,7 +3663,7 @@ describe("official adapter API families", () => {
 			  "tokenami/css.compose": {
 			    "changed": true,
 			    "code": "import { css } from "@tokenami/css";
-			// pandwind:migrate-skip (route: tokenami -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: tokenami -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3697,7 +3697,7 @@ describe("official adapter API families", () => {
 			  "treat/createTheme context": {
 			    "changed": true,
 			    "code": "import { createTheme } from "treat";
-			// pandwind:migrate-skip (route: treat -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: treat -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const theme = createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3730,7 +3730,7 @@ describe("official adapter API families", () => {
 			  },
 			  "treat/treat style": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
@@ -3777,7 +3777,7 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/unknown shortcut": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: unocss -> yumcss | parse-residual: unknown-utility | available: named-map, residual)
 			export const App = () => <div className="btn-primary" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3810,7 +3810,7 @@ describe("official adapter API families", () => {
 			  },
 			  "unocss/variant utility": {
 			    "changed": true,
-			    "code": "// pandwind:migrate-skip (route: unocss -> pandwind | parse-residual: unknown-utility | available: named-map, residual)
+			    "code": "// yumcss:migrate-skip (route: unocss -> yumcss | parse-residual: unknown-utility | available: named-map, residual)
 			export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3849,7 +3849,7 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/createTheme": {
 			    "changed": true,
 			    "code": "import { createTheme } from "@vanilla-extract/css";
-			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: vanilla-extract -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const themeClass = createTheme({ colors: { brand: "red" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -3903,8 +3903,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/fontFace": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const inter = (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  }));",
 			    "converted": 1,
@@ -3939,8 +3939,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/globalStyle": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
 			    "converted": 1,
@@ -3975,8 +3975,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
@@ -4011,14 +4011,14 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/recipe": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createRecipe as __pandwindcreateRecipe } from "./__pandwind/recipe";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
-			export const button = __pandwindcreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "4px" } } } });",
+			export const button = __yumcsscreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "4px" } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
 			      {
-			        "path": "__pandwind/recipe.ts",
+			        "path": "__yumcss/recipe.ts",
 			        "purpose": "shared recipe runtime used by migrated source",
 			      },
 			    ],
@@ -4052,7 +4052,7 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/styleVariants": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const variants = { "primary": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -4088,7 +4088,7 @@ describe("official adapter API families", () => {
 			  "vanilla-extract/theme contract": {
 			    "changed": true,
 			    "code": "import { createThemeContract } from "@vanilla-extract/css";
-			// pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: configuration | available: named-map, residual)
+			// yumcss:migrate-skip (route: vanilla-extract -> yumcss | parse-residual: configuration | available: named-map, residual)
 			export const vars = createThemeContract({ colors: { brand: null } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -4121,12 +4121,12 @@ describe("official adapter API families", () => {
 			  },
 			  "vue-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1sqdko1", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -4160,13 +4160,13 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
-			import { forwardRef as __pandwindForwardRef } from "react";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			import { forwardRef as __yumcssForwardRef } from "react";
+			import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			import type * as React from "react";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 
-			const Card = __pandwindForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });
+			const Card = __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });
 			</script>
 			<template><Card color="red" /></template>",
 			    "converted": 1,

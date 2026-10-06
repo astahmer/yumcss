@@ -4,13 +4,13 @@ import {
 	createSourceWorkspace,
 	type SourceWorkspace,
 	type SourceWorkspaceFile,
-} from "pandwind/source/workspace";
+} from "yumcss/source/workspace";
 import {
 	SOURCE_SCANNER_SERVICE,
 	type SourceDocument,
 	type SourceScanResult,
 	type SourceScannerService,
-} from "pandwind/source";
+} from "yumcss/source";
 import type {
 	MigrationPreviewDocument,
 	MigrationPreviewEditRequest,

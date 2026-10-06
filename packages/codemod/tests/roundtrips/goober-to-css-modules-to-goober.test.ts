@@ -42,7 +42,7 @@ test("goober -> css-modules -> goober: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("goober -> css-modules -> goober: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("goober -> css-modules -> goober: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("goober -> css-modules -> goober: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("goober -> css-modules -> goober: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -206,7 +206,7 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -243,7 +243,7 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -259,7 +259,7 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -296,7 +296,7 @@ test("goober -> css-modules -> goober: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -327,7 +327,7 @@ test("goober -> css-modules -> goober: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("goober -> css-modules -> goober: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

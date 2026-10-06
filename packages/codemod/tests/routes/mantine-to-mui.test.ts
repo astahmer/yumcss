@@ -38,10 +38,10 @@ test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("mantine -> mui: carries a documented secondary mantine API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | parse-residual: host-framework | lowering-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | parse-residual: host-framework | lowering-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -149,7 +149,7 @@ test("mantine -> mui: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("mantine -> mui: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("mantine -> mui: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -275,7 +275,7 @@ test("mantine -> mui: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,

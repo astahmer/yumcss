@@ -13,12 +13,12 @@ describe("package installer", () => {
 			root: "/project",
 			packageJson: {
 				packageManager: "pnpm@12.3.4",
-				dependencies: { pandwind: "workspace:*" },
+				dependencies: { yumcss: "workspace:*" },
 			},
 			dependencies: [
 				{
 					packages: [
-						{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime },
+						{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime },
 						{ name: "styled-components", kind: AdapterDependencyKindTag.Peer },
 					],
 				},
@@ -32,7 +32,7 @@ describe("package installer", () => {
 		});
 
 		expect(result.manager).toBe(PackageManagerKindTag.Pnpm);
-		expect(result.alreadyPresent).toEqual(["pandwind"]);
+		expect(result.alreadyPresent).toEqual(["yumcss"]);
 		expect(result.installed).toEqual(["styled-components", "@types/styled-components"]);
 		expect(calls).toEqual([
 			{

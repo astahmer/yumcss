@@ -3,7 +3,7 @@ import { dss } from "./design";
 /**
  * Same card, authored with the design dss() vocabulary — reads like the
  * Figma inspector, and every value is a token or a constrained option.
- * These literal calls are extracted by `pandwindCssVite` into the generated
+ * These literal calls are extracted by `yumcssExtractVite` into the generated
  * stylesheet, so nothing is accumulated at runtime.
  */
 export function DesignApp() {

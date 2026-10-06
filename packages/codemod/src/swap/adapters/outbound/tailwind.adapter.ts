@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "../../../meta.ts";
+import type { YumCSSMeta } from "../../../meta.ts";
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
@@ -6,8 +6,8 @@ import { CodemodAdapterId } from "../../identifiers.ts";
 
 const camel = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
-const forwardCache = new WeakMap<PandwindMeta, Map<string, string>>();
-function forwardIndex(meta: PandwindMeta): Map<string, string> {
+const forwardCache = new WeakMap<YumCSSMeta, Map<string, string>>();
+function forwardIndex(meta: YumCSSMeta): Map<string, string> {
 	let index = forwardCache.get(meta);
 	if (index !== undefined) return index;
 	index = new Map();

@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 
-/** Virtual CSS module served by `pandwindCssVite`. */
-declare module "pandwind:css" {}
-declare module "pandwind:ui-css" {}
+/** Virtual CSS module served by `yumcssExtractVite`. */
+declare module "yumcss:css" {}
+declare module "yumcss:ui-css" {}
 
-declare module "virtual:pandwind-tailwind-default-css" {
+declare module "virtual:yumcss-tailwind-default-css" {
 	const css: string;
 	export default css;
 }

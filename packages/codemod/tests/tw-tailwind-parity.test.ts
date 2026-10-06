@@ -1,5 +1,5 @@
 /**
- * Tailwind compatibility proof — pandwind's tw()/cx() output vs the real
+ * Tailwind compatibility proof — yumcss's tw()/cx() output vs the real
  * Tailwind compiler (`tailwindcss` 4.x, the same engine @tailwindcss/vite
  * uses in the example app).
  *
@@ -26,11 +26,11 @@ import { resolve } from "node:path";
 import { compile, __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { parse } from "postcss";
 import { beforeAll, describe, expect, test } from "vitest";
-import { createCx } from "pandwind/cx";
+import { createCx } from "yumcss/cx";
 import { canonicalProps } from "../src/tw/generate-types.ts";
-import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
-import { createTw } from "pandwind/tw";
-import { extractTwConfigFromSources } from "pandwind/vite/inline";
+import { compileStyles, type TwNestedStyles } from "yumcss/tw/compile";
+import { createTw } from "yumcss/tw";
+import { extractTwConfigFromSources } from "yumcss/vite/inline";
 import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
 
 const APP_DIR = resolve(import.meta.dirname, "../../../examples/example");

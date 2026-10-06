@@ -38,10 +38,10 @@ test("aphrodite -> vue-styled: migrates concrete aphrodite syntax to vue-styled"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "aphrodite -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("aphrodite -> vue-styled: migrates concrete aphrodite syntax to vue-styled"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -94,7 +94,7 @@ test("aphrodite -> vue-styled: carries a documented secondary aphrodite API expl
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: fonts; rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: fonts; rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("aphrodite -> vue-styled: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("aphrodite -> vue-styled: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("aphrodite -> vue-styled: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("aphrodite -> vue-styled: preserves malformed concrete aphrodite input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 0,

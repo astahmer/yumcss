@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
+import { CodemodAdapterId } from "@yumcss/codemod/swap/browser";
 import { createMigrationLab } from "./migration-lab.ts";
 import { createPlaygroundTailwindResolver } from "./tailwind-default-resolver.ts";
 
@@ -10,7 +10,7 @@ describe("playground Tailwind defaults", () => {
 		const lab = createMigrationLab({ tailwindResolver: resolver });
 		const result = lab.migrate(
 			CodemodAdapterId.Tailwind,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			'import "tailwindcss";\n<div className="text-white bg-black p-4" />',
 		);
 

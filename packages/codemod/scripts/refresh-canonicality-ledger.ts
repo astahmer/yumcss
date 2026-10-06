@@ -9,8 +9,8 @@ import {
 	CodemodAdapterId,
 	StyleMigrationOutcome,
 	runAdapterMigration,
-} from "pandwind-codemod/swap";
-import { StyleProgramResidualKindTag } from "pandwind-codemod/swap/semantic-ir";
+} from "@yumcss/codemod/swap";
+import { StyleProgramResidualKindTag } from "@yumcss/codemod/swap/semantic-ir";
 import { z } from "zod";
 
 const routePath = resolve(
@@ -358,7 +358,7 @@ const renderAuditReport = (source: string, ledger: z.infer<typeof ledgerSchema>)
 					: `${route.targetPackage.version} (${route.targetPackage.source})`;
 			const guidance = route.targetDocumentation.startsWith("http")
 				? `[official API guidance](${route.targetDocumentation})`
-				: `[Pandwind documentation](${route.targetDocumentation})`;
+				: `[YumCSS documentation](${route.targetDocumentation})`;
 			return [
 				"`" + route.to + "`",
 				"`" + route.targetPackage.package + "` — " + packageVersion,
@@ -407,7 +407,7 @@ const renderAuditReport = (source: string, ledger: z.infer<typeof ledgerSchema>)
 			"## Captured implementation",
 			"",
 			`Captured JJ revision: \`${ledger.sourceRevision}\`.`,
-			`Codemod and Pandwind source SHA-256: \`${ledger.sourceFingerprint}\`.`,
+			`Codemod and YumCSS source SHA-256: \`${ledger.sourceFingerprint}\`.`,
 			"",
 			"All 32 Canonical primary captures are identity no-ops. The 992 cross-adapter primary captures have zero Canonical verdicts; configured and installed evidence are separate dimensions, not promotions of this empty-project capture.",
 			"",
@@ -529,7 +529,7 @@ const refresh = async () => {
 		.toSorted((left, right) => right.count - left.count || left.cause.localeCompare(right.cause));
 	const result = {
 		...ledger,
-		schema: "pandwind.codemod-canonicality-route-ledger/1",
+		schema: "yumcss.codemod-canonicality-route-ledger/1",
 		sourceRevision: execFileSync("jj", ["log", "-r", "@", "--no-graph", "-T", "commit_id"], {
 			encoding: "utf8",
 		}).trim(),

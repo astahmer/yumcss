@@ -6,9 +6,10 @@
  * provider-owned runtime theme callbacks remain an explicit adapter residual;
  * this proof covers the static Box/sx lane that can be lowered losslessly.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -29,8 +30,8 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const muiReferenceRoot = createReferenceWorkspace().path("mui");
 const referenceCommit = "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4";
 const referencePath = "docs/data/material/components/box/BoxSx.tsx";
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@emotion/cache": "11.14.0",
 	"@emotion/react": "11.14.0",
@@ -42,7 +43,7 @@ const versions = {
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "7.0.2",
@@ -90,7 +91,7 @@ interface MuiInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Mui;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly referenceCommit: string;
 	readonly referencePath: string;
@@ -105,9 +106,9 @@ interface MuiInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
-		readonly pandwindClassCarrier: boolean;
+		readonly yumcssClassCarrier: boolean;
 	};
 	readonly checks: {
 		readonly sourceTypecheck: boolean;
@@ -143,7 +144,7 @@ const assertPinnedReference = (): void => {
 };
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-mui-target" : "mui-installed-source",
+	name: target ? "yumcss-mui-target" : "mui-installed-source",
 	private: true,
 	type: "module",
 	scripts: {
@@ -152,7 +153,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 		typecheck: "tsc --noEmit",
 	},
 	dependencies: target
-		? { pandwind: versions.pandwind, react: versions.react, "react-dom": versions["react-dom"] }
+		? { yumcss: versions.yumcss, react: versions.react, "react-dom": versions["react-dom"] }
 		: {
 				"@emotion/cache": versions["@emotion/cache"],
 				"@emotion/react": versions["@emotion/react"],
@@ -221,7 +222,7 @@ const proofIsComplete = (report: MuiInstalledProof): boolean =>
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
 	report.migration.sourceImportRemoved &&
-	report.migration.pandwindClassCarrier &&
+	report.migration.yumcssClassCarrier &&
 	report.dependencies.installed &&
 	report.dependencies.targetNodeModule &&
 	report.checks.sourceTypecheck &&
@@ -240,7 +241,7 @@ const proofIsComplete = (report: MuiInstalledProof): boolean =>
 export async function runMuiInstalledProof(): Promise<MuiInstalledProof> {
 	assertPinnedReference();
 	return withInstalledProofProject(
-		"pandwind-mui-installed-",
+		"yumcss-mui-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			writeFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -257,13 +258,13 @@ export async function runMuiInstalledProof(): Promise<MuiInstalledProof> {
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						CodemodAdapterId.Mui,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -294,20 +295,20 @@ export async function runMuiInstalledProof(): Promise<MuiInstalledProof> {
 			const targetCss = generatedCss(targetRoot);
 			const report: MuiInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Mui, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Mui, to: CodemodAdapterId.YumCSS },
 				referenceCommit,
 				referencePath,
 				fixture: { files: ["src/App.tsx", "src/entry-server.tsx"], isolated: true },
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@mui/material"),
-					targetPackage: versions.pandwind,
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 					sourceImportRemoved: !migratedApp.includes("@mui/material"),
-					pandwindClassCarrier: migratedApp.includes("css.class("),
+					yumcssClassCarrier: migratedApp.includes("css.class("),
 				},
 				checks: {
 					sourceTypecheck: true,
@@ -325,7 +326,7 @@ export async function runMuiInstalledProof(): Promise<MuiInstalledProof> {
 				css: {
 					sourceBytes: Buffer.byteLength(sourceSsr.css),
 					targetBytes: Buffer.byteLength(targetCss),
-					note: "MUI source bytes are Emotion SSR stylesheet bytes while the static Pandwind projection uses Pandwind's generated atomic stylesheet. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget.",
+					note: "MUI source bytes are Emotion SSR stylesheet bytes while the static YumCSS projection uses YumCSS's generated atomic stylesheet. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget.",
 				},
 			};
 			if (!proofIsComplete(report))

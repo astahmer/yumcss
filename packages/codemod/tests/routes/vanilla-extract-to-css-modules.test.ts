@@ -38,10 +38,10 @@ test("vanilla-extract -> css-modules: migrates concrete vanilla-extract syntax t
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> css-modules happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("vanilla-extract -> css-modules: migrates concrete vanilla-extract syntax t
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("vanilla-extract -> css-modules: carries a documented secondary vanilla-ext
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("vanilla-extract -> css-modules: loads concrete theme and project context v
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("vanilla-extract -> css-modules: loads concrete theme and project context v
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("vanilla-extract -> css-modules: resolves concrete token values with projec
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("vanilla-extract -> css-modules: preserves malformed concrete vanilla-extra
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 0,

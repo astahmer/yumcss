@@ -42,7 +42,7 @@ test("stitches -> css-modules -> stitches: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("stitches -> css-modules -> stitches: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("stitches -> css-modules -> stitches: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("stitches -> css-modules -> stitches: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("stitches -> css-modules -> stitches: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("stitches -> css-modules -> stitches: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("stitches -> css-modules -> stitches: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("stitches -> css-modules -> stitches: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

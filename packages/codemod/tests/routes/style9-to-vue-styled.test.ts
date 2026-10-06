@@ -38,10 +38,10 @@ test("style9 -> vue-styled: migrates concrete style9 syntax to vue-styled", () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "style9 -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("style9 -> vue-styled: migrates concrete style9 syntax to vue-styled", () =
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -94,7 +94,7 @@ test("style9 -> vue-styled: carries a documented secondary style9 API explicitly
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("style9 -> vue-styled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("style9 -> vue-styled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("style9 -> vue-styled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "#2563eb" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("style9 -> vue-styled: preserves malformed concrete style9 input", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = style9.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 0,

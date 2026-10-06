@@ -42,7 +42,7 @@ test("next-yak -> stylex -> next-yak: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "next-yak -> stylex round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -175,7 +175,7 @@ test("next-yak -> stylex -> next-yak: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: stylex -> next-yak | lowering-residual: host-framework)
+		    "code": "// yumcss:migrate-skip (route: stylex -> next-yak | lowering-residual: host-framework)
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",

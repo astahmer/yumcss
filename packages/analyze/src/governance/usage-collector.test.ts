@@ -7,7 +7,7 @@ import {
 import type { TokenDefinition, TokenPolicySnapshot } from "./contracts.ts";
 
 const resolvedPolicy: TokenPolicySnapshot = {
-	owner: "pandwind",
+	owner: "yumcss",
 	resolved: true,
 	strictProperties: ["color"],
 	allowedRawValues: ["auto"],
@@ -88,7 +88,7 @@ describe("collectTokenUsage", () => {
 
 	it("classifies bare vocabulary literals as verified token usage", () => {
 		const vocabularyPolicy: TokenPolicySnapshot = {
-			owner: "pandwind",
+			owner: "yumcss",
 			resolved: true,
 			strictProperties: ["color", "padding", "width"],
 			origin: "official-loader",

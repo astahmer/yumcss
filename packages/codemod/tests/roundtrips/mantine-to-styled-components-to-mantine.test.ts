@@ -42,7 +42,7 @@ test("mantine -> styled-components -> mantine: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("mantine -> styled-components -> mantine: preserves an actionable concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,7 +140,7 @@ test("mantine -> styled-components -> mantine: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("mantine -> styled-components -> mantine: retains the documented secondary 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -254,7 +254,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -328,7 +328,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -417,7 +417,7 @@ test("mantine -> styled-components -> mantine: resolves token values across both
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -331,7 +331,7 @@ function ShellFrame() {
 							color: "textStrong",
 						})}
 					>
-						pandwind
+						yumcss
 					</span>
 					<span className={uiCss.class({ fontSize: "13px", color: "textFaint" })}>/</span>
 					<span

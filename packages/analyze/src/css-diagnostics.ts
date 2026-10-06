@@ -2,14 +2,14 @@ import {
 	createCssSourceScanner,
 	type CssCallSite,
 	type CssDiagnostic,
-} from "pandwind/vite/css-extract";
+} from "yumcss/vite/css-extract";
 
 export type {
 	AuthoredCssImport,
 	CssCallSite,
 	CssDiagnostic,
 	CssDiagnosticKind,
-} from "pandwind/vite/css-extract";
+} from "yumcss/vite/css-extract";
 
 export interface AnalyzeSourceFile {
 	file: string;
@@ -17,7 +17,7 @@ export interface AnalyzeSourceFile {
 }
 
 export interface CssAnalysisReport {
-	authoredCss: Array<import("pandwind/vite/css-extract").AuthoredCssImport>;
+	authoredCss: Array<import("yumcss/vite/css-extract").AuthoredCssImport>;
 	cssNamesByFile: Map<string, ReadonlySet<string>>;
 	cssSources: Array<CssCallSite>;
 	cssDiagnostics: Array<CssDiagnostic>;
@@ -65,7 +65,7 @@ export function createCssReportCollector(
 /** Collect explicit web stylesheet imports without parsing their CSS. */
 export function collectAuthoredCssImports(
 	files: ReadonlyArray<AnalyzeSourceFile>,
-): Array<import("pandwind/vite/css-extract").AuthoredCssImport> {
+): Array<import("yumcss/vite/css-extract").AuthoredCssImport> {
 	return collectCssReport(files).authoredCss;
 }
 
@@ -96,7 +96,7 @@ export function formatCssDiagnostics(diagnostics: ReadonlyArray<CssDiagnostic>):
 }
 
 export function formatAuthoredCssImports(
-	imports: ReadonlyArray<import("pandwind/vite/css-extract").AuthoredCssImport>,
+	imports: ReadonlyArray<import("yumcss/vite/css-extract").AuthoredCssImport>,
 ): string {
 	if (imports.length === 0) return "";
 	return [

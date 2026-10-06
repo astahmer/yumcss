@@ -1,5 +1,5 @@
 /**
- * `pandwind.agents.json` — machine-readable capability file for AI agents
+ * `yumcss.agents.json` — machine-readable capability file for AI agents
  * (plans/014 §5). Derived from the ACTUAL generated artifacts at codegen
  * time, so it cannot drift from the compiled design system: everything in
  * the file provably exists, and the verification workflows ship inside it.
@@ -8,9 +8,9 @@
  * intent; this describes state, and pairs with tooling (typecheck errors on
  * wrong utilities, analyze missing-css gate) that proves agent output.
  */
-import type { TwConfig } from "pandwind/vite/inline";
+import type { TwConfig } from "yumcss/vite/inline";
 
-const AGENTS_SCHEMA = "pandwind.agents/1";
+const AGENTS_SCHEMA = "yumcss.agents/1";
 /** Cap per-key literal lists; huge unions keep only a sample + total count. */
 const VALUES_CAP = 50;
 
@@ -101,8 +101,8 @@ export function buildAgentsDocument(options: {
 			types: "types.d.ts",
 			runtime: "tw.ts",
 			bridge: "bridge.ts",
-			interop: "pandwind.interop.json",
-			theme: options.themeBlock ? "pandwind-theme.css" : undefined,
+			interop: "yumcss.interop.json",
+			theme: options.themeBlock ? "yumcss-theme.css" : undefined,
 		},
 		utilities: utilitiesFromTypesDts(options.typesDts),
 		variants: Object.keys(config.variants ?? {}),

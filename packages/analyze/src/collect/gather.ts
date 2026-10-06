@@ -6,19 +6,19 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadTwConfig } from "../analyze.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";
-import { examplePreset } from "@pandwind/example-preset";
-import { defaultPreset } from "pandwind/preset/default";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import { createCssExtractionService } from "pandwind/vite/css-extract";
+import { examplePreset } from "@yumcss/example-preset";
+import { defaultPreset } from "yumcss/preset/default";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import { createCssExtractionService } from "yumcss/vite/css-extract";
 import {
 	buildTokenGraph,
-	parsePandwindInteropArtifact,
-	type PandwindInteropTokenSnapshot,
-} from "pandwind-codemod/tw";
+	parseYumCSSInteropArtifact,
+	type YumCSSInteropTokenSnapshot,
+} from "@yumcss/codemod/tw";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,
@@ -46,7 +46,7 @@ const DEFAULT_APP = "examples/example";
  * Override target via env vars to point the Inspector at an external project:
  *   INSPECTOR_ROOT=/path/to/other-repo INSPECTOR_APP=packages/geos pnpm run dev
  * `INSPECTOR_APP` is resolved as `<root>/<app>/src`. Artifacts specific to the
- * pandwind dogfood app (examplePreset tokens, bridge.ts, pandwind-theme.css)
+ * yumcss dogfood app (examplePreset tokens, bridge.ts, yumcss-theme.css)
  * are optional and degrade to empty when the target app doesn't have them.
  */
 export async function gather(repoRoot?: string): Promise<CollectPayload> {
@@ -54,7 +54,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
 	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
 	const isDogfoodApp =
-		APP === DEFAULT_APP && existsSync(resolve(root, "examples/pandwind-example-preset/package.json"));
+		APP === DEFAULT_APP && existsSync(resolve(root, "examples/yumcss-example-preset/package.json"));
 	const activePreset = isDogfoodApp ? examplePreset : defaultPreset;
 	const sourceWorkspace = createSourceWorkspace();
 	const cssBudgetService = createCssBudgetService();
@@ -100,7 +100,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	let themeCss = "";
 	try {
-		themeCss = readSourceArtifact(appSrc("pandwind-theme.css")) ?? "";
+		themeCss = readSourceArtifact(appSrc("yumcss-theme.css")) ?? "";
 	} catch {
 		themeCss = "";
 	}
@@ -245,26 +245,26 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// universe from the preset, theme vars, and interop artifact. A generated
 	// safelist file downgrades every unused candidate to review-required (its
 	// class strings cannot be attributed to token ids without guessing).
-	const projectPreset = `./${APP}/src/pandwind.preset.ts`;
+	const projectPreset = `./${APP}/src/yumcss.preset.ts`;
 	const presetSpecifier = isDogfoodApp
-		? "@pandwind/example-preset"
-		: existsSync(resolve(root, APP, "src", "pandwind.preset.ts"))
+		? "@yumcss/example-preset"
+		: existsSync(resolve(root, APP, "src", "yumcss.preset.ts"))
 			? projectPreset
 			: DEFAULT_GOVERNANCE_PRESET;
 	const presetLoad = await loadOfficialPresetModule(presetSpecifier, root);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
-	let interopTokens: PandwindInteropTokenSnapshot = {
+	let interopTokens: YumCSSInteropTokenSnapshot = {
 		state: "unavailable",
 		source: null,
 		fidelity: null,
 		document: null,
-		diagnostics: ["No generated pandwind.interop/1 artifact was found."],
+		diagnostics: ["No generated yumcss.interop/1 artifact was found."],
 	};
 	let interopVariables: Record<string, string> = {};
 	try {
-		const contents = readSourceArtifact(appSrc("pandwind.interop.json"));
+		const contents = readSourceArtifact(appSrc("yumcss.interop.json"));
 		if (contents !== undefined) {
-			const interop = parsePandwindInteropArtifact(JSON.parse(contents));
+			const interop = parseYumCSSInteropArtifact(JSON.parse(contents));
 			interopVariables = { ...interop.theme.variables };
 			interopTokens = interop.tokens;
 		}
@@ -277,7 +277,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 			diagnostics: [error instanceof Error ? error.message : String(error)],
 		};
 	}
-	const safelistSource = readSourceArtifact(appSrc("pandwind.safelist.css")) ?? "";
+	const safelistSource = readSourceArtifact(appSrc("yumcss.safelist.css")) ?? "";
 	const safelistEntries = [...safelistSource.matchAll(/"([^"]+)"/g)].map((m) => m[1] ?? "");
 	const governance = analyzeTokenGovernance({
 		root,

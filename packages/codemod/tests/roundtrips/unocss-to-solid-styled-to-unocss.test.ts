@@ -42,7 +42,7 @@ test("unocss -> solid-styled -> unocss: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> solid-styled -> unocss: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "solid-styled-components";
 		export const App = () => css({ "display": "flex", "alignItems": "center", "gap": "1rem" });",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("unocss -> solid-styled -> unocss: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "solid-styled-components";
 		export const App = () => css({ "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } });",
 		    "converted": 0,

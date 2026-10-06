@@ -10,7 +10,7 @@ export const App = () => {
 	});
 	return (
 		<main data-testid="fixture-host" className={className}>
-			Pandwind package fixture
+			YumCSS package fixture
 			<button data-testid="hydration-control" onClick={() => setClicks((count) => count + 1)}>
 				Clicks: {clicks}
 			</button>

@@ -1,12 +1,12 @@
-import interopJson from "../pandwind.interop.json" with { type: "json" };
-import { examplePreset } from "@pandwind/example-preset";
-import type { PandwindMeta } from "pandwind-codemod/migration/meta";
-import type { PandwindInteropArtifact } from "pandwind-codemod/tw";
+import interopJson from "../yumcss.interop.json" with { type: "json" };
+import { examplePreset } from "@yumcss/example-preset";
+import type { YumCSSMeta } from "@yumcss/codemod/migration/meta";
+import type { YumCSSInteropArtifact } from "@yumcss/codemod/tw";
 
-const interop = interopJson as PandwindInteropArtifact;
+const interop = interopJson as YumCSSInteropArtifact;
 
 /** Browser-safe migration metadata generated from the playground's own artifacts. */
-export const PLAYGROUND_MIGRATION_META: PandwindMeta = (() => {
+export const PLAYGROUND_MIGRATION_META: YumCSSMeta = (() => {
 	const keys = interop.utilities.map(({ key, base, valueType }) => ({ key, base, valueType }));
 	const keysByBase = new Map<string, typeof keys>();
 	for (const key of keys) {

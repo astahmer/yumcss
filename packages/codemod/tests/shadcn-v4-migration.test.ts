@@ -9,7 +9,7 @@ const referenceAvailability = await ensureReferenceWorkspace("shadcn-ui");
 const referenceRoot = referenceAvailability.path;
 
 describe("shadcn/ui v4 migration corpus", () => {
-	test("runs every Pandwind API lane from the pinned corpus", async () => {
+	test("runs every YumCSS API lane from the pinned corpus", async () => {
 		for (const lane of ShadcnV4Migration.lanes) {
 			const report = await ShadcnV4Migration.run(lane, { referenceRoot });
 			expect(report.referenceCommit).toBe("683a5a9b370acdb7785a0529434e6a3b8c7e0441");

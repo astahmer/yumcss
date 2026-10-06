@@ -28,7 +28,7 @@ describe("project-aware migration metadata", () => {
 	});
 
 	test("loads custom conditions from the resolved source preset", async () => {
-		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-conditions-"));
+		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-meta-conditions-"));
 		const bridgePath = join(dir, "bridge.ts");
 		try {
 			writeFileSync(
@@ -52,12 +52,12 @@ describe("project-aware migration metadata", () => {
 	});
 
 	test("loads the versioned interop artifact without generated source files", () => {
-		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-"));
+		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-meta-"));
 		try {
 			writeFileSync(
-				join(dir, "pandwind.interop.json"),
+				join(dir, "yumcss.interop.json"),
 				JSON.stringify({
-					schema: "pandwind.interop/1",
+					schema: "yumcss.interop/1",
 					generatedFrom: { types: "types.d.ts", runtime: "tw.ts", bridge: "bridge.ts" },
 					utilities: [
 						{ key: "bgColor", base: "bg", valueType: "BgColorValue" },
@@ -76,7 +76,7 @@ describe("project-aware migration metadata", () => {
 						source: { kind: "configured-token-module", module: "./tokens.ts", fingerprint: "abc" },
 						fidelity: { status: "lossless", losses: [] },
 						document: {
-							schema: "pandwind.token-document/1",
+							schema: "yumcss.token-document/1",
 							format: "dtcg",
 							formatVersion: "2025.10",
 							sourceFingerprint: "abc",
@@ -85,7 +85,7 @@ describe("project-aware migration metadata", () => {
 					},
 				}),
 			);
-			const meta = loadMetaFromSources({ interopPath: join(dir, "pandwind.interop.json") });
+			const meta = loadMetaFromSources({ interopPath: join(dir, "yumcss.interop.json") });
 			expect(meta.keys[0]).toMatchObject({ key: "bgColor", base: "bg" });
 			expect(meta.valueLiterals.get("BgColorValue")).toEqual(new Set(["blue-500"]));
 			expect(meta.variants.get("hover")).toEqual({ join: ":" });
@@ -99,12 +99,12 @@ describe("project-aware migration metadata", () => {
 	});
 
 	test("rejects unsupported interop schema versions", () => {
-		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-meta-"));
+		const dir = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-meta-"));
 		try {
-			const path = join(dir, "pandwind.interop.json");
-			writeFileSync(path, '{"schema":"pandwind.interop/future"}\n');
+			const path = join(dir, "yumcss.interop.json");
+			writeFileSync(path, '{"schema":"yumcss.interop/future"}\n');
 			expect(() => loadMetaFromSources({ interopPath: path })).toThrow(
-				"invalid pandwind.interop/1 artifact",
+				"invalid yumcss.interop/1 artifact",
 			);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });

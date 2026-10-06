@@ -1,4 +1,4 @@
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
@@ -127,8 +127,8 @@ export function rewriteSolidJsxToVue(
 	};
 }
 
-export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
-export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;
+export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "yumcss.host-framework-plugin/1" as const;
+export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "yumcss.host-framework-contract/1" as const;
 
 export interface HostFrameworkAdapter {
 	readonly id: HostFramework;

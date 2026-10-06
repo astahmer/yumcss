@@ -75,7 +75,7 @@ describe("createMigrationPreviewApp", () => {
 			expect(
 				(
 					await app.request("/api/migration-preview/snapshot", {
-						headers: { "x-pandwind-migration-preview-token": "app-token" },
+						headers: { "x-yumcss-migration-preview-token": "app-token" },
 					})
 				).status,
 			).toBe(409);
@@ -92,7 +92,7 @@ describe("createMigrationPreviewApp", () => {
 		const { app } = handle;
 		try {
 			const page = await app.request("/", {
-				headers: { "x-pandwind-migration-preview-token": "app-token" },
+				headers: { "x-yumcss-migration-preview-token": "app-token" },
 			});
 			expect(page.status).toBe(200);
 			expect(await page.text()).toContain("Migration Preview app");

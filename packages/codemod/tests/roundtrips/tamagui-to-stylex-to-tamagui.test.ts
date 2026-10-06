@@ -42,7 +42,7 @@ test("tamagui -> stylex -> tamagui: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> stylex round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("tamagui -> stylex -> tamagui: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
+		    "code": "// yumcss:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
 		import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "$4" } }).style;
@@ -140,7 +140,7 @@ test("tamagui -> stylex -> tamagui: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> stylex | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> stylex | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("tamagui -> stylex -> tamagui: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> stylex | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> stylex | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -264,7 +264,7 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
+		      "code": "// yumcss:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
 		import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
@@ -338,7 +338,7 @@ test("tamagui -> stylex -> tamagui: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
+		      "code": "// yumcss:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
 		import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;
@@ -427,7 +427,7 @@ test("tamagui -> stylex -> tamagui: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
+		    "code": "// yumcss:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
 		import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "$4" } }).style;

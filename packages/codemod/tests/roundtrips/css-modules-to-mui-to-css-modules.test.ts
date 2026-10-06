@@ -42,7 +42,7 @@ test("css-modules -> mui -> css-modules: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> mui -> css-modules: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("css-modules -> mui -> css-modules: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -163,7 +163,7 @@ test("css-modules -> mui -> css-modules: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -208,7 +208,7 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -242,7 +242,7 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("css-modules -> mui -> css-modules: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> mui -> css-modules: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -355,7 +355,7 @@ test("css-modules -> mui -> css-modules: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

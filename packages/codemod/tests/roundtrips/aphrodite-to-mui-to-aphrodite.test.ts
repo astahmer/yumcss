@@ -42,7 +42,7 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("aphrodite -> mui -> aphrodite: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("aphrodite -> mui -> aphrodite: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

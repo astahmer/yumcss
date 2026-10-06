@@ -1,5 +1,5 @@
 import { MagicString } from "magic-string";
-import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "yumcss/source";
 import {
 	dirnameDocumentPath,
 	isAbsoluteDocumentPath,
@@ -177,7 +177,7 @@ const stylesheetArtifact = (
 	const path = joinDocumentPath(directory, `${stem}${suffix}.module.css`);
 	let specifier = relativeDocumentPath(directory, path);
 	if (!specifier.startsWith(".")) specifier = `./${specifier}`;
-	return { path, specifier, local: `__pandwind${binding}Styles` };
+	return { path, specifier, local: `__yumcss${binding}Styles` };
 };
 
 const stylesheetSourceMap = (
@@ -232,7 +232,7 @@ const targetComponentRewrite = (
 	)
 		return { code: context.code, residuals: [componentResidual(context.binding)] };
 	if (context.code === context.source) return { code: context.code, residuals: [] };
-	const classExpression = /^(__pandwind[A-Za-z_$][\w$]*Styles)\.root$/u.exec(
+	const classExpression = /^(__yumcss[A-Za-z_$][\w$]*Styles)\.root$/u.exec(
 		context.emittedExpression,
 	);
 	if (classExpression === null)

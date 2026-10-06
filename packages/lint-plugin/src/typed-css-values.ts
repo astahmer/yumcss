@@ -95,7 +95,7 @@ const NONE_VALUE = values("none");
 const OVERFLOW_VALUES = values("auto", "clip", "hidden", "overlay", "scroll", "visible");
 const SIZE_VALUES = values("auto", "min-content", "max-content", "fit-content");
 
-/** Mirrors the property-aware scalar vocabulary in pandwind's CSS value types. */
+/** Mirrors the property-aware scalar vocabulary in yumcss's CSS value types. */
 export const CSS_WIDE_VALUES = values("inherit", "initial", "revert", "revert-layer", "unset");
 
 export const CSS_PROPERTY_VALUES: ReadonlyMap<string, ReadonlySet<string>> = new Map([

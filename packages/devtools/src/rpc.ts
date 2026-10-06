@@ -2,10 +2,10 @@ import "@vitejs/devtools-kit";
 import type { DevtoolsEvidenceSnapshot } from "./evidence/store.ts";
 
 export const DEVTOOLS_RPC = {
-	GetSnapshot: "pandwind-devtools:get-snapshot",
-	GetCatalog: "pandwind-devtools:get-catalog",
-	PreviewMigration: "pandwind-devtools:preview-migration",
-	InspectElement: "pandwind-devtools:inspect-element",
+	GetSnapshot: "yumcss-devtools:get-snapshot",
+	GetCatalog: "yumcss-devtools:get-catalog",
+	PreviewMigration: "yumcss-devtools:preview-migration",
+	InspectElement: "yumcss-devtools:inspect-element",
 } as const;
 
 export interface DevtoolsMigrationInput {
@@ -43,7 +43,7 @@ export interface DevtoolsMigrationPreview {
 		readonly skipped: number;
 		readonly residuals: readonly unknown[];
 		readonly loweringPlans: readonly {
-			readonly program: import("pandwind-codemod/swap/semantic-ir").StyleProgram;
+			readonly program: import("@yumcss/codemod/swap/semantic-ir").StyleProgram;
 			readonly representation: string;
 		}[];
 		readonly generatedFiles: readonly { readonly path: string; readonly content: string }[];

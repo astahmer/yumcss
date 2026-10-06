@@ -14,7 +14,7 @@ import {
 	MCP_VALIDATION_CHECK,
 	MCP_VALIDATION_STATUS,
 } from "./contract.ts";
-import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
+import { createBuiltinCodemodCatalog } from "@yumcss/codemod/swap";
 
 const roots: string[] = [];
 
@@ -23,18 +23,18 @@ afterEach(() => {
 });
 
 function project() {
-	const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-"));
+	const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-"));
 	roots.push(root);
 	mkdirSync(resolve(root, "src"), { recursive: true });
 	writeFileSync(
 		resolve(root, "src/tw.ts"),
-		`import { createTw } from "pandwind/tw";\nexport const tw = createTw({ variants: {} });\n`,
+		`import { createTw } from "yumcss/tw";\nexport const tw = createTw({ variants: {} });\n`,
 	);
 	writeFileSync(
 		resolve(root, "src/button.ts"),
-		`import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const button = css.class({ color: "red" });\n`,
+		`import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const button = css.class({ color: "red" });\n`,
 	);
-	writeFileSync(resolve(root, "pandwind.interop.json"), '{"schema":"pandwind.interop/1"}\n');
+	writeFileSync(resolve(root, "yumcss.interop.json"), '{"schema":"yumcss.interop/1"}\n');
 	return createMcpToolService(createMcpProjectContext(root));
 }
 
@@ -42,7 +42,7 @@ function structured(result: { structuredContent?: unknown }): Record<string, unk
 	return result.structuredContent as Record<string, unknown>;
 }
 
-describe("Pandwind MCP tools", () => {
+describe("YumCSS MCP tools", () => {
 	it("exposes the complete tool and resource catalog", async () => {
 		const service = project();
 		expect(service.tools.map(({ name }) => name)).toEqual([
@@ -68,18 +68,18 @@ describe("Pandwind MCP tools", () => {
 			MCP_RESOURCE.LatestComparison,
 		]);
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.AdapterCatalog))).toMatchObject({
-			schema: "pandwind.mcp.catalog/1",
+			schema: "yumcss.mcp.catalog/1",
 		});
 		expect(JSON.parse(await service.readResource(MCP_RESOURCE.InteropArtifact))).toMatchObject({
-			schema: "pandwind.mcp.interop/1",
-			path: "pandwind.interop.json",
-			content: '{"schema":"pandwind.interop/1"}\n',
+			schema: "yumcss.mcp.interop/1",
+			path: "yumcss.interop.json",
+			content: '{"schema":"yumcss.interop/1"}\n',
 		});
 		const routes = JSON.parse(await service.readResource(MCP_RESOURCE.MigrationRouteCatalog)) as {
 			schema: string;
 			routes: readonly { id: string; from: string; to: string }[];
 		};
-		expect(routes).toMatchObject({ schema: "pandwind.migration-route-proof-catalog/1" });
+		expect(routes).toMatchObject({ schema: "yumcss.migration-route-proof-catalog/1" });
 		expect(routes.routes).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
@@ -96,11 +96,11 @@ describe("Pandwind MCP tools", () => {
 		const result = await service.call(MCP_TOOL.InspectProject, {});
 		const value = structured(result);
 		const adapters = value.adapters as Array<{ id: string }>;
-		expect(value.schema).toBe("pandwind.mcp.project/1");
-		expect(adapters.some((adapter) => adapter.id === "pandwind")).toBe(true);
+		expect(value.schema).toBe("yumcss.mcp.project/1");
+		expect(adapters.some((adapter) => adapter.id === "yumcss")).toBe(true);
 		expect(
 			(value.registeredAdapters as Array<{ id: string }>).some(
-				(adapter) => adapter.id === "pandwind",
+				(adapter) => adapter.id === "yumcss",
 			),
 		).toBe(true);
 		expect(value.executionEvidence).toEqual([
@@ -115,8 +115,8 @@ describe("Pandwind MCP tools", () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.PreviewMigration, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 		});
 		const value = structured(result);
 		expect(value.executionEvidence).toEqual([
@@ -152,22 +152,22 @@ describe("Pandwind MCP tools", () => {
 		await expect(
 			service.call(MCP_TOOL.ApplyMigration, {
 				files: ["src/button.ts"],
-				from: "pandwind",
-				to: "pandwind",
+				from: "yumcss",
+				to: "yumcss",
 			}),
 		).rejects.toThrow("confirm: true");
 		const result = await service.call(MCP_TOOL.ApplyMigration, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 			confirm: true,
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.apply-migration/1",
+			schema: "yumcss.mcp.apply-migration/1",
 			applied: true,
 		});
 
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-apply-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-apply-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");
@@ -205,12 +205,12 @@ describe("Pandwind MCP tools", () => {
 		const comparison = await service.call(MCP_TOOL.CompareMigrations, {
 			files: ["src/button.ts"],
 			routes: [
-				{ from: "pandwind", to: "pandwind" },
-				{ from: "pandwind", to: "pandwind" },
+				{ from: "yumcss", to: "yumcss" },
+				{ from: "yumcss", to: "yumcss" },
 			],
 		});
 		expect(structured(comparison)).toMatchObject({
-			schema: "pandwind.mcp.compare-migrations/1",
+			schema: "yumcss.mcp.compare-migrations/1",
 			executionEvidence: [
 				expect.objectContaining({
 					lane: MCP_EVIDENCE_LANE.InProcess,
@@ -221,21 +221,21 @@ describe("Pandwind MCP tools", () => {
 		});
 		const programs = await service.call(MCP_TOOL.InspectStyleProgram, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 		});
-		expect(structured(programs).schema).toBe("pandwind.mcp.style-program/1");
+		expect(structured(programs).schema).toBe("yumcss.mcp.style-program/1");
 		expect(structured(programs).executionEvidence).toEqual([
 			expect.objectContaining({ lane: MCP_EVIDENCE_LANE.InProcess }),
 		]);
 		const benchmark = await service.call(MCP_TOOL.BenchmarkProject, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 			iterations: 1,
 		});
 		expect(structured(benchmark)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/1",
+			schema: "yumcss.mcp.benchmark/1",
 			executionLane: MCP_EXECUTION_LANE.InProcess,
 			scope: MCP_BENCHMARK_SCOPE.InProcessMigration,
 			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Warm,
@@ -255,13 +255,13 @@ describe("Pandwind MCP tools", () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.BenchmarkProject, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 			iterations: 2,
 			benchmarkMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/1",
+			schema: "yumcss.mcp.benchmark/1",
 			measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold,
 			profile: "cold-in-process",
 			inputs: {
@@ -277,7 +277,7 @@ describe("Pandwind MCP tools", () => {
 		["scope", { scope: MCP_BENCHMARK_SCOPE.InProcessMigration }],
 		["measurement mode", { measurementMode: MCP_BENCHMARK_MEASUREMENT_MODE.Cold }],
 	] as const)("rejects host benchmark evidence with an invalid %s", async (_label, invalid) => {
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-benchmark-contract-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-benchmark-contract-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");
@@ -328,9 +328,9 @@ describe("Pandwind MCP tools", () => {
 			twPath: "src/tw.ts",
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.analyze-project/1",
-			analysis: { schema: "pandwind.analyze/1" },
-			governance: { schema: "pandwind.analyze.governance/1" },
+			schema: "yumcss.mcp.analyze-project/1",
+			analysis: { schema: "yumcss.analyze/1" },
+			governance: { schema: "yumcss.analyze.governance/1" },
 		});
 	});
 
@@ -338,11 +338,11 @@ describe("Pandwind MCP tools", () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.ValidateMigration, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 		});
 		expect(structured(result)).toMatchObject({
-			schema: "pandwind.mcp.validate-migration/1",
+			schema: "yumcss.mcp.validate-migration/1",
 			valid: true,
 			files: [{ valid: true }],
 			checks: [
@@ -365,8 +365,8 @@ describe("Pandwind MCP tools", () => {
 		await expect(
 			service.call(MCP_TOOL.PreviewMigration, {
 				files: ["../outside.ts"],
-				from: "pandwind",
-				to: "pandwind",
+				from: "yumcss",
+				to: "yumcss",
 			}),
 		).rejects.toThrow("project-relative");
 	});
@@ -375,8 +375,8 @@ describe("Pandwind MCP tools", () => {
 		const service = project();
 		const result = await service.call(MCP_TOOL.ValidateMigration, {
 			files: ["src/button.ts"],
-			from: "pandwind",
-			to: "pandwind",
+			from: "yumcss",
+			to: "yumcss",
 			checks: [MCP_VALIDATION_CHECK.Typecheck],
 		});
 		const value = structured(result);
@@ -403,7 +403,7 @@ describe("Pandwind MCP tools", () => {
 	});
 
 	it("accepts substituted migration and analyzer ports", async () => {
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-ports-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-ports-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");
@@ -457,7 +457,7 @@ describe("Pandwind MCP tools", () => {
 			iterations: 1,
 		});
 		expect(structured(benchmark)).toMatchObject({
-			schema: "pandwind.mcp.benchmark/1",
+			schema: "yumcss.mcp.benchmark/1",
 			benchmark: {
 				executionLane: MCP_EXECUTION_LANE.HostProject,
 				scope: MCP_BENCHMARK_SCOPE.Project,
@@ -469,7 +469,7 @@ describe("Pandwind MCP tools", () => {
 	});
 
 	it("runs only the explicitly supplied host validation checks", async () => {
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-validation-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");
@@ -530,7 +530,7 @@ describe("Pandwind MCP tools", () => {
 	});
 
 	it("preserves skipped and not-applicable host statuses in evidence", async () => {
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-status-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-validation-status-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");
@@ -591,7 +591,7 @@ describe("Pandwind MCP tools", () => {
 	});
 
 	it("fails closed when a host validation port returns invalid evidence", async () => {
-		const root = mkdtempSync(resolve(tmpdir(), "pandwind-mcp-validation-contract-"));
+		const root = mkdtempSync(resolve(tmpdir(), "yumcss-mcp-validation-contract-"));
 		roots.push(root);
 		mkdirSync(resolve(root, "src"), { recursive: true });
 		writeFileSync(resolve(root, "src/source.ts"), "before");

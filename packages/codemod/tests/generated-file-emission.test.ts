@@ -10,17 +10,17 @@ import {
 const catalog = createBuiltinCodemodCatalog();
 const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
 const panda = catalog.registry.get(CodemodAdapterId.Panda)!;
-const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind)!;
+const yumcss = catalog.registry.get(CodemodAdapterId.YumCSS)!;
 const generatedTargetId = "test-generated-target";
 
 function targetWithGeneratedFile(
 	createFile: (index: number) => AdapterGeneratedFile,
 ): StyleAdapter {
 	return {
-		...pandwind,
+		...yumcss,
 		id: generatedTargetId,
 		emit(program, context) {
-			const emitted = pandwind.emit(program, context);
+			const emitted = yumcss.emit(program, context);
 			return {
 				...emitted,
 				generatedFiles: [createFile(context.index)],
@@ -48,23 +48,23 @@ describe("generated target files", () => {
 				'export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });\n',
 			{
 				from: CodemodAdapterId.Panda,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: "/project/src/recipes.ts",
 				root: "/project",
 				mode: "safe",
 				readFile: () => undefined,
-				adapterRegistry: createStyleAdapterRegistry([panda, pandwind]),
+				adapterRegistry: createStyleAdapterRegistry([panda, yumcss]),
 			},
 		);
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('from "../__pandwind/recipe"');
-		expect(result.code).not.toContain('from "pandwind/recipe"');
+		expect(result.code).toContain('from "../__yumcss/recipe"');
+		expect(result.code).not.toContain('from "yumcss/recipe"');
 		expect(result.generatedFiles).toEqual([
 			expect.objectContaining({
-				path: "__pandwind/recipe.ts",
+				path: "__yumcss/recipe.ts",
 				purpose: "shared recipe runtime used by migrated source",
 			}),
 		]);
@@ -84,12 +84,12 @@ describe("generated target files", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Panda,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/Card.tsx",
 			root: "/project",
 			mode: "safe",
 			readFile: () => undefined,
-			adapterRegistry: createStyleAdapterRegistry([panda, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([panda, yumcss]),
 		});
 
 		expect(result.residuals).toEqual([]);
@@ -124,7 +124,7 @@ describe("generated target files", () => {
 			]
 		`);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			"
@@ -150,7 +150,7 @@ describe("generated target files", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.generatedFiles).toHaveLength(1);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			const panel = css.class({ backgroundColor: "white" });
@@ -182,13 +182,13 @@ describe("generated target files", () => {
 			}),
 		]);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
+			"// yumcss:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
 			import { css } from "@emotion/css";
 			const card = css({ color: "red" });
 			const panel = css({ color: "blue" });
 			"
 		`);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("@emotion/css");
 	});
 
@@ -213,7 +213,7 @@ describe("generated target files", () => {
 			}),
 		]);
 		expect(result.code).toMatchInlineSnapshot(`
-		"// pandwind:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
+		"// yumcss:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
 		import { css } from "@emotion/css";
 		const card = css({ color: "red" });
 		"

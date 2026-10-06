@@ -42,7 +42,7 @@ test("tokenami -> css-modules -> tokenami: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tokenami -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("tokenami -> css-modules -> tokenami: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("tokenami -> css-modules -> tokenami: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("tokenami -> css-modules -> tokenami: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,7 +160,7 @@ test("tokenami -> css-modules -> tokenami: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -204,7 +204,7 @@ test("tokenami -> css-modules -> tokenami: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,7 +241,7 @@ test("tokenami -> css-modules -> tokenami: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("tokenami -> css-modules -> tokenami: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -294,7 +294,7 @@ test("tokenami -> css-modules -> tokenami: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -325,7 +325,7 @@ test("tokenami -> css-modules -> tokenami: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -362,7 +362,7 @@ test("tokenami -> css-modules -> tokenami: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

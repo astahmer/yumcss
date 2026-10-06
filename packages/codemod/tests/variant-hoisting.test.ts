@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { variantKeyForTarget, variantPathForKey } from "../src/swap/variant-hoisting.ts";
 import { runSwap } from "../src/swap/index.ts";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { resolve } from "node:path";
 
 const appDir = resolve(import.meta.dirname, "../../../examples/example/src");

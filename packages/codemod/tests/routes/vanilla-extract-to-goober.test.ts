@@ -38,10 +38,10 @@ test("vanilla-extract -> goober: migrates concrete vanilla-extract syntax to goo
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> goober happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("vanilla-extract -> goober: carries a documented secondary vanilla-extract 
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> goober | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> goober | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],

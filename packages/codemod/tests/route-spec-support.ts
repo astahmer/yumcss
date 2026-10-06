@@ -136,7 +136,7 @@ interface AdapterRouteProject {
 	};
 }
 
-const routeProjectRoot = "/virtual/pandwind-route-project";
+const routeProjectRoot = "/virtual/yumcss-route-project";
 
 const installedChakraProjectRoot = resolve(import.meta.dirname, "..");
 const installedChakraModuleLoader: ProjectModuleLoader = {
@@ -195,11 +195,11 @@ function routeProjectFiles(
 			return {
 				[`${routeProjectRoot}/panda.config.ts`]: `export default { theme: { extend: { tokens: { colors: { brand: { 500: { value: ${quotedColor} } } }, spacing: { card: { value: "1.125rem" } } } } } };`,
 			};
-		case CodemodAdapterId.Pandwind:
+		case CodemodAdapterId.YumCSS:
 			return {
-				[`${routeProjectRoot}/pandwind.interop.json`]: '{"generatedFrom":{"bridge":"bridge.ts"}}',
+				[`${routeProjectRoot}/yumcss.interop.json`]: '{"generatedFrom":{"bridge":"bridge.ts"}}',
 				[`${routeProjectRoot}/bridge.ts`]:
-					'import { defaultPreset } from "pandwind/preset/default";\nexport const bridge = { preset: defaultPreset };',
+					'import { defaultPreset } from "yumcss/preset/default";\nexport const bridge = { preset: defaultPreset };',
 			};
 		case CodemodAdapterId.ChakraUi:
 			return {
@@ -266,8 +266,8 @@ function routeProjectLoader(
 					} as T;
 			}
 			if (
-				hasAdapter(adapters, CodemodAdapterId.Pandwind) &&
-				packageName === "pandwind/preset/default"
+				hasAdapter(adapters, CodemodAdapterId.YumCSS) &&
+				packageName === "yumcss/preset/default"
 			)
 				return {
 					defaultPreset: {
@@ -606,8 +606,8 @@ function officialConfigPackages(adapter: CodemodAdapterId): readonly string[] {
 	switch (adapter) {
 		case CodemodAdapterId.Panda:
 			return ["@pandacss/config"];
-		case CodemodAdapterId.Pandwind:
-			return ["pandwind/preset/default"];
+		case CodemodAdapterId.YumCSS:
+			return ["yumcss/preset/default"];
 		case CodemodAdapterId.ChakraUi:
 			return ["@chakra-ui/react"];
 		case CodemodAdapterId.Mui:
@@ -643,7 +643,7 @@ export function expectConfiguredProjectEvidence(
 
 function configuredTargetTokenMarkers(target: CodemodAdapterId): readonly string[] {
 	switch (target) {
-		case CodemodAdapterId.Pandwind:
+		case CodemodAdapterId.YumCSS:
 			return ["brand", "$brand", "card"];
 		case CodemodAdapterId.Panda:
 		case CodemodAdapterId.ChakraUi:
@@ -670,7 +670,7 @@ function configuredTargetTokenUsed(
 ): boolean {
 	if (marker !== "card") return code.includes(marker);
 	if (
-		target !== CodemodAdapterId.Pandwind &&
+		target !== CodemodAdapterId.YumCSS &&
 		target !== CodemodAdapterId.Panda &&
 		target !== CodemodAdapterId.ChakraUi &&
 		target !== CodemodAdapterId.Mui
@@ -752,9 +752,9 @@ export function expectRouteScenarioEvidence(result: AdapterMigrationResult, labe
 			result.outcomes.some((outcome) => outcome.outcome === StyleMigrationOutcome.Residual),
 			`${label} skipped without a residual outcome`,
 		).toBe(true);
-	if (result.code.includes("__pandwind/slot"))
+	if (result.code.includes("__yumcss/slot"))
 		expect(
-			result.generatedFiles.some((file) => file.path.includes("__pandwind/slot")),
+			result.generatedFiles.some((file) => file.path.includes("__yumcss/slot")),
 			`${label} references a generated slot without emitting it`,
 		).toBe(true);
 }
@@ -764,7 +764,7 @@ export function expectExplicitResidualEvidence(result: AdapterMigrationResult): 
 	// A host adapter owns the opening-tag rewrite. A target emitter must never
 	// leak a second JSX/Vue host into a class/style attribute expression.
 	expect(result.code).not.toMatch(/\b(?:className|class|style)\s*=\s*\{\s*<[A-Za-z]/u);
-	if (result.skipped > 0) expect(result.code).toContain("pandwind:migrate-skip");
+	if (result.skipped > 0) expect(result.code).toContain("yumcss:migrate-skip");
 	if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
 	for (const residual of result.residuals) {
 		expect(
@@ -795,7 +795,7 @@ export function expectActionableRoundTrip(
 	const forwardHasPortableArtifact =
 		forward.outcomes.some(
 			(outcome) => outcome.representation === StyleRepresentationKind.PortableArtifact,
-		) && forward.code.includes("pandwind/");
+		) && forward.code.includes("yumcss/");
 	if (forward.converted > 0 && !forwardHasResidual) {
 		expect(reverseActionable || (forwardHasPortableArtifact && reverse.code === forward.code)).toBe(
 			true,

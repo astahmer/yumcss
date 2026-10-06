@@ -1,6 +1,6 @@
 import { SourcePass } from "../source-pass-utils.ts";
 import { ensureImport } from "../shared.ts";
-import type { SourceBindingIndex, SourceScanResult, SourceScannerService } from "pandwind/source";
+import type { SourceBindingIndex, SourceScanResult, SourceScannerService } from "yumcss/source";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import { intrinsicTagForSubject } from "./host-component-rewriter.ts";
 import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";

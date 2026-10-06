@@ -42,7 +42,7 @@ test("mui -> stitches -> mui: preserves an actionable concrete round trip", asyn
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("mui -> stitches -> mui: preserves an actionable concrete round trip", asyn
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "red", padding: "16px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -277,7 +277,7 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#f97316", padding: "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -351,7 +351,7 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -440,7 +440,7 @@ test("mui -> stitches -> mui: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

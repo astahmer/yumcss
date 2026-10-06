@@ -42,7 +42,7 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("react-native -> mui -> react-native: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("react-native -> mui -> react-native: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

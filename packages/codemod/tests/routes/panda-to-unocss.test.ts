@@ -38,10 +38,10 @@ test("panda -> unocss: migrates concrete panda syntax to unocss", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "panda -> unocss happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("panda -> unocss: carries a documented secondary panda API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> unocss | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> unocss | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],

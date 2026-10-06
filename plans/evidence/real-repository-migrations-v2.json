@@ -1,7 +1,7 @@
 {
-  "schema": "pandwind.real-repository-report/1",
+  "schema": "yumcss.real-repository-report/1",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
-  "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
+  "cloneRoot": "${YUMCSS_REFERENCE_ROOT:-~/.references}",
   "sourceFiles": 32,
   "reports": [
     {
@@ -9,7 +9,7 @@
       "repository": "https://github.com/chakra-ui/panda",
       "commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
       "path": "website/app/page.tsx",
-      "adapterRoute": "panda -> pandwind",
+      "adapterRoute": "panda -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -32,7 +32,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -92,10 +92,10 @@
           "@pandacss/dev"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@pandacss/dev"
@@ -133,7 +133,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -232,7 +232,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -306,7 +306,7 @@
       "repository": "https://github.com/chakra-ui/panda",
       "commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
       "path": "website/app/page.tsx",
-      "adapterRoute": "panda -> pandwind",
+      "adapterRoute": "panda -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -329,7 +329,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -389,10 +389,10 @@
           "@pandacss/dev"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@pandacss/dev"
@@ -405,7 +405,7 @@
       "repository": "https://github.com/emotion-js/emotion",
       "commit": "b882bcba85132554992e4bd49e94c95939bbf810",
       "path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
-      "adapterRoute": "emotion -> pandwind",
+      "adapterRoute": "emotion -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -430,7 +430,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -487,10 +487,10 @@
           "@emotion/react"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@emotion/css",
@@ -504,7 +504,7 @@
       "repository": "https://github.com/styled-components/styled-components",
       "commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
       "path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
-      "adapterRoute": "styled-components -> pandwind",
+      "adapterRoute": "styled-components -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -529,7 +529,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -585,10 +585,10 @@
           "styled-components"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "styled-components"
@@ -601,7 +601,7 @@
       "repository": "https://github.com/vanilla-extract-css/vanilla-extract",
       "commit": "881c256a867f55386f96a7fe95068300bac720e6",
       "path": "examples/next/components/HelloWorld.css.ts",
-      "adapterRoute": "vanilla-extract -> pandwind",
+      "adapterRoute": "vanilla-extract -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -626,7 +626,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -682,10 +682,10 @@
           "@vanilla-extract/css"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@vanilla-extract/css"
@@ -698,7 +698,7 @@
       "repository": "https://github.com/stitchesjs/stitches",
       "commit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
       "path": "packages/core/tests/basic.js",
-      "adapterRoute": "stitches -> pandwind",
+      "adapterRoute": "stitches -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.7,
@@ -722,7 +722,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -778,10 +778,10 @@
           "@stitches/react"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@stitches/react"
@@ -794,7 +794,7 @@
       "repository": "https://github.com/callstack/linaria",
       "commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
       "path": "examples/astro-solid/pages/csr.tsx",
-      "adapterRoute": "linaria -> pandwind",
+      "adapterRoute": "linaria -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -819,7 +819,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -874,10 +874,10 @@
           "@linaria/react"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@linaria/core",
@@ -891,7 +891,7 @@
       "repository": "https://github.com/cssinjs/jss",
       "commit": "901882a894c7e802450696ebe2ea633ae63c5977",
       "path": "examples/inline/app.js",
-      "adapterRoute": "jss -> pandwind",
+      "adapterRoute": "jss -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -916,7 +916,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -971,10 +971,10 @@
           "react-jss"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "jss",
@@ -988,7 +988,7 @@
       "repository": "https://github.com/rofrischmann/fela",
       "commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
       "path": "packages/fela-dom/src/dom/__tests__/render-test.js",
-      "adapterRoute": "fela -> pandwind",
+      "adapterRoute": "fela -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1014,7 +1014,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1073,10 +1073,10 @@
           "react-fela"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "fela",
@@ -1090,7 +1090,7 @@
       "repository": "https://github.com/cristianbote/goober",
       "commit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
       "path": "src/__tests__/css.test.js",
-      "adapterRoute": "goober -> pandwind",
+      "adapterRoute": "goober -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1116,7 +1116,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1174,10 +1174,10 @@
           "goober"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "goober"
@@ -1190,7 +1190,7 @@
       "repository": "https://github.com/Khan/aphrodite",
       "commit": "225f43c5802259a9e042b384a1f4f2e5b48094ea",
       "path": "tests/index_test.js",
-      "adapterRoute": "aphrodite -> pandwind",
+      "adapterRoute": "aphrodite -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1214,7 +1214,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1270,10 +1270,10 @@
           "aphrodite"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "aphrodite"
@@ -1286,7 +1286,7 @@
       "repository": "https://github.com/johanholmerin/style9",
       "commit": "b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42",
       "path": "examples/nextjs/shared/styles.js",
-      "adapterRoute": "style9 -> pandwind",
+      "adapterRoute": "style9 -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1311,7 +1311,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1367,10 +1367,10 @@
           "style9"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "style9"
@@ -1383,7 +1383,7 @@
       "repository": "https://github.com/seek-oss/treat",
       "commit": "1cc001170ee6b66b1d960ac4097fb84597163d1c",
       "path": "examples/gatsby-plugin-treat-example/src/components/Button.treat.js",
-      "adapterRoute": "treat -> pandwind",
+      "adapterRoute": "treat -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1408,7 +1408,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1464,10 +1464,10 @@
           "treat"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "treat"
@@ -1480,7 +1480,7 @@
       "repository": "https://github.com/atlassian-labs/compiled",
       "commit": "0f5d2b606471b9fb92c2402d5367c3c23efd1a29",
       "path": "fixtures/parcel-optimizer-test-app/src/index.jsx",
-      "adapterRoute": "compiled -> pandwind",
+      "adapterRoute": "compiled -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.7,
@@ -1504,7 +1504,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1561,10 +1561,10 @@
           "@compiled/css-in-js"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@compiled/react",
@@ -1578,7 +1578,7 @@
       "repository": "https://github.com/solidjs/solid-styled-components",
       "commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
       "path": "test/test.spec.tsx",
-      "adapterRoute": "solid-styled -> pandwind",
+      "adapterRoute": "solid-styled -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1602,7 +1602,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1656,10 +1656,10 @@
           "solid-styled-components"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "solid-styled-components"
@@ -1672,7 +1672,7 @@
       "repository": "https://github.com/vue-styled-components/core",
       "commit": "5874630ed4d54aa955052fc864140eeae30fad2c",
       "path": "packages/playground/src/App.vue",
-      "adapterRoute": "vue-styled -> pandwind",
+      "adapterRoute": "vue-styled -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.8,
@@ -1699,7 +1699,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1757,10 +1757,10 @@
           "vue-styled-components"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "vue-styled-components"
@@ -1773,7 +1773,7 @@
       "repository": "https://github.com/facebook/stylex",
       "commit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
       "path": "examples/example-bun/src/App.jsx",
-      "adapterRoute": "stylex -> pandwind",
+      "adapterRoute": "stylex -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -1798,7 +1798,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1854,10 +1854,10 @@
           "@stylexjs/stylex"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@stylexjs/stylex"
@@ -1870,7 +1870,7 @@
       "repository": "https://github.com/react/react-strict-dom",
       "commit": "86a8033d3fd7272258d421c926b2a588be36eb6f",
       "path": "apps/example-ui/Button/index.js",
-      "adapterRoute": "react-strict-dom -> pandwind",
+      "adapterRoute": "react-strict-dom -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -1895,7 +1895,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -1951,10 +1951,10 @@
           "react-strict-dom"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "react-strict-dom"
@@ -1967,7 +1967,7 @@
       "repository": "https://github.com/jantimon/css-in-js-bench",
       "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
       "path": "techs/bamboo/case/realistic-button/index.tsx",
-      "adapterRoute": "bamboo -> pandwind",
+      "adapterRoute": "bamboo -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.7,
@@ -1991,7 +1991,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2048,10 +2048,10 @@
           "@bamboocss/vite"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [],
         "byteDelta": -65
@@ -2062,7 +2062,7 @@
       "repository": "https://github.com/jantimon/css-in-js-bench",
       "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
       "path": "techs/next-yak/case/realistic-button/index.tsx",
-      "adapterRoute": "next-yak -> pandwind",
+      "adapterRoute": "next-yak -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2089,7 +2089,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2149,10 +2149,10 @@
           "next-yak"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "next-yak"
@@ -2165,7 +2165,7 @@
       "repository": "https://github.com/jantimon/css-in-js-bench",
       "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
       "path": "techs/next-yak/case/dyn-fair/index.tsx",
-      "adapterRoute": "next-yak -> pandwind",
+      "adapterRoute": "next-yak -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.7,
@@ -2188,7 +2188,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -2251,10 +2251,10 @@
           "next-yak"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "next-yak"
@@ -2267,7 +2267,7 @@
       "repository": "https://github.com/jantimon/css-in-js-bench",
       "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
       "path": "techs/next-yak-css/case/realistic-button/index.tsx",
-      "adapterRoute": "next-yak -> pandwind",
+      "adapterRoute": "next-yak -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2292,7 +2292,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2348,10 +2348,10 @@
           "next-yak"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "next-yak"
@@ -2364,7 +2364,7 @@
       "repository": "https://github.com/chakra-ui/chakra-ui",
       "commit": "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
       "path": "apps/www/components/chakra-mastery-ad.tsx",
-      "adapterRoute": "chakra-ui -> pandwind",
+      "adapterRoute": "chakra-ui -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2389,7 +2389,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2445,10 +2445,10 @@
           "@chakra-ui/react"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@chakra-ui/react"
@@ -2461,7 +2461,7 @@
       "repository": "https://github.com/mui/material-ui",
       "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
       "path": "docs/data/material/components/box/BoxSx.tsx",
-      "adapterRoute": "mui -> pandwind",
+      "adapterRoute": "mui -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2488,7 +2488,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2549,10 +2549,10 @@
           "@mui/material"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [],
         "byteDelta": 212
@@ -2563,7 +2563,7 @@
       "repository": "https://github.com/mantinedev/mantine",
       "commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
       "path": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
-      "adapterRoute": "mantine -> pandwind",
+      "adapterRoute": "mantine -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2590,7 +2590,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -2650,10 +2650,10 @@
           "@mantine/core"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [],
         "byteDelta": 676
@@ -2664,7 +2664,7 @@
       "repository": "https://github.com/tokenami/tokenami",
       "commit": "29cf3b97ef14b22421734113f37b7b29e73f35e0",
       "path": "examples/nextjs/src/components/button.tsx",
-      "adapterRoute": "tokenami -> pandwind",
+      "adapterRoute": "tokenami -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.9,
@@ -2689,7 +2689,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -2754,10 +2754,10 @@
           "@tokenami/config"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "@tokenami/css"
@@ -2770,7 +2770,7 @@
       "repository": "https://github.com/unocss/unocss",
       "commit": "75103d5e12ec9876069daf6b97a7db1d73428829",
       "path": "examples/next/app/page.tsx",
-      "adapterRoute": "unocss -> pandwind",
+      "adapterRoute": "unocss -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.55,
@@ -2793,7 +2793,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -2857,10 +2857,10 @@
           "@unocss/core"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "unocss",
@@ -2874,7 +2874,7 @@
       "repository": "https://github.com/tailwindlabs/tailwindcss.com",
       "commit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
       "path": "src/app/page.tsx",
-      "adapterRoute": "tailwind -> pandwind",
+      "adapterRoute": "tailwind -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 0.6,
@@ -2897,7 +2897,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -2961,10 +2961,10 @@
           "@tailwindcss/node"
         ],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [
           "tailwindcss",
@@ -2978,7 +2978,7 @@
       "repository": "https://github.com/tamagui/tamagui",
       "commit": "25d97e1ab6bc5d09e83c7776f61d6b0852048678",
       "path": "code/starters/remix/app/routes/_index.tsx",
-      "adapterRoute": "tamagui -> pandwind",
+      "adapterRoute": "tamagui -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -3002,7 +3002,7 @@
         "byteDelta": 0
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "source-static",
         "eligible": false,
         "dimensions": {
@@ -3056,10 +3056,10 @@
         "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
         "sourceRuntimePackages": [],
         "targetRuntimePackages": [
-          "pandwind"
+          "yumcss"
         ],
         "added": [
-          "pandwind"
+          "yumcss"
         ],
         "removed": [],
         "byteDelta": 249
@@ -3070,7 +3070,7 @@
       "repository": "https://github.com/facebook/astryx",
       "commit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
       "path": "apps/docsite/src/app/not-found.module.css",
-      "adapterRoute": "css-modules -> pandwind",
+      "adapterRoute": "css-modules -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -3093,7 +3093,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -3164,7 +3164,7 @@
       "repository": "https://github.com/twbs/bootstrap",
       "commit": "12cb8b902d175a0d612f1280f58b386a09921a16",
       "path": "scss/helpers/_stacks.scss",
-      "adapterRoute": "sass -> pandwind",
+      "adapterRoute": "sass -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -3188,7 +3188,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -3258,7 +3258,7 @@
       "repository": "https://github.com/less/less.js",
       "commit": "713331655e437401dfea6cd233893a69762734e1",
       "path": "packages/less/test/browser/less/postProcessor/postProcessor.less",
-      "adapterRoute": "less -> pandwind",
+      "adapterRoute": "less -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -3282,7 +3282,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -3352,7 +3352,7 @@
       "repository": "https://github.com/PostHog/posthog.com",
       "commit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
       "path": "src/components/Layout/SkeletonLoading.css",
-      "adapterRoute": "authored-css -> pandwind",
+      "adapterRoute": "authored-css -> yumcss",
       "detection": {
         "matched": true,
         "confidence": 1,
@@ -3375,7 +3375,7 @@
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
       },
       "promotion": {
-        "schema": "pandwind.real-repository-proof/1",
+        "schema": "yumcss.real-repository-proof/1",
         "status": "pipeline-unpaired",
         "eligible": false,
         "dimensions": {
@@ -3442,9 +3442,9 @@
   ],
   "routeProof": [
     {
-      "id": "tailwind-to-pandwind",
+      "id": "tailwind-to-yumcss",
       "from": "tailwind",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3503,9 +3503,9 @@
       "note": "A bounded installed React/Vite fixture covers the project lifecycle; broader route coverage is still required for promotion."
     },
     {
-      "id": "panda-to-pandwind",
+      "id": "panda-to-yumcss",
       "from": "panda",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3574,9 +3574,9 @@
       "note": "A bounded installed React/Vite fixture covers official generated-system loading, shorthand lowering, token preservation, SSR, hydration, and browser parity; broader recipe and framework coverage is still required for promotion."
     },
     {
-      "id": "styled-components-to-pandwind",
+      "id": "styled-components-to-yumcss",
       "from": "styled-components",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3631,9 +3631,9 @@
       "note": "A bounded installed React/Vite fixture covers a styled object and pseudo-condition; broader component and theme coverage is still required for promotion."
     },
     {
-      "id": "unocss-to-pandwind",
+      "id": "unocss-to-yumcss",
       "from": "unocss",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3692,9 +3692,9 @@
       "note": "An installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; a pinned upstream Next example also passes the migration, Next typecheck/build, HTTP/RSC/browser checks, and UnoCSS removal. Broader preset and framework coverage is still required for promotion."
     },
     {
-      "id": "vanilla-extract-to-pandwind",
+      "id": "vanilla-extract-to-yumcss",
       "from": "vanilla-extract",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3749,9 +3749,9 @@
       "note": "A pinned Vanilla Extract HelloWorld fixture covers typed custom properties, fallback variables, keyframes, the official Vite plugin, SSR, hydration, and browser parity. Its tiny fused-versus-atomic CSS comparison is recorded but is not a meaningful non-growth budget; broader recipes, themes, and framework coverage remain required for promotion."
     },
     {
-      "id": "stitches-to-pandwind",
+      "id": "stitches-to-yumcss",
       "from": "stitches",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3806,9 +3806,9 @@
       "note": "A pinned upstream Stitches React test API is exercised through an installed React/Vite host with theme tokens, a variant recipe, hover parity, SSR, hydration, and browser checks. The small fused-versus-atomic CSS comparison is diagnostic rather than a non-growth budget; broader theme, compound-variant, and framework coverage remain required for promotion."
     },
     {
-      "id": "mui-to-pandwind",
+      "id": "mui-to-yumcss",
       "from": "mui",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3865,9 +3865,9 @@
       "note": "A pinned MUI Box sx example is exercised through an installed React/Vite host with static system values and a hover pseudo-condition. The proof covers typecheck, build, SSR, hydration, generated atomic CSS, and browser parity; ThemeProvider-owned callbacks, responsive arrays, and component theme overrides remain explicit residual territory."
     },
     {
-      "id": "mantine-to-pandwind",
+      "id": "mantine-to-yumcss",
       "from": "mantine",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3924,9 +3924,9 @@
       "note": "A pinned Mantine help-center style-prop example is exercised through an installed React/Vite host with a real MantineProvider, static Box style props, SSR, hydration, atomic CSS, and browser parity; provider-owned theme callbacks, styles/classNames/vars maps, and responsive style-prop objects remain explicit residual territory."
     },
     {
-      "id": "tokenami-to-pandwind",
+      "id": "tokenami-to-yumcss",
       "from": "tokenami",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -3985,9 +3985,9 @@
       "note": "A pinned Tokenami button example is exercised through the installed Tokenami CLI and React/Vite host with css.compose aliases, grid math, verified theme-value lowering, hover conditions, SSR, hydration, atomic CSS, and browser parity; runtime composition, theme-mode switching, and unsupported global rules remain explicit residual territory."
     },
     {
-      "id": "jss-to-pandwind",
+      "id": "jss-to-yumcss",
       "from": "jss",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4041,9 +4041,9 @@
       "note": "A pinned JSS inline example is exercised through installed JSS camel-case and nested plugins with static sheet creation, attachment, hover output, SSR, hydration, and browser parity. Dynamic rule values, plugin-specific runtime behavior, and non-static renderer inputs remain explicit residual territory."
     },
     {
-      "id": "fela-to-pandwind",
+      "id": "fela-to-yumcss",
       "from": "fela",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4099,9 +4099,9 @@
       "note": "A pinned Fela renderRule example is exercised through installed Fela and fela-dom with a static rule, empty props, hover output, SSR, hydration, and browser parity. Dynamic props, enhancers, plugins, and renderer-owned component options remain explicit residual territory."
     },
     {
-      "id": "aphrodite-to-pandwind",
+      "id": "aphrodite-to-yumcss",
       "from": "aphrodite",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4156,9 +4156,9 @@
       "note": "A pinned Aphrodite API example is exercised through installed StyleSheet.create and css with a static rule, hover output, server CSS collection, SSR, hydration, and browser parity. Dynamic style arrays, keyframes, font-face, and runtime-specific injection options remain explicit residual territory."
     },
     {
-      "id": "compiled-to-pandwind",
+      "id": "compiled-to-yumcss",
       "from": "compiled",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4213,9 +4213,9 @@
       "note": "A pinned Atlassian Compiled Vite fixture is exercised through the official Compiled Vite plugin, styled components, cssMapScoped selectors, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Plugin-specific transforms, dynamic style expressions, and CSS-map runtime semantics beyond this static fixture remain explicit residual territory."
     },
     {
-      "id": "style9-to-pandwind",
+      "id": "style9-to-yumcss",
       "from": "style9",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4270,9 +4270,9 @@
       "note": "A pinned Style9 Next.js example is exercised through the installed Style9 Vite compiler with named maps, composition, hover output, SSR, hydration, and browser parity. The proof covers the static compiler lane; dynamic style-map expressions and framework-specific compiler options remain explicit residual territory."
     },
     {
-      "id": "next-yak-to-pandwind",
+      "id": "next-yak-to-yumcss",
       "from": "next-yak",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4346,12 +4346,12 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "A pinned css-in-js-bench dynamic-interpolation example is exercised through installed next-yak Vite and Pandwind runtime carriers with typecheck, build, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Nested dynamic template composition and non-React compiler hosts remain explicit residual territory."
+      "note": "A pinned css-in-js-bench dynamic-interpolation example is exercised through installed next-yak Vite and YumCSS runtime carriers with typecheck, build, SSR, hydration, browser parity, and inline-style-aware CSS accounting. Nested dynamic template composition and non-React compiler hosts remain explicit residual territory."
     },
     {
-      "id": "linaria-to-pandwind",
+      "id": "linaria-to-yumcss",
       "from": "linaria",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4402,12 +4402,12 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "A pinned Linaria Astro/Solid example is exercised through the installed Linaria compiler and a Pandwind Vite target with static styled components, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. Dynamic expressions, theme functions, and compiler options outside this static lane remain explicit residual territory; the measured CSS comparison is diagnostic when the runtime carrier is larger."
+      "note": "A pinned Linaria Astro/Solid example is exercised through the installed Linaria compiler and a YumCSS Vite target with static styled components, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. Dynamic expressions, theme functions, and compiler options outside this static lane remain explicit residual territory; the measured CSS comparison is diagnostic when the runtime carrier is larger."
     },
     {
-      "id": "treat-to-pandwind",
+      "id": "treat-to-yumcss",
       "from": "treat",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4459,12 +4459,12 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "A pinned Treat Gatsby button style is compiled with Treat's official Webpack plugin and compared with an installed Pandwind Vite target across static declarations, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. createTheme, styleMap/theme runtime APIs, and dynamic style functions remain explicit residual territory; runtime CSS is currently a measured diagnostic trade-off against Treat's extracted stylesheet."
+      "note": "A pinned Treat Gatsby button style is compiled with Treat's official Webpack plugin and compared with an installed YumCSS Vite target across static declarations, pseudo-conditions, typecheck, build, SSR, hydration, and browser parity. createTheme, styleMap/theme runtime APIs, and dynamic style functions remain explicit residual territory; runtime CSS is currently a measured diagnostic trade-off against Treat's extracted stylesheet."
     },
     {
-      "id": "solid-styled-to-pandwind",
+      "id": "solid-styled-to-yumcss",
       "from": "solid-styled",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4515,12 +4515,12 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "A pinned solid-styled-components test host is exercised through installed Solid and Pandwind runtimes with static styles, function styles, composition, custom hosts, typecheck, build, SSR, hydration, and browser parity. ThemeProvider semantics, nested dynamic templates, and unsupported Solid control-flow/compiler behavior remain explicit residual territory."
+      "note": "A pinned solid-styled-components test host is exercised through installed Solid and YumCSS runtimes with static styles, function styles, composition, custom hosts, typecheck, build, SSR, hydration, and browser parity. ThemeProvider semantics, nested dynamic templates, and unsupported Solid control-flow/compiler behavior remain explicit residual territory."
     },
     {
-      "id": "vue-styled-to-pandwind",
+      "id": "vue-styled-to-yumcss",
       "from": "vue-styled",
-      "to": "pandwind",
+      "to": "yumcss",
       "maturity": "experimental",
       "execution": "installed-project",
       "referenceIds": [
@@ -4573,7 +4573,7 @@
         "dependency graphs are not installed by the reference runner",
         "built CSS size is not measured by the source-only runner"
       ],
-      "note": "A pinned vue-styled-components playground SFC is exercised through installed Vue and Pandwind runtimes with script-block scanning, static and dynamic props, styled subjects, typecheck, build, SSR, hydration, and browser parity. Vue macro semantics, unsupported component expressions, and theme-provider behavior beyond the proven prop lane remain explicit residual territory."
+      "note": "A pinned vue-styled-components playground SFC is exercised through installed Vue and YumCSS runtimes with script-block scanning, static and dynamic props, styled subjects, typecheck, build, SSR, hydration, and browser parity. Vue macro semantics, unsupported component expressions, and theme-provider behavior beyond the proven prop lane remain explicit residual territory."
     },
     {
       "id": "unocss-to-tailwind",
@@ -4666,8 +4666,8 @@
       "note": "The route is registered, but no pinned installed-project proof fixture exists yet."
     },
     {
-      "id": "pandwind-to-unocss",
-      "from": "pandwind",
+      "id": "yumcss-to-unocss",
+      "from": "yumcss",
       "to": "unocss",
       "maturity": "experimental",
       "execution": "unavailable",

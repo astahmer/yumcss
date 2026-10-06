@@ -40,10 +40,10 @@ test("chakra-ui -> next-yak: migrates concrete chakra-ui syntax to next-yak", as
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "chakra-ui -> next-yak happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("chakra-ui -> next-yak: carries a documented secondary chakra-ui API explic
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> next-yak | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> next-yak | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,

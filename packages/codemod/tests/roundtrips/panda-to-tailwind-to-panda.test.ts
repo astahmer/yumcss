@@ -42,7 +42,7 @@ test("panda -> tailwind -> panda: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -138,7 +138,7 @@ test("panda -> tailwind -> panda: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tailwind | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> tailwind | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("panda -> tailwind -> panda: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tailwind | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> tailwind | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -264,7 +264,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#f97316]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -423,7 +423,7 @@ test("panda -> tailwind -> panda: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#2563eb]";",
 		    "converted": 0,
 		    "generatedFiles": [],

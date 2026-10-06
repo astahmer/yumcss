@@ -30,7 +30,7 @@ describe("const-enum control tags", () => {
 	});
 
 	test("use explicit arrays for runtime registry iteration", () => {
-		expect(BUILTIN_CODEMOD_ADAPTER_IDS[0]).toBe(CodemodAdapterId.Pandwind);
+		expect(BUILTIN_CODEMOD_ADAPTER_IDS[0]).toBe(CodemodAdapterId.YumCSS);
 		expect(BUILTIN_CODEMOD_ADAPTER_IDS).toContain(CodemodAdapterId.StyleX);
 		expect(BUILTIN_STYLE_VALIDATOR_IDS).toContain(StyleValidatorId.CanonicalCss);
 	});

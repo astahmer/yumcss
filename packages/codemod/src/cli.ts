@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * pandwind-codemod CLI.
+ * yumcss-codemod CLI.
  *
  * The CLI has one migration command for registered adapter routes. It writes
  * by default; `--dry-run`
@@ -10,8 +10,8 @@
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
-import { createSourceWorkspace } from "pandwind/source/workspace";
-import { createEmptyPandwindMeta, loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
+import { createSourceWorkspace } from "yumcss/source/workspace";
+import { createEmptyYumCSSMeta, loadMetaFromSourcesAsync, type YumCSSMeta } from "./meta.ts";
 import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import {
@@ -39,8 +39,8 @@ import { extractArbitraryValueProposals } from "./arbitrary-values.ts";
 import { sortStaticClassSource } from "./class-sorter.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import {
-	createPandwindProjectSupport,
-	type PandwindProjectSupport,
+	createYumCSSProjectSupport,
+	type YumCSSProjectSupport,
 } from "./swap/project-bootstrap.ts";
 import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
 import {
@@ -171,7 +171,7 @@ const readProjectFile =
 const projectFiles = (root: string): readonly string[] =>
 	sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 
-function shouldBootstrapPandwindProject(args: swapImport.MigrateCliArgs): boolean {
+function shouldBootstrapYumCSSProject(args: swapImport.MigrateCliArgs): boolean {
 	if (
 		args.to === SwapTargetId.Tw ||
 		args.to === SwapTargetId.Dss ||
@@ -179,7 +179,7 @@ function shouldBootstrapPandwindProject(args: swapImport.MigrateCliArgs): boolea
 	)
 		return args.from !== SwapSourceId.Tw;
 	return (
-		(args.to === CodemodAdapterId.Pandwind && args.from !== CodemodAdapterId.Pandwind) ||
+		(args.to === CodemodAdapterId.YumCSS && args.from !== CodemodAdapterId.YumCSS) ||
 		(args.to === SwapTargetId.CssClass && isExternalAdapterId(args.from))
 	);
 }
@@ -257,8 +257,8 @@ const usesProjectModule = (file: string, modulePath: string, source: string): bo
 const existingProjectSupport = (
 	root: string,
 	directory: string,
-	meta: PandwindMeta,
-): PandwindProjectSupport => {
+	meta: YumCSSMeta,
+): YumCSSProjectSupport => {
 	const relativeDirectory = projectOutputDirectory(root, directory);
 	const modulePath = (name: string): string | undefined =>
 		existsSync(resolve(root, relativeDirectory, name)) ? `${relativeDirectory}/${name}` : undefined;
@@ -287,7 +287,7 @@ const existingProjectSupport = (
 		files: [],
 		fileChanges: [],
 		meta,
-		sourceConfig: { adapter: CodemodAdapterId.Pandwind, root, files: [], values: {} },
+		sourceConfig: { adapter: CodemodAdapterId.YumCSS, root, files: [], values: {} },
 	};
 };
 
@@ -340,14 +340,14 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			const detected = detectExternalSource(source, file.slice(root.length + 1), root);
 			return (
 				detected !== undefined &&
-				(detected !== CodemodAdapterId.Pandwind || args.to !== SwapTargetId.CssClass)
+				(detected !== CodemodAdapterId.YumCSS || args.to !== SwapTargetId.CssClass)
 			);
 		});
 	const external = explicitlyExternal || autoExternal;
 	const filePaths = external ? candidateFilePaths : expandPatterns(args.patterns, root);
 	if (external) {
-		let meta: PandwindMeta | undefined;
-		let project: PandwindProjectSupport | undefined;
+		let meta: YumCSSMeta | undefined;
+		let project: YumCSSProjectSupport | undefined;
 		if (args.metaDir !== "") {
 			const metaDir = resolve(root, args.metaDir);
 			try {
@@ -376,14 +376,14 @@ async function mainMigrate(argv: string[]): Promise<void> {
 				project = undefined;
 			}
 		}
-		if (meta === undefined && shouldBootstrapPandwindProject(args)) {
+		if (meta === undefined && shouldBootstrapYumCSSProject(args)) {
 			const sourceAdapter = projectAdapterFor(args, filePaths, root);
 			if (sourceAdapter !== undefined) {
-				project = await createPandwindProjectSupport({
+				project = await createYumCSSProjectSupport({
 					root,
 					sourceAdapter,
 					targetAdapter: args.to,
-					outputDirectory: projectOutputDirectory(root, args.outDir || "pandwind"),
+					outputDirectory: projectOutputDirectory(root, args.outDir || "yumcss"),
 					readFile: readProjectFile(root),
 					listFiles: projectFiles,
 					...(packageJson === undefined ? {} : { packageJson }),
@@ -397,7 +397,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "examples/example/src";
 	const metaDir = resolve(root, metaDirRelative);
 
-	let meta: PandwindMeta = createEmptyPandwindMeta();
+	let meta: YumCSSMeta = createEmptyYumCSSMeta();
 	const typesDtsPath = resolve(metaDir, "types.d.ts");
 	const twTsPath = resolve(metaDir, "tw.ts");
 	if (existsSync(typesDtsPath) && existsSync(twTsPath)) {
@@ -411,7 +411,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		} catch (error) {
 			console.error(
 				`codemod migrate: failed to load generated metadata from ${metaDir}\n` +
-					"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>\n" +
+					"  run `yumcss-codemod tw generate --bridge` first, or pass --meta=<dir>\n" +
 					`  (${(error as Error).message})`,
 			);
 			process.exitCode = 1;
@@ -420,7 +420,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	} else if (!ownsProjectRoute) {
 		console.error(
 			`codemod migrate: generated metadata is missing from ${metaDir}\n` +
-				"  run `pandwind-codemod tw generate --bridge` first, or pass --meta=<dir>",
+				"  run `yumcss-codemod tw generate --bridge` first, or pass --meta=<dir>",
 		);
 		process.exitCode = 1;
 		return;
@@ -621,8 +621,8 @@ async function runAdapterRoute(
 	args: swapImport.MigrateCliArgs,
 	filePaths: Array<string>,
 	root: string,
-	meta?: PandwindMeta,
-	project?: PandwindProjectSupport,
+	meta?: YumCSSMeta,
+	project?: YumCSSProjectSupport,
 	packageJson?: Readonly<Record<string, unknown>>,
 ): Promise<void> {
 	if (filePaths.length === 0) {
@@ -633,13 +633,13 @@ async function runAdapterRoute(
 	const target = isExternalAdapterId(args.to)
 		? args.to
 		: args.to === SwapTargetId.Tw
-			? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`
+			? `${CodemodAdapterId.YumCSS}:${SwapSourceId.Tw}`
 			: args.to === SwapTargetId.Dss
-				? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Dss}`
+				? `${CodemodAdapterId.YumCSS}:${SwapSourceId.Dss}`
 				: args.to === SwapTargetId.Design
-					? `${CodemodAdapterId.Pandwind}:${SwapSourceId.Css}`
+					? `${CodemodAdapterId.YumCSS}:${SwapSourceId.Css}`
 					: args.to === SwapTargetId.CssClass
-						? CodemodAdapterId.Pandwind
+						? CodemodAdapterId.YumCSS
 						: undefined;
 	if (target === undefined) {
 		console.error(`codemod migrate: no registered target adapter for '${args.to}'`);
@@ -686,7 +686,7 @@ async function runAdapterRoute(
 			? []
 			: [
 					{
-						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+						packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 					},
 				];
 	const dependencies: AdapterDependencies[] = [...targetDependencies];
@@ -959,10 +959,10 @@ const tokenContextSelection = (value: string | undefined): TokenContextSelection
 };
 
 const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
-	const cli = cac("pandwind-codemod tokens");
+	const cli = cac("yumcss-codemod tokens");
 	const command = cli.command("<input>", "Convert a token file between supported formats");
 	configureTokensCommand(command);
-	cli.parse(["node", "pandwind-codemod tokens", ...argv], { run: false });
+	cli.parse(["node", "yumcss-codemod tokens", ...argv], { run: false });
 	if (cli.matchedCommand === undefined) throw new Error("codemod tokens: input file is required");
 	validateCommand(cli.matchedCommand);
 	const options = cli.options as CliOptions;
@@ -992,7 +992,7 @@ const parseTokenArgs = (argv: readonly string[]): TokenCliArgs => {
 };
 
 const createCodemodCli = (): CAC => {
-	const cli = cac("pandwind-codemod");
+	const cli = cac("yumcss-codemod");
 	const migrate = cli.command(
 		"migrate [...patterns]",
 		"Migrate a project between styling adapters",
@@ -1005,10 +1005,10 @@ const createCodemodCli = (): CAC => {
 		"Inspect or normalize static codemod source shapes",
 	);
 	configurePolishCommand(polish);
-	cli.command("tw [...args]", "Generate and inspect Pandwind Tailwind artifacts");
-	cli.command("runtime [...args]", "Generate a specialized Pandwind CSS runtime");
-	cli.command("lib [...args]", "Build a publishable Pandwind design-system artifact");
-	cli.command("css [...args]", "Generate concrete Pandwind CSS types");
+	cli.command("tw [...args]", "Generate and inspect YumCSS Tailwind artifacts");
+	cli.command("runtime [...args]", "Generate a specialized YumCSS CSS runtime");
+	cli.command("lib [...args]", "Build a publishable YumCSS design-system artifact");
+	cli.command("css [...args]", "Generate concrete YumCSS CSS types");
 	return cli;
 };
 
@@ -1073,7 +1073,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 		);
 	const tokenCount = countTokens(document.root);
 	const baseReport = {
-		schema: "pandwind.token-operation-report/1",
+		schema: "yumcss.token-operation-report/1",
 		input: resolve(input),
 		from,
 		to,
@@ -1152,7 +1152,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 
 const configurePolishCommand = (command: Command): void => {
 	command
-		.option("--meta <dir>", "Generated Pandwind metadata directory")
+		.option("--meta <dir>", "Generated YumCSS metadata directory")
 		.option("--root <dir>", "Project root (defaults to cwd or the absolute-pattern root)")
 		.option("--write", "Write class-sort changes to source files")
 		.option("--diff", "Print class-sort unified diffs")
@@ -1183,7 +1183,7 @@ const polishRoot = (patterns: readonly string[], options: CliOptions): string =>
 		: resolve(process.cwd(), explicit);
 };
 
-const polishMeta = async (root: string, options: CliOptions): Promise<PandwindMeta> => {
+const polishMeta = async (root: string, options: CliOptions): Promise<YumCSSMeta> => {
 	const directory = optionString(options, "meta");
 	if (directory === undefined)
 		throw new Error("codemod polish: --meta <dir> is required for metadata-aware tooling");
@@ -1223,13 +1223,13 @@ const printArbitraryReport = (
 };
 
 async function mainPolish(argv: string[]): Promise<void> {
-	const cli = cac("pandwind-codemod polish");
+	const cli = cac("yumcss-codemod polish");
 	const command = cli.command(
 		"<mode> [...patterns]",
 		"Inspect or normalize static codemod source shapes",
 	);
 	configurePolishCommand(command);
-	cli.parse(["node", "pandwind-codemod polish", ...argv], { run: false });
+	cli.parse(["node", "yumcss-codemod polish", ...argv], { run: false });
 	if (cli.matchedCommand === undefined)
 		throw new Error("codemod polish: mode is required (sort or arbitrary)");
 	validateCommand(cli.matchedCommand);
@@ -1282,7 +1282,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 			await createRuntimeCli().run(argv.slice(1));
 		} catch (error) {
 			console.error(
-				`pandwind-codemod runtime: ${error instanceof Error ? error.message : String(error)}`,
+				`yumcss-codemod runtime: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}
@@ -1293,7 +1293,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 			await createTwCli().run(argv.slice(1));
 		} catch (error) {
 			console.error(
-				`pandwind-codemod tw: ${error instanceof Error ? error.message : String(error)}`,
+				`yumcss-codemod tw: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}
@@ -1304,7 +1304,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 			await createLibCli().run(argv.slice(1));
 		} catch (error) {
 			console.error(
-				`pandwind-codemod lib: ${error instanceof Error ? error.message : String(error)}`,
+				`yumcss-codemod lib: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}
@@ -1315,7 +1315,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 			await createCssCli().run(argv.slice(1));
 		} catch (error) {
 			console.error(
-				`pandwind-codemod css: ${error instanceof Error ? error.message : String(error)}`,
+				`yumcss-codemod css: ${error instanceof Error ? error.message : String(error)}`,
 			);
 			process.exitCode = 1;
 		}
@@ -1324,7 +1324,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 	const cli = createCodemodCli();
 	cli.help();
 	try {
-		cli.parse(["node", "pandwind-codemod", ...argv], { run: false });
+		cli.parse(["node", "yumcss-codemod", ...argv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("-h") || argv.includes("--help")) return;
 			cli.outputHelp();
@@ -1343,7 +1343,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 			return;
 		}
 	} catch (error) {
-		console.error(`pandwind-codemod: ${error instanceof Error ? error.message : String(error)}`);
+		console.error(`yumcss-codemod: ${error instanceof Error ? error.message : String(error)}`);
 		cli.outputHelp();
 		process.exitCode = 1;
 	}

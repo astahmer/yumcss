@@ -42,7 +42,7 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", as
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "jss -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", as
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("jss -> vue-styled -> jss: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -118,7 +118,7 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +154,7 @@ test("jss -> vue-styled -> jss: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -199,7 +199,7 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -235,7 +235,7 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("jss -> vue-styled -> jss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -318,7 +318,7 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -354,7 +354,7 @@ test("jss -> vue-styled -> jss: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

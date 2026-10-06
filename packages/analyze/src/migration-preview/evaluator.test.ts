@@ -74,7 +74,7 @@ describe("migration-preview codemod evaluator", () => {
 
 	test("detects a source adapter and returns the target source without writing files", async () => {
 		const root = mkdtempSync(
-			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-evaluator-"),
+			join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-evaluator-"),
 		);
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
@@ -173,7 +173,7 @@ describe("migration-preview codemod evaluator", () => {
 
 	test("returns a visible diagnostic when no target has been selected", async () => {
 		const root = mkdtempSync(
-			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-empty-"),
+			join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-empty-"),
 		);
 		writeFileSync(join(root, "Card.tsx"), "export const Card = () => null;");
 		roots.push(root);

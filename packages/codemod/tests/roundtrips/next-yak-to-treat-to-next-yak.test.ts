@@ -42,7 +42,7 @@ test("next-yak -> treat -> next-yak: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "next-yak -> treat round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("next-yak -> treat -> next-yak: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("next-yak -> treat -> next-yak: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -118,10 +118,10 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { __pandwindCardStyles } from "./styles.styles.treat";
-		import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = (() => { type __pandwindCardProps<As extends import("react").ElementType> = Omit<__pandwindCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }; type __pandwindCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindCardProps<As> & { ref?: import("react").Ref<__pandwindCardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => true)), ref, className: [__pandwindCardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+		    "code": "import { __yumcssCardStyles } from "./styles.styles.treat";
+		import { createElement as __yumcssCardCreateElement, forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentRef as __yumcssCardComponentRef, ComponentPropsWithoutRef as __yumcssCardComponentProps } from "react";
+		export const Card = (() => { type __yumcssCardProps<As extends import("react").ElementType> = Omit<__yumcssCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }; type __yumcssCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __yumcssCardProps<As> & { ref?: import("react").Ref<__yumcssCardComponentRef<As>> }) => import("react").ReactElement | null; type __yumcssCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }; return __yumcssCardForwardRef<unknown, __yumcssCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __yumcssCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => true)), ref, className: [__yumcssCardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __yumcssCardPolymorphicComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
@@ -161,10 +161,10 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { __pandwindCardStyles } from "./styles.styles.treat";
-		import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-		export const Card = (() => { type __pandwindCardProps<As extends import("react").ElementType> = Omit<__pandwindCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }; type __pandwindCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindCardProps<As> & { ref?: import("react").Ref<__pandwindCardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => true)), ref, className: [__pandwindCardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindCardPolymorphicComponent; })();",
+		    "code": "import { __yumcssCardStyles } from "./styles.styles.treat";
+		import { createElement as __yumcssCardCreateElement, forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentRef as __yumcssCardComponentRef, ComponentPropsWithoutRef as __yumcssCardComponentProps } from "react";
+		export const Card = (() => { type __yumcssCardProps<As extends import("react").ElementType> = Omit<__yumcssCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }; type __yumcssCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __yumcssCardProps<As> & { ref?: import("react").Ref<__yumcssCardComponentRef<As>> }) => import("react").ReactElement | null; type __yumcssCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }; return __yumcssCardForwardRef<unknown, __yumcssCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __yumcssCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => true)), ref, className: [__yumcssCardStyles, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __yumcssCardPolymorphicComponent; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [],
@@ -177,7 +177,7 @@ test("next-yak -> treat -> next-yak: retains the documented secondary API withou
 		    {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const __pandwindCardStyles = css\`color: red; padding: 1rem;\`;
+		export const __yumcssCardStyles = css\`color: red; padding: 1rem;\`;
 		",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -282,7 +282,7 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("next-yak -> treat -> next-yak: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -366,7 +366,7 @@ test("next-yak -> treat -> next-yak: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -403,7 +403,7 @@ test("next-yak -> treat -> next-yak: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -12,11 +12,11 @@ import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const requireFromPandwind = createRequire(join(pandwindPackageRoot, "package.json"));
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in stylesheet asset this generator owns. */
-export const tailwindProseStylesheetPath = join(pandwindPackageRoot, "src/prose/tailwindcss.css");
+export const tailwindProseStylesheetPath = join(yumcssPackageRoot, "src/prose/tailwindcss.css");
 
 /**
  * Tailwind emits a modifier only when a candidate asks for it, so this list is
@@ -89,7 +89,7 @@ interface TailwindCompiler {
 
 const packageVersion = (specifier: string): string =>
 	(
-		JSON.parse(readFileSync(requireFromPandwind.resolve(`${specifier}/package.json`), "utf8")) as {
+		JSON.parse(readFileSync(requireFromYumCSS.resolve(`${specifier}/package.json`), "utf8")) as {
 			version: string;
 		}
 	).version;
@@ -128,14 +128,14 @@ export const renderTailwindProseStylesheet = async (): Promise<{
 }> => {
 	const tailwindVersion = packageVersion("tailwindcss");
 	const typographyVersion = packageVersion("@tailwindcss/typography");
-	const typographyEntry = requireFromPandwind.resolve("@tailwindcss/typography");
+	const typographyEntry = requireFromYumCSS.resolve("@tailwindcss/typography");
 
 	const tailwindNode = (await import(
-		requireFromPandwind.resolve("@tailwindcss/node")
+		requireFromYumCSS.resolve("@tailwindcss/node")
 	)) as TailwindCompiler;
 	const compiler = await tailwindNode.compile(
 		['@import "tailwindcss";', `@plugin "${typographyEntry}";`, ""].join("\n"),
-		{ base: pandwindPackageRoot, onDependency: () => {} },
+		{ base: yumcssPackageRoot, onDependency: () => {} },
 	);
 
 	const ruleset = proseRuleset(compiler.build([...proseCandidates]));
@@ -163,7 +163,7 @@ export const renderTailwindProseStylesheet = async (): Promise<{
 
 	const banner = `
 /*
- * Pandwind prose: Tailwind Typography, compiled from @tailwindcss/typography@${typographyVersion}.
+ * YumCSS prose: Tailwind Typography, compiled from @tailwindcss/typography@${typographyVersion}.
  * Upstream: https://github.com/tailwindlabs/tailwindcss-typography/blob/v${typographyVersion}/src/index.js
  *           https://github.com/tailwindlabs/tailwindcss-typography/blob/v${typographyVersion}/src/styles.js
  *
@@ -177,12 +177,12 @@ export const renderTailwindProseStylesheet = async (): Promise<{
  * Ported, not copied verbatim. Four deliberate differences:
  *
  *   1. The rules sit in \`@layer prose\` instead of \`@layer utilities\`. A project on
- *      Pandwind's \`cascade: "layers"\` output declares the order once:
+ *      YumCSS's \`cascade: "layers"\` output declares the order once:
  *
- *        @layer reset, prose, pandwind;
+ *        @layer reset, prose, yumcss;
  *
  *      Layer order is fixed by first appearance, so a declaration that stops at
- *      \`pandwind\` would sort this whole scale after every generated atom. An
+ *      \`yumcss\` would sort this whole scale after every generated atom. An
  *      undeclared layer still loses to unlayered CSS, so a project on the default
  *      \`specificity\` cascade needs no declaration.
  *   2. The \`.not-prose\` guard reads \`${compactedGuard}\` where upstream writes the

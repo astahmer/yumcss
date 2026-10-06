@@ -42,7 +42,7 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", async
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -274,7 +274,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 0,
@@ -355,7 +355,7 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 0,
@@ -451,7 +451,7 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 0,

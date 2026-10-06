@@ -3,12 +3,12 @@ import { gzipSync } from "node:zlib";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 import {
 	hashGeneratedContent,
-	PANDWIND_GENERATED_MANIFEST_SCHEMA,
+	YUMCSS_GENERATED_MANIFEST_SCHEMA,
 	type GeneratedArtifactOwnershipTag as GeneratedArtifactOwnership,
-	type PandwindGeneratedManifest,
+	type YumCSSGeneratedManifest,
 } from "./artifact-manifest.ts";
 
-export const PANDWIND_GENERATED_BUDGET_SCHEMA = "pandwind.generated-budget/1" as const;
+export const YUMCSS_GENERATED_BUDGET_SCHEMA = "yumcss.generated-budget/1" as const;
 
 export interface GeneratedArtifactBudget {
 	readonly ownership?: GeneratedArtifactOwnership;
@@ -17,7 +17,7 @@ export interface GeneratedArtifactBudget {
 }
 
 export interface GeneratedArtifactBudgetFile {
-	readonly schema: typeof PANDWIND_GENERATED_BUDGET_SCHEMA;
+	readonly schema: typeof YUMCSS_GENERATED_BUDGET_SCHEMA;
 	readonly artifacts: Readonly<Record<string, GeneratedArtifactBudget>>;
 }
 
@@ -33,7 +33,7 @@ export interface GeneratedArtifactCheck {
 }
 
 export interface GeneratedArtifactCheckReport {
-	readonly schema: typeof PANDWIND_GENERATED_BUDGET_SCHEMA;
+	readonly schema: typeof YUMCSS_GENERATED_BUDGET_SCHEMA;
 	readonly manifest: string;
 	readonly inputs: readonly GeneratedArtifactCheck[];
 	readonly artifacts: readonly GeneratedArtifactCheck[];
@@ -101,7 +101,7 @@ function checkEntry(
 }
 
 /**
- * Verify a generated Pandwind artifact manifest in a consumer project.
+ * Verify a generated YumCSS artifact manifest in a consumer project.
  *
  * The manifest records source and generated-file hashes. An optional budget
  * file adds raw and gzip limits without making consumers copy repository-only
@@ -109,7 +109,7 @@ function checkEntry(
  */
 export function checkGeneratedArtifactManifest(
 	root: string,
-	manifestPath = "src/pandwind.generated.json",
+	manifestPath = "src/yumcss.generated.json",
 	budgetFile?: GeneratedArtifactBudgetFile,
 ): GeneratedArtifactCheckReport {
 	const projectRoot = resolve(root);
@@ -117,7 +117,7 @@ export function checkGeneratedArtifactManifest(
 	const failures: string[] = [];
 	if (manifestAbsolute === undefined) {
 		return {
-			schema: PANDWIND_GENERATED_BUDGET_SCHEMA,
+			schema: YUMCSS_GENERATED_BUDGET_SCHEMA,
 			manifest: manifestPath,
 			inputs: [],
 			artifacts: [],
@@ -125,12 +125,12 @@ export function checkGeneratedArtifactManifest(
 			valid: false,
 		};
 	}
-	let manifest: PandwindGeneratedManifest;
+	let manifest: YumCSSGeneratedManifest;
 	try {
-		manifest = JSON.parse(readFileSync(manifestAbsolute, "utf8")) as PandwindGeneratedManifest;
+		manifest = JSON.parse(readFileSync(manifestAbsolute, "utf8")) as YumCSSGeneratedManifest;
 	} catch {
 		return {
-			schema: PANDWIND_GENERATED_BUDGET_SCHEMA,
+			schema: YUMCSS_GENERATED_BUDGET_SCHEMA,
 			manifest: manifestPath,
 			inputs: [],
 			artifacts: [],
@@ -138,7 +138,7 @@ export function checkGeneratedArtifactManifest(
 			valid: false,
 		};
 	}
-	if (manifest.schema !== PANDWIND_GENERATED_MANIFEST_SCHEMA)
+	if (manifest.schema !== YUMCSS_GENERATED_MANIFEST_SCHEMA)
 		failures.push(`unsupported generated manifest schema: ${String(manifest.schema)}`);
 	const inputs = manifest.inputs.map((entry) =>
 		checkEntry(projectRoot, entry, "input", undefined, failures),
@@ -156,7 +156,7 @@ export function checkGeneratedArtifactManifest(
 			if (!manifest.artifacts.some((entry) => entry.path === path))
 				failures.push(`budget names missing artifact ${path}`);
 	return {
-		schema: PANDWIND_GENERATED_BUDGET_SCHEMA,
+		schema: YUMCSS_GENERATED_BUDGET_SCHEMA,
 		manifest: manifestPath,
 		inputs,
 		artifacts,

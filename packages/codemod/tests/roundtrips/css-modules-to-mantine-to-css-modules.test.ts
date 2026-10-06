@@ -42,7 +42,7 @@ test("css-modules -> mantine -> css-modules: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> mantine -> css-modules: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("css-modules -> mantine -> css-modules: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("css-modules -> mantine -> css-modules: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -163,7 +163,7 @@ test("css-modules -> mantine -> css-modules: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -208,7 +208,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -242,7 +242,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -281,7 +281,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -291,7 +291,7 @@ test("css-modules -> mantine -> css-modules: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("css-modules -> mantine -> css-modules: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -345,7 +345,7 @@ test("css-modules -> mantine -> css-modules: resolves token values across both c
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -355,7 +355,7 @@ test("css-modules -> mantine -> css-modules: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: host-framework) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: host-framework) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

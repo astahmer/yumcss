@@ -112,7 +112,7 @@ const style9 = makeExtraAdapter({
 	},
 	migration: {
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
-			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.YumCSS || !complete) return { code, residuals: [] };
 			let rewritten = code.replace(/\bstyle9\s*\(/g, "cx(");
 			for (const binding of convertedBindings) {
 				const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -123,7 +123,7 @@ const style9 = makeExtraAdapter({
 			}
 			return {
 				code: rewritten,
-				imports: ['import { createCx } from "pandwind/cx";', "const cx = createCx();"],
+				imports: ['import { createCx } from "yumcss/cx";', "const cx = createCx();"],
 				residuals: [],
 			};
 		},

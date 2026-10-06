@@ -4,8 +4,8 @@ import type { AdapterContractFixture } from "../src/swap/index.ts";
 /** One representative source shape for every built-in adapter. */
 export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
-		adapter: CodemodAdapterId.Pandwind,
-		file: "pandwind.ts",
+		adapter: CodemodAdapterId.YumCSS,
+		file: "yumcss.ts",
 		source: "css.class({ color: 'red' })",
 	},
 	{

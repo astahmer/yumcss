@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
 import type { GovernanceSuggestionInput } from "./tokens.ts";
@@ -19,7 +19,7 @@ export interface SwapSourceMatch {
 export interface SwapSourceContext {
 	readonly source: string;
 	readonly file: string;
-	readonly meta: PandwindMeta;
+	readonly meta: YumCSSMeta;
 	readonly engineResolver?: (
 		utilityClass: string,
 	) => readonly { prop: string; value: string }[] | null;
@@ -38,7 +38,7 @@ export interface SwapSourceAdapter {
 
 export interface SwapTargetAdapter {
 	readonly id: string;
-	emit(ir: SwapIR, meta: PandwindMeta, context: EmitterContext): EmitterResult;
+	emit(ir: SwapIR, meta: YumCSSMeta, context: EmitterContext): EmitterResult;
 	readonly capabilities?: AdapterCapabilities;
 }
 

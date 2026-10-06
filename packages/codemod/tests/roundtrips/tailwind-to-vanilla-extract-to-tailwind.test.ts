@@ -42,7 +42,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("tailwind -> vanilla-extract -> tailwind: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -157,7 +157,7 @@ test("tailwind -> vanilla-extract -> tailwind: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,7 +200,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -236,7 +236,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("tailwind -> vanilla-extract -> tailwind: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -317,7 +317,7 @@ test("tailwind -> vanilla-extract -> tailwind: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -353,7 +353,7 @@ test("tailwind -> vanilla-extract -> tailwind: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

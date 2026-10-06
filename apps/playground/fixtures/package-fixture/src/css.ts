@@ -1,4 +1,4 @@
-import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 export const css = createCss(examplePreset);

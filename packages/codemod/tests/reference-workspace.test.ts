@@ -4,7 +4,7 @@ import { createReferenceWorkspace } from "../../../scripts/reference-workspace.t
 
 describe("reference workspace", () => {
 	test("maps logical corpus ids to their pinned checkout", () => {
-		const workspace = createReferenceWorkspace("/tmp/pandwind-reference-test");
+		const workspace = createReferenceWorkspace("/tmp/yumcss-reference-test");
 
 		expect(workspace.path("panda-website")).toBe(join(workspace.root, "panda"));
 		expect(workspace.path("stylex/packages/docs")).toBe(

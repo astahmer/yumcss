@@ -42,7 +42,7 @@ test("jss -> unocss -> jss: preserves an actionable concrete round trip", async 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "jss -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("jss -> unocss -> jss: preserves an actionable concrete round trip", async 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const useStyles = { "card": "[color:red]" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("jss -> unocss -> jss: retains the documented secondary API without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const sheet = { "card": "[color:red]" };",
 		    "converted": 0,
 		    "generatedFiles": [],

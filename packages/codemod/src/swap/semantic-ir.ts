@@ -14,7 +14,7 @@ import {
 	type SwapResidualKind,
 } from "./ir.ts";
 export { SwapResidualKindTag } from "./ir.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import {
 	StyleProgramConditionOrder,
 	StyleProgramCompositionKind,
@@ -22,11 +22,11 @@ import {
 	type StyleProgramEmissionHint,
 } from "./identifiers.ts";
 import { createStyleDeclarationOrderingPolicy } from "./style-declaration-order.ts";
-import { NodeKind, PropertyKindTag } from "pandwind/tw/literal";
+import { NodeKind, PropertyKindTag } from "yumcss/tw/literal";
 
 const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/1" as const;
+export const STYLE_PROGRAM_SCHEMA = "yumcss.style-program/1" as const;
 
 export const enum SemanticConditionKindTag {
 	Named = "named",
@@ -1202,7 +1202,7 @@ export function styleProgramFromSourceObject(
 	let root: SourceNode | undefined;
 	try {
 		const parsed = SOURCE_SCANNER_SERVICE.parse({
-			file: options.source?.file ?? "pandwind-style-program.tsx",
+			file: options.source?.file ?? "yumcss-style-program.tsx",
 			source: `({${body}})`,
 			language: "tsx",
 		});

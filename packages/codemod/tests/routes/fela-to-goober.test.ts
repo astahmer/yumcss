@@ -38,10 +38,10 @@ test("fela -> goober: migrates concrete fela syntax to goober", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "fela -> goober happy");
 	expectExplicitResidualEvidence(result);
@@ -96,7 +96,7 @@ test("fela -> goober: carries a documented secondary fela API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> goober | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> goober | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],

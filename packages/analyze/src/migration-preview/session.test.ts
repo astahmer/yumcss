@@ -171,7 +171,7 @@ describe("createMigrationPreviewSession", () => {
 		const opened = await session.open({ root: "/project", patterns: ["src/**/*.tsx"] });
 		await session.edit({ file: "/project/src/App.tsx", source: "const App = () => null;" });
 		await session.select({ file: "/project/src/App.tsx", start: 10, end: 20 });
-		await session.switchTarget({ source: "styled-components", target: "pandwind/tw" });
+		await session.switchTarget({ source: "styled-components", target: "yumcss/tw" });
 		const themed = await session.switchTheme({ scope: '[data-theme="dark"]' });
 
 		expect(themed).toMatchInlineSnapshot(`
@@ -180,7 +180,7 @@ describe("createMigrationPreviewSession", () => {
 			    "diagnostics": [],
 			  },
 			  "revision": 5,
-			  "schema": "pandwind.migration-preview-snapshot/1",
+			  "schema": "yumcss.migration-preview-snapshot/1",
 			  "selection": {
 			    "end": 20,
 			    "file": "/project/src/App.tsx",
@@ -188,7 +188,7 @@ describe("createMigrationPreviewSession", () => {
 			  },
 			  "target": {
 			    "source": "styled-components",
-			    "target": "pandwind/tw",
+			    "target": "yumcss/tw",
 			  },
 			  "theme": {
 			    "scope": "[data-theme="dark"]",
@@ -201,7 +201,7 @@ describe("createMigrationPreviewSession", () => {
 			}
 		`);
 		expect(opened.workspace.root).toBe("/project");
-		expect(requests.at(-1)?.target?.target).toBe("pandwind/tw");
+		expect(requests.at(-1)?.target?.target).toBe("yumcss/tw");
 		expect(requests.at(-1)?.theme.scope).toBe('[data-theme="dark"]');
 		expect(updates).toEqual([1, 2, 3, 4, 5]);
 

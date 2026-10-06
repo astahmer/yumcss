@@ -1,11 +1,11 @@
 {
-	"schema": "pandwind.generated-budget/1",
+	"schema": "yumcss.generated-budget/1",
 	"baseline": "2026-09-08",
 	"apps": [
 		{
 			"id": "example",
 			"root": "examples/example",
-			"manifest": "src/pandwind.generated.json",
+			"manifest": "src/yumcss.generated.json",
 			"artifacts": {
 				"src/types.d.ts": { "ownership": "editor", "maxRawBytes": 160000, "maxGzipBytes": 12000 },
 				"src/tw.conflicts.ts": { "ownership": "optional", "maxRawBytes": 40000, "maxGzipBytes": 9000 },
@@ -13,14 +13,14 @@
 				"src/tw.build.ts": { "ownership": "build-only", "maxRawBytes": 70000, "maxGzipBytes": 7000 },
 				"src/tw.ts": { "ownership": "runtime", "maxRawBytes": 8000, "maxGzipBytes": 3000 },
 				"src/bridge.ts": { "ownership": "optional", "maxRawBytes": 60000, "maxGzipBytes": 10000 },
-				"src/pandwind.interop.json": { "ownership": "build-only", "maxRawBytes": 850000, "maxGzipBytes": 50000 },
-				"src/pandwind-theme.css": { "ownership": "runtime", "maxRawBytes": 4000, "maxGzipBytes": 1500 }
+				"src/yumcss.interop.json": { "ownership": "build-only", "maxRawBytes": 850000, "maxGzipBytes": 50000 },
+				"src/yumcss-theme.css": { "ownership": "runtime", "maxRawBytes": 4000, "maxGzipBytes": 1500 }
 			}
 		},
 		{
 			"id": "playground",
 			"root": "apps/playground",
-			"manifest": "src/pandwind.generated.json",
+			"manifest": "src/yumcss.generated.json",
 			"artifacts": {
 				"src/types.d.ts": { "ownership": "editor", "maxRawBytes": 170000, "maxGzipBytes": 13000 },
 				"src/tw.conflicts.ts": { "ownership": "optional", "maxRawBytes": 40000, "maxGzipBytes": 9000 },
@@ -28,8 +28,8 @@
 				"src/tw.build.ts": { "ownership": "build-only", "maxRawBytes": 70000, "maxGzipBytes": 7000 },
 				"src/tw.ts": { "ownership": "runtime", "maxRawBytes": 8000, "maxGzipBytes": 3000 },
 				"src/bridge.ts": { "ownership": "optional", "maxRawBytes": 60000, "maxGzipBytes": 10000 },
-				"src/pandwind.interop.json": { "ownership": "build-only", "maxRawBytes": 900000, "maxGzipBytes": 52000 },
-				"src/pandwind-theme.css": { "ownership": "runtime", "maxRawBytes": 4000, "maxGzipBytes": 1500 }
+				"src/yumcss.interop.json": { "ownership": "build-only", "maxRawBytes": 900000, "maxGzipBytes": 52000 },
+				"src/yumcss-theme.css": { "ownership": "runtime", "maxRawBytes": 4000, "maxGzipBytes": 1500 }
 			}
 		}
 	]

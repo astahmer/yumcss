@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import type { AdapterDependencies } from "./adapter-contract.ts";
 import type { TokenReferenceFormat } from "./tokens.ts";
 
@@ -10,7 +10,7 @@ export interface ProjectMigrationContext {
 	readonly reportFormat: "text" | "json";
 	readonly patterns: readonly string[];
 	readonly filePaths: readonly string[];
-	readonly meta: PandwindMeta;
+	readonly meta: YumCSSMeta;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly outDir?: string;
 	readonly force?: boolean;

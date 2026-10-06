@@ -3,12 +3,12 @@
 	"changelog": [
 		"@changesets/changelog-github",
 		{
-			"repo": "astahmer/pandwind"
+			"repo": "astahmer/yumcss"
 		}
 	],
 	"commit": false,
 	"fixed": [],
-	"linked": [["@pandwind/lint-plugin", "pandwind", "pandwind-analyze", "pandwind-codemod"]],
+	"linked": [["@yumcss/lint-plugin", "yumcss", "@yumcss/analyze", "@yumcss/codemod"]],
 	"access": "public",
 	"privatePackages": {
 		"version": false,

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
 import {
@@ -25,7 +25,7 @@ function migrate(
 ) {
 	return runAdapterMigration(source, {
 		from: CodemodAdapterId.Emotion,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: "Card.tsx",
 		mode: "safe",
 		readFile: () => undefined,
@@ -35,8 +35,8 @@ function migrate(
 	});
 }
 
-describe("verified Pandwind token preservation", () => {
-	test("emits an expert Pandwind token reference when metadata proves the match", () => {
+describe("verified YumCSS token preservation", () => {
+	test("emits an expert YumCSS token reference when metadata proves the match", () => {
 		const result = migrate(
 			'import { css } from "@emotion/css";\n' +
 				'export const card = css({ color: "#3182ce", padding: "4px", borderRadius: "0.5rem" });',
@@ -50,7 +50,7 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('padding: "4"');
 		expect(result.code).toContain('borderRadius: "lg"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "blue.500", padding: "4", borderRadius: "lg" });"
 		`);
@@ -77,7 +77,7 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('color: "#3182ce"');
 		expect(result.code).not.toContain('color: "$blue-500"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "#3182ce" });"
 		`);
@@ -94,7 +94,7 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.code).toContain('color: "#60A3BC"');
 		expect(result.code).not.toMatch(/color: "\$(?:green-500|success)"/u);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "#60A3BC" });"
 		`);

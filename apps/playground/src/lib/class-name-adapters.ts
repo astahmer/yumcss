@@ -1,9 +1,9 @@
-import { createNamedAtomsStrategy } from "pandwind/css/named";
-import { createPandaAdapter } from "pandwind/css/panda";
-import { createStyleXAdapter } from "pandwind/css/stylex";
-import { createUnoCssAdapter } from "pandwind/css/unocss";
-import type { ClassNameStrategy } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+import { createPandaAdapter } from "yumcss/css/panda";
+import { createStyleXAdapter } from "yumcss/css/stylex";
+import { createUnoCssAdapter } from "yumcss/css/unocss";
+import type { ClassNameStrategy } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 import { twAdapter } from "../bridge.ts";
 
 /** Runtime-selectable class-name strategies shown by the own-API playground. */
@@ -22,7 +22,7 @@ export interface ClassNameAdapterDefinition {
 	id: ClassNameAdapterId;
 	label: string;
 	description: string;
-	/** `undefined` selects Pandwind's normal hashed atomic output. */
+	/** `undefined` selects YumCSS's normal hashed atomic output. */
 	strategy: ClassNameStrategy | undefined;
 }
 
@@ -38,14 +38,14 @@ const strategies: Readonly<Record<ClassNameAdapterId, ClassNameStrategy | undefi
 export const CLASS_NAME_ADAPTERS: readonly ClassNameAdapterDefinition[] = [
 	{
 		id: ClassNameAdapterId.Atomic,
-		label: "Pandwind atomic",
-		description: "hashed classes and a Pandwind-owned runtime sheet",
+		label: "YumCSS atomic",
+		description: "hashed classes and a YumCSS-owned runtime sheet",
 		strategy: strategies[ClassNameAdapterId.Atomic],
 	},
 	{
 		id: ClassNameAdapterId.NamedAtoms,
-		label: "Pandwind named atoms",
-		description: "readable classes and a Pandwind-owned runtime sheet",
+		label: "YumCSS named atoms",
+		description: "readable classes and a YumCSS-owned runtime sheet",
 		strategy: strategies[ClassNameAdapterId.NamedAtoms],
 	},
 	{
@@ -69,7 +69,7 @@ export const CLASS_NAME_ADAPTERS: readonly ClassNameAdapterDefinition[] = [
 	{
 		id: ClassNameAdapterId.StyleX,
 		label: "StyleX",
-		description: "StyleX-shaped classes with a Pandwind-owned sheet",
+		description: "StyleX-shaped classes with a YumCSS-owned sheet",
 		strategy: strategies[ClassNameAdapterId.StyleX],
 	},
 ];

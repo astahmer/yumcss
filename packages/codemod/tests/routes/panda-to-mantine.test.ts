@@ -38,10 +38,10 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "panda -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,7 +73,7 @@ test("panda -> mantine: migrates concrete panda syntax to mantine", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -106,7 +106,7 @@ test("panda -> mantine: carries a documented secondary panda API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -169,7 +169,7 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -193,7 +193,7 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -217,7 +217,7 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -241,7 +241,7 @@ test("panda -> mantine: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -277,7 +277,7 @@ test("panda -> mantine: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -301,7 +301,7 @@ test("panda -> mantine: resolves concrete token values with project context", as
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -334,7 +334,7 @@ test("panda -> mantine: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: panda -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", _hover: { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,
@@ -359,7 +359,7 @@ test("panda -> mantine: preserves malformed concrete panda input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

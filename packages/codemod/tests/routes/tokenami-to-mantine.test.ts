@@ -38,10 +38,10 @@ test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,7 +73,7 @@ test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -106,7 +106,7 @@ test("tokenami -> mantine: carries a documented secondary tokenami API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mantine | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -157,7 +157,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -205,7 +205,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -229,7 +229,7 @@ test("tokenami -> mantine: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -265,7 +265,7 @@ test("tokenami -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -289,7 +289,7 @@ test("tokenami -> mantine: resolves concrete token values with project context",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -322,7 +322,7 @@ test("tokenami -> mantine: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: tokenami -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,
@@ -347,7 +347,7 @@ test("tokenami -> mantine: preserves malformed concrete tokenami input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

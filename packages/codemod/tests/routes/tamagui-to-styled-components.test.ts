@@ -38,10 +38,10 @@ test("tamagui -> styled-components: migrates concrete tamagui syntax to styled-c
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tamagui -> styled-components happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("tamagui -> styled-components: carries a documented secondary tamagui API e
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],

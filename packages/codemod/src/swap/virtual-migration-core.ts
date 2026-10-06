@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { MagicString } from "magic-string";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import type {
 	AdapterMigrationOptions,
 	AdapterMigrationResult,
@@ -23,7 +23,7 @@ export interface VirtualMigrationResidual {
 	readonly residuals: AdapterMigrationResult["residuals"];
 }
 
-export interface PandwindMigrateOptions {
+export interface YumCSSMigrateOptions {
 	readonly from: AdapterMigrationOptions["from"];
 	readonly to: AdapterMigrationOptions["to"];
 	readonly root?: string;
@@ -42,7 +42,7 @@ interface CachedTransform {
 	readonly result: AdapterMigrationResult;
 }
 
-const VIRTUAL_PREFIX = "\0pandwind:migration:";
+const VIRTUAL_PREFIX = "\0yumcss:migration:";
 
 function stripQuery(id: string): string {
 	const query = id.indexOf("?");
@@ -119,7 +119,7 @@ function migrationSourceMap(source: string, code: string, file: string) {
  * configuration, lowering, emission, and residual semantics stay in the
  * adapter pipeline.
  */
-export function createVirtualMigrationPlugin(options: PandwindMigrateOptions) {
+export function createVirtualMigrationPlugin(options: YumCSSMigrateOptions) {
 	let root = resolve(options.root ?? process.cwd());
 	const cache = new Map<string, CachedTransform>();
 	const generatedByPath = new Map<string, { readonly id: string; readonly content: string }>();
@@ -148,7 +148,7 @@ export function createVirtualMigrationPlugin(options: PandwindMigrateOptions) {
 			const existing = generatedByPath.get(absolute);
 			if (existing !== undefined && existing.content !== file.content)
 				throw new Error(
-					`pandwind virtual migration generated-file conflict at ${file.path} from ${sourceFile}`,
+					`yumcss virtual migration generated-file conflict at ${file.path} from ${sourceFile}`,
 				);
 			const id = `${VIRTUAL_PREFIX}${absolute}`;
 			generatedByPath.set(absolute, {
@@ -180,7 +180,7 @@ export function createVirtualMigrationPlugin(options: PandwindMigrateOptions) {
 	};
 
 	return {
-		name: `pandwind:virtual-migration:${options.from}->${options.to}`,
+		name: `yumcss:virtual-migration:${options.from}->${options.to}`,
 		enforce: "pre" as const,
 		async transform(code: string, id: string) {
 			if (!isEligible(id, options.include, options.exclude)) return null;

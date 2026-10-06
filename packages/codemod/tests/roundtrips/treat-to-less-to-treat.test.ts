@@ -42,7 +42,7 @@ test("treat -> less -> treat: preserves an actionable concrete round trip", asyn
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "treat -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("treat -> less -> treat: preserves an actionable concrete round trip", asyn
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("treat -> less -> treat: preserves an actionable concrete round trip", asyn
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("treat -> less -> treat: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("treat -> less -> treat: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("treat -> less -> treat: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("treat -> less -> treat: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("treat -> less -> treat: preserves concrete theme and project context varia
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("treat -> less -> treat: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("treat -> less -> treat: resolves token values across both concrete legs", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("treat -> less -> treat: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

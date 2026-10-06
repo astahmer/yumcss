@@ -4,9 +4,10 @@
  * the complete project lifecycle without claiming that one button proves the
  * whole Tailwind language.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	allFiles,
 	browserProof,
@@ -23,8 +24,8 @@ import {
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@tailwindcss/vite": "4.3.3",
 	"@tailwindcss/node": "4.3.3",
@@ -33,7 +34,7 @@ const versions = {
 	"@types/node": "26.4.1",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	tailwindcss: "4.3.3",
@@ -84,7 +85,7 @@ interface TailwindInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Tailwind;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
@@ -98,7 +99,7 @@ interface TailwindInstalledProof {
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
 		readonly generatedSupportFiles: number;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly customThemeTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
@@ -131,7 +132,7 @@ function proofIsComplete(report: TailwindInstalledProof): boolean {
 		report.migration.residuals === 0 &&
 		report.migration.canonical.checked &&
 		report.migration.canonical.equal &&
-		report.migration.targetUsesPandwind &&
+		report.migration.targetUsesYumCSS &&
 		report.migration.customThemeTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
 		report.migration.generatedVitePresetImportIsExplicit &&
@@ -143,7 +144,7 @@ function proofIsComplete(report: TailwindInstalledProof): boolean {
 	);
 }
 
-function packageJson(includePandwind: boolean): Record<string, unknown> {
+function packageJson(includeYumCSS: boolean): Record<string, unknown> {
 	return {
 		private: true,
 		type: "module",
@@ -153,7 +154,7 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 			typecheck: "tsc --noEmit",
 		},
 		dependencies: {
-			...(includePandwind ? { pandwind: versions.pandwind } : {}),
+			...(includeYumCSS ? { yumcss: versions.yumcss } : {}),
 			react: versions.react,
 			"react-dom": versions["react-dom"],
 			tailwindcss: versions.tailwindcss,
@@ -165,16 +166,16 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 			"@types/react": versions["@types/react"],
 			"@types/react-dom": versions["@types/react-dom"],
 			"@vitejs/plugin-react-swc": versions["@vitejs/plugin-react-swc"],
-			...(includePandwind ? { "oxc-parser": versions["oxc-parser"] } : {}),
+			...(includeYumCSS ? { "oxc-parser": versions["oxc-parser"] } : {}),
 			typescript: versions.typescript,
 			vite: versions.vite,
 		},
 	};
 }
 
-function createFixture(root: string, includePandwind: boolean): void {
+function createFixture(root: string, includeYumCSS: boolean): void {
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(includePandwind));
+	writeJson(join(root, "package.json"), packageJson(includeYumCSS));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
 	writeFileSync(
 		join(root, "styles.css"),
@@ -200,9 +201,9 @@ function createFixture(root: string, includePandwind: boolean): void {
 }
 
 export async function runTailwindInstalledProof(): Promise<TailwindInstalledProof> {
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
-		"pandwind-tailwind-installed-proof-",
+		"yumcss-tailwind-installed-proof-",
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, false);
 			createFixture(targetRoot, true);
@@ -214,13 +215,13 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						"tailwindcss",
 						"--to",
-						"pandwind",
+						"yumcss",
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -233,7 +234,7 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 				"Tailwind",
 			);
 			const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
-			const generatedSupportFiles = allFiles(join(targetRoot, "pandwind")).map((file) =>
+			const generatedSupportFiles = allFiles(join(targetRoot, "yumcss")).map((file) =>
 				relative(targetRoot, file).replaceAll("\\", "/"),
 			);
 			const installedTargetPackage = JSON.parse(
@@ -261,15 +262,15 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 				markup.replace(/class="[^"]*"/gu, 'class="CLASS"');
 			return {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Tailwind, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Tailwind, to: CodemodAdapterId.YumCSS },
 				fixture: {
 					files: ["src/App.tsx", "src/Badge.tsx", "styles.css", "vite.config.ts"],
 					isolated: true,
 				},
 				dependencies: {
 					installed: true,
-					targetPackage: installedTargetPackage.dependencies?.pandwind ?? "",
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(installedTargetPackage.dependencies?.yumcss ?? "", repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					converted: migration.converted,
@@ -277,12 +278,12 @@ export async function runTailwindInstalledProof(): Promise<TailwindInstalledProo
 					residuals: migration.residuals,
 					canonical: migration.canonical,
 					generatedSupportFiles: generatedSupportFiles.length,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 					customThemeTokenPreserved:
 						migratedApp.includes('backgroundColor: "$brand"') ||
 						migratedApp.includes('backgroundColor: "brand"'),
 					sourceStylesheetImportRemoved: !migratedApp.includes("../styles.css"),
-					generatedVitePresetImportIsExplicit: targetViteConfig.includes("./pandwind/preset.ts"),
+					generatedVitePresetImportIsExplicit: targetViteConfig.includes("./yumcss/preset.ts"),
 				},
 				checks: {
 					sourceTypecheck: true,

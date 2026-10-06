@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
 	root: "client",
-	base: "/__pandwind_devtools__/",
+	base: "/__yumcss_devtools__/",
 	plugins: [react()],
 	build: {
 		outDir: "../dist/client",

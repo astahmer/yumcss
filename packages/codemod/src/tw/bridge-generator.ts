@@ -2,9 +2,9 @@ import { parse } from "postcss";
 import type { Rule } from "postcss";
 import { canonicalProps } from "./codegen-conflicts.ts";
 import { loadTailwindDesignSystem } from "./design-system-cache.ts";
-import { selectorClassMatches } from "pandwind/css/selector-scan";
-import { resolveVar, simplifyCalc } from "pandwind/tw";
-import type { UtilityBridge } from "pandwind/tw";
+import { selectorClassMatches } from "yumcss/css/selector-scan";
+import { resolveVar, simplifyCalc } from "yumcss/tw";
+import type { UtilityBridge } from "yumcss/tw";
 
 /**
  * Default property allowlist: every CSS property the design surface and a

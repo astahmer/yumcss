@@ -8,8 +8,8 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"pandwind": "workspace:*",
-		"pandwind-analyze": "workspace:*",
+		"yumcss": "workspace:*",
+		"@yumcss/analyze": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8"
 	},

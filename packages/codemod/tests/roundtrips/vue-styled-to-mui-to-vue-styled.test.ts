@@ -42,7 +42,7 @@ test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -101,7 +101,7 @@ test("vue-styled -> mui -> vue-styled: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -130,7 +130,7 @@ test("vue-styled -> mui -> vue-styled: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("vue-styled -> mui -> vue-styled: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,7 +223,7 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -271,7 +271,7 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -366,7 +366,7 @@ test("vue-styled -> mui -> vue-styled: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -414,7 +414,7 @@ test("vue-styled -> mui -> vue-styled: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

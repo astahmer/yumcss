@@ -42,7 +42,7 @@ test("tailwind -> aphrodite -> tailwind: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("tailwind -> aphrodite -> tailwind: retains the documented secondary API wi
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tailwind -> aphrodite -> tailwind: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> aphrodite | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

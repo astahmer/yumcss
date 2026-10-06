@@ -42,7 +42,7 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("panda -> react-native -> panda: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("panda -> react-native -> panda: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> react-native | lowering-residual: composition | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

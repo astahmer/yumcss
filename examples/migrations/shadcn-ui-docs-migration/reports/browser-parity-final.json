@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.shadcn-v4-browser-report/1",
+	"schema": "yumcss.shadcn-v4-browser-report/1",
 	"baselineUrl": "http://127.0.0.1:4010",
 	"lanes": {
 		"cssUrl": "http://127.0.0.1:4011",

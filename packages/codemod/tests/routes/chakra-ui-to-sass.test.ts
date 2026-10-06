@@ -40,10 +40,10 @@ test("chakra-ui -> sass: migrates concrete chakra-ui syntax to sass", async () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "chakra-ui -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("chakra-ui -> sass: migrates concrete chakra-ui syntax to sass", async () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -102,7 +102,7 @@ test("chakra-ui -> sass: carries a documented secondary chakra-ui API explicitly
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -161,7 +161,7 @@ test("chakra-ui -> sass: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -203,7 +203,7 @@ test("chakra-ui -> sass: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -257,7 +257,7 @@ test("chakra-ui -> sass: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -308,7 +308,7 @@ test("chakra-ui -> sass: preserves malformed concrete chakra-ui input", async ()
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 0,

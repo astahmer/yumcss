@@ -42,7 +42,7 @@ test("mantine -> goober -> mantine: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> goober round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("mantine -> goober -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -115,7 +115,7 @@ test("mantine -> goober -> mantine: preserves an actionable concrete round trip"
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -155,7 +155,7 @@ test("mantine -> goober -> mantine: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> goober | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> goober | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("mantine -> goober -> mantine: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> goober | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> goober | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -274,7 +274,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css({ "color": "#f97316", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -364,7 +364,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -388,7 +388,7 @@ test("mantine -> goober -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -469,7 +469,7 @@ test("mantine -> goober -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css({ "color": "#2563eb", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -493,7 +493,7 @@ test("mantine -> goober -> mantine: resolves token values across both concrete l
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

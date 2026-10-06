@@ -2,12 +2,12 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import type { Plugin } from "vite";
 
-const tailwindDefaultCssId = "\0pandwind-tailwind-default-css";
+const tailwindDefaultCssId = "\0yumcss-tailwind-default-css";
 
 export const tailwindDefaultCssPlugin: Plugin = {
-	name: "pandwind-tailwind-default-css",
+	name: "yumcss-tailwind-default-css",
 	resolveId(id) {
-		return id === "virtual:pandwind-tailwind-default-css" ? tailwindDefaultCssId : undefined;
+		return id === "virtual:yumcss-tailwind-default-css" ? tailwindDefaultCssId : undefined;
 	},
 	load(id) {
 		if (id !== tailwindDefaultCssId) return undefined;

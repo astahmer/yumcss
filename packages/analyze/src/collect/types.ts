@@ -7,7 +7,7 @@
  * signatures unchanged.
  */
 
-import type { PandwindInteropTokenSnapshot } from "pandwind-codemod/tw";
+import type { YumCSSInteropTokenSnapshot } from "@yumcss/codemod/tw";
 
 export interface ThemeVar {
 	name: string;
@@ -131,8 +131,8 @@ export interface CollectPayload {
 	/** Token governance report (plans/054) — computed when the app's
 	 * official preset is loadable; report-only when it is not. */
 	governance?: import("../governance/contracts.ts").TokenGovernanceReport;
-	/** Validated token snapshot from the codegen-owned pandwind.interop/1 artifact. */
-	interopTokens?: PandwindInteropTokenSnapshot;
+	/** Validated token snapshot from the codegen-owned yumcss.interop/1 artifact. */
+	interopTokens?: YumCSSInteropTokenSnapshot;
 	/** Deterministic prune-changeset proposal derived from the report. */
 	governanceChangeset?: import("../governance/prune-changeset.ts").GovernancePruneChangeset;
 	cssCrawl?: {
@@ -168,7 +168,7 @@ export interface CollectPayload {
 		rules: Array<{ selector: string; declarations: string }>;
 	}>;
 	contrastWarnings?: ContrastWarning[];
-	/** Inspector-side token graph (built by the app via pandwind-codemod/tw). */
+	/** Inspector-side token graph (built by the app via @yumcss/codemod/tw). */
 	tokenGraph: unknown;
 	designSystem: {
 		themeVars: Array<ThemeVar>;

@@ -15,7 +15,7 @@ describe("codemod public source surfaces", () => {
 	test("keeps the browser entry point executable and filesystem-free", () => {
 		const catalog = createBrowserCodemodCatalog();
 		const result = runBrowserAdapterMigration('css.class({ color: "red" })', {
-			from: CodemodAdapterId.Pandwind,
+			from: CodemodAdapterId.YumCSS,
 			to: CodemodAdapterId.Emotion,
 			file: "Card.tsx",
 			adapterRegistry: catalog.registry,

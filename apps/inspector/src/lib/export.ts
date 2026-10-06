@@ -7,7 +7,7 @@ import type { InspectorPayload, ThemeVar, UtilityUnion } from "../types.ts";
 import {
 	serializeDtcgTokenDocument,
 	serializeTokenResolverDocument,
-} from "pandwind-codemod/swap/token-document/serializer";
+} from "@yumcss/codemod/swap/token-document/serializer";
 
 /** Export only the source-validated generated token snapshot. */
 export function tokensToDtcg(data: InspectorPayload): string {
@@ -108,7 +108,7 @@ export function coverageToCsv(data: InspectorPayload): string {
 /** Human-readable Markdown report: summary, per-file stats, warnings. */
 export function coverageToMarkdown(data: InspectorPayload): string {
 	const c = data.coverage;
-	const lines: Array<string> = ["# pandwind inspector report", ""];
+	const lines: Array<string> = ["# yumcss inspector report", ""];
 
 	lines.push("## Fold coverage", "");
 	lines.push("| metric | value |", "| --- | --- |");
@@ -189,7 +189,7 @@ export function coverageToHtml(data: InspectorPayload, generatedAt: string): str
 		? c.missingCssSites.map((m) => row([m.file, String(m.line), m.token])).join("\n")
 		: `<tr><td colspan="3">none</td></tr>`;
 	return `<!doctype html>
-<html><head><meta charset="utf-8"><title>pandwind report</title>
+<html><head><meta charset="utf-8"><title>yumcss report</title>
 <style>
 	body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 2rem; background: #101014; color: #e8e8ea; }
 	h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
@@ -201,7 +201,7 @@ export function coverageToHtml(data: InspectorPayload, generatedAt: string): str
 	.card b { display: block; font-size: 1.5rem; }
 	code { color: #7cc4ff; }
 </style></head><body>
-<h1>pandwind report <small style="color:#777">${htmlEsc(generatedAt)}</small></h1>
+<h1>yumcss report <small style="color:#777">${htmlEsc(generatedAt)}</small></h1>
 <div class="cards">
 	<div class="card"><b>${c.eliminatedPct}%</b>cx eliminated (${c.totalCxCalls} calls)</div>
 	<div class="card"><b>${c.twFolded}/${c.totalTwCalls}</b>tw calls inlined</div>

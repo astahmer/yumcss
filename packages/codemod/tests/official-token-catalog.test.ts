@@ -9,7 +9,7 @@ import {
 	createTokenamiAdapter,
 	createUnoCssAdapter,
 	createBuiltinCodemodCatalog,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
@@ -282,7 +282,7 @@ describe("official custom-token loaders", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/1",
+			  "schema": "yumcss.style-program/1",
 			  "source": {
 			    "adapter": "panda",
 			    "end": 81,
@@ -448,7 +448,7 @@ describe("official custom-token loaders", () => {
 		expect(emit(CodemodAdapterId.Panda)).toMatchInlineSnapshot(`
 			"css({ color: "brand.500" })"
 		`);
-		expect(emit(CodemodAdapterId.Pandwind)).toMatchInlineSnapshot(`
+		expect(emit(CodemodAdapterId.YumCSS)).toMatchInlineSnapshot(`
 			"css.class({ color: "brand.500" })"
 		`);
 		const preserve = (adapter: StyleAdapter) =>
@@ -489,7 +489,7 @@ describe("official custom-token loaders", () => {
 
 	test("preserves color tokens when the declaration uses the CSS background property", () => {
 		const catalog = TokenCatalog.fromGroups({ colors: { brand: "#123456" } })?.contract;
-		const adapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind);
+		const adapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS);
 		expect(adapter?.tokenPolicy).toBeDefined();
 		const program = styleProgramFromRules([
 			{
@@ -503,7 +503,7 @@ describe("official custom-token loaders", () => {
 			},
 		]);
 		const config = {
-			adapter: CodemodAdapterId.Pandwind,
+			adapter: CodemodAdapterId.YumCSS,
 			files: [],
 			values: {},
 			tokenCatalog: catalog,
@@ -519,7 +519,7 @@ describe("official custom-token loaders", () => {
 		expect(adapter!.emit(preserved, emitContext).text).toContain('background: "brand"');
 	});
 
-	test("reuses generated Pandwind preset tokens during an async migration", async () => {
+	test("reuses generated YumCSS preset tokens during an async migration", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
 				return undefined;
@@ -535,7 +535,7 @@ describe("official custom-token loaders", () => {
 			},
 		};
 		const builtin = createBuiltinCodemodCatalog();
-		const target = createPandwindAdapter({ moduleLoader: loader });
+		const target = createYumCSSAdapter({ moduleLoader: loader });
 		const registry = createStyleAdapterRegistry([
 			builtin.registry.get(CodemodAdapterId.Emotion)!,
 			target,
@@ -544,11 +544,11 @@ describe("official custom-token loaders", () => {
 			'import { css } from "@emotion/css";\nexport const card = css({ color: "#123456" });';
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Emotion,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/Card.tsx",
 			root: "/project",
 			readFile: (file) => {
-				if (file === "/project/src/pandwind.interop.json")
+				if (file === "/project/src/yumcss.interop.json")
 					return JSON.stringify({ generatedFrom: { bridge: "bridge.ts" } });
 				if (file === "/project/src/bridge.ts")
 					return 'import { customPreset } from "./preset"; export const bridge = { preset: customPreset };';
@@ -564,7 +564,7 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toContain('color: "brand"');
 		expect(result.code).not.toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "brand" });"
 		`);
@@ -596,12 +596,12 @@ describe("official custom-token loaders", () => {
 			},
 		};
 		const adapter = createTailwindAdapter({ moduleLoader: loader });
-		const target = createPandwindAdapter({ moduleLoader: loader });
+		const target = createYumCSSAdapter({ moduleLoader: loader });
 		const result = await runAdapterMigrationAsync(
 			'import "./styles.css";\nexport const card = <div className="bg-blue-500 text-white" />;',
 			{
 				from: CodemodAdapterId.Tailwind,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: "src/Card.tsx",
 				root: "/project",
 				readFile: (file) =>
@@ -609,7 +609,7 @@ describe("official custom-token loaders", () => {
 				listFiles: () => ["/project/src/styles.css", "/project/src/Card.tsx"],
 				moduleLoader: loader,
 				adapterRegistry: createStyleAdapterRegistry([adapter, target]),
-				project: { cssModule: "pandwind/css.ts" },
+				project: { cssModule: "yumcss/css.ts" },
 			},
 		);
 
@@ -621,7 +621,7 @@ describe("official custom-token loaders", () => {
 		expect(result.code).not.toContain("var(--color-blue-500)");
 	});
 
-	test("reports an explicit residual when generated Pandwind preset loading fails", async () => {
+	test("reports an explicit residual when generated YumCSS preset loading fails", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage() {
 				return undefined;
@@ -633,17 +633,17 @@ describe("official custom-token loaders", () => {
 		const builtin = createBuiltinCodemodCatalog();
 		const registry = createStyleAdapterRegistry([
 			builtin.registry.get(CodemodAdapterId.Emotion)!,
-			createPandwindAdapter({ moduleLoader: loader }),
+			createYumCSSAdapter({ moduleLoader: loader }),
 		]);
 		const result = await runAdapterMigrationAsync(
 			'import { css } from "@emotion/css"; css({ color: "red" });',
 			{
 				from: CodemodAdapterId.Emotion,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: "src/Card.tsx",
 				root: "/project",
 				readFile: (file) => {
-					if (file === "/project/src/pandwind.interop.json")
+					if (file === "/project/src/yumcss.interop.json")
 						return JSON.stringify({ generatedFrom: { bridge: "bridge.ts" } });
 					if (file === "/project/src/bridge.ts") return "export const bridge = {};";
 					return undefined;
@@ -657,9 +657,9 @@ describe("official custom-token loaders", () => {
 		expect(result.residuals).toMatchInlineSnapshot(`
 		[
 		  {
-		    "hint": "Pandwind interop loading failed: generated bridge does not expose a loadable preset",
+		    "hint": "YumCSS interop loading failed: generated bridge does not expose a loadable preset",
 		    "kind": "configuration",
-		    "text": "Pandwind generated design-system metadata",
+		    "text": "YumCSS generated design-system metadata",
 		  },
 		]
 		`);

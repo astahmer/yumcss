@@ -175,7 +175,7 @@ describe("contrast warnings", () => {
 describe("prune changeset", () => {
 	test("generates changeset markdown listing unused tokens", () => {
 		const content = buildPruneChangeset(["$unused-a", "$unused-b"], "docs-app");
-		expect(content).toContain('---\n"pandwind": patch\n---');
+		expect(content).toContain('---\n"yumcss": patch\n---');
 		expect(content).toContain("Remove 2 unused design token(s)");
 		expect(content).toContain("- `$unused-a`");
 	});

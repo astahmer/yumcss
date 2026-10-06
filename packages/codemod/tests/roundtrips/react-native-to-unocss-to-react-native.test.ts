@@ -42,7 +42,7 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("react-native -> unocss -> react-native: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("react-native -> unocss -> react-native: retains the documented secondary A
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const styles = { "card": "[padding:8px] [background-color:red]" };",
 		    "converted": 0,
 		    "generatedFiles": [],

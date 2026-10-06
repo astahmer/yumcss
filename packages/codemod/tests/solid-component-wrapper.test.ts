@@ -22,7 +22,7 @@ const migrate = (input: string) =>
 	});
 
 const typecheckGeneratedSolid = (generatedSource: string): string => {
-	const projectRoot = resolve(import.meta.dirname, "../../pandwind");
+	const projectRoot = resolve(import.meta.dirname, "../../yumcss");
 	const temporaryDirectory = mkdtempSync(resolve(projectRoot, ".codemod-solid-wrapper-"));
 	const generatedFile = join(temporaryDirectory, "SolidWrapper.tsx");
 	try {

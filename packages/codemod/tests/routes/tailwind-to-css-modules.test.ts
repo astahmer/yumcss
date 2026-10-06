@@ -38,17 +38,17 @@ test("tailwind -> css-modules: migrates concrete tailwind syntax to css-modules"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tailwind -> css-modules happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -98,7 +98,7 @@ test("tailwind -> css-modules: carries a documented secondary tailwind API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -161,7 +161,7 @@ test("tailwind -> css-modules: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -202,7 +202,7 @@ test("tailwind -> css-modules: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -255,7 +255,7 @@ test("tailwind -> css-modules: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -305,7 +305,7 @@ test("tailwind -> css-modules: preserves malformed concrete tailwind input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> css-modules | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 0,

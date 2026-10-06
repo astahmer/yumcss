@@ -10,7 +10,7 @@ import {
 	type AdapterCapability,
 	type StyleDeclaration,
 	type SemanticContractFixture,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 
 export interface SemanticProofFixture extends SemanticContractFixture {
 	readonly covers: readonly AdapterCapability[];

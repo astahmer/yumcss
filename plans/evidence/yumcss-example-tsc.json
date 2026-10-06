@@ -1,0 +1,23 @@
+{
+  "schema": "yumcss.tsc-performance/1",
+  "project": "examples/example/tsconfig.json",
+  "command": "pnpm --filter example exec tsc --noEmit --extendedDiagnostics --pretty false",
+  "samples": 7,
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "updatedAt": "2026-09-16",
+  "metrics": {
+    "files": 840,
+    "instantiations": 172628,
+    "memoryUsedKiB": 311726,
+    "checkTimeSeconds": 0.365,
+    "totalTimeSeconds": 0.497
+  },
+  "tolerances": {
+    "instantiations": 0.1,
+    "memoryUsedKiB": 0.1,
+    "checkTimeSeconds": 0.5
+  }
+}

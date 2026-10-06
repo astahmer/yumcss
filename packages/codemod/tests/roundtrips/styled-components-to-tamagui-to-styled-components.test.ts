@@ -42,7 +42,7 @@ test("styled-components -> tamagui -> styled-components: preserves an actionable
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);

@@ -10,13 +10,13 @@ import {
 import { tw } from "../tw.ts";
 import { dss } from "../css.ts";
 import { cx } from "../cx.ts";
-import { createCss } from "pandwind/css";
-import { createNamedAtomsStrategy } from "pandwind/css/named";
-import { createStyleXAdapter } from "pandwind/css/stylex";
-import type { ClassNameStrategy } from "pandwind/css";
-import { createUnsafeCss } from "pandwind/unsafe/css";
-import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+import { createStyleXAdapter } from "yumcss/css/stylex";
+import type { ClassNameStrategy } from "yumcss/css";
+import { createUnsafeCss } from "yumcss/unsafe/css";
+import { resolveDesignStyle } from "yumcss/design/resolve";
+import { examplePreset } from "@yumcss/example-preset";
 import { SANDBOX_MODULES } from "./sandbox-modules.ts";
 import { applyPreviewControls } from "./preview-controls.ts";
 

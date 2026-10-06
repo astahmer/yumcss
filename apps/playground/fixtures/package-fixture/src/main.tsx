@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
-import "pandwind:css";
+import "yumcss:css";
 import { App } from "./app";
 
 const root = document.getElementById("root");

@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -14,8 +15,8 @@ import {
 import { readPinnedSource } from "./adapter-proof-harness.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 
 const reference = {
 	clone: "treat",
@@ -30,7 +31,7 @@ const versions = {
 	"css-loader": "5.2.7",
 	"mini-css-extract-plugin": "1.6.2",
 	oxcParser: "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	treat: "2.0.4",
@@ -111,13 +112,13 @@ module.exports = {
 `;
 
 const targetViteConfig = `import react from "@vitejs/plugin-react-swc";
-import { pandwindCssVite } from "pandwind/vite";
-import { preset } from "./pandwind/preset";
+import { yumcssExtractVite } from "yumcss/vite";
+import { preset } from "./yumcss/preset";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [react(), pandwindCssVite(preset, { root: "." })],
-	ssr: { noExternal: ["pandwind"] },
+	plugins: [react(), yumcssExtractVite(preset, { root: "." })],
+	ssr: { noExternal: ["yumcss"] },
 });
 `;
 
@@ -138,7 +139,7 @@ const tsConfig = {
 };
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-treat-target-proof" : "pandwind-treat-source-proof",
+	name: target ? "yumcss-treat-target-proof" : "yumcss-treat-source-proof",
 	private: true,
 	type: "module",
 	scripts: target
@@ -153,7 +154,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 				typecheck: "tsc --noEmit",
 			},
 	dependencies: {
-		...(target ? { pandwind: versions.pandwind } : { treat: versions.treat }),
+		...(target ? { yumcss: versions.yumcss } : { treat: versions.treat }),
 		react: versions.react,
 		"react-dom": versions["react-dom"],
 	},
@@ -213,7 +214,7 @@ const proofIsComplete = (report: Record<string, any>): boolean =>
 	report.migration.residuals === 0 &&
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
-	report.migration.targetUsesPandwind &&
+	report.migration.targetUsesYumCSS &&
 	report.dependencies.targetNodeModule &&
 	report.checks.hydration &&
 	report.ssr.markupEquivalent &&
@@ -223,9 +224,9 @@ const proofIsComplete = (report: Record<string, any>): boolean =>
 	(report.css.targetNotLarger || report.css.comparison === "diagnostic");
 
 const runProof = async (): Promise<void> => {
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
 	await withInstalledProofProject(
-		"pandwind-treat-installed-proof-",
+		"yumcss-treat-installed-proof-",
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, false);
 			createFixture(targetRoot, true);
@@ -247,13 +248,13 @@ const runProof = async (): Promise<void> => {
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						CodemodAdapterId.Treat,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -320,7 +321,7 @@ export const render = () => renderToString(React.createElement(App));
 					commit: reference.commit,
 					sourceEntry: reference.path,
 				},
-				route: { from: CodemodAdapterId.Treat, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Treat, to: CodemodAdapterId.YumCSS },
 				fixture: {
 					files: [
 						"src/Button.treat.js",
@@ -333,15 +334,15 @@ export const render = () => renderToString(React.createElement(App));
 				},
 				dependencies: {
 					installed: true,
-					targetPackage: versions.pandwind,
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: readFileSync(
+					targetUsesYumCSS: readFileSync(
 						join(targetRoot, "src/Button.treat.js"),
 						"utf8",
-					).includes("pandwind"),
+					).includes("yumcss"),
 				},
 				checks: {
 					sourceTypecheck: true,

@@ -40,10 +40,10 @@ test("mantine -> chakra-ui: migrates concrete mantine syntax to chakra-ui", asyn
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("mantine -> chakra-ui: migrates concrete mantine syntax to chakra-ui", asyn
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("mantine -> chakra-ui: carries a documented secondary mantine API explicitl
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("mantine -> chakra-ui: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("mantine -> chakra-ui: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("mantine -> chakra-ui: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("mantine -> chakra-ui: preserves malformed concrete mantine input", async (
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,

@@ -68,7 +68,7 @@ describe("versioned semantic style-program IR", () => {
 
 		const program = styleProgramFromSwapIR(ir, {
 			conditionKinds: { hover: "pseudo", sm: "media" },
-			source: { file: "Card.tsx", start: 10, end: 80, adapter: "pandwind" },
+			source: { file: "Card.tsx", start: 10, end: 80, adapter: "yumcss" },
 		});
 
 		expect(program.schema).toBe(STYLE_PROGRAM_SCHEMA);

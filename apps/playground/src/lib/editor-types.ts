@@ -5,7 +5,7 @@ const generatedWindTypes = String(
 );
 const windTypes = generatedWindTypes.replace("export type WindVariants", "type WindVariants");
 
-const generatedPandwindTypes = import.meta.glob("../generated/pandwind/**/*.d.ts", {
+const generatedYumCSSTypes = import.meta.glob("../generated/yumcss/**/*.d.ts", {
 	eager: true,
 	import: "default",
 	query: "?raw",
@@ -20,35 +20,35 @@ const generatedDependencyTypes = import.meta.glob(
 	},
 );
 
-const packageTypeLibraries = Object.entries(generatedPandwindTypes).map(([path, content]) => ({
-	filePath: `file:///pandwind/playground/generated/pandwind/${path.replace("../generated/pandwind/", "")}`,
+const packageTypeLibraries = Object.entries(generatedYumCSSTypes).map(([path, content]) => ({
+	filePath: `file:///yumcss/playground/generated/yumcss/${path.replace("../generated/yumcss/", "")}`,
 	content: String(content),
 }));
 
 const dependencyTypeLibraries = Object.entries(generatedDependencyTypes).map(([path, content]) => ({
-	filePath: `file:///pandwind/playground/generated/dependencies/${path.replace("../generated/dependencies/", "")}`,
+	filePath: `file:///yumcss/playground/generated/dependencies/${path.replace("../generated/dependencies/", "")}`,
 	content: String(content),
 }));
 
 /**
  * Monaco's TypeScript worker has no access to the host filesystem. The
- * declaration graph is generated from the workspace-linked `pandwind`
+ * declaration graph is generated from the workspace-linked `yumcss`
  * package before dev/build, then mounted under a virtual package tree here.
  * Relative imports are redirected to emitted declarations so the editor uses
  * the same `CssFn`, `CxFn`, design types, and option contracts as the package.
  */
-/** TypeScript paths for every Pandwind public module used by the playground. */
-export const PANDWIND_EDITOR_MODULE_PATHS = {
-	pandwind: "generated/pandwind/index.d.ts",
-	"pandwind/css": "generated/pandwind/css/index.d.ts",
-	"pandwind/unsafe/css": "generated/pandwind/unsafe/css.d.ts",
-	"pandwind/design": "generated/pandwind/design/index.d.ts",
-	"pandwind/tw": "generated/pandwind/tw/index.d.ts",
-	"pandwind/cx": "generated/pandwind/cx/index.d.ts",
-	"pandwind/preset": "generated/pandwind/preset/index.d.ts",
-	"pandwind/preset/csstype": "generated/pandwind/preset/csstype.d.ts",
-	"pandwind/preset/default": "generated/pandwind/preset/default.d.ts",
-	"pandwind/types/typings": "generated/pandwind/types/typings.d.ts",
+/** TypeScript paths for every YumCSS public module used by the playground. */
+export const YUMCSS_EDITOR_MODULE_PATHS = {
+	yumcss: "generated/yumcss/index.d.ts",
+	"yumcss/css": "generated/yumcss/css/index.d.ts",
+	"yumcss/unsafe/css": "generated/yumcss/unsafe/css.d.ts",
+	"yumcss/design": "generated/yumcss/design/index.d.ts",
+	"yumcss/tw": "generated/yumcss/tw/index.d.ts",
+	"yumcss/cx": "generated/yumcss/cx/index.d.ts",
+	"yumcss/preset": "generated/yumcss/preset/index.d.ts",
+	"yumcss/preset/csstype": "generated/yumcss/preset/csstype.d.ts",
+	"yumcss/preset/default": "generated/yumcss/preset/default.d.ts",
+	"yumcss/types/typings": "generated/yumcss/types/typings.d.ts",
 } as const;
 
 const installedEditorModules = new Set(
@@ -62,8 +62,8 @@ const installedEditorModules = new Set(
 /** These are browser-only shims only for migration packages absent from the workspace graph. */
 const migrationShimModules = [
 	[
-		"@pandwind/example-preset",
-		String.raw`declare module "@pandwind/example-preset" {
+		"@yumcss/example-preset",
+		String.raw`declare module "@yumcss/example-preset" {
   // This is a playground-only shim; the real preset is loaded by the browser evaluator.
   type PlaygroundConfig = {
     backgroundColor: string;
@@ -223,7 +223,7 @@ const migrationShimModules = [
 
 const migrationExampleModules = [
 	String.raw`
-type PlaygroundStyleObject = import("pandwind/types/typings").StyleObject;
+type PlaygroundStyleObject = import("yumcss/types/typings").StyleObject;
 type PlaygroundComponent<Props extends object = Record<string, unknown>> =
 	(props: Props) => React.JSX.Element;
 
@@ -263,8 +263,8 @@ interface PlaygroundStyledFactory {
 
 const globalEditorDeclarations = String.raw`
 declare const tw: (styles: WindVariants) => string;
-declare const css: import("pandwind/css").CssFn;
-declare const cx: import("pandwind").CxFn;
+declare const css: import("yumcss/css").CssFn;
+declare const cx: import("yumcss").CxFn;
 declare const renderer: {
   renderRule(rule: (...args: readonly unknown[]) => PlaygroundStyleObject): string;
 };
@@ -287,11 +287,11 @@ export const EDITOR_TYPE_LIBRARIES: readonly EditorTypeLibrary[] = [
 	...packageTypeLibraries,
 	...dependencyTypeLibraries,
 	{
-		filePath: "file:///pandwind/playground/generated-types.d.ts",
+		filePath: "file:///yumcss/playground/generated-types.d.ts",
 		content: `${windTypes}\n${globalEditorDeclarations}`,
 	},
 	{
-		filePath: "file:///pandwind/playground/modules.d.ts",
+		filePath: "file:///yumcss/playground/modules.d.ts",
 		content: migrationExampleModules,
 	},
 ];

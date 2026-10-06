@@ -42,7 +42,7 @@ test("unocss -> styled-components -> unocss: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("unocss -> styled-components -> unocss: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import styled from "styled-components";
 		export const App = () => styled.div({ display: "flex", alignItems: "center", gap: "1rem" });",
 		    "converted": 0,
@@ -160,7 +160,7 @@ test("unocss -> styled-components -> unocss: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import styled from "styled-components";
 		export const App = () => styled.div({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } });",
 		    "converted": 0,
@@ -250,7 +250,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#f97316", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -324,7 +324,7 @@ test("unocss -> styled-components -> unocss: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -413,7 +413,7 @@ test("unocss -> styled-components -> unocss: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div({ color: "#2563eb", padding: "1.125rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -16,7 +16,7 @@ const catalog = createBuiltinCodemodCatalog();
 function migrate(source: string, from: CodemodAdapterId, file: string) {
 	return runAdapterMigration(source, {
 		from,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file,
 		mode: "safe",
 		adapterRegistry: catalog.registry,
@@ -97,7 +97,7 @@ describe("stylesheet source adapters", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/1",
+			  "schema": "yumcss.style-program/1",
 			  "source": {
 			    "adapter": "authored-css",
 			    "end": 36,
@@ -232,7 +232,7 @@ describe("stylesheet source adapters", () => {
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/1",
+			  "schema": "yumcss.style-program/1",
 			  "source": undefined,
 			  "sourceMap": [
 			    {
@@ -268,7 +268,7 @@ describe("stylesheet source adapters", () => {
 		);
 		expect(result.outputExtension).toBeUndefined();
 		expect(result.code).toMatchInlineSnapshot(`
-			"/* pandwind:migrate-skip (lowering-residual: capability) */
+			"/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }"
 		`);
 	});
@@ -280,7 +280,7 @@ describe("stylesheet source adapters", () => {
 		]);
 		const result = runAdapterMigration(files.get("Card.module.css")!, {
 			from: CodemodAdapterId.CssModules,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.module.css",
 			root: ".",
 			readFile: (file) => files.get(file.replace(/^\.\//u, "")),
@@ -296,7 +296,7 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }), "token": css.class({ color: "blue" }) };
 			export default styles;",
@@ -306,7 +306,7 @@ describe("stylesheet source adapters", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -355,7 +355,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 45,
@@ -416,7 +416,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 23,
@@ -487,7 +487,7 @@ describe("stylesheet source adapters", () => {
 		]);
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.CssModules,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.module.css",
 			root: "/project",
 			readFile: (file) => files.get(file),
@@ -507,7 +507,7 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };
 			export default styles;",
@@ -517,7 +517,7 @@ describe("stylesheet source adapters", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -574,7 +574,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 21,
@@ -677,7 +677,7 @@ describe("stylesheet source adapters", () => {
 		const source = ".card { composes: base; color: red; }";
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.CssModules,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.module.css",
 			root: ".",
 			readFile: () => undefined,
@@ -687,7 +687,7 @@ describe("stylesheet source adapters", () => {
 		});
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain(source);
 		expect(result.converted).toBe(0);
 		expect(result.residuals).toEqual([
@@ -696,7 +696,7 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "/* pandwind:migrate-skip (lowering-residual: composition) */
+			  "code": "/* yumcss:migrate-skip (lowering-residual: composition) */
 			.card { composes: base; color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
@@ -749,7 +749,7 @@ describe("stylesheet source adapters", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 37,
@@ -800,7 +800,7 @@ describe("stylesheet source adapters", () => {
 		] as const) {
 			const result = migrate(source, from, file);
 			expect(result.changed).toBe(true);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 			expect(result.code).toContain(source);
 			expect(result.residuals.length).toBeGreaterThan(0);
 			expect(result.outputExtension).toBeUndefined();
@@ -936,7 +936,7 @@ describe("stylesheet source adapters", () => {
 
 	test("preserves global Sass when runtime output would need consumer rewrites", async () => {
 		let compilerCalls = 0;
-		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const yumcss = catalog.registry.get(CodemodAdapterId.YumCSS);
 		const sass = createSassAdapter({
 			async importPackage<T>() {
 				return {
@@ -953,10 +953,10 @@ describe("stylesheet source adapters", () => {
 		const source = ".card { color: $tone; }";
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Sass,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "styles.scss",
 			root: "/project",
-			adapterRegistry: createStyleAdapterRegistry([sass, pandwind!]),
+			adapterRegistry: createStyleAdapterRegistry([sass, yumcss!]),
 			mode: "safe",
 		});
 
@@ -971,7 +971,7 @@ describe("stylesheet source adapters", () => {
 		expect(migrationEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: $tone; }",
 			  "converted": 0,
 			  "fileChanges": [],
@@ -1010,7 +1010,7 @@ describe("stylesheet source adapters", () => {
 		});
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain(".card { color: red; }");
 		expect(result.outputExtension).toBeUndefined();
 		expect(result.residuals).toEqual(

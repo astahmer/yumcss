@@ -103,7 +103,7 @@ const comparisons = routes.map((route, index) => {
 });
 
 const report = {
-	schema: "pandwind.stylex-docs-browser-report/1",
+	schema: "yumcss.stylex-docs-browser-report/1",
 	baselineUrl,
 	migratedUrl,
 	allRoutesEquivalent: comparisons.every(

@@ -39,8 +39,8 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import { createTokenPolicy, TokenCatalog } from "../tokens.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { componentAttrsValueExpression } from "../host-component-rewriter.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, walkWithParent, type OxcNode } from "pandwind/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, walkWithParent, type OxcNode } from "yumcss/tw/literal";
 import { z } from "zod";
 
 function camelCase(property: string): string {
@@ -513,7 +513,7 @@ function normalizeTokenamiComposeProgram(
 			residual.kind !== StyleProgramResidualKindTag.Composition || residual.text !== "css.compose",
 	);
 	if (
-		context.targetId === CodemodAdapterId.Pandwind &&
+		context.targetId === CodemodAdapterId.YumCSS &&
 		tokenamiStaticComposeProgram({ ...normalized, residuals: residualsWithoutComposeApi }) &&
 		tokenamiStaticComposeCallsite(context.source, context.file, normalized.source?.start) !==
 			undefined

@@ -2,12 +2,12 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { parseSync, type Expression } from "oxc-parser";
-import { define } from "pandwind/preset";
-import { evalLiteral } from "pandwind/tw/literal";
+import { define } from "yumcss/preset";
+import { evalLiteral } from "yumcss/tw/literal";
 import {
 	presetTokenVocabularyByProperty,
 	type PresetTokenVocabulary,
-} from "pandwind/vite/preset-context";
+} from "yumcss/vite/preset-context";
 import { NodeKind } from "./ast-node-kind.ts";
 
 type AstNode = { readonly type: string; readonly [key: string]: any };
@@ -35,7 +35,7 @@ const DEFINE_BUILDERS = {
 	tokens: define.tokens,
 } as const;
 const TOKEN_CATALOG_BUILDERS = new Set(["defineColorPalettes", "defineSemanticTokens"]);
-const CSS_FACTORY_SOURCES = new Set(["pandwind", "pandwind/css"]);
+const CSS_FACTORY_SOURCES = new Set(["yumcss", "yumcss/css"]);
 const CSS_FACTORY_NAMES = new Set(["createCss", "createGeneratedCss"]);
 const MODULE_CACHE_LIMIT = 256;
 const UNRESOLVED = Symbol("unresolved project value");
@@ -234,7 +234,7 @@ class ProjectPresetGraph {
 
 	constructor(root: ParsedModule) {
 		this.#root = root;
-		const packageJson = resolveModuleFile(root.filename, "pandwind/package.json");
+		const packageJson = resolveModuleFile(root.filename, "yumcss/package.json");
 		this.#compilerPackageRoot = packageJson === undefined ? undefined : dirname(packageJson);
 		this.#modules.set(root.filename, root);
 	}
@@ -255,7 +255,7 @@ class ProjectPresetGraph {
 
 	#isCompilerDefineImport(binding: ModuleImport): boolean {
 		return (
-			(binding.source === "pandwind" || binding.source === "pandwind/preset") &&
+			(binding.source === "yumcss" || binding.source === "yumcss/preset") &&
 			binding.imported === "define"
 		);
 	}
@@ -396,7 +396,7 @@ class ProjectPresetGraph {
 		if (this.#isCompilerDefineImport(binding) && path.length === 2) return path[1];
 		if (
 			binding.imported === "*" &&
-			(binding.source === "pandwind" || binding.source === "pandwind/preset") &&
+			(binding.source === "yumcss" || binding.source === "yumcss/preset") &&
 			path.length === 3 &&
 			path[1] === "define"
 		)

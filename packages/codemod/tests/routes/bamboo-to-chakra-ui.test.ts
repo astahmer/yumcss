@@ -40,10 +40,10 @@ test("bamboo -> chakra-ui: migrates concrete bamboo syntax to chakra-ui", async 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "bamboo -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -95,7 +95,7 @@ test("bamboo -> chakra-ui: carries a documented secondary bamboo API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 0,
 		  "generatedFiles": [],

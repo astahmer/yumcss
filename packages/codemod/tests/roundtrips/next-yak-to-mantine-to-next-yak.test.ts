@@ -42,7 +42,7 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "next-yak -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -77,7 +77,7 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -101,7 +101,7 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,7 +162,7 @@ test("next-yak -> mantine -> next-yak: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: dynamic | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: mantine -> next-yak | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -233,7 +233,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -281,7 +281,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -297,7 +297,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -345,7 +345,7 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -376,7 +376,7 @@ test("next-yak -> mantine -> next-yak: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -400,7 +400,7 @@ test("next-yak -> mantine -> next-yak: resolves token values across both concret
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -424,7 +424,7 @@ test("next-yak -> mantine -> next-yak: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

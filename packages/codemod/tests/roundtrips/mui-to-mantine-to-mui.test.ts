@@ -42,7 +42,7 @@ test("mui -> mantine -> mui: preserves an actionable concrete round trip", async
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -169,7 +169,7 @@ test("mui -> mantine -> mui: retains the documented secondary API without silent
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: mantine -> mui | parse-residual: dynamic | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: mantine -> mui | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

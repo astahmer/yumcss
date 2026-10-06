@@ -42,7 +42,7 @@ test("emotion -> css-modules -> emotion: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "emotion -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("emotion -> css-modules -> emotion: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("emotion -> css-modules -> emotion: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("emotion -> css-modules -> emotion: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("emotion -> css-modules -> emotion: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("emotion -> css-modules -> emotion: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("emotion -> css-modules -> emotion: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("emotion -> css-modules -> emotion: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("emotion -> css-modules -> emotion: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("emotion -> css-modules -> emotion: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("emotion -> css-modules -> emotion: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

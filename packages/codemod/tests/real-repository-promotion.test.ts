@@ -16,7 +16,7 @@ const reference: RealRepositoryReference = {
 	commit: "abc123",
 	path: "src/index.tsx",
 	from: CodemodAdapterId.Emotion,
-	to: CodemodAdapterId.Pandwind,
+	to: CodemodAdapterId.YumCSS,
 	framework: "react",
 };
 
@@ -87,7 +87,7 @@ describe("real repository promotion runner", () => {
 			    "targetCssBytes": 90,
 			  },
 			  "repository": "https://example.test/fixture",
-			  "schema": "pandwind.real-repository-promotion/1",
+			  "schema": "yumcss.real-repository-promotion/1",
 			  "stages": [
 			    {
 			      "passed": true,

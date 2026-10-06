@@ -1,6 +1,6 @@
 import type { TokenDocument } from "./token-document.ts";
 
-export const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
+export const TOKEN_FORMAT_SCHEMA = "yumcss.token-format/1" as const;
 
 export const TokenFormatId = {
 	Dtcg: "dtcg",

@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.real-repository-report/1",
+	"schema": "yumcss.real-repository-report/1",
 	"generatedFrom": "scripts/generate-real-repository-report.ts",
 	"reports": [
 		{
@@ -7,7 +7,7 @@
 			"repository": "https://github.com/chakra-ui/panda",
 			"commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
 			"path": "website/app/page.tsx",
-			"adapterRoute": "panda -> pandwind",
+			"adapterRoute": "panda -> yumcss",
 			"sourceBytes": 1421,
 			"outputBytes": 1420,
 			"outputByteDelta": -1,
@@ -15,19 +15,19 @@
 			"skipped": 0,
 			"residuals": 0,
 			"emittedModules": [
-				"pandwind/preset.ts",
-				"pandwind/css.ts",
-				"pandwind/virtual.d.ts",
-				"pandwind/internal.ts",
-				"pandwind/recipes/index.ts",
-				"pandwind/patterns/index.ts",
-				"pandwind/jsx/index.tsx"
+				"yumcss/preset.ts",
+				"yumcss/css.ts",
+				"yumcss/virtual.d.ts",
+				"yumcss/internal.ts",
+				"yumcss/recipes/index.ts",
+				"yumcss/patterns/index.ts",
+				"yumcss/jsx/index.tsx"
 			],
 			"runtimeBundleImpact": {
 				"measured": false,
 				"sourceRuntimePackages": ["@pandacss/dev"],
-				"targetRuntimePackages": ["pandwind"],
-				"added": ["pandwind"],
+				"targetRuntimePackages": ["yumcss"],
+				"added": ["yumcss"],
 				"removed": ["@pandacss/dev"],
 				"byteDelta": -1
 			}

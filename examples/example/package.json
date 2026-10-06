@@ -8,13 +8,13 @@
 		"prebuild": "pnpm run tw:generate && pnpm run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.conflicts.ts ./src/tw.build.ts ./src/bridge.ts ./src/pandwind-theme.css ./src/pandwind.interop.json && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css",
-		"tw:prune": "pnpm exec pandwind-codemod tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:scan": "pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+		"tw:generate": "pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src --tokens @yumcss/example-preset --preset-import @yumcss/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.conflicts.ts ./src/tw.build.ts ./src/bridge.ts ./src/yumcss-theme.css ./src/yumcss.interop.json && pnpm exec yumcss-codemod tw manifest ./src ./src/tailwind.css",
+		"tw:prune": "pnpm exec yumcss-codemod tw prune ./src/yumcss-theme.css ./src/tw.ts ./src",
+		"tw:scan": "pnpm exec yumcss-codemod tw scan ./src/tw.ts ./src ./src/yumcss.safelist.css"
 	},
 	"dependencies": {
-		"@pandwind/example-preset": "workspace:*",
-		"pandwind": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
+		"yumcss": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8"
 	},
@@ -24,8 +24,8 @@
 		"@types/react-dom": "19.2.7",
 		"@vitejs/devtools": "0.7.2",
 		"@vitejs/plugin-react-swc": "4.3.3",
-		"pandwind-codemod": "workspace:*",
-		"pandwind-devtools": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
+		"@yumcss/devtools": "workspace:*",
 		"tailwindcss": "4.3.3",
 		"typescript": "7.0.2",
 		"vite": "8.2.2"

@@ -42,7 +42,7 @@ test("aphrodite -> vanilla-extract -> aphrodite: preserves an actionable concret
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("aphrodite -> vanilla-extract -> aphrodite: retains the documented secondar
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
+		// yumcss:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("aphrodite -> vanilla-extract -> aphrodite: retains the documented secondar
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
+		// yumcss:migrate-skip (route: aphrodite -> vanilla-extract | lowering-residual: validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],

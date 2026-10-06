@@ -7,9 +7,9 @@ import {
 	generateCssTypes,
 	type GenerateCssTypesOptions,
 } from "./generate-types.ts";
-import { loadPandwindPreset } from "../preset-loader.ts";
+import { loadYumCSSPreset } from "../preset-loader.ts";
 import type { ProjectModuleLoader } from "../swap/project-module-loader.ts";
-import type { TokenVariableNames } from "pandwind/types/typings";
+import type { TokenVariableNames } from "yumcss/types/typings";
 
 export const CssCommand = {
 	Generate: "generate",
@@ -57,7 +57,7 @@ const actionPositionals = (args: readonly unknown[]): string[] =>
 
 const configureGenerate = (command: Command): void => {
 	command
-		.option("--preset-import <module>", "Module that exports the Pandwind preset")
+		.option("--preset-import <module>", "Module that exports the YumCSS preset")
 		.option("--preset-export <name>", "Preset export name; use 'default' for a default export")
 		.option(
 			"--token-variable-names <mode>",
@@ -93,10 +93,10 @@ const generateCommand = (
 };
 
 const createCssCliApp = (handlers: CssCliHandlers, cwd: string): CAC => {
-	const cli = cac("pandwind-codemod css");
+	const cli = cac("yumcss-codemod css");
 	const generate = cli.command(
 		"generate [root] [out-file]",
-		"Generate a concrete typed Pandwind CSS facade from a preset",
+		"Generate a concrete typed YumCSS CSS facade from a preset",
 	);
 	configureGenerate(generate);
 	generate.action((...actionArgs: Array<unknown>) => {
@@ -114,10 +114,10 @@ export const parseCssCommand = (
 ): CssCommandInvocation => {
 	const effectiveArgv = argv.length === 0 ? [CssCommand.Generate] : [...argv];
 	const cli = createCssCliApp({ generate: async () => {} }, cwd);
-	cli.parse(["node", "pandwind-codemod css", ...effectiveArgv], { run: false });
+	cli.parse(["node", "yumcss-codemod css", ...effectiveArgv], { run: false });
 	if (cli.matchedCommand === undefined)
 		throw new Error(
-			`pandwind-codemod css: unknown command '${effectiveArgv[0] ?? ""}'. Expected generate`,
+			`yumcss-codemod css: unknown command '${effectiveArgv[0] ?? ""}'. Expected generate`,
 		);
 	cli.matchedCommand.checkUnknownOptions();
 	cli.matchedCommand.checkOptionValue();
@@ -147,7 +147,7 @@ const generatedOptions = (command: CssGenerateCommand): GenerateCssTypesOptions 
 
 const defaultHandlers = (dependencies: CssCliDependencies): CssCliHandlers => ({
 	async generate(command) {
-		const preset = await loadPandwindPreset(
+		const preset = await loadYumCSSPreset(
 			{
 				root: command.root,
 				presetImport: command.presetImport,
@@ -161,9 +161,9 @@ const defaultHandlers = (dependencies: CssCliDependencies): CssCliHandlers => ({
 				throw new Error(`generated CSS types are missing: ${command.outFile}`);
 			if (readFileSync(command.outFile, "utf8") !== result.source)
 				throw new Error(
-					`generated CSS types are stale: ${command.outFile}; run pandwind-codemod css generate to refresh it`,
+					`generated CSS types are stale: ${command.outFile}; run yumcss-codemod css generate to refresh it`,
 				);
-			console.log(`pandwind: generated CSS types are up to date (${command.outFile})`);
+			console.log(`yumcss: generated CSS types are up to date (${command.outFile})`);
 			return;
 		}
 
@@ -177,7 +177,7 @@ const defaultHandlers = (dependencies: CssCliDependencies): CssCliHandlers => ({
 		mkdirSync(dirname(command.outFile), { recursive: true });
 		writeFileSync(command.outFile, result.source);
 		console.log(
-			`pandwind: generated CSS types at ${command.outFile} (${result.propertyCount} properties, ${result.conditionCount} conditions, ${result.tokenCount} tokens)`,
+			`yumcss: generated CSS types at ${command.outFile} (${result.propertyCount} properties, ${result.conditionCount} conditions, ${result.tokenCount} tokens)`,
 		);
 	},
 });
@@ -195,11 +195,11 @@ class DefaultCssCli implements CssCli {
 		const cli = createCssCliApp(this.handlers, this.cwd);
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [CssCommand.Generate] : [...argv];
-		cli.parse(["node", "pandwind-codemod css", ...effectiveArgv], { run: false });
+		cli.parse(["node", "yumcss-codemod css", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-codemod css: unknown command '${argv[0] ?? ""}'. Expected generate`,
+				`yumcss-codemod css: unknown command '${argv[0] ?? ""}'. Expected generate`,
 			);
 		}
 		await cli.runMatchedCommand();

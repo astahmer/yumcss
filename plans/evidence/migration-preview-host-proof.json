@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.migration-preview-host-proof/1",
+  "schema": "yumcss.migration-preview-host-proof/1",
   "host": "browser",
   "status": "ready",
   "computedColor": "rgb(239, 68, 68)",

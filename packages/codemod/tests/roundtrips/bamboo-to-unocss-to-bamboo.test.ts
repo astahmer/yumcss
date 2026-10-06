@@ -42,7 +42,7 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "bamboo -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const card = "[color:red]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const card = "[display:flex] [gap:4]";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.stylex-docs-browser-report/1",
+	"schema": "yumcss.stylex-docs-browser-report/1",
 	"referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
 	"verifiedLanes": {
 		"runtime-css": "passed",

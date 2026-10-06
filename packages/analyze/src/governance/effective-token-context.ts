@@ -29,7 +29,7 @@ export interface EffectiveTokenContextInputs {
 	readonly unresolvedImports?: ReadonlyArray<{ from: string; specifier: string }>;
 	/** Official/config loader failures (message list). */
 	readonly loaderFailures?: readonly string[];
-	/** Provenance origin label for the design-system loader (default "pandwind"). */
+	/** Provenance origin label for the design-system loader (default "yumcss"). */
 	readonly origin?: string;
 }
 
@@ -193,7 +193,7 @@ function diagnosticsFromFailures(inputs: EffectiveTokenContextInputs): Governanc
 export function buildEffectiveTokenContext(
 	inputs: EffectiveTokenContextInputs,
 ): EffectiveTokenContext {
-	const origin = inputs.origin ?? "pandwind";
+	const origin = inputs.origin ?? "yumcss";
 	const byId = new Map<string, TokenDefinition>();
 	const absorb = (defs: ReadonlyArray<TokenDefinition>): void => {
 		for (const def of defs) {
@@ -205,7 +205,7 @@ export function buildEffectiveTokenContext(
 	absorb(definitionsFromTokenGroups(inputs.tokenGroups ?? {}, origin));
 	absorb(definitionsFromThemeVars(inputs.themeVars ?? []));
 	absorb(
-		definitionsFromInterop(inputs.interopVariables ?? {}, "pandwind.interop.json theme.variables"),
+		definitionsFromInterop(inputs.interopVariables ?? {}, "yumcss.interop.json theme.variables"),
 	);
 
 	return {

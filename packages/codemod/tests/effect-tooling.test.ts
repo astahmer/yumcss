@@ -67,7 +67,7 @@ describe("Effect tooling ports", () => {
 	});
 
 	it("uses the official Effect 4 Node filesystem and path services", async () => {
-		const directory = mkdtempSync(join(tmpdir(), "pandwind-effect-"));
+		const directory = mkdtempSync(join(tmpdir(), "yumcss-effect-"));
 		try {
 			const fileSystem = createEffectToolingFileSystem();
 			const nested = await fileSystem.resolve(directory, "nested");

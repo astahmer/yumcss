@@ -42,7 +42,7 @@ test("tamagui -> styled-components -> tamagui: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("tamagui -> styled-components -> tamagui: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -175,7 +175,7 @@ test("tamagui -> styled-components -> tamagui: retains the documented secondary 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> styled-components | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],

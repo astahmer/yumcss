@@ -42,7 +42,7 @@ test("goober -> unocss -> goober: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("goober -> unocss -> goober: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -127,7 +127,7 @@ test("goober -> unocss -> goober: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,7 +164,7 @@ test("goober -> unocss -> goober: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

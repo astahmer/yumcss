@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"reference": {
 		"repository": "https://github.com/solidjs/solid-styled-components",
 		"commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "solid-styled",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -32,7 +32,7 @@
 			"targetBytes": 379,
 			"differences": []
 		},
-		"targetUsesPandwind": true
+		"targetUsesYumCSS": true
 	},
 	"checks": {
 		"sourceTypecheck": true,

@@ -15,7 +15,7 @@ import type {
 	AdapterDetectionResult,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
-import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { SourceBindingKind, type SourceBinding } from "yumcss/source";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	componentAttrsExpressionForSubject,
@@ -424,7 +424,7 @@ const emotionAdapter = defineCodemodAdapter({
 				rewriteEmotionHost({ code, program, emittedExpression }),
 		},
 		rewrite: ({ code, targetId, complete }) => {
-			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.YumCSS || !complete) return { code, residuals: [] };
 			return {
 				code: code
 					.replace(/<Global\s+styles=\{(?:\{[\s\S]*\}|[^{}]+)\}\s*\/>/g, "<></>")

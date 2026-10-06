@@ -42,7 +42,7 @@ test("goober -> react-native -> goober: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -142,7 +142,7 @@ test("goober -> react-native -> goober: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("goober -> react-native -> goober: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

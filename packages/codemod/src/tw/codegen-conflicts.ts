@@ -1,7 +1,7 @@
-import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { UTILITY_SUBKEYS } from "yumcss/tw/compile";
 import { twMerge } from "tailwind-merge";
 import { longestFunctionalPrefix } from "./codegen-catalog.ts";
-import { resolveVar, simplifyCalc } from "pandwind/tw";
+import { resolveVar, simplifyCalc } from "yumcss/tw";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;

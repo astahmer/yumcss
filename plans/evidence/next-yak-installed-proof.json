@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"reference": {
 		"repository": "https://github.com/jantimon/css-in-js-bench",
 		"commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "next-yak",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -34,7 +34,7 @@
 			"targetBytes": 106,
 			"differences": []
 		},
-		"targetUsesPandwind": true
+		"targetUsesYumCSS": true
 	},
 	"checks": {
 		"sourceTypecheck": true,

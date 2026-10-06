@@ -9,7 +9,7 @@ import {
 	type ReactNode,
 } from "react";
 import { codeToHtml } from "shiki";
-import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
+import type { StyleProgram } from "@yumcss/codemod/swap/semantic-ir";
 import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import type {
 	PlaygroundExecutionEvidence,

@@ -40,10 +40,10 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", asyn
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tamagui -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("tamagui -> chakra-ui: migrates concrete tamagui syntax to chakra-ui", asyn
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -101,7 +101,7 @@ test("tamagui -> chakra-ui: carries a documented secondary tamagui API explicitl
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -158,7 +158,7 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -199,7 +199,7 @@ test("tamagui -> chakra-ui: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -252,7 +252,7 @@ test("tamagui -> chakra-ui: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2a57c8", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -302,7 +302,7 @@ test("tamagui -> chakra-ui: preserves malformed concrete tamagui input", async (
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: emission-empty, configuration | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished tamagui */",

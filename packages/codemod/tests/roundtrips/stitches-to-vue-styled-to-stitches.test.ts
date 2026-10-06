@@ -42,7 +42,7 @@ test("stitches -> vue-styled -> stitches: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("stitches -> vue-styled -> stitches: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -141,7 +141,7 @@ test("stitches -> vue-styled -> stitches: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
+		// yumcss:migrate-skip (route: stitches -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("stitches -> vue-styled -> stitches: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
+		// yumcss:migrate-skip (route: stitches -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -257,7 +257,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -332,7 +332,7 @@ test("stitches -> vue-styled -> stitches: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -422,7 +422,7 @@ test("stitches -> vue-styled -> stitches: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

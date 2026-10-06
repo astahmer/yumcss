@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	createUnoCssAdapter,
@@ -84,13 +84,13 @@ describe("adapter fallback resolution", () => {
 		const source = '<div className="custom-button" />';
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tailwind,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/App.tsx",
 			root: "/project",
 			readFile: () => '@import "tailwindcss";',
 			adapterRegistry: createStyleAdapterRegistry([
 				createTailwindAdapter({ moduleLoader: loader }),
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 		});
 
@@ -101,7 +101,7 @@ describe("adapter fallback resolution", () => {
 		]);
 		expect(result.code).toContain(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (configuration-residual: configuration)
+			"// yumcss:migrate-skip (configuration-residual: configuration)
 			<div className="custom-button" />"
 		`);
 	});

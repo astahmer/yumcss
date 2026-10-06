@@ -4,8 +4,8 @@
  * targets). Build-time atomic extraction is demonstrated separately in
  * examples/css-example.
  */
-import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "yumcss/design";
+import { examplePreset } from "@yumcss/example-preset";
 import { header, status, body } from "../shared-styles.ts";
 
 const dss = createDesignCss(examplePreset);

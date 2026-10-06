@@ -19,7 +19,7 @@ export const createNodeMigrationPreviewUiProvider = (): MigrationPreviewUiPort =
 			cached = await readFile(artifact, "utf8");
 		} catch {
 			throw new Error(
-				"Migration Preview UI is not built; run the pandwind-analyze package build first",
+				"Migration Preview UI is not built; run the yumcss-analyze package build first",
 			);
 		}
 		return cached;

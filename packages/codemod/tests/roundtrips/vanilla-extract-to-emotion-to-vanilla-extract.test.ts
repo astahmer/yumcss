@@ -42,7 +42,7 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> emotion round-trip happy forward");
 	expectExplicitResidualEvidence(first);

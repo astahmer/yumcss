@@ -38,10 +38,10 @@ test("aphrodite -> sass: migrates concrete aphrodite syntax to sass", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "aphrodite -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("aphrodite -> sass: migrates concrete aphrodite syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("aphrodite -> sass: carries a documented secondary aphrodite API explicitly
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -155,7 +155,7 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -192,7 +192,7 @@ test("aphrodite -> sass: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -241,7 +241,7 @@ test("aphrodite -> sass: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -287,7 +287,7 @@ test("aphrodite -> sass: preserves malformed concrete aphrodite input", () => {
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 0,

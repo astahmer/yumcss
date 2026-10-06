@@ -42,7 +42,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -144,7 +144,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: retains the documented seco
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -261,7 +261,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -339,7 +339,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -432,7 +432,7 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

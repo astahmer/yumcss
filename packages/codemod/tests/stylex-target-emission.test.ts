@@ -2,11 +2,11 @@ import { expect, test } from "vitest";
 import { CodemodAdapterId } from "../src/swap/index.ts";
 import { createAdapterRouteSpec, routeEvidence } from "./route-spec-support.ts";
 
-const route = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.StyleX);
+const route = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.StyleX);
 
-test("emits Pandwind groups as StyleX named rules", () => {
+test("emits YumCSS groups as StyleX named rules", () => {
 	const result = route.run({
-		source: `import { createUnsafeCss } from "pandwind/unsafe/css";
+		source: `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });`,
 		file: "styles.ts",
@@ -17,7 +17,7 @@ export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain("stylex.create({ card:");
 	expect(result.code).toContain("muted:");
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.code).not.toContain("yumcss:migrate-skip");
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
@@ -60,9 +60,9 @@ export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 
 	`);
 });
 
-test("emits conditional Pandwind declarations as StyleX property-value conditions", () => {
+test("emits conditional YumCSS declarations as StyleX property-value conditions", () => {
 	const result = route.run({
-		source: `import { createUnsafeCss } from "pandwind/unsafe/css";
+		source: `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 export const card = css.class({ color: "red", _hover: { color: "blue" }, _focusVisible: { opacity: 0.8 }, _highlighted: { opacity: 0.4 } });`,
 		file: "styles.ts",

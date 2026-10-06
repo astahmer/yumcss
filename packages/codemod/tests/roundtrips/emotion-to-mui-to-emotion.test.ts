@@ -42,7 +42,7 @@ test("emotion -> mui -> emotion: preserves an actionable concrete round trip", a
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "emotion -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("emotion -> mui -> emotion: preserves an actionable concrete round trip", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("emotion -> mui -> emotion: preserves an actionable concrete round trip", a
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("emotion -> mui -> emotion: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("emotion -> mui -> emotion: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("emotion -> mui -> emotion: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("emotion -> mui -> emotion: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("emotion -> mui -> emotion: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -42,7 +42,7 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> next-yak round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -138,7 +138,7 @@ test("panda -> next-yak -> panda: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> next-yak | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> next-yak | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -173,7 +173,7 @@ test("panda -> next-yak -> panda: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> next-yak | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> next-yak | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -251,7 +251,7 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -323,7 +323,7 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -410,7 +410,7 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

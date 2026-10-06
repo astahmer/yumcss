@@ -38,10 +38,10 @@ test("solid-styled -> jss: migrates concrete solid-styled syntax to jss", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "solid-styled -> jss happy");
 	expectExplicitResidualEvidence(result);
@@ -49,9 +49,9 @@ test("solid-styled -> jss: migrates concrete solid-styled syntax to jss", () => 
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -96,9 +96,9 @@ test("solid-styled -> jss: carries a documented secondary solid-styled API expli
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -152,9 +152,9 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -190,9 +190,9 @@ test("solid-styled -> jss: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -240,9 +240,9 @@ test("solid-styled -> jss: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -288,9 +288,9 @@ test("solid-styled -> jss: preserves malformed concrete solid-styled input", () 
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
 		import jss from "jss";
-		import { children as __pandwindCardChildren, splitProps as __pandwindCardSplitProps } from "solid-js";
-		import type { JSX as __pandwindCardJSX } from "solid-js";
-		export const Card = (() => { type __pandwindCardProps = __pandwindCardJSX.IntrinsicElements["div"]; return (props: __pandwindCardProps) => { const [local, forwarded] = __pandwindCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __pandwindCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		import type { JSX as __yumcssCardJSX } from "solid-js";
+		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
 		  "generatedFiles": [],

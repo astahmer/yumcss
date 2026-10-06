@@ -38,10 +38,10 @@ test("panda -> less: migrates concrete panda syntax to less", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "panda -> less happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("panda -> less: migrates concrete panda syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("panda -> less: carries a documented secondary panda API explicitly", () =>
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: composition, capability | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: composition, capability | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -164,7 +164,7 @@ test("panda -> less: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("panda -> less: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -250,7 +250,7 @@ test("panda -> less: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -296,7 +296,7 @@ test("panda -> less: preserves malformed concrete panda input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 0,

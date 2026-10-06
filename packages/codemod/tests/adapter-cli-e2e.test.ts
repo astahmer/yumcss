@@ -13,12 +13,12 @@ import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.
 const repoRoot = resolve(import.meta.dirname, "../../..");
 const codemodRoot = resolve(import.meta.dirname, "..");
 const catalog = createBuiltinCodemodCatalog();
-const pandwindSource =
-	'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+const yumcssSource =
+	'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 	"const css = createUnsafeCss();\n" +
 	'export const card = css.class({ color: "red", padding: "1rem" });\n';
-const pandwindFixture = adapterContractFixtures.find(
-	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,
+const yumcssFixture = adapterContractFixtures.find(
+	(fixture) => fixture.adapter === CodemodAdapterId.YumCSS,
 );
 interface MigrationRunResult {
 	readonly report: {
@@ -39,7 +39,7 @@ async function runInMemory(
 	// real CLI boundary proof for argument parsing, file discovery, and writes.
 	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === from);
 	const file = fileOverride ?? fixture?.file ?? "source.tsx";
-	const source = sourceOverride ?? fixture?.source ?? pandwindSource;
+	const source = sourceOverride ?? fixture?.source ?? yumcssSource;
 	const files = new Map([[file, source]]);
 	const result = await STYLE_MIGRATION_USE_CASE.runAsync(source, {
 		from,
@@ -118,7 +118,7 @@ describe("adapter migration e2e matrix", () => {
 				"src/Card.module.css.map",
 			]);
 			expect(readFileSync(sourceFile, "utf8")).toContain(
-				'import __pandwindCardStyles from "./Card.module.css";',
+				'import __yumcssCardStyles from "./Card.module.css";',
 			);
 			expect(existsSync(cssFile)).toBe(true);
 			expect(generatedSourceMap).toMatchObject({
@@ -291,8 +291,8 @@ describe("adapter migration e2e matrix", () => {
 		);
 		mkdirSync(join(directory, "styled-system"), { recursive: true });
 		writeFileSync(join(directory, "styled-system/styles.css"), "@layer utilities;\n");
-		mkdirSync(join(directory, "pandwind"), { recursive: true });
-		const presetFile = join(directory, "pandwind/preset.ts");
+		mkdirSync(join(directory, "yumcss"), { recursive: true });
+		const presetFile = join(directory, "yumcss/preset.ts");
 		writeFileSync(presetFile, "export const preset = { conditions: {} };\n");
 		try {
 			execFileSync(
@@ -303,7 +303,7 @@ describe("adapter migration e2e matrix", () => {
 					"--root",
 					directory,
 					`--from=${CodemodAdapterId.Panda}`,
-					`--to=${CodemodAdapterId.Pandwind}`,
+					`--to=${CodemodAdapterId.YumCSS}`,
 					"--force",
 					"--no-install",
 					"--report=json",
@@ -319,7 +319,7 @@ describe("adapter migration e2e matrix", () => {
 		}
 	}, 120_000);
 
-	test("composes Next host changes with a Pandwind target alias", () => {
+	test("composes Next host changes with a YumCSS target alias", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-next-"));
 		mkdirSync(join(directory, "app"), { recursive: true });
 		const sourceFile = join(directory, "App.tsx");
@@ -352,21 +352,21 @@ describe("adapter migration e2e matrix", () => {
 					"--root",
 					directory,
 					`--from=${CodemodAdapterId.StyledComponents}`,
-					"--to=pandwind-css",
+					"--to=yumcss-css",
 					"--no-install",
 					"--report=json",
 					sourceFile,
 				],
 				{ cwd: codemodRoot, encoding: "utf8" },
 			);
-			expect(readFileSync(join(directory, "pandwind/css.ts"), "utf8")).toContain(
-				'import "pandwind-css.css";',
+			expect(readFileSync(join(directory, "yumcss/css.ts"), "utf8")).toContain(
+				'import "yumcss-css.css";',
 			);
 			expect(readFileSync(join(directory, "app/layout.tsx"), "utf8")).toContain(
-				'import "pandwind-css.css";',
+				'import "yumcss-css.css";',
 			);
 			expect(readFileSync(join(directory, "next.config.mjs"), "utf8")).toContain(
-				"pandwindWebpackCss",
+				"yumcssWebpackCss",
 			);
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
@@ -374,40 +374,40 @@ describe("adapter migration e2e matrix", () => {
 	}, 120_000);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"executes the %s -> Pandwind use case with safe source preservation",
+		"executes the %s -> YumCSS use case with safe source preservation",
 		async (sourceAdapter) => {
-			const { report, source } = await runInMemory(sourceAdapter, CodemodAdapterId.Pandwind);
+			const { report, source } = await runInMemory(sourceAdapter, CodemodAdapterId.YumCSS);
 			const result = report.files[0]!;
-			if (sourceAdapter === CodemodAdapterId.Pandwind) {
+			if (sourceAdapter === CodemodAdapterId.YumCSS) {
 				expect(result.converted).toBe(0);
 				expect(result.skipped).toBe(0);
-				expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+				expect(source).toBe(yumcssFixture?.source ?? yumcssSource);
 				return;
 			}
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			if (result.skipped > 0) {
 				expect(result.residuals).toBeGreaterThan(0);
-				expect(source).toContain("pandwind:migrate-skip");
+				expect(source).toContain("yumcss:migrate-skip");
 			} else expect(source).not.toContain("adapter capability mismatch");
 		},
 		30_000,
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"executes the Pandwind -> %s use case with explicit outcome evidence",
+		"executes the YumCSS -> %s use case with explicit outcome evidence",
 		async (targetAdapter) => {
-			const { report, source } = await runInMemory(CodemodAdapterId.Pandwind, targetAdapter);
+			const { report, source } = await runInMemory(CodemodAdapterId.YumCSS, targetAdapter);
 			const result = report.files[0]!;
-			if (targetAdapter === CodemodAdapterId.Pandwind) {
+			if (targetAdapter === CodemodAdapterId.YumCSS) {
 				expect(result.converted).toBe(0);
 				expect(result.skipped).toBe(0);
-				expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+				expect(source).toBe(yumcssFixture?.source ?? yumcssSource);
 				return;
 			}
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			if (result.skipped > 0) {
 				expect(result.residuals).toBeGreaterThan(0);
-				expect(source).toContain("pandwind:migrate-skip");
+				expect(source).toContain("yumcss:migrate-skip");
 			} else expect(source).not.toContain("adapter capability mismatch");
 		},
 		30_000,
@@ -422,12 +422,12 @@ describe("adapter migration e2e matrix", () => {
 			if (fixture === undefined) throw new Error(`missing edge fixture for ${sourceAdapter}`);
 			const { report, source } = await runInMemory(
 				sourceAdapter,
-				CodemodAdapterId.Pandwind,
+				CodemodAdapterId.YumCSS,
 				fixture.source,
 				fixture.file,
 			);
 			const result = report.files[0]!;
-			if (sourceAdapter === CodemodAdapterId.Pandwind) {
+			if (sourceAdapter === CodemodAdapterId.YumCSS) {
 				expect(result.converted).toBe(0);
 				expect(result.skipped).toBe(0);
 				expect(source).toBe(fixture.source);
@@ -436,28 +436,28 @@ describe("adapter migration e2e matrix", () => {
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			if (result.skipped > 0) {
 				expect(result.residuals).toBeGreaterThan(0);
-				expect(source).toContain("pandwind:migrate-skip");
+				expect(source).toContain("yumcss:migrate-skip");
 			}
 		},
 		30_000,
 	);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
-		"keeps the Pandwind edge case explicit when targeting %s",
+		"keeps the YumCSS edge case explicit when targeting %s",
 		async (targetAdapter) => {
 			const fixture = completeAdapterMatrixFixtures.find(
 				(candidate) =>
-					candidate.sourceAdapter === CodemodAdapterId.Pandwind && candidate.scenario === "edge",
+					candidate.sourceAdapter === CodemodAdapterId.YumCSS && candidate.scenario === "edge",
 			);
-			if (fixture === undefined) throw new Error("missing Pandwind edge fixture");
+			if (fixture === undefined) throw new Error("missing YumCSS edge fixture");
 			const { report, source } = await runInMemory(
-				CodemodAdapterId.Pandwind,
+				CodemodAdapterId.YumCSS,
 				targetAdapter,
 				fixture.source,
 				fixture.file,
 			);
 			const result = report.files[0]!;
-			if (targetAdapter === CodemodAdapterId.Pandwind) {
+			if (targetAdapter === CodemodAdapterId.YumCSS) {
 				expect(result.converted).toBe(0);
 				expect(result.skipped).toBe(0);
 				expect(source).toBe(fixture.source);
@@ -466,7 +466,7 @@ describe("adapter migration e2e matrix", () => {
 			expect(result.converted + result.skipped).toBeGreaterThan(0);
 			if (result.skipped > 0) {
 				expect(result.residuals).toBeGreaterThan(0);
-				expect(source).toContain("pandwind:migrate-skip");
+				expect(source).toContain("yumcss:migrate-skip");
 			}
 		},
 		30_000,

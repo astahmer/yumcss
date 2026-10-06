@@ -42,7 +42,7 @@ test("compiled -> goober -> compiled: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "compiled -> goober round-trip happy forward");
 	expectExplicitResidualEvidence(first);

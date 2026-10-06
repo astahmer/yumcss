@@ -11,11 +11,11 @@ import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
-} from "pandwind-codemod/swap";
-import type { AdapterMigrationResult } from "pandwind-codemod/swap";
-import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import type { StyleObject } from "pandwind/types/typings";
+} from "@yumcss/codemod/swap";
+import type { AdapterMigrationResult } from "@yumcss/codemod/swap";
+import { createCssExtractionService } from "yumcss/vite/css-extract";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import type { StyleObject } from "yumcss/types/typings";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 
 export enum EmotionSiteMigrationLane {
@@ -128,7 +128,7 @@ function transform(
 ): AdapterMigrationResult {
 	return runAdapterMigration(source, {
 		from: adapter.id,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file,
 		root,
 		mode: "safe",
@@ -207,7 +207,7 @@ async function materialize(
 		"@next/bundle-analyzer": "12.2.0",
 		next: "12.2.0",
 		stylis: "^4.2.0",
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	const referenceVersions = {
 		"@babel/standalone": "7.18.9",
@@ -246,7 +246,7 @@ async function materialize(
 		cwd: join(outputRoot, "site"),
 		stdio: "inherit",
 	});
-	await packagePandwind(outputRoot);
+	await packageYumCSS(outputRoot);
 	for (const [file, code] of transformed) {
 		const target = join(outputRoot, "site", file);
 		await mkdir(dirname(target), { recursive: true });
@@ -254,8 +254,8 @@ async function materialize(
 			target,
 			code
 				.replaceAll(
-					'import { createUnsafeCss } from "pandwind/unsafe/css";',
-					'import { createUnsafeCss, type CssFn } from "pandwind/unsafe/css";',
+					'import { createUnsafeCss } from "yumcss/unsafe/css";',
+					'import { createUnsafeCss, type CssFn } from "yumcss/unsafe/css";',
 				)
 				.replaceAll("const css = createUnsafeCss();", "const css = createUnsafeCss() as CssFn;"),
 		);
@@ -278,33 +278,33 @@ async function materialize(
 	tsconfig.compilerOptions.baseUrl = ".";
 	tsconfig.compilerOptions.paths = {
 		...tsconfig.compilerOptions.paths,
-		"pandwind/css": ["node_modules/pandwind/css"],
-		"pandwind/css/runtime": ["node_modules/pandwind/runtime"],
-		"pandwind/cx": ["node_modules/pandwind/cx"],
-		"pandwind/preset/default": ["node_modules/pandwind/preset-default"],
+		"yumcss/css": ["node_modules/yumcss/css"],
+		"yumcss/css/runtime": ["node_modules/yumcss/runtime"],
+		"yumcss/cx": ["node_modules/yumcss/cx"],
+		"yumcss/preset/default": ["node_modules/yumcss/preset-default"],
 	};
 	await writeFile(tsconfigFile, `${JSON.stringify(tsconfig, null, 2)}\n`);
-	const cssFile = join(outputRoot, "site/pandwind-static.css");
+	const cssFile = join(outputRoot, "site/yumcss-static.css");
 	await writeFile(cssFile, `${globalCss}\n${staticCss}\n`);
 	const appFile = join(outputRoot, "site/pages/_app.tsx");
 	const app = await readFile(appFile, "utf8");
-	if (!app.includes("../pandwind-static.css"))
-		await writeFile(appFile, `import '../pandwind-static.css'\n${app}`);
+	if (!app.includes("../yumcss-static.css"))
+		await writeFile(appFile, `import '../yumcss-static.css'\n${app}`);
 }
 
-async function packagePandwind(outputRoot: string): Promise<void> {
-	const packageRoot = join(outputRoot, "site/node_modules/pandwind");
+async function packageYumCSS(outputRoot: string): Promise<void> {
+	const packageRoot = join(outputRoot, "site/node_modules/yumcss");
 	await rm(packageRoot, { recursive: true, force: true });
 	await mkdir(packageRoot, { recursive: true });
 	// This is an intentional package-assembly boundary: the proof materializer
 	// bundles the current local package into the disposable output so the
 	// cloned reference repository remains reproducible without vendoring it.
 	const entries = {
-		css: "packages/pandwind/src/css/index.ts",
-		runtime: "packages/pandwind/src/css/runtime.ts",
-		cx: "packages/pandwind/src/cx/index.ts",
-		preset: "packages/pandwind/src/preset/index.ts",
-		presetDefault: "packages/pandwind/src/preset/default.ts",
+		css: "packages/yumcss/src/css/index.ts",
+		runtime: "packages/yumcss/src/css/runtime.ts",
+		cx: "packages/yumcss/src/cx/index.ts",
+		preset: "packages/yumcss/src/preset/index.ts",
+		presetDefault: "packages/yumcss/src/preset/default.ts",
 	} as const;
 	const esbuild = resolve(
 		repositoryRoot,
@@ -327,7 +327,7 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 		join(packageRoot, "package.json"),
 		`${JSON.stringify(
 			{
-				name: "pandwind",
+				name: "yumcss",
 				version: "0.0.0-proof",
 				main: "index.js",
 				exports: {

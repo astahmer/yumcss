@@ -42,7 +42,7 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", async ()
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", async ()
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -95,7 +95,7 @@ test("mui -> less -> mui: preserves an actionable concrete round trip", async ()
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -124,7 +124,7 @@ test("mui -> less -> mui: retains the documented secondary API without silent lo
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("mui -> less -> mui: retains the documented secondary API without silent lo
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -205,7 +205,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,7 +263,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -305,7 +305,7 @@ test("mui -> less -> mui: preserves concrete theme and project context variants"
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("mui -> less -> mui: resolves token values across both concrete legs", asyn
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -378,7 +378,7 @@ test("mui -> less -> mui: resolves token values across both concrete legs", asyn
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> less | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

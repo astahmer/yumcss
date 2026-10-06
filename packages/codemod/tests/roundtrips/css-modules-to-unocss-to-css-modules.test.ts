@@ -42,7 +42,7 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("css-modules -> unocss -> css-modules: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("css-modules -> unocss -> css-modules: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -169,7 +169,7 @@ test("css-modules -> unocss -> css-modules: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -250,13 +250,13 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-d2b6ln.module.css";
-		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-255ox4"] };
+		      "code": "import __yumcssgroup0Styles from "./Card.module.yumcss-pw-group0-d2b6ln.module.css";
+		export const styles = { "card": __yumcssgroup0Styles["pw-group0-card-255ox4"] };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
-		          "path": "Card.module.pandwind-pw-group0-d2b6ln.module.css",
+		          "path": "Card.module.yumcss-pw-group0-d2b6ln.module.css",
 		          "purpose": "CSS Modules styles for a migrated static class",
 		        },
 		      ],
@@ -331,13 +331,13 @@ test("css-modules -> unocss -> css-modules: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-d2b6ln.module.css";
-		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-255ox4"] };
+		      "code": "import __yumcssgroup0Styles from "./Card.module.yumcss-pw-group0-d2b6ln.module.css";
+		export const styles = { "card": __yumcssgroup0Styles["pw-group0-card-255ox4"] };
 		export default styles;",
 		      "converted": 1,
 		      "generatedFiles": [
 		        {
-		          "path": "Card.module.pandwind-pw-group0-d2b6ln.module.css",
+		          "path": "Card.module.yumcss-pw-group0-d2b6ln.module.css",
 		          "purpose": "CSS Modules styles for a migrated static class",
 		        },
 		      ],
@@ -427,13 +427,13 @@ test("css-modules -> unocss -> css-modules: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import __pandwindgroup0Styles from "./Card.module.pandwind-pw-group0-d2b6ln.module.css";
-		export const styles = { "card": __pandwindgroup0Styles["pw-group0-card-255ox4"] };
+		    "code": "import __yumcssgroup0Styles from "./Card.module.yumcss-pw-group0-d2b6ln.module.css";
+		export const styles = { "card": __yumcssgroup0Styles["pw-group0-card-255ox4"] };
 		export default styles;",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
-		        "path": "Card.module.pandwind-pw-group0-d2b6ln.module.css",
+		        "path": "Card.module.yumcss-pw-group0-d2b6ln.module.css",
 		        "purpose": "CSS Modules styles for a migrated static class",
 		      },
 		    ],

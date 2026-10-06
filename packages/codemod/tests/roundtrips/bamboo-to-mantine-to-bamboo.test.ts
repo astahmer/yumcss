@@ -42,7 +42,7 @@ test("bamboo -> mantine -> bamboo: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "bamboo -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("bamboo -> mantine -> bamboo: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -77,7 +77,7 @@ test("bamboo -> mantine -> bamboo: preserves an actionable concrete round trip",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -101,7 +101,7 @@ test("bamboo -> mantine -> bamboo: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -130,7 +130,7 @@ test("bamboo -> mantine -> bamboo: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +154,7 @@ test("bamboo -> mantine -> bamboo: retains the documented secondary API without 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -178,7 +178,7 @@ test("bamboo -> mantine -> bamboo: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,7 +223,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -271,7 +271,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -335,7 +335,7 @@ test("bamboo -> mantine -> bamboo: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -366,7 +366,7 @@ test("bamboo -> mantine -> bamboo: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -390,7 +390,7 @@ test("bamboo -> mantine -> bamboo: resolves token values across both concrete le
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -414,7 +414,7 @@ test("bamboo -> mantine -> bamboo: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

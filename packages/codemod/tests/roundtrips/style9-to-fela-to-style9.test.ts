@@ -42,7 +42,7 @@ test("style9 -> fela -> style9: preserves an actionable concrete round trip", as
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "style9 -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);

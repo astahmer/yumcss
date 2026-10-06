@@ -39,18 +39,18 @@ const applyEvaluation = async (
 	return page.evaluate(
 		`(() => {
 			const { css: nextCss, probe } = ${JSON.stringify({ css, probe: probeClass })};
-			let style = document.querySelector("style[data-pandwind-migration-preview]");
+			let style = document.querySelector("style[data-yumcss-migration-preview]");
 			if (!(style instanceof HTMLStyleElement)) {
 				style = document.createElement("style");
-				style.dataset.pandwindMigrationPreview = "";
+				style.dataset.yumcssMigrationPreview = "";
 				document.head.append(style);
 			}
 			style.textContent = nextCss;
-			let element = document.querySelector("[data-pandwind-migration-preview-probe]");
+			let element = document.querySelector("[data-yumcss-migration-preview-probe]");
 			if (!(element instanceof HTMLElement)) {
 				element = document.createElement("div");
-				element.dataset.pandwindMigrationPreviewProbe = "";
-			element.textContent = "Pandwind migration preview";
+				element.dataset.yumcssMigrationPreviewProbe = "";
+			element.textContent = "YumCSS migration preview";
 				document.body.append(element);
 			}
 			element.className = probe;
@@ -75,7 +75,7 @@ export const createBrowserMigrationPreviewHost = (
 	options: BrowserMigrationPreviewOptions,
 ): MigrationPreviewHostPort => {
 	let page: MigrationPreviewBrowserPage | undefined;
-	const probeClass = options.probeClass ?? "pandwind-migration-preview-probe";
+	const probeClass = options.probeClass ?? "yumcss-migration-preview-probe";
 	const render = async (
 		request: MigrationPreviewRequest,
 		status: "starting" | "ready",

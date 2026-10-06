@@ -42,7 +42,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves an actionabl
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves an actionabl
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves an actionabl
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: retains the documented
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: retains the documented
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves concrete the
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves concrete the
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: preserves concrete the
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: resolves token values 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("vanilla-extract -> authored-css -> vanilla-extract: resolves token values 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

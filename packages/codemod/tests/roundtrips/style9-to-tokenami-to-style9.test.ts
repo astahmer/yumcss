@@ -42,7 +42,7 @@ test("style9 -> tokenami -> style9: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "style9 -> tokenami round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -174,7 +174,7 @@ test("style9 -> tokenami -> style9: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { css as sourceCss } from "@tokenami/css";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: tokenami -> style9 | parse-residual: configuration | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> style9 | parse-residual: configuration | available: named-map, residual)
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": sourceCss({ "--opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

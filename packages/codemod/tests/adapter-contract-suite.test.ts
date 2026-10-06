@@ -105,7 +105,7 @@ describe("adapter contract suite", () => {
 		expect(summaries.slice(0, 4)).toMatchInlineSnapshot(`
 			[
 			  {
-			    "adapter": "pandwind",
+			    "adapter": "yumcss",
 			    "configuration": [
 			      "project-source-fallback:resolved",
 			    ],

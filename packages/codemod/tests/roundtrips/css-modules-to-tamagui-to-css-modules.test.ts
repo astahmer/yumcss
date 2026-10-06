@@ -42,7 +42,7 @@ test("css-modules -> tamagui -> css-modules: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> tamagui -> css-modules: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -85,7 +85,7 @@ test("css-modules -> tamagui -> css-modules: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -113,7 +113,7 @@ test("css-modules -> tamagui -> css-modules: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -160,7 +160,7 @@ test("css-modules -> tamagui -> css-modules: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -240,7 +240,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -320,7 +320,7 @@ test("css-modules -> tamagui -> css-modules: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -415,7 +415,7 @@ test("css-modules -> tamagui -> css-modules: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const styles = { "card": styled(View, { color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,

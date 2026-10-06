@@ -42,7 +42,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves an actionable 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "authored-css -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves an actionable 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("authored-css -> react-strict-dom -> authored-css: retains the documented s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -174,7 +174,7 @@ test("authored-css -> react-strict-dom -> authored-css: retains the documented s
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		@media (prefers-color-scheme: dark) {
 		  .card { color: white; }
 		}
@@ -224,7 +224,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves concrete theme
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -260,7 +260,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -275,7 +275,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves concrete theme
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("authored-css -> react-strict-dom -> authored-css: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -341,7 +341,7 @@ test("authored-css -> react-strict-dom -> authored-css: resolves token values ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -377,7 +377,7 @@ test("authored-css -> react-strict-dom -> authored-css: resolves token values ac
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,4 +1,4 @@
-import { getPropertyPriority } from "pandwind/css/create-stylesheet";
+import { getPropertyPriority } from "yumcss/css/create-stylesheet";
 import type { StyleDeclaration } from "./semantic-ir.ts";
 
 /** Replaceable declaration-order policy for canonical semantic emission. */

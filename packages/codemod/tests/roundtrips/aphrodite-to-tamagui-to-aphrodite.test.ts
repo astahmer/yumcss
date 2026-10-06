@@ -42,7 +42,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -87,7 +87,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -150,7 +150,7 @@ test("aphrodite -> tamagui -> aphrodite: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: fonts | available: static, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,7 +195,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -229,7 +229,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -245,7 +245,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -279,7 +279,7 @@ test("aphrodite -> tamagui -> aphrodite: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -310,7 +310,7 @@ test("aphrodite -> tamagui -> aphrodite: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -344,7 +344,7 @@ test("aphrodite -> tamagui -> aphrodite: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

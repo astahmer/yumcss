@@ -111,7 +111,7 @@ function detectPackageManager(root: string, packageJson: PackageJson): PackageMa
 function copyProject(root: string): ValidationWorkspace {
 	if (!existsSync(join(root, "package.json")))
 		throw new Error("project validation requires a package.json at the project root");
-	const isolatedRoot = mkdtempSync(join(tmpdir(), "pandwind-mcp-validation-"));
+	const isolatedRoot = mkdtempSync(join(tmpdir(), "yumcss-mcp-validation-"));
 	try {
 		cpSync(root, isolatedRoot, {
 			recursive: true,

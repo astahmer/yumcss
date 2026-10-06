@@ -1,14 +1,14 @@
 /**
  * Shared helpers for the Tailwind-parity tests: every assertion here is
  * checked against CSS produced by the real `tailwindcss` compiler (parsed
- * with postcss as an independent oracle), never against pandwind's own
+ * with postcss as an independent oracle), never against yumcss's own
  * output parsers.
  */
 import { compile } from "@tailwindcss/node";
 import { parse, type Root, type Rule } from "postcss";
-import { selectorClassMatches } from "pandwind/css/selector-scan";
-import { themeVariables } from "pandwind/tw";
-export { resolveVar } from "pandwind/tw";
+import { selectorClassMatches } from "yumcss/css/selector-scan";
+import { themeVariables } from "yumcss/tw";
+export { resolveVar } from "yumcss/tw";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
 export const TW_ENTRY = '@import "tailwindcss";';

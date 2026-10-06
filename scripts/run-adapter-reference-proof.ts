@@ -5,7 +5,7 @@ import {
 	CodemodAdapterId,
 	createRealRepositoryCorpus,
 	runAdapterMigrationAsync,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 import { createEffectToolingTaskRunner } from "./effect-tooling.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import {
@@ -20,7 +20,7 @@ import {
  * upstream repositories. The distinction is intentional:
  *
  * - adapter-program proves a pinned upstream source excerpt, the adapter,
- *   Pandwind emission, canonical CSS, and the emitted CSS in Chromium;
+ *   YumCSS emission, canonical CSS, and the emitted CSS in Chromium;
  * - installed-repository promotion additionally proves the upstream build,
  *   runtime package, framework SSR, and application routes.
  *
@@ -28,7 +28,7 @@ import {
  * evidence for the reusable adapter contract and a deterministic input for a
  * later installed-repository promotion runner.
  */
-const PROOF_SCHEMA = "pandwind.adapter-reference-proof/1" as const;
+const PROOF_SCHEMA = "yumcss.adapter-reference-proof/1" as const;
 const root = resolve(import.meta.dirname, "..");
 const referencesRoot = createReferenceWorkspace().root;
 const requireFromExample = createRequire(join(root, "examples/showcase/package.json"));
@@ -37,7 +37,7 @@ const { chromium } = requireFromExample("playwright-core") as typeof import("pla
 function browserCss(canonical: string): string {
 	// StyleProgram canonical selectors are rooted at `&`; a probe element gives
 	// the browser a concrete subject while preserving conditions and ordering.
-	return canonical.replaceAll("&", ".pandwind-proof-probe");
+	return canonical.replaceAll("&", ".yumcss-proof-probe");
 }
 
 function declarationProperties(canonical: string): string[] {
@@ -73,10 +73,10 @@ async function proveInBrowser(
 		const properties = declarationProperties(validation.canonicalSource);
 		const inspect = async (css: string) => {
 			await page.setContent(
-				`<!doctype html><style>${css}</style><main><div class="pandwind-proof-probe">proof</div></main>`,
+				`<!doctype html><style>${css}</style><main><div class="yumcss-proof-probe">proof</div></main>`,
 			);
 			return page.$eval(
-				".pandwind-proof-probe",
+				".yumcss-proof-probe",
 				(element, names) => {
 					const computed = getComputedStyle(element);
 					return Object.fromEntries(
@@ -91,10 +91,10 @@ async function proveInBrowser(
 		equivalent &&= JSON.stringify(sourceComputed) === JSON.stringify(targetComputed);
 
 		await page.setContent(
-			`<!doctype html><style id="proof-style">${targetCss}</style><main><div class="pandwind-proof-probe">proof</div></main>`,
+			`<!doctype html><style id="proof-style">${targetCss}</style><main><div class="yumcss-proof-probe">proof</div></main>`,
 		);
 		const before = await page.$eval(
-			".pandwind-proof-probe",
+			".yumcss-proof-probe",
 			(element, names) => {
 				const computed = getComputedStyle(element);
 				return Object.fromEntries(
@@ -108,7 +108,7 @@ async function proveInBrowser(
 			if (style !== null) style.replaceWith(style.cloneNode(true));
 		});
 		const after = await page.$eval(
-			".pandwind-proof-probe",
+			".yumcss-proof-probe",
 			(element, names) => {
 				const computed = getComputedStyle(element);
 				return Object.fromEntries(
@@ -233,7 +233,7 @@ async function run(): Promise<AdapterReferenceProofReport> {
 if (import.meta.main) {
 	const report = await run();
 	const output =
-		process.env.PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT ??
+		process.env.YUMCSS_ADAPTER_REFERENCE_PROOF_OUTPUT ??
 		join(root, "plans/evidence/adapter-reference-proof.json");
 	writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
 	console.log(JSON.stringify(report, null, 2));

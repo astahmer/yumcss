@@ -110,7 +110,7 @@ describe("projectGovernanceInputs", () => {
 
 	it("loads a real preset module by path and derives its context", async () => {
 		const load = await loadOfficialPresetModule(
-			resolve(import.meta.dirname, "../../../../examples/pandwind-example-preset/src/index.ts"),
+			resolve(import.meta.dirname, "../../../../examples/yumcss-example-preset/src/index.ts"),
 			"/tmp",
 		);
 		expect(load.status).toBe("loaded");

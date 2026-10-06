@@ -20,7 +20,7 @@ describe("devtools evidence store", () => {
 		});
 
 		const snapshot = store.snapshot();
-		expect(snapshot.schema).toBe("pandwind.devtools.evidence/1");
+		expect(snapshot.schema).toBe("yumcss.devtools.evidence/1");
 		expect(snapshot.transforms).toMatchObject([
 			{ file: "src/Card.tsx", bytes: 45, transformCount: 2 },
 		]);

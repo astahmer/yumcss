@@ -3,9 +3,9 @@ import { createRequire } from "node:module";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId, getCodemodAdapter, runAdapterMigration } from "pandwind-codemod/swap";
-import { createCss } from "pandwind/css";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
+import { CodemodAdapterId, getCodemodAdapter, runAdapterMigration } from "@yumcss/codemod/swap";
+import { createCss } from "yumcss/css";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const root = resolve(import.meta.dirname, "..");
@@ -21,7 +21,7 @@ const preset = {
 } as const;
 
 interface EmotionProofReport {
-	readonly schema: "pandwind.installed-adapter-proof/1";
+	readonly schema: "yumcss.installed-adapter-proof/1";
 	readonly adapter: CodemodAdapterId.Emotion;
 	readonly referenceCommit: string;
 	readonly sourcePath: string;
@@ -30,7 +30,7 @@ interface EmotionProofReport {
 		readonly converted: number;
 		readonly skipped: number;
 		readonly residuals: number;
-		readonly outputContainsPandwind: boolean;
+		readonly outputContainsYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
 	};
 	readonly ssr: {
@@ -63,7 +63,7 @@ function pinnedSource(): string {
 }
 
 function installEmotion(): string {
-	const project = mkdtempSync(join(tmpdir(), "pandwind-emotion-installed-proof-"));
+	const project = mkdtempSync(join(tmpdir(), "yumcss-emotion-installed-proof-"));
 	writeFileSync(
 		join(project, "package.json"),
 		`${JSON.stringify({
@@ -122,8 +122,8 @@ function normalizeMarkup(markup: string): string {
 	return markup.replace(/class="[^"]*"/u, 'class="CLASS"');
 }
 
-const hasPandwindImport = (code: string): boolean =>
-	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']pandwind(?:["/])/u.test(code);
+const hasYumCSSImport = (code: string): boolean =>
+	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']yumcss(?:["/])/u.test(code);
 
 async function browserProof(
 	sourceCss: string,
@@ -176,7 +176,7 @@ export async function runEmotionInstalledProof(): Promise<EmotionProofReport> {
 		throw new Error("Emotion adapter is not registered");
 	const migration = runAdapterMigration(source, {
 		from: CodemodAdapterId.Emotion,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: sourcePath,
 	});
 	const project = installEmotion();
@@ -192,7 +192,7 @@ export async function runEmotionInstalledProof(): Promise<EmotionProofReport> {
 		const sourceCssBytes = Buffer.byteLength(rendered.css);
 		const targetCssBytes = Buffer.byteLength(targetCss);
 		return {
-			schema: "pandwind.installed-adapter-proof/1",
+			schema: "yumcss.installed-adapter-proof/1",
 			adapter: CodemodAdapterId.Emotion,
 			referenceCommit,
 			sourcePath,
@@ -210,7 +210,7 @@ export async function runEmotionInstalledProof(): Promise<EmotionProofReport> {
 				converted: migration.converted,
 				skipped: migration.skipped,
 				residuals: migration.residuals.length,
-				outputContainsPandwind: hasPandwindImport(migration.code),
+				outputContainsYumCSS: hasYumCSSImport(migration.code),
 				sourceImportRemoved: !migration.code.includes("@emotion/react"),
 			},
 			ssr: {
@@ -235,7 +235,7 @@ if (import.meta.main) {
 	if (
 		report.migration.skipped > 0 ||
 		report.migration.residuals > 0 ||
-		!report.migration.outputContainsPandwind ||
+		!report.migration.outputContainsYumCSS ||
 		!report.migration.sourceImportRemoved ||
 		!report.ssr.markupEquivalent ||
 		!report.ssr.notLarger ||

@@ -16,7 +16,7 @@ import { createMantineAdapter } from "./mantine.adapter.ts";
 import { createMuiAdapter } from "./mui.adapter.ts";
 import nextYak from "./next-yak.adapter.ts";
 import { createPandaAdapter } from "./panda.adapter.ts";
-import { createPandwindAdapter } from "./pandwind.adapter.ts";
+import { createYumCSSAdapter } from "./yumcss.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
 import stitches from "./stitches.adapter.ts";
@@ -68,7 +68,7 @@ export function createBuiltinAdapterPlugin(
 	const { moduleLoader, stylexResolver, tailwindResolver, readFile } = options;
 	const stylex = createStyleXAdapter({ crossModuleResolver: stylexResolver });
 	const adapters: readonly StyleAdapter[] = [
-		createPandwindAdapter({ moduleLoader: moduleLoader ?? null }),
+		createYumCSSAdapter({ moduleLoader: moduleLoader ?? null }),
 		bamboo,
 		moduleLoader === undefined
 			? createChakraAdapter({ moduleLoader: null })

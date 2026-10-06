@@ -99,7 +99,7 @@ describe("UnoCSS stylesheet targets", () => {
 			expect(result.code).not.toContain("text-brand p-card");
 			expect(routeEvidence(result).validations.every(({ valid }) => valid)).toBe(true);
 			if (id === CodemodAdapterId.CssModules) {
-				expect(result.code).toMatch(/import __pandwind[A-Za-z0-9]+Styles from/u);
+				expect(result.code).toMatch(/import __yumcss[A-Za-z0-9]+Styles from/u);
 			} else {
 				expect(result.code).toContain('import "./Card.styles.');
 			}
@@ -134,11 +134,11 @@ describe("UnoCSS stylesheet targets", () => {
 			      {
 			        "content": ".pw-style0-ixxmek { color: rebeccapurple; padding: 1rem; }
 			",
-			        "path": "src/Card.pandwind-pw-style0-ixxmek.module.css",
+			        "path": "src/Card.yumcss-pw-style0-ixxmek.module.css",
 			      },
 			    ],
-			    "code": "import __pandwindstyle0Styles from "./Card.pandwind-pw-style0-ixxmek.module.css";
-			export const Card = () => <div className={__pandwindstyle0Styles["pw-style0-ixxmek"]} data-kind="card" />;",
+			    "code": "import __yumcssstyle0Styles from "./Card.yumcss-pw-style0-ixxmek.module.css";
+			export const Card = () => <div className={__yumcssstyle0Styles["pw-style0-ixxmek"]} data-kind="card" />;",
 			    "converted": 1,
 			    "residuals": [],
 			    "skipped": 0,
@@ -255,17 +255,17 @@ describe("UnoCSS stylesheet targets", () => {
 			      {
 			        "content": ".pw-style0-ixxmek { color: rebeccapurple; }
 			",
-			        "path": "src/Card.pandwind-pw-style0-ixxmek.module.css",
+			        "path": "src/Card.yumcss-pw-style0-ixxmek.module.css",
 			      },
 			      {
 			        "content": ".pw-style1-j7x83j { padding: 1rem; }
 			",
-			        "path": "src/Card.pandwind-pw-style1-j7x83j.module.css",
+			        "path": "src/Card.yumcss-pw-style1-j7x83j.module.css",
 			      },
 			    ],
-			    "code": "import __pandwindstyle0Styles from "./Card.pandwind-pw-style0-ixxmek.module.css";
-			import __pandwindstyle1Styles from "./Card.pandwind-pw-style1-j7x83j.module.css";
-			export const App = () => <><div className={__pandwindstyle0Styles["pw-style0-ixxmek"]} /><span className={__pandwindstyle1Styles["pw-style1-j7x83j"]} /></>;",
+			    "code": "import __yumcssstyle0Styles from "./Card.yumcss-pw-style0-ixxmek.module.css";
+			import __yumcssstyle1Styles from "./Card.yumcss-pw-style1-j7x83j.module.css";
+			export const App = () => <><div className={__yumcssstyle0Styles["pw-style0-ixxmek"]} /><span className={__yumcssstyle1Styles["pw-style1-j7x83j"]} /></>;",
 			    "converted": 2,
 			    "residuals": [],
 			    "skipped": 0,
@@ -391,11 +391,11 @@ describe("UnoCSS stylesheet targets", () => {
 			      {
 			        "content": ".pw-style0-ixxmek { color: rebeccapurple; padding: 1rem; }
 			",
-			        "path": "src/Card.pandwind-pw-style0-ixxmek.module.css",
+			        "path": "src/Card.yumcss-pw-style0-ixxmek.module.css",
 			      },
 			    ],
-			    "code": "import __pandwindstyle0Styles from "./Card.pandwind-pw-style0-ixxmek.module.css";
-			const classes = __pandwindstyle0Styles["pw-style0-ixxmek"]; export const Card = () => <div className={classes} data-kind="card" />;",
+			    "code": "import __yumcssstyle0Styles from "./Card.yumcss-pw-style0-ixxmek.module.css";
+			const classes = __yumcssstyle0Styles["pw-style0-ixxmek"]; export const Card = () => <div className={classes} data-kind="card" />;",
 			    "converted": 1,
 			    "residuals": [],
 			    "skipped": 0,
@@ -471,7 +471,7 @@ describe("UnoCSS stylesheet targets", () => {
 		expect(result.generatedFiles).toHaveLength(1);
 		expect(result.code).toContain('"card"');
 		expect(result.code).toContain('"icon"');
-		expect(result.code).toContain("import __pandwindgroup0Styles from");
+		expect(result.code).toContain("import __yumcssgroup0Styles from");
 		expect(result.generatedFiles[0]?.content.match(/\.pw-/gu)).toHaveLength(2);
 		expect(routeEvidence(result).validations.every(({ valid }) => valid)).toBe(true);
 		expect(evidence(result)).toMatchInlineSnapshot(`
@@ -481,11 +481,11 @@ describe("UnoCSS stylesheet targets", () => {
 			      "content": ".pw-group0-card-8789kj { color: rebeccapurple; padding: 1rem; }
 			.pw-group0-icon-yf080s { color: rebeccapurple; }
 			",
-			      "path": "src/classes.pandwind-pw-group0-18w4ti.module.css",
+			      "path": "src/classes.yumcss-pw-group0-18w4ti.module.css",
 			    },
 			  ],
-			  "code": "import __pandwindgroup0Styles from "./classes.pandwind-pw-group0-18w4ti.module.css";
-			export const classes = { "card": __pandwindgroup0Styles["pw-group0-card-8789kj"], "icon": __pandwindgroup0Styles["pw-group0-icon-yf080s"] };",
+			  "code": "import __yumcssgroup0Styles from "./classes.yumcss-pw-group0-18w4ti.module.css";
+			export const classes = { "card": __yumcssgroup0Styles["pw-group0-card-8789kj"], "icon": __yumcssgroup0Styles["pw-group0-icon-yf080s"] };",
 			  "converted": 1,
 			  "residuals": [],
 			  "skipped": 0,
@@ -518,7 +518,7 @@ describe("UnoCSS stylesheet targets", () => {
 		expect(evidence(result)).toMatchInlineSnapshot(`
 			{
 			  "artifacts": [],
-			  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | parse-residual: unknown-utility | lowering-residual: capability | available: named-map, residual)
+			  "code": "// yumcss:migrate-skip (route: unocss -> css-modules | parse-residual: unknown-utility | lowering-residual: capability | available: named-map, residual)
 			export const classes = { card: "text-brand custom-shortcut" };",
 			  "converted": 0,
 			  "residuals": [
@@ -556,7 +556,7 @@ describe("UnoCSS stylesheet targets", () => {
 		expect(evidence(result)).toMatchInlineSnapshot(`
 			{
 			  "artifacts": [],
-			  "code": "// pandwind:migrate-skip (route: unocss -> css-modules | parse-residual: unknown-utility | lowering-residual: capability | available: named-map, residual)
+			  "code": "// yumcss:migrate-skip (route: unocss -> css-modules | parse-residual: unknown-utility | lowering-residual: capability | available: named-map, residual)
 			export const classes = { card: "custom-shortcut" };",
 			  "converted": 0,
 			  "residuals": [
@@ -589,7 +589,7 @@ describe("UnoCSS stylesheet targets", () => {
 		expect(evidence(result)).toMatchInlineSnapshot(`
 			{
 			  "artifacts": [],
-			  "code": "// pandwind:migrate-skip (route: unocss -> authored-css | lowering-residual: host-framework | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+			  "code": "// yumcss:migrate-skip (route: unocss -> authored-css | lowering-residual: host-framework | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 			<div class="text-brand" data-kind="card"></div>",
 			  "converted": 0,
 			  "residuals": [

@@ -372,7 +372,7 @@ await comparePage.close();
 await browser.close();
 
 const report = {
-	schema: "pandwind.posthog-docs-browser-report/1",
+	schema: "yumcss.posthog-docs-browser-report/1",
 	routeCount: routes.length,
 	visualRouteCount: browserComparisons.length,
 	baseline,

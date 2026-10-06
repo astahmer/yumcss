@@ -42,7 +42,7 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("stitches -> mui -> stitches: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("stitches -> mui -> stitches: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("stitches -> mui -> stitches: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("stitches -> mui -> stitches: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

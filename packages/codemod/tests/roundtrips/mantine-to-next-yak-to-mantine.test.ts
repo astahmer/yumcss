@@ -42,7 +42,7 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> next-yak round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css\`color: blue; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -113,7 +113,7 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -153,7 +153,7 @@ test("mantine -> next-yak -> mantine: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("mantine -> next-yak -> mantine: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> next-yak | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -267,7 +267,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css\`color: #f97316; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -354,7 +354,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -378,7 +378,7 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -456,7 +456,7 @@ test("mantine -> next-yak -> mantine: resolves token values across both concrete
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => css\`color: #2563eb; margin-inline: auto; max-width: calc(25rem * var(--mantine-scale));\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -480,7 +480,7 @@ test("mantine -> next-yak -> mantine: resolves token values across both concrete
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

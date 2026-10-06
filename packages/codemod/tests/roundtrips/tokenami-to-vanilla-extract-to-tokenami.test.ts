@@ -42,7 +42,7 @@ test("tokenami -> vanilla-extract -> tokenami: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tokenami -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -139,7 +139,7 @@ test("tokenami -> vanilla-extract -> tokenami: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vanilla-extract | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> vanilla-extract | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -175,7 +175,7 @@ test("tokenami -> vanilla-extract -> tokenami: retains the documented secondary 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vanilla-extract | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> vanilla-extract | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

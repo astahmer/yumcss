@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"reference": {
 		"repository": "https://github.com/callstack/linaria",
 		"commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "linaria",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -34,7 +34,7 @@
 			"targetBytes": 190,
 			"differences": []
 		},
-		"targetUsesPandwind": true
+		"targetUsesYumCSS": true
 	},
 	"checks": {
 		"sourceTypecheck": true,

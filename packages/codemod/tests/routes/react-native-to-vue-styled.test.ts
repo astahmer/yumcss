@@ -38,10 +38,10 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-native -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -94,7 +94,7 @@ test("react-native -> vue-styled: carries a documented secondary react-native AP
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -148,7 +148,7 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("react-native -> vue-styled: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("react-native -> vue-styled: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -277,7 +277,7 @@ test("react-native -> vue-styled: preserves malformed concrete react-native inpu
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 0,

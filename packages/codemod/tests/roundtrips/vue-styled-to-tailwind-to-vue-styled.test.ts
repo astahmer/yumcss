@@ -42,7 +42,7 @@ test("vue-styled -> tailwind -> vue-styled: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);

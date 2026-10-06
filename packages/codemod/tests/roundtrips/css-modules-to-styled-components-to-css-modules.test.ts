@@ -42,7 +42,7 @@ test("css-modules -> styled-components -> css-modules: preserves an actionable c
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> styled-components -> css-modules: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("css-modules -> styled-components -> css-modules: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("css-modules -> styled-components -> css-modules: retains the documented se
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -163,7 +163,7 @@ test("css-modules -> styled-components -> css-modules: retains the documented se
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -244,7 +244,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -325,7 +325,7 @@ test("css-modules -> styled-components -> css-modules: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -421,7 +421,7 @@ test("css-modules -> styled-components -> css-modules: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> css-modules | lowering-residual: capability | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,

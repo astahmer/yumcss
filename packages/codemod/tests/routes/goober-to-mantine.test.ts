@@ -38,10 +38,10 @@ test("goober -> mantine: migrates concrete goober syntax to mantine", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "goober -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("goober -> mantine: migrates concrete goober syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,7 +73,7 @@ test("goober -> mantine: migrates concrete goober syntax to mantine", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -106,7 +106,7 @@ test("goober -> mantine: carries a documented secondary goober API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mantine | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -159,7 +159,7 @@ test("goober -> mantine: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("goober -> mantine: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -207,7 +207,7 @@ test("goober -> mantine: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -231,7 +231,7 @@ test("goober -> mantine: loads concrete theme and project context variants", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -267,7 +267,7 @@ test("goober -> mantine: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -291,7 +291,7 @@ test("goober -> mantine: resolves concrete token values with project context", a
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -324,7 +324,7 @@ test("goober -> mantine: preserves malformed concrete goober input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: goober -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 0,
@@ -349,7 +349,7 @@ test("goober -> mantine: preserves malformed concrete goober input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

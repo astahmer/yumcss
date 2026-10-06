@@ -42,7 +42,7 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("aphrodite -> solid-styled -> aphrodite: retains the documented secondary A
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("aphrodite -> solid-styled -> aphrodite: retains the documented secondary A
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> solid-styled | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],

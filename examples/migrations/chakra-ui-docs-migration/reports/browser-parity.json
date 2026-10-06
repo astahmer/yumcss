@@ -56,5 +56,5 @@
 		}
 	],
 	"lanes": ["baseline", "css-class", "design-css"],
-	"assertion": "All listed geometry and counts were identical across baseline and both Pandwind lanes."
+	"assertion": "All listed geometry and counts were identical across baseline and both YumCSS lanes."
 }

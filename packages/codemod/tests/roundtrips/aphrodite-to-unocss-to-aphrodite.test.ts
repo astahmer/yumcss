@@ -42,7 +42,7 @@ test("aphrodite -> unocss -> aphrodite: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("aphrodite -> unocss -> aphrodite: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -127,7 +127,7 @@ test("aphrodite -> unocss -> aphrodite: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -163,9 +163,9 @@ test("aphrodite -> unocss -> aphrodite: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> unocss | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],

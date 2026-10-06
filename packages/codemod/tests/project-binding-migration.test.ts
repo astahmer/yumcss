@@ -13,7 +13,7 @@ describe("project binding migration", () => {
 		]);
 		const result = runAdapterMigration(files.get("/project/entry.tsx")!, {
 			from: CodemodAdapterId.Emotion,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "/project/entry.tsx",
 			root: "/project",
 			readFile: (file) => files.get(file),
@@ -23,6 +23,6 @@ describe("project binding migration", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("createUnsafeCss");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	});
 });

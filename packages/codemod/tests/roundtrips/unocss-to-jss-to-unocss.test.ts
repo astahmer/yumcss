@@ -42,7 +42,7 @@ test("unocss -> jss -> unocss: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> jss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> jss -> unocss: preserves an actionable concrete round trip", asy
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import jss from "jss";
 		export const App = () => <div className={jss.createStyleSheet({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).attach().classes.style}/>;",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("unocss -> jss -> unocss: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import jss from "jss";
 		export const App = () => <div className={jss.createStyleSheet({ style: { "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } } }).attach().classes.style}/>;",
 		    "converted": 0,

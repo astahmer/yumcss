@@ -38,17 +38,17 @@ test("sass -> vanilla-extract: migrates concrete sass syntax to vanilla-extract"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "sass -> vanilla-extract happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("sass -> vanilla-extract: carries a documented secondary sass API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -152,7 +152,7 @@ test("sass -> vanilla-extract: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -188,7 +188,7 @@ test("sass -> vanilla-extract: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("sass -> vanilla-extract: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -281,7 +281,7 @@ test("sass -> vanilla-extract: preserves malformed concrete sass input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,

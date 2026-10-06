@@ -38,10 +38,10 @@ test("style9 -> unocss: migrates concrete style9 syntax to unocss", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "style9 -> unocss happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("style9 -> unocss: carries a documented secondary style9 API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 0,
 		  "generatedFiles": [],

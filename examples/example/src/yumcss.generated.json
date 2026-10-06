@@ -1,0 +1,52 @@
+{
+	"schema": "yumcss.generated/1",
+	"generator": "yumcss-codemod tw generate",
+	"inputs": [
+		{
+			"path": "src/tailwind.css",
+			"hash": "58bc5b6e06ed4711380275619c89a287878eb474f360e7eec5ddfa85b8a94128"
+		}
+	],
+	"artifacts": [
+		{
+			"path": "src/bridge.ts",
+			"ownership": "optional",
+			"hash": "ad8c22b67e4b9445767a86ff925bfe68513ee1ce6ff94ec10d2b5896c33a84e0"
+		},
+		{
+			"path": "src/yumcss-theme.css",
+			"ownership": "runtime",
+			"hash": "1b60dcdcc8153139470696fd4520bbadd538865874db722672515c3d38777f2a"
+		},
+		{
+			"path": "src/yumcss.interop.json",
+			"ownership": "build-only",
+			"hash": "8659480015cef54deb8dee6127fc317d38c8deda4da91eed2999836d85524d60"
+		},
+		{
+			"path": "src/tw.build.ts",
+			"ownership": "build-only",
+			"hash": "5c3f32ff21b443ba9603f11ddd4795a076efe6baafd2cc8c0bbd2f5868ec5e1c"
+		},
+		{
+			"path": "src/tw.conflicts.ts",
+			"ownership": "optional",
+			"hash": "56147dbeceb3ad15c96e97eabe20fe55fcc47dacc7f624d3e8d570cd193324b6"
+		},
+		{
+			"path": "src/tw.runtime.ts",
+			"ownership": "optional",
+			"hash": "c86510bcb8e34528686c7d69d39d81d3d547b96e48f78c27e247863ab9abfda8"
+		},
+		{
+			"path": "src/tw.ts",
+			"ownership": "runtime",
+			"hash": "84a689b71b54d44f0e7fc11862ab2af96b038b4373dd61c9ebb86e8fd8f39bbc"
+		},
+		{
+			"path": "src/types.d.ts",
+			"ownership": "editor",
+			"hash": "c05ed62131924a0d6ff557bdf22485305c038c9979341a74af4fe9e55b4f9fef"
+		}
+	]
+}

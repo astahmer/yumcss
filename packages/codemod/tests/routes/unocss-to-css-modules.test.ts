@@ -38,22 +38,22 @@ test("unocss -> css-modules: migrates concrete unocss syntax to css-modules", ()
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "unocss -> css-modules happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
-		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		      "purpose": "CSS Modules styles for a migrated static class",
 		    },
 		  ],
@@ -98,12 +98,12 @@ test("unocss -> css-modules: carries a documented secondary unocss API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
-		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		      "purpose": "CSS Modules styles for a migrated static class",
 		    },
 		  ],
@@ -156,12 +156,12 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		    "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
-		        "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		        "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		        "purpose": "CSS Modules styles for a migrated static class",
 		      },
 		    ],
@@ -197,12 +197,12 @@ test("unocss -> css-modules: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		    "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;",
 		    "converted": 1,
 		    "generatedFiles": [
 		      {
-		        "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		        "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		        "purpose": "CSS Modules styles for a migrated static class",
 		      },
 		    ],
@@ -250,12 +250,12 @@ test("unocss -> css-modules: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;",
+		  "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
-		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		      "purpose": "CSS Modules styles for a migrated static class",
 		    },
 		  ],
@@ -300,13 +300,13 @@ test("unocss -> css-modules: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import __pandwindstyle0Styles from "./App.pandwind-pw-style0-sh7wts.module.css";
-		export const App = () => <div className={__pandwindstyle0Styles["pw-style0-sh7wts"]} />;
+		  "code": "import __yumcssstyle0Styles from "./App.yumcss-pw-style0-sh7wts.module.css";
+		export const App = () => <div className={__yumcssstyle0Styles["pw-style0-sh7wts"]} />;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "generatedFiles": [
 		    {
-		      "path": "App.pandwind-pw-style0-sh7wts.module.css",
+		      "path": "App.yumcss-pw-style0-sh7wts.module.css",
 		      "purpose": "CSS Modules styles for a migrated static class",
 		    },
 		  ],

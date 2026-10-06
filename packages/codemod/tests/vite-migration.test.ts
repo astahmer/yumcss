@@ -7,7 +7,7 @@ import {
 } from "../src/swap/index.ts";
 import { createVirtualMigrationPlugin as createVitePlugin } from "../src/swap/virtual-migration-core.ts";
 
-const pandwindMigrateVite = (
+const yumcssMigrateVite = (
 	options: Parameters<typeof createVitePlugin>[0],
 ): ReturnType<typeof createVitePlugin> => createVitePlugin(options);
 
@@ -27,12 +27,12 @@ export function App() {
 `;
 
 function generatedTarget(createFile: (index: number) => AdapterGeneratedFile): StyleAdapter {
-	const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind)!;
+	const yumcss = catalog.registry.get(CodemodAdapterId.YumCSS)!;
 	return {
-		...pandwind,
+		...yumcss,
 		id: "test-generated-target",
 		emit(program, context) {
-			const emitted = pandwind.emit(program, context);
+			const emitted = yumcss.emit(program, context);
 			return { ...emitted, generatedFiles: [createFile(context.index)] };
 		},
 	};
@@ -40,7 +40,7 @@ function generatedTarget(createFile: (index: number) => AdapterGeneratedFile): S
 
 describe("virtual Vite migrations", () => {
 	test("transforms real styled-components source without changing the file", async () => {
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			root: "/virtual/project",
@@ -49,13 +49,13 @@ describe("virtual Vite migrations", () => {
 		const result = await plugin.transform(styledCard, file);
 
 		expect(plugin.enforce).toBe("pre");
-		expect(plugin.name).toBe("pandwind:virtual-migration:styled-components->tailwind");
+		expect(plugin.name).toBe("yumcss:virtual-migration:styled-components->tailwind");
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			  "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -104,7 +104,7 @@ export function App() {
 		return <ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
 }
 `;
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			root: "/virtual/project",
@@ -114,11 +114,11 @@ export function App() {
 
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
+			  "code": "// yumcss:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
 			import styled, { ThemeProvider } from "styled-components";
 
 			export function App() {
-			// pandwind:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
+			// yumcss:migrate-skip (route: styled-components -> tailwind | parse-residual: runtime-context | available: named-map, residual)
 					return <ThemeProvider theme={{ color: "red" }}><div /></ThemeProvider>;
 			}
 			",
@@ -142,7 +142,7 @@ export function App() {
 			}
 		`);
 		expect(result).not.toBeNull();
-		expect(result?.code).toContain("pandwind:migrate-skip");
+		expect(result?.code).toContain("yumcss:migrate-skip");
 		expect(result?.code).toContain('<ThemeProvider theme={{ color: "red" }}>');
 		expect(residuals).toMatchInlineSnapshot(`
 			[
@@ -176,7 +176,7 @@ export function App() {
 	});
 
 	test("uses shared scanner eligibility and include/exclude policies", async () => {
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			include: [/src\/Card\.tsx$/gu],
@@ -191,7 +191,7 @@ export function App() {
 	});
 
 	test("hands the virtual result to the host target plugin after pre-transform", async () => {
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			root: "/project",
@@ -209,10 +209,10 @@ export function App() {
 		expect(plugin.enforce).toBe("pre");
 		expect(received).toMatchInlineSnapshot(`
 			[
-			  "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			  "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -230,7 +230,7 @@ export function App() {
 	});
 
 	test("is idempotent after the target adapter has emitted classes", async () => {
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			root: "/project",
@@ -252,7 +252,7 @@ export function App() {
 			catalog.registry.get(CodemodAdapterId.Emotion)!,
 			target,
 		]);
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.Emotion,
 			to: target.id,
 			root: "/virtual/project",
@@ -267,7 +267,7 @@ export function App() {
 
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			",
@@ -289,7 +289,7 @@ export function App() {
 		`);
 		expect(result).not.toBeNull();
 		expect(virtualId?.replace(virtualPrefix, "<NUL>")).toMatchInlineSnapshot(
-			`"<NUL>pandwind:migration:/virtual/project/src/styles/migration-theme.ts"`,
+			`"<NUL>yumcss:migration:/virtual/project/src/styles/migration-theme.ts"`,
 		);
 		expect(virtualId).not.toBeNull();
 		expect(plugin.load(virtualId!)).toMatchInlineSnapshot(`
@@ -302,9 +302,9 @@ export function App() {
 	});
 
 	test("resets virtual artifacts when the bundler resolves a new project root", async () => {
-		const plugin = pandwindMigrateVite({
+		const plugin = yumcssMigrateVite({
 			from: CodemodAdapterId.Emotion,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			root: "/old-project",
 		});
 		const source = 'import { css } from "@emotion/css";\nconst card = css({ color: "red" });\n';
@@ -330,7 +330,7 @@ export function App() {
 			'const panel = css({ color: "blue" });\n';
 
 		const residuals: unknown[] = [];
-		const safePlugin = pandwindMigrateVite({
+		const safePlugin = yumcssMigrateVite({
 			from: CodemodAdapterId.Emotion,
 			to: first.id,
 			root: "/virtual/project",
@@ -341,7 +341,7 @@ export function App() {
 
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
+			  "code": "// yumcss:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
 			import { css } from "@emotion/css";
 			const card = css({ color: "red" });
 			const panel = css({ color: "blue" });
@@ -364,7 +364,7 @@ export function App() {
 			}
 		`);
 		expect(result).not.toBeNull();
-		expect(result?.code).toContain("pandwind:migrate-skip");
+		expect(result?.code).toContain("yumcss:migrate-skip");
 		expect(result?.code).toContain("@emotion/css");
 		expect(residuals).toMatchInlineSnapshot(`
 			[

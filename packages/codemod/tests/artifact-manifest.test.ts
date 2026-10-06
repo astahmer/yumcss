@@ -5,9 +5,9 @@ import { describe, expect, test } from "vitest";
 import {
 	buildGeneratedArtifactManifest,
 	checkGeneratedArtifactManifest,
-	PANDWIND_GENERATED_BUDGET_SCHEMA,
+	YUMCSS_GENERATED_BUDGET_SCHEMA,
 	GeneratedArtifactOwnershipTag,
-	PANDWIND_GENERATED_MANIFEST_SCHEMA,
+	YUMCSS_GENERATED_MANIFEST_SCHEMA,
 	hashGeneratedContent,
 } from "../src/tw/index.ts";
 
@@ -33,8 +33,8 @@ describe("generated artifact manifest", () => {
 		});
 
 		expect(manifest).toEqual({
-			schema: PANDWIND_GENERATED_MANIFEST_SCHEMA,
-			generator: "pandwind-codemod tw generate",
+			schema: YUMCSS_GENERATED_MANIFEST_SCHEMA,
+			generator: "yumcss-codemod tw generate",
 			inputs: [
 				{
 					path: "src/tailwind.css",
@@ -58,7 +58,7 @@ describe("generated artifact manifest", () => {
 	});
 
 	test("verifies consumer manifests, budgets, and stale artifacts", () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-generated-check-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-generated-check-"));
 		try {
 			mkdirSync(join(root, "src"), { recursive: true });
 			const input = "@import 'tailwindcss';";
@@ -75,9 +75,9 @@ describe("generated artifact manifest", () => {
 					},
 				],
 			});
-			writeFileSync(join(root, "src/pandwind.generated.json"), JSON.stringify(manifest));
+			writeFileSync(join(root, "src/yumcss.generated.json"), JSON.stringify(manifest));
 			const budget = {
-				schema: PANDWIND_GENERATED_BUDGET_SCHEMA,
+				schema: YUMCSS_GENERATED_BUDGET_SCHEMA,
 				artifacts: {
 					"src/tw.ts": {
 						ownership: GeneratedArtifactOwnershipTag.Runtime,

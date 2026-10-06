@@ -10,7 +10,7 @@ import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts
 import type { AdapterParseContext, AdapterParseResult } from "../adapter-contract.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { SourceBindingKind, type SourceBinding } from "yumcss/source";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import { normalizeCssObjectNumericUnits } from "../style-program-units.ts";
 import {

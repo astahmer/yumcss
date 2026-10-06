@@ -1,6 +1,6 @@
 import { CSS_RAW_PROPERTIES } from "../../css-properties.ts";
 
-export const PANDWIND_TOKEN_PROPERTIES = {
+export const YUMCSS_TOKEN_PROPERTIES = {
 	color: "colors",
 	background: "colors",
 	backgroundColor: "colors",
@@ -80,11 +80,11 @@ export const PANDWIND_TOKEN_PROPERTIES = {
 	maxHeight: "sizes",
 } as const;
 
-export const PANDWIND_RAW_PROPERTIES: Readonly<Record<string, true>> = {
+export const YUMCSS_RAW_PROPERTIES: Readonly<Record<string, true>> = {
 	...CSS_RAW_PROPERTIES,
 	...Object.fromEntries(
-		Object.keys(PANDWIND_TOKEN_PROPERTIES).map((property) => [property, true] as const),
+		Object.keys(YUMCSS_TOKEN_PROPERTIES).map((property) => [property, true] as const),
 	),
 };
 
-export const PANDWIND_SUPPORTED_PROPERTIES = new Set(Object.keys(PANDWIND_RAW_PROPERTIES));
+export const YUMCSS_SUPPORTED_PROPERTIES = new Set(Object.keys(YUMCSS_RAW_PROPERTIES));

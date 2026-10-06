@@ -38,10 +38,10 @@ test("panda -> react-strict-dom: migrates concrete panda syntax to react-strict-
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "panda -> react-strict-dom happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("panda -> react-strict-dom: carries a documented secondary panda API explic
 		{
 		  "changed": true,
 		  "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> react-strict-dom | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> react-strict-dom | capability-blocked: composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		  "converted": 0,
 		  "generatedFiles": [],

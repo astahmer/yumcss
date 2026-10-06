@@ -38,10 +38,10 @@ test("styled-components -> mui: migrates concrete styled-components syntax to mu
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "styled-components -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -178,7 +178,7 @@ test("styled-components -> mui: loads concrete theme and project context variant
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -233,7 +233,7 @@ test("styled-components -> mui: resolves concrete token values with project cont
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -44,7 +44,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -55,7 +55,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -95,7 +95,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -124,7 +124,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -164,7 +164,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -209,7 +209,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -249,7 +249,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -265,7 +265,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -305,7 +305,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -376,7 +376,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -21,11 +21,11 @@ if (options.collectAphrodite === true) {
 		render(element),
 	);
 	console.log(JSON.stringify({ markup: rendered.html, css: rendered.css.content }));
-} else if (serverModule.pandwindCss !== undefined) {
+} else if (serverModule.yumcssCss !== undefined) {
 	const css =
-		typeof serverModule.pandwindCss === "function"
-			? serverModule.pandwindCss()
-			: serverModule.pandwindCss;
+		typeof serverModule.yumcssCss === "function"
+			? serverModule.yumcssCss()
+			: serverModule.yumcssCss;
 	console.log(JSON.stringify({ markup: render(element), css }));
 } else if (serverModule.stitchesCss !== undefined) {
 	const css =

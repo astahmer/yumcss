@@ -3,7 +3,7 @@
 	"source": {
 		"url": "https://github.com/gajus/css-in-js-arena",
 		"arenaRevision": "2f4ed369a107a186b8108184871bba0777f23fe4",
-		"pandwindRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
+		"yumcssRevision": "bc1b904c5d6795d43396b9f364a127fd68c2f436",
 		"measuredAt": "2026-09-25",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
 		"parity": {
@@ -13,7 +13,7 @@
 			"screenshotsPassed": 72,
 			"screenshotsTotal": 72,
 			"screenshotThresholdPercent": 0.05,
-			"pandwindMaxImageDifferencePercent": 0.0151,
+			"yumcssMaxImageDifferencePercent": 0.0151,
 			"maxImageDifferencePercent": 0.0187
 		}
 	},
@@ -22,89 +22,89 @@
 			"category": "Output",
 			"label": "Browser CSS, raw",
 			"unit": "B",
-			"values": { "bamboo": 43420, "stylex": 40430, "panda": 54007, "pandwind": 31732 }
+			"values": { "bamboo": 43420, "stylex": 40430, "panda": 54007, "yumcss": 31732 }
 		},
 		{
 			"category": "Output",
 			"label": "Browser CSS, gzip",
 			"unit": "B",
-			"values": { "bamboo": 8627, "stylex": 8200, "panda": 11489, "pandwind": 9913 }
+			"values": { "bamboo": 8627, "stylex": 8200, "panda": 11489, "yumcss": 9913 }
 		},
 		{
 			"category": "Output",
 			"label": "Browser CSS, Brotli",
 			"unit": "B",
-			"values": { "bamboo": 7357, "stylex": 7008, "panda": 9518, "pandwind": 8724 }
+			"values": { "bamboo": 7357, "stylex": 7008, "panda": 9518, "yumcss": 8724 }
 		},
 		{
 			"category": "Output",
 			"label": "Client JavaScript, Brotli",
 			"unit": "B",
-			"values": { "bamboo": 97104, "stylex": 97845, "panda": 102731, "pandwind": 111644 }
+			"values": { "bamboo": 97104, "stylex": 97845, "panda": 102731, "yumcss": 111644 }
 		},
 		{
 			"category": "Output",
 			"label": "Mean SSR HTML, gzip, six routes",
 			"unit": "B",
-			"values": { "bamboo": 5533, "stylex": 5529, "panda": 5537, "pandwind": 5470 }
+			"values": { "bamboo": 5533, "stylex": 5529, "panda": 5537, "yumcss": 5470 }
 		},
 		{
 			"category": "Output",
 			"label": "Full first load",
 			"unit": "B",
-			"values": { "bamboo": 109994, "stylex": 110382, "panda": 117786, "pandwind": 125838 }
+			"values": { "bamboo": 109994, "stylex": 110382, "panda": 117786, "yumcss": 125838 }
 		},
 		{
 			"category": "Output",
 			"label": "HTML class attributes, six routes",
 			"unit": "B",
-			"values": { "bamboo": 93036, "stylex": 70843, "panda": 92738, "pandwind": 59980 }
+			"values": { "bamboo": 93036, "stylex": 70843, "panda": 92738, "yumcss": 59980 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Cold production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 3872, "stylex": 7443, "panda": 4882, "pandwind": 2465 }
+			"values": { "bamboo": 3872, "stylex": 7443, "panda": 4882, "yumcss": 2465 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Warm production build, median of five",
 			"unit": "ms",
-			"values": { "bamboo": 4257, "stylex": 7356, "panda": 4711, "pandwind": 1997 }
+			"values": { "bamboo": 4257, "stylex": 7356, "panda": 4711, "yumcss": 1997 }
 		},
 		{
 			"category": "Build and dev",
 			"label": "Dev server cold start, median of seven",
 			"unit": "ms",
-			"values": { "bamboo": 2867, "stylex": 2285, "panda": 2834, "pandwind": 2091 }
+			"values": { "bamboo": 2867, "stylex": 2285, "panda": 2834, "yumcss": 2091 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 129, "stylex": 100, "panda": 112, "pandwind": 113 }
+			"values": { "bamboo": 129, "stylex": 100, "panda": 112, "yumcss": 113 }
 		},
 		{
 			"category": "HMR",
 			"label": "Shared style edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 313.2, "stylex": 245.2, "panda": 211.4, "pandwind": 199.9 }
+			"values": { "bamboo": 313.2, "stylex": 245.2, "panda": 211.4, "yumcss": 199.9 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to HMR websocket",
 			"unit": "ms",
-			"values": { "bamboo": 139, "stylex": 113, "panda": 117, "pandwind": 126 }
+			"values": { "bamboo": 139, "stylex": 113, "panda": 117, "yumcss": 126 }
 		},
 		{
 			"category": "HMR",
 			"label": "Component edit to correct paint",
 			"unit": "ms",
-			"values": { "bamboo": 193.6, "stylex": 410.2, "panda": 232.6, "pandwind": 219.6 }
+			"values": { "bamboo": 193.6, "stylex": 410.2, "panda": 232.6, "yumcss": 219.6 }
 		}
 	],
 	"outputVerification": {
-		"pandwindRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
+		"yumcssRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
 		"measuredAt": "2026-09-26",
 		"environment": "Apple M4 (arm64), macOS, Node 24.20.0, Vite 8.2.1 across all four apps",
 		"parity": {
@@ -128,7 +128,7 @@
 	"scaleSweep": {
 		"measuredAt": "2026-09-25",
 		"arenaRevision": "2f4ed369a107a186b8108184871bba0777f23fe4",
-		"pandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
+		"yumcssRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb",
 		"stylesPerRun": [0, 50, 200, 800],
 		"declarationsPerStyle": 6,
 		"allDeclarationValuesUnique": true,
@@ -224,7 +224,7 @@
 					"blocks": 5379
 				}
 			],
-			"pandwindHash": [
+			"yumcssHash": [
 				{
 					"styles": 0,
 					"rawBytes": 31732,
@@ -254,7 +254,7 @@
 					"blocks": 5521
 				}
 			],
-			"pandwindNamedAtoms": [
+			"yumcssNamedAtoms": [
 				{
 					"styles": 0,
 					"rawBytes": 36240,
@@ -285,7 +285,7 @@
 				}
 			]
 		},
-		"pandwindHashGrowthBreakdown": {
+		"yumcssHashGrowthBreakdown": {
 			"base": { "rawBytes": 31732, "gzip9Bytes": 9913, "brotli11Bytes": 8724 },
 			"at800": { "rawBytes": 181543, "gzip9Bytes": 49925, "brotli11Bytes": 38968 },
 			"declarationInputs": 4800,

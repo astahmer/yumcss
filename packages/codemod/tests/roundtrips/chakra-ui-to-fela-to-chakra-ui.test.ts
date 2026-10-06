@@ -44,7 +44,7 @@ test("chakra-ui -> fela -> chakra-ui: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "chakra-ui -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("chakra-ui -> fela -> chakra-ui: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> fela | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> fela | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -178,7 +178,7 @@ test("chakra-ui -> fela -> chakra-ui: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> fela | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> fela | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,

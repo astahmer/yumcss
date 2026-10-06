@@ -9,7 +9,7 @@ import {
 	type StyleDialectResolver,
 } from "../src/swap/index.ts";
 import { createAdapterMigrationEngine } from "../src/swap/adapter-migration-engine.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 
 const result: AdapterMigrationResult = {
 	code: "const card = 1;",

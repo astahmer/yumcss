@@ -42,7 +42,7 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stylex -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("stylex -> css-modules -> stylex: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("stylex -> css-modules -> stylex: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("stylex -> css-modules -> stylex: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("stylex -> css-modules -> stylex: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

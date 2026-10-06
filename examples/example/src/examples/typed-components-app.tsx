@@ -1,6 +1,6 @@
 import type { CSSProperties, PropsWithChildren } from "react";
-import type { AtomicStyleProps } from "pandwind/css";
-import { createStack } from "pandwind/stack/react";
+import type { AtomicStyleProps } from "yumcss/css";
+import { createStack } from "yumcss/stack/react";
 import { css } from "../css";
 import { cx } from "../cx";
 import { tw } from "../tw";
@@ -29,7 +29,7 @@ const Stack = createStack(css);
 
 function Panel({ children, className, style, xcss, ...styleProps }: PanelProps) {
 	const generated = css.props(
-		/* pandwind:migrate-skip (residual: component styles resolve from runtime caller props) */ css(
+		/* yumcss:migrate-skip (residual: component styles resolve from runtime caller props) */ css(
 			styleProps,
 		),
 		xcss,

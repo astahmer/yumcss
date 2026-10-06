@@ -38,17 +38,17 @@ test("unocss -> treat: migrates concrete unocss syntax to treat", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "unocss -> treat happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("unocss -> treat: carries a documented secondary unocss API explicitly", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("unocss -> treat: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -182,7 +182,7 @@ test("unocss -> treat: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -230,7 +230,7 @@ test("unocss -> treat: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -275,7 +275,7 @@ test("unocss -> treat: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 0,

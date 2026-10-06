@@ -1,13 +1,14 @@
 /**
- * Prove a bounded Panda -> Pandwind project migration with the real CLI and
+ * Prove a bounded Panda -> YumCSS project migration with the real CLI and
  * installed Panda generated-system output. The fixture covers a custom token,
  * a spacing token, a pseudo-condition, generated project support, and the
  * source/target build boundary, SSR, hydration, and browser base/hover
  * behavior.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
 import { z } from "zod";
 import {
 	browserProof,
@@ -24,8 +25,8 @@ import {
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@pandacss/dev": "1.12.1",
 	"@types/node": "26.4.1",
@@ -33,7 +34,7 @@ const versions = {
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	// Panda 1.12.1 publishes declarations that predate this repository's
@@ -103,7 +104,7 @@ const tsConfig = {
 
 const pandaProjectMigrationSchema = z.object({
 	from: z.literal(CodemodAdapterId.Panda),
-	to: z.literal(CodemodAdapterId.Pandwind),
+	to: z.literal(CodemodAdapterId.YumCSS),
 	report: z.object({
 		filesScanned: z.number().int().nonnegative(),
 		filesChanged: z.number().int().nonnegative(),
@@ -131,7 +132,7 @@ interface PandaInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Panda;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
@@ -147,7 +148,7 @@ interface PandaInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly residualsByKind: Readonly<Record<string, number>>;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
@@ -180,7 +181,7 @@ function proofIsComplete(report: PandaInstalledProof): boolean {
 		report.migration.canonical.equal &&
 		report.migration.skipped === 0 &&
 		report.migration.residuals === 0 &&
-		report.migration.targetUsesPandwind &&
+		report.migration.targetUsesYumCSS &&
 		report.migration.customTokenPreserved &&
 		report.migration.sourceStylesheetImportRemoved &&
 		report.migration.generatedVitePresetImportIsExplicit &&
@@ -193,7 +194,7 @@ function proofIsComplete(report: PandaInstalledProof): boolean {
 	);
 }
 
-function packageJson(includePandwind: boolean): Record<string, unknown> {
+function packageJson(includeYumCSS: boolean): Record<string, unknown> {
 	return {
 		private: true,
 		type: "module",
@@ -204,7 +205,7 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 		},
 		dependencies: {
 			"@pandacss/dev": versions["@pandacss/dev"],
-			...(includePandwind ? { pandwind: versions.pandwind } : {}),
+			...(includeYumCSS ? { yumcss: versions.yumcss } : {}),
 			react: versions.react,
 			"react-dom": versions["react-dom"],
 		},
@@ -213,16 +214,16 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 			"@types/react": versions["@types/react"],
 			"@types/react-dom": versions["@types/react-dom"],
 			"@vitejs/plugin-react-swc": versions["@vitejs/plugin-react-swc"],
-			...(includePandwind ? { "oxc-parser": versions["oxc-parser"] } : {}),
+			...(includeYumCSS ? { "oxc-parser": versions["oxc-parser"] } : {}),
 			typescript: versions.typescript,
 			vite: versions.vite,
 		},
 	};
 }
 
-function createFixture(root: string, includePandwind: boolean): void {
+function createFixture(root: string, includeYumCSS: boolean): void {
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(includePandwind));
+	writeJson(join(root, "package.json"), packageJson(includeYumCSS));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
 	writeFileSync(join(root, "panda.config.ts"), pandaConfig);
 	writeFileSync(join(root, "vite.config.ts"), sourceViteConfig);
@@ -247,7 +248,7 @@ function createFixture(root: string, includePandwind: boolean): void {
 
 async function main(): Promise<void> {
 	await withInstalledProofProject(
-		"pandwind-panda-installed-",
+		"yumcss-panda-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -257,7 +258,7 @@ async function main(): Promise<void> {
 			run("pnpm", ["run", "build"], sourceRoot);
 			const adapterProof = await runAdapterMigrationAsync(sourceApp, {
 				from: CodemodAdapterId.Panda,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				root: sourceRoot,
 				file: "src/App.tsx",
 				mode: "safe",
@@ -286,13 +287,13 @@ async function main(): Promise<void> {
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						"packages/codemod/src/cli.ts",
 						"migrate",
 						"--from",
 						CodemodAdapterId.Panda,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -309,7 +310,7 @@ async function main(): Promise<void> {
 			const targetMain = readFileSync(join(targetRoot, "src/main.tsx"), "utf8");
 			const targetGlobalStyles = readFileSync(join(targetRoot, "src/global.css"), "utf8");
 			const viteConfig = readFileSync(join(targetRoot, "vite.config.ts"), "utf8");
-			const preset = readFileSync(join(targetRoot, "pandwind/preset.ts"), "utf8");
+			const preset = readFileSync(join(targetRoot, "yumcss/preset.ts"), "utf8");
 			const sourceSsr = await renderInstalledServer(sourceRoot);
 			const sourceCss = readFileSync(join(sourceRoot, "styled-system/styles.css"), "utf8");
 			writeIndex(sourceRoot, sourceSsr.markup, sourceCss);
@@ -330,28 +331,28 @@ async function main(): Promise<void> {
 			const targetCss = generatedCss(targetRoot);
 			const report: PandaInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Panda, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Panda, to: CodemodAdapterId.YumCSS },
 				fixture: {
 					files: ["panda.config.ts", "src/App.tsx", "src/global.css", "vite.config.ts"],
 					isolated: true,
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@pandacss/dev"),
-					targetPackage: `file:${pandwindPackageRoot}`,
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: normalizeInstalledTargetPackage(`file:${yumcssPackageRoot}`, repositoryRoot),
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
 					canonical,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 					customTokenPreserved:
 						preset.includes("123456") &&
 						(migratedApp.includes('"$brand"') || migratedApp.includes('"brand"')),
 					sourceStylesheetImportRemoved:
 						!targetGlobalStyles.includes("styled-system/styles.css") &&
-						targetMain.includes('import "pandwind:css";'),
-					generatedVitePresetImportIsExplicit: viteConfig.includes('./pandwind/preset.ts"'),
-					generatedVitePluginPresent: viteConfig.includes("pandwindCssVite"),
+						targetMain.includes('import "yumcss:css";'),
+					generatedVitePresetImportIsExplicit: viteConfig.includes('./yumcss/preset.ts"'),
+					generatedVitePluginPresent: viteConfig.includes("yumcssExtractVite"),
 				},
 				checks: {
 					sourceTypecheck: true,

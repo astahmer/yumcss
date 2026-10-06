@@ -40,10 +40,10 @@ test("tokenami -> chakra-ui: migrates concrete tokenami syntax to chakra-ui", as
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -95,7 +95,7 @@ test("tokenami -> chakra-ui: carries a documented secondary tokenami API explici
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> chakra-ui | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> chakra-ui | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],

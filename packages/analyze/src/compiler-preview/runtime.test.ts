@@ -18,20 +18,20 @@ describe("createCompilerPreviewRuntime", () => {
 			}
 			writeFileSync(
 				join(root, "src", "design.ts"),
-				"import { createDesignCss } from 'pandwind/design'; import { examplePreset } from '@pandwind/example-preset'; export const css = createDesignCss(examplePreset);\n",
+				"import { createDesignCss } from 'yumcss/design'; import { examplePreset } from '@yumcss/example-preset'; export const css = createDesignCss(examplePreset);\n",
 			);
 			writeFileSync(
 				join(root, "src", "Card.ts"),
-				"import { css } from './design'; import 'pandwind:css'; export const card = css.class({ color: '$blue-500' });\n",
+				"import { css } from './design'; import 'yumcss:css'; export const card = css.class({ color: '$blue-500' });\n",
 			);
 			writeFileSync(
 				join(root, "vite.config.ts"),
-				`import { pandwindCssVite, pandwindVite } from 'pandwind/vite'; import { createDesignCss } from 'pandwind/design'; import { examplePreset } from '@pandwind/example-preset'; const css = createDesignCss(examplePreset); export default { plugins: [pandwindVite({ css: { preset: examplePreset } }), pandwindCssVite(css, { root: ${JSON.stringify(root)} })] };\n`,
+				`import { yumcssExtractVite, yumcssVite } from 'yumcss/vite'; import { createDesignCss } from 'yumcss/design'; import { examplePreset } from '@yumcss/example-preset'; const css = createDesignCss(examplePreset); export default { plugins: [yumcssVite({ css: { preset: examplePreset } }), yumcssExtractVite(css, { root: ${JSON.stringify(root)} })] };\n`,
 			);
 
 			runtime = await createCompilerPreviewRuntime({ root });
 			expect(runtime.info.viteVersion).toBe("8.2.2");
-			expect(runtime.info.pandwindPlugins.length).toBeGreaterThan(0);
+			expect(runtime.info.yumcssPlugins.length).toBeGreaterThan(0);
 			expect(runtime.files().map((file) => file.path)).toContain("src/Card.ts");
 			for (const declaration of ["types.d.ts", "types.d.mts", "types.d.cts"]) {
 				expect(runtime.files().map((file) => file.path)).not.toContain(`src/${declaration}`);

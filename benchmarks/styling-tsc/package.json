@@ -1,5 +1,5 @@
 {
-	"name": "pandwind-styling-tsc-benchmark",
+	"name": "yumcss-styling-tsc-benchmark",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -27,8 +27,8 @@
 		"goober": "2.1.19",
 		"jss": "10.10.0",
 		"next-yak": "9.10.0",
-		"pandwind": "workspace:*",
-		"pandwind-codemod": "workspace:*",
+		"yumcss": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
 		"react": "19.2.8",
 		"react-jss": "10.10.0",
 		"react-strict-dom": "0.0.55",

@@ -8,8 +8,8 @@ import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { createEmptyPandwindMeta, loadMetaFromSources } from "../src/meta.ts";
-import { examplePreset } from "@pandwind/example-preset";
+import { createEmptyYumCSSMeta, loadMetaFromSources } from "../src/meta.ts";
+import { examplePreset } from "@yumcss/example-preset";
 import {
 	runPandaMigration,
 	scanFactoryElements,
@@ -31,9 +31,9 @@ import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-prop
 import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { emptyPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import { CodemodAdapterId, parseMigrateArgs, TokenReferenceFormat } from "../src/swap/index.ts";
-import type { PandwindMeta } from "../src/meta.ts";
+import type { YumCSSMeta } from "../src/meta.ts";
 
-let meta: PandwindMeta;
+let meta: YumCSSMeta;
 try {
 	meta = loadMetaFromSources({
 		typesDtsPath: "../../examples/example/src/types.d.ts",
@@ -41,7 +41,7 @@ try {
 		tokens: examplePreset.tokens,
 	});
 } catch {
-	meta = createEmptyPandwindMeta();
+	meta = createEmptyYumCSSMeta();
 }
 
 const dirs: Array<string> = [];
@@ -54,7 +54,7 @@ afterAll(() => {
 });
 
 function makeProject(): string {
-	const dir = mkdtempSync(join(tmpdir(), "pandwind-migrate-"));
+	const dir = mkdtempSync(join(tmpdir(), "yumcss-migrate-"));
 	dirs.push(dir);
 	writeFileSync(
 		join(dir, "tsconfig.json"),
@@ -198,7 +198,7 @@ describe("factory elements", () => {
 });
 
 describe("supporting migration primitives", () => {
-	it("emits an app-owned, static-first Pandwind surface", () => {
+	it("emits an app-owned, static-first YumCSS surface", () => {
 		const theme: PandaTheme = {
 			...emptyPandaTheme,
 			tokens: {
@@ -342,7 +342,7 @@ describe("supporting migration primitives", () => {
 				spacing: { 4: "1rem" },
 			},
 		};
-		const directory = mkdtempSync(join(tmpdir(), "pandwind-emitted-types-"));
+		const directory = mkdtempSync(join(tmpdir(), "yumcss-emitted-types-"));
 		dirs.push(directory);
 		mkdirSync(join(directory, "patterns"));
 		writeFileSync(join(directory, "preset.ts"), renderPandaPreset(theme));
@@ -386,11 +386,11 @@ describe("supporting migration primitives", () => {
 						skipLibCheck: true,
 						strict: true,
 						paths: {
-							"pandwind/*": [resolve(workspaceRoot, "packages/pandwind/src/*")],
+							"yumcss/*": [resolve(workspaceRoot, "packages/yumcss/src/*")],
 							react: [
-								resolve(workspaceRoot, "packages/pandwind/node_modules/@types/react/index.d.ts"),
+								resolve(workspaceRoot, "packages/yumcss/node_modules/@types/react/index.d.ts"),
 							],
-							"react/*": [resolve(workspaceRoot, "packages/pandwind/node_modules/@types/react/*")],
+							"react/*": [resolve(workspaceRoot, "packages/yumcss/node_modules/@types/react/*")],
 						},
 					},
 					files: ["preset.ts", "css.ts", "recipe.ts", "patterns/hstack.ts"],
@@ -428,7 +428,7 @@ describe("supporting migration primitives", () => {
 		const args = parseMigrateArgs([
 			"--from=panda",
 			"--to=css.class",
-			"--out=pandwind",
+			"--out=yumcss",
 			"--force",
 			"--engine",
 			"--tokenize",
@@ -436,7 +436,7 @@ describe("supporting migration primitives", () => {
 			"--dedup",
 			"site/**/*.tsx",
 		]);
-		expect(args.outDir).toBe("pandwind");
+		expect(args.outDir).toBe("yumcss");
 		expect(args.force).toBe(true);
 		expect(args.patterns).toEqual(["site/**/*.tsx"]);
 	});
@@ -454,7 +454,7 @@ describe("supporting migration primitives", () => {
 	});
 
 	it("uses the unified migrate spellings and writes by default", () => {
-		const args = parseMigrateArgs(["-f", "tailwindcss", "-t", "pandwind-tw", "src/**/*.tsx"]);
+		const args = parseMigrateArgs(["-f", "tailwindcss", "-t", "yumcss-tw", "src/**/*.tsx"]);
 		expect(args.from).toBe(CodemodAdapterId.Tailwind);
 		expect(args.to).toBe("tw");
 		expect(args.dryRun).toBe(false);
@@ -468,7 +468,7 @@ describe("supporting migration primitives", () => {
 			"--from",
 			"emotion",
 			"--to",
-			"pandwind",
+			"yumcss",
 			"Card.tsx",
 		]);
 		expect(args.tokenReferenceFormat).toBe(TokenReferenceFormat.Stitches);
@@ -487,7 +487,7 @@ describe("supporting migration primitives", () => {
 	it("accepts explicit capability policy and machine-readable reports", () => {
 		const args = parseMigrateArgs([
 			"--from=emotion",
-			"--to=pandwind",
+			"--to=yumcss",
 			"--partial",
 			"--report=json",
 			"Card.tsx",
@@ -511,7 +511,7 @@ describe("supporting migration primitives", () => {
 			targetRoot: "src",
 			source: "tsconfig.json paths",
 		});
-		expect(dir).toContain("pandwind-migrate");
+		expect(dir).toContain("yumcss-migrate");
 	});
 
 	it("folds a single-use recipe without duplicating a shared definition", () => {
@@ -554,14 +554,14 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 			fileSystem: projectFiles,
 		});
 
-		expect(writes.get(join(dir, "next.config.mjs"))).toContain("pandwindWebpackCss");
+		expect(writes.get(join(dir, "next.config.mjs"))).toContain("yumcssWebpackCss");
 		expect(writes.get(join(dir, "package.json"))).not.toContain("panda codegen");
 		expect([...writes.keys()].some((path) => path.endsWith("/preset.ts"))).toBe(true);
 	});
@@ -587,10 +587,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}", "theme/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		expect(report.filesScanned).toBeGreaterThanOrEqual(2);
 		expect(report.cssCallsConverted).toBe(1);
@@ -599,15 +599,15 @@ describe("runPandaMigration", () => {
 		expect(report.residualsByKind).toEqual({});
 
 		const app = readFileSync(join(dir, "src", "app.tsx"), "utf8");
-		expect(app).toContain("@/pandwind/css");
-		expect(app).toContain("@/pandwind/recipes");
+		expect(app).toContain("@/yumcss/css");
+		expect(app).toContain("@/yumcss/recipes");
 		expect(app).not.toContain("@/styled-system/");
 		expect(app).toContain('className={css.class({ "paddingInline": "4", "paddingBlock": "2" })}');
 		expect(app).toContain('css.class({ background: "gray.100", _hover: { background: "white" } })');
-		expect(app).not.toContain("pandwind:migrate-skip");
+		expect(app).not.toContain("yumcss:migrate-skip");
 		expect(app).toMatchInlineSnapshot(`
-			"import { css } from '@/pandwind/css';
-			import { badge } from '@/pandwind/recipes'
+			"import { css } from '@/yumcss/css';
+			import { badge } from '@/yumcss/recipes'
 
 			export const App = () => (
 			  <div className={css.class({ "paddingInline": "4", "paddingBlock": "2" })}>
@@ -619,11 +619,11 @@ describe("runPandaMigration", () => {
 		`);
 
 		// bootstrap owns the configured css binding
-		const bootstrap = readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8");
+		const bootstrap = readFileSync(join(dir, "src", "yumcss", "css.ts"), "utf8");
 		expect(bootstrap).toContain("createCss(preset)");
 		expect(bootstrap).not.toContain("createDesignCss");
 		expect(bootstrap).not.toContain("createCx");
-		expect(readFileSync(join(dir, "src", "pandwind", "css.ts"), "utf8")).toContain(
+		expect(readFileSync(join(dir, "src", "yumcss", "css.ts"), "utf8")).toContain(
 			"export type StyleProps",
 		);
 	});
@@ -647,21 +647,21 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "layout.tsx"), "utf8");
-		expect(output).toContain('from "@/pandwind/stack"');
+		expect(output).toContain('from "@/yumcss/stack"');
 		expect(output).not.toContain("styled-system/jsx");
 		expect(output).toContain('direction="column"');
 		expect(output).toContain('className={css.class({ "paddingInline": "4" })}');
 		expect(output).toContain("paddingInline");
 		expect(output).toContain("</div>");
 		expect(output).not.toContain("<Box");
-		expect(readFileSync(join(dir, "src", "pandwind", "stack.tsx"), "utf8")).toContain(
+		expect(readFileSync(join(dir, "src", "yumcss", "stack.tsx"), "utf8")).toContain(
 			"createStack(css)",
 		);
 	});
@@ -683,10 +683,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "examples.tsx"), "utf8");
@@ -709,10 +709,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		const output = readFileSync(join(dir, "src", "local.tsx"), "utf8");
 		expect(output).not.toMatch(/^\s*\)\s*$/m);
@@ -739,10 +739,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		const output = readFileSync(join(dir, "src", "client.tsx"), "utf8");
 		expect(output).toMatch(/^'use client'\nimport \{ local as local \}/);
@@ -759,10 +759,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		};
 		await runPandaMigration(migration);
 		const once = readFileSync(join(dir, "src", "residual.ts"), "utf8");
@@ -772,11 +772,11 @@ describe("runPandaMigration", () => {
 		expect(report.filesChanged).toBe(0);
 		expect(once).toContain("import { css } from '@/styled-system/css'");
 		expect(once).toContain("css({ color: 'auditUnknown.400' })");
-		expect(once).not.toContain("from '@/pandwind/css'");
-		expect(once).toContain("pandwind:migrate-skip");
+		expect(once).not.toContain("from '@/yumcss/css'");
+		expect(once).toContain("yumcss:migrate-skip");
 		const stylesEntry = readFileSync(join(dir, "src", "main.tsx"), "utf8");
 		expect(stylesEntry).toContain('import "@/styled-system/styles.css";');
-		expect(stylesEntry).toContain('import "pandwind:css";');
+		expect(stylesEntry).toContain('import "yumcss:css";');
 		expect(report.notes).toContain(
 			"kept Panda stylesheet imports because the migration scope does not cover every project source file",
 		);
@@ -785,7 +785,7 @@ describe("runPandaMigration", () => {
 		);
 		expect(once).toMatchInlineSnapshot(`
 			"import { css } from '@/styled-system/css'
-			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			// yumcss:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the YumCSS preset before migration)
 			export const styles = css({ color: 'auditUnknown.400' })"
 		`);
 	});
@@ -795,7 +795,7 @@ describe("runPandaMigration", () => {
 		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
 		writeFileSync(
 			join(dir, "src", "main.tsx"),
-			'import "@/styled-system/styles.css";\nimport "pandwind:css";\n',
+			'import "@/styled-system/styles.css";\nimport "yumcss:css";\n',
 		);
 		writeFileSync(
 			join(dir, "src", "page.tsx"),
@@ -808,30 +808,30 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const stylesEntry = readFileSync(join(dir, "src", "main.tsx"), "utf8");
 		expect(report.cssCallsConverted).toBe(1);
 		expect(report.residualsByKind).toEqual({});
-		expect(stylesEntry.match(/import "pandwind:css";/gu)).toHaveLength(1);
+		expect(stylesEntry.match(/import "yumcss:css";/gu)).toHaveLength(1);
 		expect(stylesEntry).not.toContain("styled-system/styles.css");
 		expect(sideEffectImports(stylesEntry)).toMatchInlineSnapshot(`
 			[
-			  "pandwind:css",
+			  "yumcss:css",
 			]
 		`);
 	});
 
-	it("replaces Panda CSS @import with the Pandwind Vite entry", async () => {
+	it("replaces Panda CSS @import with the YumCSS Vite entry", async () => {
 		const dir = makeProject();
 		rmSync(join(dir, "theme", "recipes", "badge.recipe.ts"), { force: true });
 		writeFileSync(
 			join(dir, "src", "main.tsx"),
-			'// import "pandwind:css";\nimport "./global.css";\n',
+			'// import "yumcss:css";\nimport "./global.css";\n',
 		);
 		writeFileSync(join(dir, "src", "global.css"), '@import "./styled-system/styles.css";\n');
 		writeFileSync(
@@ -845,10 +845,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const globalStylesheet = readFileSync(join(dir, "src", "global.css"), "utf8");
@@ -856,11 +856,11 @@ describe("runPandaMigration", () => {
 		expect(report.cssCallsConverted).toBe(1);
 		expect(report.residualsByKind).toEqual({});
 		expect(globalStylesheet).toBe("\n");
-		expect(main).toContain('// import "pandwind:css";');
+		expect(main).toContain('// import "yumcss:css";');
 		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
 			[
 			  "./global.css",
-			  "pandwind:css",
+			  "yumcss:css",
 			]
 		`);
 	});
@@ -886,10 +886,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const pandaStylesheet = readFileSync(join(dir, "src", "styles", "panda.css"), "utf8");
@@ -900,7 +900,7 @@ describe("runPandaMigration", () => {
 		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
 			[
 			  "./styles/index.css",
-			  "pandwind:css",
+			  "yumcss:css",
 			]
 		`);
 	});
@@ -921,10 +921,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const globalStylesheet = readFileSync(join(dir, "src", "global.css"), "utf8");
@@ -935,7 +935,7 @@ describe("runPandaMigration", () => {
 		expect(sideEffectImports(main)).toMatchInlineSnapshot(`
 			[
 			  "./global.css",
-			  "pandwind:css",
+			  "yumcss:css",
 			]
 		`);
 	});
@@ -956,10 +956,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.{ts,tsx}"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		expect(report.cssCallsConverted).toBe(0);
@@ -984,24 +984,24 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "mixed.ts"), "utf8");
 		expect(report.cssCallsConverted).toBe(1);
 		expect(report.cssCallsFlagged).toBe(1);
 		expect(output).toContain("import { css } from '@/styled-system/css'");
-		expect(output).toContain('import { css as pandwindCss } from "@/pandwind/css";');
-		expect(output).toContain('pandwindCss.class({ color: "rebeccapurple" })');
+		expect(output).toContain('import { css as yumcssCss } from "@/yumcss/css";');
+		expect(output).toContain('yumcssCss.class({ color: "rebeccapurple" })');
 		expect(output).toContain("css({ color: 'auditUnknown.400' })");
 		expect(output).toMatchInlineSnapshot(`
-			"import { css as pandwindCss } from "@/pandwind/css";
+			"import { css as yumcssCss } from "@/yumcss/css";
 			import { css } from '@/styled-system/css'
-			export const known = pandwindCss.class({ color: "rebeccapurple" })
-			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			export const known = yumcssCss.class({ color: "rebeccapurple" })
+			// yumcss:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the YumCSS preset before migration)
 			export const unknown = css({ color: 'auditUnknown.400' })"
 		`);
 	});
@@ -1019,20 +1019,20 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "aliased.ts"), "utf8");
 		expect(report.cssCallsConverted).toBe(1);
 		expect(report.cssCallsFlagged).toBe(0);
-		expect(output).toContain("import { css as pandaCss } from '@/pandwind/css'");
+		expect(output).toContain("import { css as pandaCss } from '@/yumcss/css'");
 		expect(output).toContain('pandaCss.class({ color: "rebeccapurple" })');
-		expect(output).not.toContain("pandwind:migrate-skip");
+		expect(output).not.toContain("yumcss:migrate-skip");
 		expect(output).toMatchInlineSnapshot(`
-			"import { css as pandaCss } from '@/pandwind/css';
+			"import { css as pandaCss } from '@/yumcss/css';
 			export const styles = pandaCss.class({ color: "rebeccapurple" })"
 		`);
 	});
@@ -1057,10 +1057,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "dynamic.ts"), "utf8");
@@ -1072,7 +1072,7 @@ describe("runPandaMigration", () => {
 		expect(report.residualsByKind.dynamic).toBe(1);
 		expect(output).toContain("import { css } from '@/styled-system/css'");
 		expect(output).toContain("css(runtimeStyle)");
-		expect(output).toContain("pandwind:migrate-skip");
+		expect(output).toContain("yumcss:migrate-skip");
 		expect(packageJson.scripts).toEqual({
 			prepare: "panda codegen",
 			prebuild: "pnpm build && panda codegen",
@@ -1083,7 +1083,7 @@ describe("runPandaMigration", () => {
 		expect(output).toMatchInlineSnapshot(`
 			"import { css } from '@/styled-system/css'
 			declare const runtimeStyle: Record<string, string>
-			// pandwind:migrate-skip (non-literal Panda css() call)
+			// yumcss:migrate-skip (non-literal Panda css() call)
 			export const styles = css(runtimeStyle)"
 		`);
 	});
@@ -1102,10 +1102,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "unrelated-css.tsx"), "utf8");
@@ -1114,13 +1114,13 @@ describe("runPandaMigration", () => {
 		expect(report.factoryElementsConverted).toBe(1);
 		expect(output).toContain("import { css } from '@emotion/css'");
 		expect(output).toContain("css({ color: 'rebeccapurple' })");
-		expect(output).toContain('import { css as pandwindCss } from "@/pandwind/css";');
-		expect(output).toContain('className={pandwindCss.class({ "paddingInline": "4" })}');
+		expect(output).toContain('import { css as yumcssCss } from "@/yumcss/css";');
+		expect(output).toContain('className={yumcssCss.class({ "paddingInline": "4" })}');
 		expect(output).toMatchInlineSnapshot(`
-			"import { css as pandwindCss } from "@/pandwind/css";
+			"import { css as yumcssCss } from "@/yumcss/css";
 			import { css } from '@emotion/css'
 			export const styles = css({ color: 'rebeccapurple' })
-			export const App = () => <div className={pandwindCss.class({ "paddingInline": "4" })}/>"
+			export const App = () => <div className={yumcssCss.class({ "paddingInline": "4" })}/>"
 		`);
 	});
 
@@ -1134,10 +1134,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "factory.tsx"), "utf8");
@@ -1145,9 +1145,9 @@ describe("runPandaMigration", () => {
 		expect(report.factoryElementsFlagged).toBe(1);
 		expect(output).toContain('<panda.div color="auditUnknown.400" px="4" />');
 		expect(output).not.toContain("css.class");
-		expect(output).toContain("pandwind:migrate-skip");
+		expect(output).toContain("yumcss:migrate-skip");
 		expect(output).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			"// yumcss:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the YumCSS preset before migration)
 			export const App = () => <panda.div color="auditUnknown.400" px="4" />;"
 		`);
 	});
@@ -1164,10 +1164,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		const output = readFileSync(join(dir, "src", "button.ts"), "utf8");
@@ -1176,10 +1176,10 @@ describe("runPandaMigration", () => {
 		expect(output).toContain("import { cva } from '@/styled-system/css'");
 		expect(output).toContain("const button = cva({ base: { color: 'auditUnknown.400' }");
 		expect(output).toContain("button({ tone: 'quiet' })");
-		expect(output).toContain("pandwind:migrate-skip");
+		expect(output).toContain("yumcss:migrate-skip");
 		expect(output).toMatchInlineSnapshot(`
 			"import { cva } from '@/styled-system/css'
-			// pandwind:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the Pandwind preset before migration)
+			// yumcss:migrate-skip (token "auditUnknown.400" is not in the ingested panda theme; add it to the YumCSS preset before migration)
 			const button = cva({ base: { color: 'auditUnknown.400' }, variants: { tone: { quiet: { color: 'rebeccapurple' } } } })
 			export const buttonClass = button({ tone: 'quiet' })"
 		`);
@@ -1200,20 +1200,20 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		const once = readFileSync(join(dir, "src", "plain.ts"), "utf8");
 		const report = await runPandaMigration({
 			projectRoot: dir,
 			patterns: ["src/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		const twice = readFileSync(join(dir, "src", "plain.ts"), "utf8");
 		expect(twice).toBe(once);
@@ -1235,11 +1235,11 @@ describe("runPandaMigration", () => {
 		writeFileSync(
 			join(dir, "next.config.mjs"),
 			[
-				'import { pandwindWebpackCss } from "pandwind/unplugin";',
-				'import { preset } from "./src/pandwind/preset.ts";',
+				'import { yumcssWebpackCss } from "yumcss/unplugin";',
+				'import { preset } from "./src/yumcss/preset.ts";',
 				"export default {",
 				"\twebpack(config) {",
-				'\t\tconfig.plugins.push(pandwindWebpackCss({ preset, virtualId: "pandwind-css.css" }));',
+				'\t\tconfig.plugins.push(yumcssWebpackCss({ preset, virtualId: "yumcss-css.css" }));',
 				"\t\treturn config;",
 				"\t},",
 				"};",
@@ -1255,20 +1255,20 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["**/*.tsx", "theme/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		expect(readFileSync(join(dir, "next.config.mjs"), "utf8")).toContain(
-			'virtualId: "pandwind-css.css"',
+			'virtualId: "yumcss-css.css"',
 		);
 		expect(readFileSync(join(dir, "app", "layout.tsx"), "utf8")).toBe(
-			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
+			'import "yumcss-css.css";\nexport default function Layout() { return null; }\n',
 		);
-		expect(readFileSync(join(dir, "src", "pandwind", "virtual.d.ts"), "utf8")).toContain(
-			'declare module "pandwind-css.css"',
+		expect(readFileSync(join(dir, "src", "yumcss", "virtual.d.ts"), "utf8")).toContain(
+			'declare module "yumcss-css.css"',
 		);
 		const packageJson = JSON.parse(readFileSync(join(dir, "package.json"), "utf8")) as {
 			scripts: Record<string, string>;
@@ -1291,34 +1291,34 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["app/**/*.tsx"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 			packageJson: { dependencies: { next: "15.0.0" } },
 		});
 
 		const nextConfig = readFileSync(join(dir, "next.config.mjs"), "utf8");
 		const layout = readFileSync(join(dir, "app", "layout.tsx"), "utf8");
-		const runtimePreset = readFileSync(join(dir, "src", "pandwind", "preset.mjs"), "utf8");
+		const runtimePreset = readFileSync(join(dir, "src", "yumcss", "preset.mjs"), "utf8");
 		expect(report.residualsByKind).toEqual({});
-		expect(report.emittedModules).toContain("src/pandwind/preset.mjs");
-		expect(nextConfig).toContain('from "./src/pandwind/preset.mjs"');
-		expect(nextConfig).toContain("pandwindWebpackCss");
+		expect(report.emittedModules).toContain("src/yumcss/preset.mjs");
+		expect(nextConfig).toContain('from "./src/yumcss/preset.mjs"');
+		expect(nextConfig).toContain("yumcssWebpackCss");
 		expect(layout).toBe(
-			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
+			'import "yumcss-css.css";\nexport default function Layout() { return null; }\n',
 		);
-		expect(runtimePreset).toContain('import { define } from "pandwind/preset";');
-		expect(runtimePreset).not.toContain("PandwindProperties");
+		expect(runtimePreset).toContain('import { define } from "yumcss/preset";');
+		expect(runtimePreset).not.toContain("YumCSSProperties");
 		expect(runtimePreset).not.toContain(" as const");
 		expect(nextConfig).toMatchInlineSnapshot(`
-			"import { pandwindWebpackCss } from "pandwind/unplugin";
-			import { preset } from "./src/pandwind/preset.mjs";
+			"import { yumcssWebpackCss } from "yumcss/unplugin";
+			import { preset } from "./src/yumcss/preset.mjs";
 
 			const config = {
 				webpack(config) {
 					config.plugins.push(
-						pandwindWebpackCss({ preset: preset, root: process.cwd(), virtualId: "pandwind-css.css" })
+						yumcssWebpackCss({ preset: preset, root: process.cwd(), virtualId: "yumcss-css.css" })
 					);
 					return config;
 				},
@@ -1343,10 +1343,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["src/unhosted.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 
 		expect(report.cssCallsConverted).toBe(0);
@@ -1369,10 +1369,10 @@ describe("runPandaMigration", () => {
 			projectRoot: dir,
 			patterns: ["theme/**/*.ts"],
 			meta,
-			outDirName: "pandwind",
+			outDirName: "yumcss",
 			write: true,
 			diff: false,
-			skipMarker: "pandwind:migrate-skip",
+			skipMarker: "yumcss:migrate-skip",
 		});
 		const output = readFileSync(join(dir, "theme", "text-styles.ts"), "utf8");
 		expect(output).not.toContain("defineTextStyles");

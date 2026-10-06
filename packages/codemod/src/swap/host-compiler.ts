@@ -1,5 +1,5 @@
-import { foldStackElements } from "pandwind/vite/stack-fold";
-import { stackClasses, type StackProps } from "pandwind/stack";
+import { foldStackElements } from "yumcss/vite/stack-fold";
+import { stackClasses, type StackProps } from "yumcss/stack";
 import {
 	HOST_FRAMEWORK_REGISTRY,
 	BuiltinHostFramework,
@@ -8,7 +8,7 @@ import {
 } from "./host-adapters.ts";
 
 /** Versioned boundary for framework-native compiler integrations. */
-export const HOST_COMPILER_SCHEMA = "pandwind.host-compiler/1" as const;
+export const HOST_COMPILER_SCHEMA = "yumcss.host-compiler/1" as const;
 
 export interface HostCompilerDiagnostic {
 	readonly severity: "warning" | "error";
@@ -90,7 +90,7 @@ export function createHostCompilerPlugin(framework: HostFramework): HostCompiler
 	if (host === undefined) throw new Error(`unknown host framework: ${framework}`);
 	return {
 		schema: HOST_COMPILER_SCHEMA,
-		name: `pandwind-host-${framework}`,
+		name: `yumcss-host-${framework}`,
 		framework,
 		extensions: host.extensions,
 		detect(file, source) {
@@ -107,7 +107,7 @@ export function createHostCompilerPlugin(framework: HostFramework): HostCompiler
 			return {
 				code: source,
 				changed: false,
-				diagnostics: source.includes("pandwind/stack")
+				diagnostics: source.includes("yumcss/stack")
 					? [
 							{
 								severity: "warning",

@@ -15,7 +15,7 @@ const target = (
 	adapter: string,
 	capabilities: Partial<Record<AdapterCapabilityTag, AdapterCapabilityLevelTag>>,
 ) => ({
-	schema: "pandwind.adapter-capabilities/1" as const,
+	schema: "yumcss.adapter-capabilities/1" as const,
 	adapter,
 	capabilities,
 });
@@ -87,7 +87,7 @@ describe("StyleProgram lowering plans", () => {
 			      },
 			    ],
 			    "runtime": undefined,
-			    "schema": "pandwind.style-program/1",
+			    "schema": "yumcss.style-program/1",
 			    "source": undefined,
 			    "sourceMap": [],
 			    "themes": undefined,
@@ -118,13 +118,13 @@ describe("StyleProgram lowering plans", () => {
 		expect(plan.program.declarations[0]?.value).toMatchInlineSnapshot(`
 			{
 			  "kind": "literal",
-			  "value": "var(--pandwind-dynamic-lod0xs)",
+			  "value": "var(--yumcss-dynamic-lod0xs)",
 			}
 		`);
 		expect(plan.residuals).toMatchInlineSnapshot(`
 			[
 			  {
-			    "hint": "bind --pandwind-dynamic-lod0xs at runtime for target custom-property-target",
+			    "hint": "bind --yumcss-dynamic-lod0xs at runtime for target custom-property-target",
 			    "kind": "dynamic-custom-property",
 			    "text": "props.color",
 			  },

@@ -42,7 +42,7 @@ test("unocss -> react-strict-dom -> unocss: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> react-strict-dom -> unocss: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css, html } from "react-strict-dom";
 		export const App = () => <html.div style={css.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style} />;",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("unocss -> react-strict-dom -> unocss: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css, html } from "react-strict-dom";
 		export const App = () => <html.div style={css.create({ style: { "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } } }).style} />;",
 		    "converted": 0,

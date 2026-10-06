@@ -42,7 +42,7 @@ test("fela -> react-strict-dom -> fela: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -144,7 +144,7 @@ test("fela -> react-strict-dom -> fela: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("fela -> react-strict-dom -> fela: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],

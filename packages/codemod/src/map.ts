@@ -1,5 +1,5 @@
 /**
- * Core migration engine: maps raw Tailwind class tokens onto pandwind APIs.
+ * Core migration engine: maps raw Tailwind class tokens onto yumcss APIs.
  *
  * Disambiguation of overloaded utilities is driven entirely by the generated
  * conflict map: `conflicts[prefix][value]` yields the CSS properties the
@@ -7,7 +7,7 @@
  * those properties wins (`text` + ["color"] -> textColor,
  * `bg` + ["background-image"] -> bgImage). Deterministic, no guessing.
  */
-import type { PandwindMeta } from "./meta.ts";
+import type { YumCSSMeta } from "./meta.ts";
 import { parseToken, tokenizeClassList, type ParsedToken } from "./tokens.ts";
 
 export interface MappedToken {
@@ -31,7 +31,7 @@ const lastSegment = (prop: string): string => prop.split("-").pop() ?? prop;
 
 /**
  * Tailwind's direction utilities only set `flex-direction`. The typed
- * Pandwind `flex` key also emits `display: flex` for these values, so using
+ * YumCSS `flex` key also emits `display: flex` for these values, so using
  * it as a direct migration target can change `hidden flex-row` into visible
  * content. Keep the original utility as a lossless residual instead.
  */
@@ -42,7 +42,7 @@ const FLEX_DIRECTION_VALUES = new Set(["col", "row", "col-reverse", "row-reverse
  * conflict map: score = how many props' last segment appear in the key name
  * (case-insensitive). Ties resolve by interface order (first wins).
  */
-function pickKey(meta: PandwindMeta, prefix: string, props: string[]): { key: string } | null {
+function pickKey(meta: YumCSSMeta, prefix: string, props: string[]): { key: string } | null {
 	const candidates = meta.keysByBase.get(prefix);
 	if (candidates === undefined || candidates.length === 0) return null;
 	if (candidates.length === 1) return { key: candidates[0]!.key };
@@ -61,13 +61,13 @@ function pickKey(meta: PandwindMeta, prefix: string, props: string[]): { key: st
 }
 
 /** Map one raw class token onto a typed tw() entry — or explain why not. */
-export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
+export function mapToken(raw: string, meta: YumCSSMeta): MappedToken | null {
 	const parsed: ParsedToken | null = parseToken(raw, meta);
 	if (parsed === null) return null;
 	const { prefix, value } = parsed;
 	if (prefix === "flex" && FLEX_DIRECTION_VALUES.has(value)) return null;
 
-	// `not-*` is a Tailwind variant family, not a Pandwind utility. Treating
+	// `not-*` is a Tailwind variant family, not a YumCSS utility. Treating
 	// the generated `not` helper key as a normal utility drops the negation
 	// and emits the opposite selector. Preserve the source token instead.
 	if (prefix === "not") return null;
@@ -96,7 +96,7 @@ export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
 	return { raw, variants: parsed.variants, key: picked.key, value: emittedValue };
 }
 
-export function mapClassList(classString: string, meta: PandwindMeta): MapOutcome {
+export function mapClassList(classString: string, meta: YumCSSMeta): MapOutcome {
 	const mapped: MappedToken[] = [];
 	const unmapped: Array<{ raw: string; reason: string }> = [];
 	for (const token of tokenizeClassList(classString)) {

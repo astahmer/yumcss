@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	createChakraAdapter,
 	createPandaAdapter,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTokenamiAdapter,
 	runAdapterMigrationAsync,
@@ -316,7 +316,7 @@ describe("effective ecosystem configuration", () => {
 export const Button = () => <styled.button brandShadow="soft" data-testid="button" />;`;
 		const result = await runAdapterMigrationAsync(source, {
 			from: "panda",
-			to: "pandwind",
+			to: "yumcss",
 			file: "src/Button.tsx",
 			root: "/project",
 			adapterRegistry: createStyleAdapterRegistry([
@@ -332,7 +332,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 						},
 					},
 				}),
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 			readFile: (file) => {
 				if (file.endsWith("panda.config.ts")) return "export default {};";
@@ -347,7 +347,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 		expect(result.code).toContain('brandShadow: "soft"');
 		expect(result.code).toContain('data-testid="button"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Button = () => <button data-testid="button" className={css.class({ brandShadow: "soft" })} />;"
 		`);
@@ -517,7 +517,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 			    },
 			  ],
 			  "runtime": undefined,
-			  "schema": "pandwind.style-program/1",
+			  "schema": "yumcss.style-program/1",
 			  "source": {
 			    "adapter": "chakra-ui",
 			    "file": "src/App.tsx",
@@ -625,12 +625,12 @@ export const App = () => <kbd className={styles.kbd} />;`;
 		};
 		const result = await runAdapterMigrationAsync(source, {
 			from: "panda",
-			to: "pandwind",
+			to: "yumcss",
 			file: "src/App.tsx",
 			root: "/project",
 			adapterRegistry: createStyleAdapterRegistry([
 				createPandaAdapter({ moduleLoader: loader }),
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 			readFile: (file) => (file.endsWith("panda.config.ts") ? "export default {};" : undefined),
 			listFiles: () => ["/project/panda.config.ts"],

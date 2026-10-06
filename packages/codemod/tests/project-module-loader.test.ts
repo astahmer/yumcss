@@ -6,7 +6,7 @@ import { NodeProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
 describe("NodeProjectModuleLoader", () => {
 	test("resolves an official package nested under a declared dependency", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-project-loader-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-project-loader-"));
 		try {
 			writeFileSync(
 				join(root, "package.json"),
@@ -41,7 +41,7 @@ describe("NodeProjectModuleLoader", () => {
 	});
 
 	test("treats an optional package with an unusable exports map as unavailable", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-project-loader-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-project-loader-"));
 		try {
 			writeFileSync(
 				join(root, "package.json"),
@@ -72,7 +72,7 @@ describe("NodeProjectModuleLoader", () => {
 	});
 
 	test("treats a missing project file as unavailable", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-project-loader-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-project-loader-"));
 		try {
 			const module = await new NodeProjectModuleLoader().importFile<{ value: string }>(
 				join(root, "src/theme.ts"),

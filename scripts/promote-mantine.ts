@@ -3,9 +3,10 @@
  * boundary. Mantine provider/theme APIs remain separate residual territory;
  * this runner covers the static Box style-prop lane.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -26,8 +27,8 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const mantineReferenceRoot = createReferenceWorkspace().path("mantine");
 const referenceCommit = "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8";
 const referencePath = "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx";
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@mantine/core": "9.5.2",
 	"@types/node": "26.4.1",
@@ -35,7 +36,7 @@ const versions = {
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "7.0.2",
@@ -76,7 +77,7 @@ interface MantineInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Mantine;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly referenceCommit: string;
 	readonly referencePath: string;
@@ -136,7 +137,7 @@ const assertPinnedReference = (): void => {
 };
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-mantine-target" : "mantine-installed-source",
+	name: target ? "yumcss-mantine-target" : "mantine-installed-source",
 	private: true,
 	type: "module",
 	scripts: {
@@ -145,7 +146,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 		typecheck: "tsc --noEmit",
 	},
 	dependencies: target
-		? { pandwind: versions.pandwind, react: versions.react, "react-dom": versions["react-dom"] }
+		? { yumcss: versions.yumcss, react: versions.react, "react-dom": versions["react-dom"] }
 		: {
 				"@mantine/core": versions["@mantine/core"],
 				react: versions.react,
@@ -229,7 +230,7 @@ const proofIsComplete = (report: MantineInstalledProof): boolean =>
 export async function runMantineInstalledProof(): Promise<MantineInstalledProof> {
 	assertPinnedReference();
 	return withInstalledProofProject(
-		"pandwind-mantine-installed-",
+		"yumcss-mantine-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			writeFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -247,13 +248,13 @@ export async function runMantineInstalledProof(): Promise<MantineInstalledProof>
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						CodemodAdapterId.Mantine,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -292,7 +293,7 @@ export async function runMantineInstalledProof(): Promise<MantineInstalledProof>
 			const targetCss = generatedCss(targetRoot);
 			const report: MantineInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Mantine, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Mantine, to: CodemodAdapterId.YumCSS },
 				referenceCommit,
 				referencePath,
 				fixture: {
@@ -301,8 +302,8 @@ export async function runMantineInstalledProof(): Promise<MantineInstalledProof>
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@mantine/core"),
-					targetPackage: versions.pandwind,
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
@@ -325,7 +326,7 @@ export async function runMantineInstalledProof(): Promise<MantineInstalledProof>
 				css: {
 					sourceBytes: Buffer.byteLength(sourceCss),
 					targetBytes: Buffer.byteLength(targetCss),
-					note: "Mantine source bytes are its bundled stylesheet while the static Pandwind projection uses atomic class CSS. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget.",
+					note: "Mantine source bytes are its bundled stylesheet while the static YumCSS projection uses atomic class CSS. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget.",
 				},
 			};
 			if (!proofIsComplete(report))

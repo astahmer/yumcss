@@ -1,6 +1,6 @@
-import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, type OxcNode, walkWithParent } from "pandwind/tw/literal";
+import { computeExcludedRanges as scanExcludedRanges } from "yumcss/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, type OxcNode, walkWithParent } from "yumcss/tw/literal";
 import { MagicString } from "magic-string";
 
 export type SourceEdit = { readonly start: number; readonly end: number; readonly text: string };

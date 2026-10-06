@@ -42,7 +42,7 @@ test("emotion -> sass -> emotion: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "emotion -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("emotion -> sass -> emotion: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("emotion -> sass -> emotion: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("emotion -> sass -> emotion: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("emotion -> sass -> emotion: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("emotion -> sass -> emotion: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("emotion -> sass -> emotion: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("emotion -> sass -> emotion: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: emotion -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

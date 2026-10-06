@@ -5,7 +5,7 @@ import {
 	createChakraAdapter,
 	createMantineAdapter,
 	createMuiAdapter,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createBuiltinCodemodCatalog,
 	createTailwindAdapter,
@@ -195,7 +195,7 @@ describe("official project-context loaders", () => {
 export const App = () => <Box sx={{ padding: 2 }} />;`;
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Mui,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/App.tsx",
 			root: "/project",
 			readFile: (file) =>
@@ -215,10 +215,10 @@ export const App = () => <Box sx={{ padding: 2 }} />;`;
 			]),
 		);
 		expect(result.skipped).toBe(1);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("sx={{ padding: 2 }}");
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (configuration-residual: configuration)
+			"// yumcss:migrate-skip (configuration-residual: configuration)
 			import { Box } from "@mui/material";
 			export const App = () => <Box sx={{ padding: 2 }} />;"
 		`);
@@ -276,22 +276,22 @@ export const App = () => <Box sx={{ padding: 2 }} />;`;
 		const source = ".card { color: red; }";
 		const catalog = createBuiltinCodemodCatalog();
 		const authoredCss = catalog.registry.get(CodemodAdapterId.AuthoredCss)!;
-		const pandwind = createPandwindAdapter();
+		const yumcss = createYumCSSAdapter();
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.AuthoredCss,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "styles.css",
 			adapterRegistry: createStyleAdapterRegistry([
 				authoredCss,
 				{
-					...pandwind,
+					...yumcss,
 					async loadConfigAsync(context) {
 						return {
-							...pandwind.loadConfig(context),
+							...yumcss.loadConfig(context),
 							residuals: [
 								{
 									kind: StyleProgramResidualKindTag.Configuration,
-									text: "Pandwind project configuration",
+									text: "YumCSS project configuration",
 									hint: "configuration evidence is unavailable",
 								},
 							],
@@ -303,7 +303,7 @@ export const App = () => <Box sx={{ padding: 2 }} />;`;
 		});
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toMatch(/^\/\* pandwind:migrate-skip /u);
+		expect(result.code).toMatch(/^\/\* yumcss:migrate-skip /u);
 		expect(result.code).toContain(source);
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([

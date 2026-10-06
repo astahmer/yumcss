@@ -20,19 +20,19 @@ export interface OfficialApiCase {
 export function officialApiCases(): readonly OfficialApiCase[] {
 	return [
 		{
-			adapter: CodemodAdapterId.Pandwind,
+			adapter: CodemodAdapterId.YumCSS,
 			name: "css.class object",
 			file: "styles.ts",
 			source:
-				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: "red", padding: "1rem" });',
+				'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: "red", padding: "1rem" });',
 			documentation: "/api/css/",
 		},
 		{
-			adapter: CodemodAdapterId.Pandwind,
+			adapter: CodemodAdapterId.YumCSS,
 			name: "css.vars object",
 			file: "styles.ts",
 			source:
-				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.vars({ color: "var(--card-color)" });',
+				'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const card = css.vars({ color: "var(--card-color)" });',
 			documentation: "/api/css/",
 		},
 		{
@@ -301,12 +301,12 @@ export interface OfficialApiFamilyCase {
 export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 	return [
 		{
-			adapter: CodemodAdapterId.Pandwind,
+			adapter: CodemodAdapterId.YumCSS,
 			name: "css.group named map",
 			expectation: "identity",
 			file: "styles.ts",
 			source:
-				'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
+				'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
 		},
 		{
 			adapter: CodemodAdapterId.Panda,

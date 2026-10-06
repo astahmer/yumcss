@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";
 
 const codemodPackageDir = dirname(
-	createRequire(import.meta.url).resolve("pandwind-codemod/package.json"),
+	createRequire(import.meta.url).resolve("@yumcss/codemod/package.json"),
 );
 
 export default defineConfig({
@@ -13,15 +13,15 @@ export default defineConfig({
 		exclude: ["e2e/**", "node_modules/**", "dist/**"],
 	},
 	resolve: {
-		conditions: ["pandwind"],
+		conditions: ["yumcss"],
 		alias: {
-			// Mirror the vite alias: the package "pandwind" export condition is
+			// Mirror the vite alias: the package "yumcss" export condition is
 			// not active under vitest, so resolve the scenario catalog to source.
-			"pandwind-codemod/swap/official-api-cases": join(
+			"@yumcss/codemod/swap/official-api-cases": join(
 				codemodPackageDir,
 				"src/swap/official-api-cases.ts",
 			),
-			"pandwind-codemod/swap/browser": join(codemodPackageDir, "src/swap/browser.ts"),
+			"@yumcss/codemod/swap/browser": join(codemodPackageDir, "src/swap/browser.ts"),
 		},
 	},
 });

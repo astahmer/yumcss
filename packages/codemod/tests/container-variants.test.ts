@@ -2,7 +2,7 @@
  * Container-query variants — end-to-end audit proofs.
  *
  * Verifies (against the REAL Tailwind compiler) that @container variants
- * work through every pandwind layer without special-casing:
+ * work through every yumcss layer without special-casing:
  * 1. typegen exposes the functional forms (`@`, `@min`, `@max`) as variants;
  * 2. tw() emits correct escaped classes for nested container keys
  *    (`{"@md": {...}}` -> `@md\:p-4`);
@@ -15,9 +15,9 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
-import { extractTwConfigFromSources } from "pandwind/vite/inline";
-import { createTw } from "pandwind/tw";
-import { createCx } from "pandwind/cx";
+import { extractTwConfigFromSources } from "yumcss/vite/inline";
+import { createTw } from "yumcss/tw";
+import { createCx } from "yumcss/cx";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
 
 const CSS = `@import "tailwindcss";

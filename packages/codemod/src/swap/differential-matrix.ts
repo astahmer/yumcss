@@ -6,11 +6,11 @@ import {
 	type DifferentialResult,
 } from "./differential.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
-import { createRuntimeSheet, type RuntimeSemanticRule } from "pandwind/css/runtime";
+import { createRuntimeSheet, type RuntimeSemanticRule } from "yumcss/css/runtime";
 import { DifferentialExpectedTag, DifferentialProofMode } from "./identifiers.ts";
 
 /** Versioned acceptance matrix for adapter-pair proof, not just unit fixtures. */
-export const DIFFERENTIAL_MATRIX_SCHEMA = "pandwind.differential-matrix/1" as const;
+export const DIFFERENTIAL_MATRIX_SCHEMA = "yumcss.differential-matrix/1" as const;
 
 export interface DifferentialMatrixCase {
 	readonly id: string;

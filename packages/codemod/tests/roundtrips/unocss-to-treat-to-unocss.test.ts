@@ -42,7 +42,7 @@ test("unocss -> treat -> unocss: preserves an actionable concrete round trip", a
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> treat round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("unocss -> treat -> unocss: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("unocss -> treat -> unocss: preserves an actionable concrete round trip", a
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("unocss -> treat -> unocss: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("unocss -> treat -> unocss: retains the documented secondary API without si
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,7 +195,7 @@ test("unocss -> treat -> unocss: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -231,7 +231,7 @@ test("unocss -> treat -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -246,7 +246,7 @@ test("unocss -> treat -> unocss: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -282,7 +282,7 @@ test("unocss -> treat -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -312,7 +312,7 @@ test("unocss -> treat -> unocss: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -348,7 +348,7 @@ test("unocss -> treat -> unocss: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

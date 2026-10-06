@@ -11,8 +11,8 @@ const createRuntime = (): CompilerPreviewRuntime => ({
 	info: {
 		root: "/project",
 		viteVersion: "8.2.2",
-		plugins: ["pandwind:css"],
-		pandwindPlugins: ["pandwind:css"],
+		plugins: ["yumcss:css"],
+		yumcssPlugins: ["yumcss:css"],
 	},
 	files: () => [{ path: "src/Card.tsx", bytes: 31 }],
 	read: (file) => ({ file, source: "export const card = 'source';", sourceBytes: 31 }),
@@ -45,7 +45,7 @@ describe("createCompilerPreviewApp", () => {
 		const queryToken = await handle.app.request(`/api/compiler-preview/files?token=${token}`);
 		expect(queryToken.status).toBe(401);
 
-		const headers = { "x-pandwind-compiler-preview-token": token };
+		const headers = { "x-yumcss-compiler-preview-token": token };
 		const files = await handle.app.request("/api/compiler-preview/files", { headers });
 		expect(files.status).toBe(200);
 		expect(await files.json()).toEqual([{ path: "src/Card.tsx", bytes: 31 }]);
@@ -69,7 +69,7 @@ describe("createCompilerPreviewApp", () => {
 		});
 
 		const page = await handle.app.request("/", {
-			headers: { "x-pandwind-compiler-preview-token": token },
+			headers: { "x-yumcss-compiler-preview-token": token },
 		});
 		expect(page.status).toBe(200);
 		expect(page.headers.get("referrer-policy")).toBe("no-referrer");
@@ -99,7 +99,7 @@ describe("createCompilerPreviewApp", () => {
 		const response = await handle.app.request(
 			"/api/compiler-preview/transform?file=src%2FCard.tsx",
 			{
-				headers: { "x-pandwind-compiler-preview-token": token },
+				headers: { "x-yumcss-compiler-preview-token": token },
 			},
 		);
 		expect(response.status).toBe(422);

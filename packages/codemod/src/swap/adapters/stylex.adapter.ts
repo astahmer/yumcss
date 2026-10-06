@@ -16,9 +16,9 @@ import {
 	SourceBindings,
 	type SourceBinding,
 	type SourceBindingIndex,
-} from "pandwind/source";
+} from "yumcss/source";
 import { SourcePass } from "../../source-pass-utils.ts";
-import { NodeKind, walk, type OxcNode } from "pandwind/tw/literal";
+import { NodeKind, walk, type OxcNode } from "yumcss/tw/literal";
 import { parseObjectLiteral } from "../parse.ts";
 import {
 	CodemodAdapterId,
@@ -483,7 +483,7 @@ function stylexComponentEmission(
 
 function staticImports(binding: string): readonly string[] {
 	return [
-		'import { createUnsafeCss } from "pandwind/unsafe/css";',
+		'import { createUnsafeCss } from "yumcss/unsafe/css";',
 		`const ${binding} = createUnsafeCss();`,
 	];
 }
@@ -519,7 +519,7 @@ function moveStyleAfterPropsSpread(code: string, binding: string): string {
 
 /**
  * JSX applies later attributes after object spreads. StyleX's transform merges
- * its generated class with an existing `className`; a plain Pandwind spread
+ * its generated class with an existing `className`; a plain YumCSS spread
  * would otherwise be overwritten by the later attribute. Keep that host
  * contract explicit in the migrated source so CSS-module and user classes
  * remain additive.
@@ -608,7 +608,7 @@ function isRuntimeStyleXCarrier(expression: string): boolean {
 }
 
 function rewriteStaticXstyleHosts(source: string, binding: string): string {
-	const excluded = SourcePass.computeExcludedRanges(source, "pandwind-stylex-hosts.tsx");
+	const excluded = SourcePass.computeExcludedRanges(source, "yumcss-stylex-hosts.tsx");
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	for (const match of source.matchAll(/\bxstyle\s*=\s*\{/g)) {
 		const attributeStart = match.index ?? 0;
@@ -1602,7 +1602,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				const escapedBinding = binding === undefined ? undefined : escapeRegExp(binding);
 				return {
 					handled:
-						targetId === CodemodAdapterId.Pandwind &&
+						targetId === CodemodAdapterId.YumCSS &&
 						binding !== undefined &&
 						(stylexMethodReferences(sourceBindings, "props").some((callee) =>
 							new RegExp(
@@ -1627,7 +1627,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				// file remains partial; leaving `stylex.props(staticGroup)` in place
 				// would type-check against the wrong compiled-style contract and would
 				// make the static portion depend on the source runtime.
-				if (targetId !== CodemodAdapterId.Pandwind) {
+				if (targetId !== CodemodAdapterId.YumCSS) {
 					const repeatedPropsResiduals = repeatedStylexPropsSpreadResiduals(
 						code,
 						source,
@@ -1670,7 +1670,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				const sourceBindings = stylexBindingsFromSource(source, file);
 				const cssBinding = generatedCssBinding(source);
 				// StyleX permits runtime-generated selector keys such as
-				// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
+				// `Object.fromEntries([`:nth-child(...)`, value])`; YumCSS's
 				// self-selector dialect needs the explicit `&` prefix.
 				rewritten = rewritten.replace(
 					/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=(?:[:.]|\u005b))/g,
@@ -1731,7 +1731,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				rewritten = moveStyleAfterPropsSpread(rewritten, cssBinding);
 				rewritten = mergeClassNameAfterPropsSpread(rewritten, cssBinding);
 				// Some StyleX host components pass `xstyle` through StyleX's runtime
-				// `stylex.props` implementation. A compiled Pandwind group is static,
+				// `stylex.props` implementation. A compiled YumCSS group is static,
 				// but that host port does not know how to consume its class map. Move
 				// static carriers to the universal React className port at the adapter
 				// boundary; leave dynamic carriers on xstyle for their residual path.

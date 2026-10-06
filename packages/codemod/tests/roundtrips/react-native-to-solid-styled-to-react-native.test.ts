@@ -42,7 +42,7 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);

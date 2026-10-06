@@ -30,7 +30,7 @@ type WorkloadResult = {
 };
 
 type Snapshot = {
-	schema: "pandwind.styling-tsc/1";
+	schema: "yumcss.styling-tsc/1";
 	source: "runner/generate-fixtures.mts";
 	updatedAt: string;
 	samples: number;
@@ -43,7 +43,7 @@ type Snapshot = {
 	packages: Record<string, string>;
 	workloads: WorkloadResult[];
 	tolerances: {
-		pandwind: {
+		yumcss: {
 			instantiations: number;
 			memoryUsedKiB: number;
 			checkTimeSeconds: number;
@@ -64,7 +64,7 @@ const benchmarkRoot = resolve(root, "benchmarks/styling-tsc");
 const generatedRoot = resolve(benchmarkRoot, ".generated");
 const snapshotPath = resolve(benchmarkRoot, "snapshots/tsc.json");
 const reportPath = resolve(benchmarkRoot, "snapshots/tsc.md");
-const benchmarkPackageName = "pandwind-styling-tsc-benchmark";
+const benchmarkPackageName = "yumcss-styling-tsc-benchmark";
 const tscArguments = ["exec", "tsc", "--noEmit", "--extendedDiagnostics", "--pretty", "false"];
 
 const parseOptions = (argumentsList: readonly string[]): Options => {
@@ -188,13 +188,13 @@ const runPandaCodegen = (scenario: Scenario): void => {
 	]);
 };
 
-const runPandwindCodegen = (scenario: Scenario): void => {
-	const projectRoot = resolve(generatedRoot, "pandwind-generated", scenario);
+const runYumCSSCodegen = (scenario: Scenario): void => {
+	const projectRoot = resolve(generatedRoot, "yumcss-generated", scenario);
 	runCommand([
 		"--filter",
 		benchmarkPackageName,
 		"exec",
-		"pandwind-codemod",
+		"yumcss-codemod",
 		"css",
 		"generate",
 		projectRoot,
@@ -268,7 +268,7 @@ const loadPackageVersions = (): Record<string, string> => {
 		"goober",
 		"jss",
 		"next-yak",
-		"pandwind",
+		"yumcss",
 		"react",
 		"react-jss",
 		"react-strict-dom",
@@ -314,7 +314,7 @@ const buildSnapshot = (
 		) ?? [];
 
 	return {
-		schema: "pandwind.styling-tsc/1",
+		schema: "yumcss.styling-tsc/1",
 		source: "runner/generate-fixtures.mts",
 		updatedAt: new Date().toISOString().slice(0, 10),
 		samples,
@@ -330,7 +330,7 @@ const buildSnapshot = (
 				left.scenario.localeCompare(right.scenario) || left.library.localeCompare(right.library),
 		),
 		tolerances: {
-			pandwind: {
+			yumcss: {
 				instantiations: 0.1,
 				memoryUsedKiB: 0.1,
 				checkTimeSeconds: 0.5,
@@ -348,7 +348,7 @@ const assertNoRegression = (
 	const previousByKey = new Map(
 		previous.workloads.map((workload) => [workload.library + ":" + workload.scenario, workload]),
 	);
-	const tolerance = previous.tolerances.pandwind;
+	const tolerance = previous.tolerances.yumcss;
 	const failures: string[] = [];
 	if (previous.environment.typescript !== typescript) {
 		throw new Error(
@@ -365,13 +365,13 @@ const assertNoRegression = (
 		previous.environment.node === process.version;
 
 	for (const workload of measured) {
-		if (workload.library !== "pandwind" && workload.library !== "pandwind-generated") {
+		if (workload.library !== "yumcss" && workload.library !== "yumcss-generated") {
 			continue;
 		}
 		const baseline = previousByKey.get(workload.library + ":" + workload.scenario);
 		if (!baseline) {
 			throw new Error(
-				"Missing Pandwind baseline for " + workload.scenario + "; run with --update first",
+				"Missing YumCSS baseline for " + workload.scenario + "; run with --update first",
 			);
 		}
 		const checks: [keyof Metrics, number][] = [["instantiations", tolerance.instantiations]];
@@ -404,7 +404,7 @@ const assertNoRegression = (
 
 	if (failures.length > 0) {
 		throw new Error(
-			"Pandwind styling tsc regression detected:\n- " +
+			"YumCSS styling tsc regression detected:\n- " +
 				failures.join("\n- ") +
 				"\nUpdate intentionally with --update after reviewing the change.",
 		);
@@ -460,7 +460,7 @@ const renderReport = (snapshot: Snapshot): string => {
 			snapshot.environment.typescript +
 			". Each row records the median of its fresh tsc processes.",
 		"",
-		"Pandwind workloads are regression-checked. Competitor results are " +
+		"YumCSS workloads are regression-checked. Competitor results are " +
 			"descriptive and are not CI gates because their generated artifacts " +
 			"and dependency graphs can change independently.",
 		"",
@@ -520,9 +520,9 @@ const main = (): void => {
 			runPandaCodegen(scenario);
 		}
 	}
-	if (selectedLibraries.includes("pandwind-generated")) {
+	if (selectedLibraries.includes("yumcss-generated")) {
 		for (const scenario of selectedScenarios) {
-			runPandwindCodegen(scenario);
+			runYumCSSCodegen(scenario);
 		}
 	}
 

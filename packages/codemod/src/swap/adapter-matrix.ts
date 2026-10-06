@@ -4,7 +4,7 @@ import { runAdapterMigration } from "./adapter-migration.ts";
 import type { AdapterMigrationResult } from "./adapter-migration-contract.ts";
 
 /** Versioned contract for the complete registered source/target route matrix. */
-export const ADAPTER_MATRIX_SCHEMA = "pandwind.adapter-matrix/1" as const;
+export const ADAPTER_MATRIX_SCHEMA = "yumcss.adapter-matrix/1" as const;
 
 export type AdapterMatrixScenario = "happy" | "edge" | "malformed";
 
@@ -69,7 +69,7 @@ function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFai
 	if (
 		result.skipped > 0 &&
 		unpreservedResiduals.length > 0 &&
-		!result.code.includes("pandwind:migrate-skip")
+		!result.code.includes("yumcss:migrate-skip")
 	)
 		failures.push({
 			...route,
@@ -81,7 +81,7 @@ function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFai
 		!result.validations.every((item) => item.valid)
 	)
 		failures.push({ ...route, reason: "clean conversion has invalid semantic validation" });
-	if (result.code.includes("pandwind:migrate-skip")) {
+	if (result.code.includes("yumcss:migrate-skip")) {
 		if (!typedMarker.test(result.code))
 			failures.push({ ...route, reason: "skip marker has no typed semantic cause" });
 	}

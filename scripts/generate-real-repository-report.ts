@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "nod
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { createEmptyPandwindMeta } from "pandwind-codemod/migration/meta";
+import { createEmptyYumCSSMeta } from "@yumcss/codemod/migration/meta";
 import {
 	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
@@ -11,8 +11,8 @@ import {
 	MigrationRouteProofExecutionTag,
 	runAdapterMigrationAsync,
 	runPandaMigration,
-} from "pandwind-codemod/swap";
-import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
+} from "@yumcss/codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap/identifiers";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const referenceRoot = createReferenceWorkspace().root;
@@ -35,7 +35,7 @@ function readPinnedReference(reference: (typeof corpus.references)[number]): str
 	);
 }
 
-const emptyMeta = createEmptyPandwindMeta();
+const emptyMeta = createEmptyYumCSSMeta();
 
 const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	panda: ["@pandacss/dev"],
@@ -112,7 +112,7 @@ for (const fixture of fixtures) {
 	let residualKinds: Record<string, number> = {};
 	let manualFixes: string[] = [];
 	if (fixture.from === CodemodAdapterId.Panda) {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-real-corpus-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-real-corpus-"));
 		try {
 			const file = join(root, "Page.tsx");
 			writeFileSync(file, fixture.source);
@@ -123,7 +123,7 @@ for (const fixture of fixtures) {
 				meta: emptyMeta,
 				write: true,
 				diff: false,
-				skipMarker: "pandwind:migrate-skip",
+				skipMarker: "yumcss:migrate-skip",
 			});
 			output = readFileSync(file, "utf8");
 			converted = report.cssCallsConverted + report.factoryElementsConverted;
@@ -131,7 +131,7 @@ for (const fixture of fixtures) {
 			residuals = Object.values(report.residualsByKind).reduce((total, count) => total + count, 0);
 			residualKinds = report.residualsByKind;
 			emittedModules = report.emittedModules;
-			targetPackages = ["pandwind"];
+			targetPackages = ["yumcss"];
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
@@ -251,9 +251,9 @@ for (const fixture of fixtures) {
 }
 
 const report = {
-	schema: "pandwind.real-repository-report/1",
+	schema: "yumcss.real-repository-report/1",
 	generatedFrom: "scripts/generate-real-repository-report.ts",
-	cloneRoot: "${PANDWIND_REFERENCE_ROOT:-~/.references}",
+	cloneRoot: "${YUMCSS_REFERENCE_ROOT:-~/.references}",
 	sourceFiles: corpus.references.length,
 	reports,
 	routeProof: MIGRATION_ROUTE_PROOF_CATALOG.map((route) => {
@@ -306,8 +306,8 @@ const report = {
 const serialized = JSON.stringify(report, null, 2);
 if (process.argv.includes("--write")) {
 	const output =
-		process.env.PANDWIND_PROOF_OUTPUT ??
-		join(tmpdir(), "pandwind-pivot-proof", "real-repository-migrations-v2.json");
+		process.env.YUMCSS_PROOF_OUTPUT ??
+		join(tmpdir(), "yumcss-pivot-proof", "real-repository-migrations-v2.json");
 	mkdirSync(dirname(output), { recursive: true });
 	writeFileSync(output, `${serialized}\n`);
 	console.error(`wrote source-only proof report: ${output}`);

@@ -42,7 +42,7 @@ test("compiled -> vue-styled -> compiled: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "compiled -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("compiled -> vue-styled -> compiled: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> vue-styled | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// yumcss:migrate-skip (route: compiled -> vue-styled | capability-blocked: named-rules: named style rule: red | available: static, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("compiled -> vue-styled -> compiled: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> vue-styled | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// yumcss:migrate-skip (route: compiled -> vue-styled | capability-blocked: named-rules: named style rule: red | available: static, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

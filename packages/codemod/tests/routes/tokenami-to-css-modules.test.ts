@@ -38,10 +38,10 @@ test("tokenami -> css-modules: migrates concrete tokenami syntax to css-modules"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> css-modules happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("tokenami -> css-modules: migrates concrete tokenami syntax to css-modules"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("tokenami -> css-modules: carries a documented secondary tokenami API expli
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -153,7 +153,7 @@ test("tokenami -> css-modules: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("tokenami -> css-modules: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -239,7 +239,7 @@ test("tokenami -> css-modules: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -285,7 +285,7 @@ test("tokenami -> css-modules: preserves malformed concrete tokenami input", () 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,

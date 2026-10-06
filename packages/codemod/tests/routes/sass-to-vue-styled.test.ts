@@ -38,17 +38,17 @@ test("sass -> vue-styled: migrates concrete sass syntax to vue-styled", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "sass -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -92,7 +92,7 @@ test("sass -> vue-styled: carries a documented secondary sass API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		$brand: red;
 		.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -150,7 +150,7 @@ test("sass -> vue-styled: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("sass -> vue-styled: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -232,7 +232,7 @@ test("sass -> vue-styled: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2563eb; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -276,7 +276,7 @@ test("sass -> vue-styled: preserves malformed concrete sass input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished sass */",
 		  "converted": 0,

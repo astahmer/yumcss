@@ -13,7 +13,7 @@ import {
 } from "../identifiers.ts";
 
 const rewriteAphroditeApplications = (context: AdapterRewriteContext): AdapterRewriteResult => {
-	if (context.targetId !== CodemodAdapterId.Pandwind) return { code: context.code, residuals: [] };
+	if (context.targetId !== CodemodAdapterId.YumCSS) return { code: context.code, residuals: [] };
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	for (const binding of context.convertedBindings) {
 		const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

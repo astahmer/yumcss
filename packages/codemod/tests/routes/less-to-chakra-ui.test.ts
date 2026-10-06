@@ -40,17 +40,17 @@ test("less -> chakra-ui: migrates concrete less syntax to chakra-ui", async () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "less -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("less -> chakra-ui: carries a documented secondary less API explicitly", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		@brand: red;
 		.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
 		  "converted": 0,
@@ -150,7 +150,7 @@ test("less -> chakra-ui: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("less -> chakra-ui: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2a57c8; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -230,7 +230,7 @@ test("less -> chakra-ui: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: #2a57c8; padding: 1rem; }",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -273,7 +273,7 @@ test("less -> chakra-ui: preserves malformed concrete less input", async () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }
 		const unfinished = { /* unfinished less */",
 		  "converted": 0,

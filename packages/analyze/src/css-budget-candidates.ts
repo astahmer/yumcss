@@ -1,4 +1,4 @@
-import { collectTwClasses } from "pandwind-codemod/tw";
+import { collectTwClasses } from "@yumcss/codemod/tw";
 import type { CssBudgetInput, CssCandidateScanner } from "./css-budget-contracts.ts";
 
 /** Source-facing candidate port. It deliberately knows nothing about CSS output. */

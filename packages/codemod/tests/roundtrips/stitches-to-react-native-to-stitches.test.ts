@@ -42,7 +42,7 @@ test("stitches -> react-native -> stitches: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -142,7 +142,7 @@ test("stitches -> react-native -> stitches: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -180,7 +180,7 @@ test("stitches -> react-native -> stitches: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

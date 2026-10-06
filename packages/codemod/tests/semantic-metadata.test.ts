@@ -54,7 +54,7 @@ describe("semantic metadata and validator domains", () => {
 
 	test("runs standalone custom validators with the canonical registry", () => {
 		const program: StyleProgram = {
-			schema: "pandwind.style-program/1",
+			schema: "yumcss.style-program/1",
 			rules: [],
 			declarations: [],
 			residuals: [],
@@ -62,7 +62,7 @@ describe("semantic metadata and validator domains", () => {
 		const registry = createStyleValidatorRegistry([
 			...STYLE_VALIDATORS.validators,
 			{
-				schema: "pandwind.style-validator/1",
+				schema: "yumcss.style-validator/1",
 				id: "fixture-name",
 				validate: ({ fixture }) => ({
 					validator: "fixture-name",
@@ -93,7 +93,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -118,7 +118,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -131,7 +131,7 @@ describe("semantic metadata and validator domains", () => {
 		const value = result.program.declarations[0]?.value;
 		expect(value).toMatchObject({
 			kind: "literal",
-			value: expect.stringMatching(/^var\(--pandwind-dynamic-[a-z0-9]+\)$/),
+			value: expect.stringMatching(/^var\(--yumcss-dynamic-[a-z0-9]+\)$/),
 		});
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "dynamic-custom-property" })]),
@@ -147,7 +147,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -159,7 +159,7 @@ describe("semantic metadata and validator domains", () => {
 		});
 		expect(result.program.declarations[0]?.value.kind).toBe("dynamic");
 		expect(result.program.declarations[0]?.value).not.toMatchObject({
-			value: expect.stringContaining("var(--pandwind-dynamic-"),
+			value: expect.stringContaining("var(--yumcss-dynamic-"),
 		});
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "function-dynamic" })]),
@@ -171,7 +171,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "function-target",
 				capabilities: {
 					declarations: "exact",
@@ -195,7 +195,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "runtime-target",
 				capabilities: {
 					declarations: "exact",
@@ -220,7 +220,7 @@ describe("semantic metadata and validator domains", () => {
 		const result = STYLE_LOWERING_REGISTRY.lower({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: { declarations: "exact", "plugin-transforms": "unsupported" },
 			},
@@ -243,7 +243,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = STYLE_LOWERING_REGISTRY.plan({
 			program,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "static-target",
 				capabilities: {
 					declarations: "exact",
@@ -285,7 +285,7 @@ describe("semantic metadata and validator domains", () => {
 		const plan = registry.plan({
 			program: input,
 			target: {
-				schema: "pandwind.adapter-capabilities/1",
+				schema: "yumcss.adapter-capabilities/1",
 				adapter: "fixture-target",
 				capabilities: { declarations: "exact" },
 			},

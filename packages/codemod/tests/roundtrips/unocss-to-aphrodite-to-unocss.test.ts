@@ -42,7 +42,7 @@ test("unocss -> aphrodite -> unocss: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> aphrodite -> unocss: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, css } from "aphrodite";
 		export const App = () => <div className={css(StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": "1rem" } }).style)}/>;",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("unocss -> aphrodite -> unocss: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, css } from "aphrodite";
 		export const App = () => <div className={css(StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style)}/>;",
 		    "converted": 0,

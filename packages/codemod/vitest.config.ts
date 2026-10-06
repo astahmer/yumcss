@@ -11,17 +11,17 @@ export default defineConfig({
 		// timeout and avoids spawning one isolated worker per file.
 		isolate: false,
 		maxWorkers: 4,
-		// Workspace packages expose their sources behind the "pandwind"
+		// Workspace packages expose their sources behind the "yumcss"
 		// condition (see tsconfig.base.json customConditions). Without it,
 		// Node-style resolution falls through to a stale dist/ build and
 		// tests silently exercise yesterday's compiled behavior.
 	},
 	resolve: {
-		conditions: ["pandwind"],
+		conditions: ["yumcss"],
 	},
 	ssr: {
 		resolve: {
-			conditions: ["pandwind"],
+			conditions: ["yumcss"],
 		},
 	},
 	coverage: {

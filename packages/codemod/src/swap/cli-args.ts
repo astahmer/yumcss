@@ -48,7 +48,7 @@ export interface MigrateCliArgs {
 	nearestTokens: boolean;
 	dedup: boolean;
 	hoistStaticStyles: boolean;
-	/** Output folder for --from=panda project migration (default "pandwind"). */
+	/** Output folder for --from=panda project migration (default "yumcss"). */
 	outDir: string;
 	/** Regenerate existing panda migration modules. */
 	force: boolean;
@@ -60,7 +60,7 @@ export interface MigrateCliArgs {
 export function configureMigrateCommand(command: Command): void {
 	command
 		.option("-f, --from <adapter>", "Source adapter or auto-detect", { default: "auto" })
-		.option("-t, --to <adapter>", "Target adapter or Pandwind API", {
+		.option("-t, --to <adapter>", "Target adapter or YumCSS API", {
 			default: SwapTargetId.CssClass,
 		})
 		.option("--dry-run", "Preview the migration without writing files")
@@ -75,9 +75,9 @@ export function configureMigrateCommand(command: Command): void {
 		.option("--partial", "Allow partial target lowering")
 		.option("--out <dir>", "Output folder for project migrations")
 		.option("--force", "Regenerate existing project migration modules")
-		.option("--meta <dir>", "Generated Pandwind metadata directory")
+		.option("--meta <dir>", "Generated YumCSS metadata directory")
 		.option("--skip-marker <text>", "Marker used to preserve opted-out sites", {
-			default: "pandwind:migrate-skip",
+			default: "yumcss:migrate-skip",
 		})
 		.option("--token-refs <mode>", "Token references: off, bare, or group", { default: "bare" })
 		.option("--token-format <format>", "Token spelling: preserve, dot-delimited, or stitches", {
@@ -88,7 +88,7 @@ export function configureMigrateCommand(command: Command): void {
 		.option("--sort", "Sort emitted declarations canonically")
 		.option("--nearest-tokens", "Suggest nearby preset tokens for raw literals")
 		.option("--dedup", "Hoist repeated literal style calls")
-		.option("--hoist-static-styles", "Hoist static Pandwind style calls to module scope");
+		.option("--hoist-static-styles", "Hoist static YumCSS style calls to module scope");
 }
 
 const normalizeMigrateSyntax = (argv: readonly string[]): string[] => {
@@ -132,10 +132,10 @@ const optionBoolean = (options: Readonly<Record<string, unknown>>, name: string)
 const CLI_IDENTIFIERS = new Map<string, string>([
 	["tailwindcss", CodemodAdapterId.Tailwind],
 	["tw", SwapTargetId.Tw],
-	["pandwind-tw", SwapTargetId.Tw],
-	["pandwind-css", SwapTargetId.CssClass],
-	["pandwind-dss", SwapTargetId.Dss],
-	["pandwind", CodemodAdapterId.Pandwind],
+	["yumcss-tw", SwapTargetId.Tw],
+	["yumcss-css", SwapTargetId.CssClass],
+	["yumcss-dss", SwapTargetId.Dss],
+	["yumcss", CodemodAdapterId.YumCSS],
 	["chakra", CodemodAdapterId.ChakraUi],
 	["chakra-ui-v3", CodemodAdapterId.ChakraUi],
 	["uno", CodemodAdapterId.UnoCSS],
@@ -157,16 +157,16 @@ const choice = <T extends string>(
 };
 
 export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
-	const cli = cac("pandwind-codemod migrate");
+	const cli = cac("yumcss-codemod migrate");
 	const command = cli.command("[...patterns]", "Migrate a project between styling adapters");
 	configureMigrateCommand(command);
-	cli.parse(["node", "pandwind-codemod migrate", ...normalizeMigrateSyntax(argv)], { run: false });
+	cli.parse(["node", "yumcss-codemod migrate", ...normalizeMigrateSyntax(argv)], { run: false });
 	const matched = cli.matchedCommand;
 	if (matched === undefined) throw new Error("codemod migrate: no input patterns given");
 	validateCommand(matched);
 	if (cli.args.length === 0) {
 		throw new Error(
-			"codemod migrate: no input patterns given.\nusage: pandwind-codemod migrate [options] <globs...>",
+			"codemod migrate: no input patterns given.\nusage: yumcss-codemod migrate [options] <globs...>",
 		);
 	}
 	const options = cli.options as Readonly<Record<string, unknown>>;
@@ -204,7 +204,7 @@ export function parseMigrateArgs(argv: string[]): MigrateCliArgs {
 		report: optionBoolean(options, "report"),
 		patterns: [...cli.args],
 		metaDir: optionString(options, "meta") ?? "",
-		skipMarker: optionString(options, "skipMarker") ?? "pandwind:migrate-skip",
+		skipMarker: optionString(options, "skipMarker") ?? "yumcss:migrate-skip",
 		tokenRefs,
 		tokenReferenceFormat,
 		engine: optionBoolean(options, "engine"),

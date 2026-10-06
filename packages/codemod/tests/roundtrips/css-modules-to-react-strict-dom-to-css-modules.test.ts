@@ -42,7 +42,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves an actionable co
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves an actionable co
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("css-modules -> react-strict-dom -> css-modules: retains the documented sec
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -169,7 +169,7 @@ test("css-modules -> react-strict-dom -> css-modules: retains the documented sec
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -252,7 +252,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -330,7 +330,7 @@ test("css-modules -> react-strict-dom -> css-modules: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -423,7 +423,7 @@ test("css-modules -> react-strict-dom -> css-modules: resolves token values acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,

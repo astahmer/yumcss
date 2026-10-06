@@ -100,7 +100,7 @@ export const Card = () => <div {...applyStyles(styles.card)} />;`,
 		);
 		expect(result.code.endsWith(source)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
+			"// yumcss:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			export const Card = () => <div {...stylex.props(externalStyle)} />;"
 		`);
@@ -163,7 +163,7 @@ export const Card = () => <div {...applyStyles(styles.card)} />;`,
 		);
 		expect(result.code.endsWith(source)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: stylex -> styled-components | lowering-residual: host-framework)
+			"// yumcss:migrate-skip (route: stylex -> styled-components | lowering-residual: host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const __CardStyle = stylex.create({ style: { color: 'red', padding: '1rem' } }).style;
 			export const Card = (props) => { const Component = props.as ?? "div"; const styleProps = stylex.props(__CardStyle); return <Component {...props} className={[styleProps.className, props.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style }} />; };"
@@ -184,7 +184,7 @@ export const Card = () => <div {...applyStyles(styles.card)} />;`,
 		);
 		expect(result.code.endsWith(source)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
+			"// yumcss:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ normal: { color: 'red' }, active: { color: 'blue' } });
 			export const Card = () => <div {...stylex.props(styles.normal)} {...stylex.props(styles.active)} />;"
@@ -204,7 +204,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 		);
 		expect(result.code.endsWith(source)).toBe(true);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
+			"// yumcss:migrate-skip (route: stylex -> tailwind | lowering-residual: host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ normal: { color: "red" }, active: { color: "blue" } });
 			export const Card = ({ active }) => <div {...stylex.props(styles.normal, active && styles.active)} />;"
@@ -233,14 +233,14 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 		expect(reports).toMatchInlineSnapshot(`
 			[
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
 			    "converted": 1,
 			    "residuals": [],
 			    "skipped": 0,
-			    "target": "pandwind",
+			    "target": "yumcss",
 			  },
 			  {
 			    "code": "import { css } from "styled-system/css";
@@ -279,7 +279,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "styled-components",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> vanilla-extract | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> vanilla-extract | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -310,7 +310,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "linaria",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+			    "code": "// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -324,7 +324,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "mantine",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -416,7 +416,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "style9",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> treat | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> treat | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -447,7 +447,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "solid-styled",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> vue-styled | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> vue-styled | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -478,7 +478,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "tokenami",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> unocss | lowering-residual: configuration, validation, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> unocss | lowering-residual: configuration, validation, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -493,7 +493,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "unocss",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> authored-css | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> authored-css | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -506,7 +506,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "authored-css",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> css-modules | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> css-modules | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -519,7 +519,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "css-modules",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> sass | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> sass | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -532,7 +532,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "sass",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> less | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> less | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -545,7 +545,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			    "target": "less",
 			  },
 			  {
-			    "code": "// pandwind:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
+			    "code": "// yumcss:migrate-skip (route: stylex -> tamagui | lowering-residual: capability, host-framework)
 			import * as stylex from "@stylexjs/stylex";
 			const styles = stylex.create({ card: { color: "red" } });
 			export const Card = () => <div {...stylex.props(styles.card)} />;",
@@ -572,7 +572,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 			residual.filter(
 				(report) =>
 					report.converted !== 0 ||
-					report.code.replace(/^[^\n]*pandwind:migrate-skip[^\n]*\n?/gmu, "") !== stylexHostSource,
+					report.code.replace(/^[^\n]*yumcss:migrate-skip[^\n]*\n?/gmu, "") !== stylexHostSource,
 			),
 		).toEqual([]);
 	});

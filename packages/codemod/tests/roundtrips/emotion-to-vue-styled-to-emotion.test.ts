@@ -42,7 +42,7 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "emotion -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);

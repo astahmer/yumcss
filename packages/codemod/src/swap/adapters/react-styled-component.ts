@@ -1,4 +1,4 @@
-import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "yumcss/source";
 import type {
 	AdapterComponentRewriteContext,
 	AdapterEmitContext,
@@ -212,11 +212,11 @@ export const rewriteReactStyledComponent = (
 			imports: [],
 			reason: "the styled component declaration could not be rewritten safely",
 		};
-	const forwardRefBinding = `__pandwind${context.binding}ForwardRef`;
-	const createElementBinding = `__pandwind${context.binding}CreateElement`;
-	const componentRefBinding = `__pandwind${context.binding}ComponentRef`;
-	const componentPropsBinding = `__pandwind${context.binding}ComponentProps`;
-	const componentPropsTypeBinding = `__pandwind${context.binding}Props`;
+	const forwardRefBinding = `__yumcss${context.binding}ForwardRef`;
+	const createElementBinding = `__yumcss${context.binding}CreateElement`;
+	const componentRefBinding = `__yumcss${context.binding}ComponentRef`;
+	const componentPropsBinding = `__yumcss${context.binding}ComponentProps`;
+	const componentPropsTypeBinding = `__yumcss${context.binding}Props`;
 	const typescript = context.file.endsWith(".ts") || context.file.endsWith(".tsx");
 	const attrsExpression = staticDomAttrsExpression(
 		context.attrsExpression ?? componentAttrsExpressionForSubject(program.source?.subject ?? ""),
@@ -238,7 +238,7 @@ export const rewriteReactStyledComponent = (
 		: `${createElementBinding}(Component, ${elementProps})`;
 	const wrapperBody = `const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; ${attrsDeclaration} const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; ${componentDeclaration} return ${createElementCall};`;
 	const replacement = typescript
-		? `(() => { type ${componentPropsTypeBinding}<As extends import("react").ElementType> = Omit<${componentPropsBinding}<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }${hostPropFilterType(program)}; type __pandwind${context.binding}PolymorphicComponent = <As extends import("react").ElementType = ${JSON.stringify(defaultTag)}>(props: ${componentPropsTypeBinding}<As> & { ref?: import("react").Ref<${componentRefBinding}<As>> }) => import("react").ReactElement | null; type __pandwind${context.binding}InternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }${hostPropFilterType(program)}; return ${forwardRefBinding}<unknown, __pandwind${context.binding}InternalProps>((props, ref) => { ${wrapperBody} }) as __pandwind${context.binding}PolymorphicComponent; })()`
+		? `(() => { type ${componentPropsTypeBinding}<As extends import("react").ElementType> = Omit<${componentPropsBinding}<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties }${hostPropFilterType(program)}; type __yumcss${context.binding}PolymorphicComponent = <As extends import("react").ElementType = ${JSON.stringify(defaultTag)}>(props: ${componentPropsTypeBinding}<As> & { ref?: import("react").Ref<${componentRefBinding}<As>> }) => import("react").ReactElement | null; type __yumcss${context.binding}InternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties }${hostPropFilterType(program)}; return ${forwardRefBinding}<unknown, __yumcss${context.binding}InternalProps>((props, ref) => { ${wrapperBody} }) as __yumcss${context.binding}PolymorphicComponent; })()`
 		: `${forwardRefBinding}((props, ref) => { ${wrapperBody} })`;
 	return {
 		code: `${context.code.slice(0, match.index)}${match[1]}${replacement}${context.code.slice(match.index + match[0].length)}`,
@@ -287,7 +287,7 @@ export const reactStyledComponentArtifact = (
 	return {
 		file: { path, content, purpose },
 		specifier,
-		local: `__pandwind${binding}Styles`,
+		local: `__yumcss${binding}Styles`,
 	};
 };
 

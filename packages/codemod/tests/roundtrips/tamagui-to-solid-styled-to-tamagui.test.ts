@@ -42,7 +42,7 @@ test("tamagui -> solid-styled -> tamagui: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("tamagui -> solid-styled -> tamagui: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -96,7 +96,7 @@ test("tamagui -> solid-styled -> tamagui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -126,7 +126,7 @@ test("tamagui -> solid-styled -> tamagui: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,7 +162,7 @@ test("tamagui -> solid-styled -> tamagui: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -207,7 +207,7 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -250,7 +250,7 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -267,7 +267,7 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -310,7 +310,7 @@ test("tamagui -> solid-styled -> tamagui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -342,7 +342,7 @@ test("tamagui -> solid-styled -> tamagui: resolves token values across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -385,7 +385,7 @@ test("tamagui -> solid-styled -> tamagui: resolves token values across both conc
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

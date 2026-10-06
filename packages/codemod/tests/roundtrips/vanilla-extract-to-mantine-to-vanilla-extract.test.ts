@@ -42,7 +42,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves an actionable con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -77,7 +77,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves an actionable con
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -101,7 +101,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves an actionable con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -130,7 +130,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: retains the documented seco
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: rule-level, validation)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: retains the documented seco
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: rule-level, validation)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,7 +223,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -271,7 +271,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -335,7 +335,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: preserves concrete theme an
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -366,7 +366,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -390,7 +390,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: resolves token values acros
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -414,7 +414,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: resolves token values acros
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

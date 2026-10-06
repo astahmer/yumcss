@@ -42,7 +42,7 @@ test("goober -> jss -> goober: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> jss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("goober -> jss -> goober: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> jss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> jss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("goober -> jss -> goober: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> jss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> jss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

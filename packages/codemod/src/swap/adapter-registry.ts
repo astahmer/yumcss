@@ -17,7 +17,7 @@ import {
 	type AdapterCapabilityMatrix,
 	type AdapterCapabilityMatrixEntry,
 } from "./capabilities.ts";
-import { PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
+import { PANDA_STYLE_SYSTEM, YUMCSS_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
 import {
 	projectDynamicClassMigration,
 	projectPortableDynamicMigration,
@@ -27,7 +27,7 @@ import { PortableStyleArtifact } from "./portable-artifact.ts";
 import { StyleRepresentationKind } from "./identifiers.ts";
 
 /** Versioned package contract for third-party adapter discovery. */
-export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
+export const ADAPTER_PLUGIN_SCHEMA = "yumcss.style-adapter-plugin/1" as const;
 
 export interface StyleAdapterPlugin {
 	readonly schema: typeof ADAPTER_PLUGIN_SCHEMA;
@@ -68,7 +68,7 @@ export interface StyleAdapterRegistry extends StyleDialectResolver {
 	): Promise<readonly AdapterDiscoveryResult[]>;
 }
 
-const NORMALIZED_ADAPTER = Symbol("pandwind.normalized-adapter");
+const NORMALIZED_ADAPTER = Symbol("yumcss.normalized-adapter");
 
 function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
 	const candidate = (value as { default?: unknown }).default ?? value;
@@ -87,7 +87,7 @@ function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
 		if (Array.isArray(adapters) && adapters.every(isStyleAdapter))
 			return createStyleAdapterPlugin(specifier, adapters);
 	}
-	throw new Error(`package ${specifier} does not export a pandwind adapter plugin`);
+	throw new Error(`package ${specifier} does not export a yumcss adapter plugin`);
 }
 
 function isStyleAdapter(value: unknown): value is StyleAdapter {
@@ -131,7 +131,7 @@ function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
 					...emission,
 					semantic: portableProgram,
 					dependencies: {
-						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+						packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 					},
 					residuals: [],
 				};
@@ -163,7 +163,7 @@ class DefaultStyleAdapterRegistry implements StyleAdapterRegistry {
 	private readonly routeRegistry: StyleSystemRegistry;
 
 	constructor(initial: readonly StyleAdapter[]) {
-		this.routeRegistry = createStyleSystemRegistry([PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM]);
+		this.routeRegistry = createStyleSystemRegistry([PANDA_STYLE_SYSTEM, YUMCSS_STYLE_SYSTEM]);
 		for (const adapter of initial) this.register(adapter);
 	}
 

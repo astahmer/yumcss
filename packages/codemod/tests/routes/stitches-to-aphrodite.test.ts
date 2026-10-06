@@ -38,10 +38,10 @@ test("stitches -> aphrodite: migrates concrete stitches syntax to aphrodite", ()
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "stitches -> aphrodite happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("stitches -> aphrodite: carries a documented secondary stitches API explici
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> aphrodite | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> aphrodite | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],

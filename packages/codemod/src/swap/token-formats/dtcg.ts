@@ -288,7 +288,7 @@ const resolverSidecar = (
 	const resolutionOrder = Array.isArray(sourceDocument.resolutionOrder)
 		? sourceDocument.resolutionOrder
 		: [];
-	const baseName = uniqueName(sets, "pandwindBaseTokens");
+	const baseName = uniqueName(sets, "yumcssBaseTokens");
 	const nextSets: Record<string, unknown> = {
 		...sets,
 		[baseName]: { sources: [JSON.parse(serializeDtcgTokenDocument(baseDocument))] },
@@ -301,7 +301,7 @@ const resolverSidecar = (
 		if (variants.length === 0) continue;
 		const modifierName = uniqueName(
 			nextModifiers,
-			`pandwind${source[0]?.toUpperCase() ?? ""}${source.slice(1)}Contexts`,
+			`yumcss${source[0]?.toUpperCase() ?? ""}${source.slice(1)}Contexts`,
 		);
 		const contextSources: Record<string, unknown[]> = { base: [] };
 		for (const context of variants) {
@@ -337,7 +337,7 @@ const resolverSidecar = (
 };
 
 export const dtcgTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/1",
+	schema: "yumcss.token-format/1",
 	id: TokenFormatId.Dtcg,
 	canImport: true,
 	canExport: true,

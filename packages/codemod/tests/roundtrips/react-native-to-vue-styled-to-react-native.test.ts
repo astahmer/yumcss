@@ -42,7 +42,7 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -118,7 +118,7 @@ test("react-native -> vue-styled -> react-native: retains the documented seconda
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +154,7 @@ test("react-native -> vue-styled -> react-native: retains the documented seconda
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -199,7 +199,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -235,7 +235,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-native -> vue-styled -> react-native: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -318,7 +318,7 @@ test("react-native -> vue-styled -> react-native: resolves token values across b
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -354,7 +354,7 @@ test("react-native -> vue-styled -> react-native: resolves token values across b
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: react-native -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

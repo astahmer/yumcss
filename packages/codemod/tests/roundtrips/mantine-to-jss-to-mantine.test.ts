@@ -42,7 +42,7 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", a
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> jss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("mantine -> jss -> mantine: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> jss | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> jss | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -176,7 +176,7 @@ test("mantine -> jss -> mantine: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> jss | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> jss | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

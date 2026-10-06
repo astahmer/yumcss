@@ -1,4 +1,4 @@
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { STYLE_LOWERING_REGISTRY } from "./lowering.ts";
 import type { ProjectModuleLoader } from "./project-module-loader.ts";

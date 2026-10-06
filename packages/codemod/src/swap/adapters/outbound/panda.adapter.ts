@@ -11,8 +11,8 @@ import {
 	type TokenReferenceFormat as TokenReferenceFormatValue,
 } from "../../tokens.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, walk } from "pandwind/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, walk } from "yumcss/tw/literal";
 
 const addPatternNames = (pattern: unknown, names: Set<string>): void => {
 	walk(pattern, (node) => {
@@ -26,7 +26,7 @@ const localNames = (source: string | undefined): Set<string> => {
 	const names = new Set<string>();
 	if (source === undefined) return names;
 	try {
-		const parsed = SOURCE_SCANNER_SERVICE.parse({ file: "pandwind-panda-emission.tsx", source });
+		const parsed = SOURCE_SCANNER_SERVICE.parse({ file: "yumcss-panda-emission.tsx", source });
 		if (parsed.errors.length > 0) {
 			for (const name of source.match(/[A-Za-z_$][\w$]*/gu) ?? []) names.add(name);
 			return names;
@@ -83,7 +83,7 @@ const propertyGroups: Record<string, string> = {
 function tokenValue(
 	entry: SwapEntry,
 	mode: "off" | "bare" | "group",
-	tokens: import("pandwind/types/typings").AnyTokens | undefined,
+	tokens: import("yumcss/types/typings").AnyTokens | undefined,
 	format: TokenReferenceFormatValue,
 ): string | true | number | Array<string | number> {
 	if (mode === TokenRefModeTag.Off) return entry.value;

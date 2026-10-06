@@ -27,7 +27,7 @@ describe("adapter evidence contracts", () => {
 			  {
 			    "apiCount": 7,
 			    "configCount": 4,
-			    "id": "pandwind",
+			    "id": "yumcss",
 			  },
 			  {
 			    "apiCount": 1,
@@ -200,7 +200,7 @@ describe("adapter evidence contracts", () => {
 	test("records official loader, fallback, artifact, and unresolved evidence", () => {
 		const config = AdapterEvidence.normalizeConfig({
 			adapter: CodemodAdapterId.Panda,
-			files: ["/project/panda.config.ts", "/project/pandwind.interop.json"],
+			files: ["/project/panda.config.ts", "/project/yumcss.interop.json"],
 			values: {
 				officialConfigPackage: "@pandacss/config",
 				officialConfigError: "plugin failed",
@@ -221,7 +221,7 @@ describe("adapter evidence contracts", () => {
 			  },
 			  {
 			    "paths": [
-			      "/project/pandwind.interop.json",
+			      "/project/yumcss.interop.json",
 			    ],
 			    "source": "generated-artifact",
 			    "status": "resolved",

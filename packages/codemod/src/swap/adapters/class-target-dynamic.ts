@@ -58,7 +58,7 @@ export class DynamicClassHost {
 					return (
 						declaration.value.kind === StyleValueKindTag.Literal &&
 						typeof declaration.value.value === "string" &&
-						declaration.value.value.startsWith("var(--pandwind-dynamic-")
+						declaration.value.value.startsWith("var(--yumcss-dynamic-")
 					);
 				}) || rule.children.some(containsCarrier)
 			);
@@ -70,7 +70,7 @@ export class DynamicClassHost {
 	): readonly [string, string][] {
 		const entries = (residuals ?? []).flatMap((residual) => {
 			if (residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty) return [];
-			const variable = residual.hint?.match(/(--pandwind-dynamic-[a-z0-9]+)/u)?.[1];
+			const variable = residual.hint?.match(/(--yumcss-dynamic-[a-z0-9]+)/u)?.[1];
 			return variable === undefined ? [] : [[variable, residual.text] as const];
 		});
 		return [...new Map(entries.map(([variable, expression]) => [variable, expression] as const))];

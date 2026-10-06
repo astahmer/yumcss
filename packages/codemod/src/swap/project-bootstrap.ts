@@ -2,14 +2,14 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import {
-	buildPandwindInteropArtifact,
+	buildYumCSSInteropArtifact,
 	generateDesignSystem,
 	generateUtilityBridge,
 	buildThemeBlock,
 	BRIDGE_PROPS,
 	type UtilityBridge,
 } from "../tw/index.ts";
-import { extractTwConfigFromSources } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "yumcss/vite/inline";
 import type {
 	AdapterConfigContext,
 	AdapterConditionCatalog,
@@ -17,22 +17,22 @@ import type {
 	AdapterProjectConfig,
 	AdapterProjectBindings,
 } from "./adapter-contract.ts";
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import { loadMetaFromSources } from "../meta.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { ProjectModuleLoader } from "./project-module-loader.ts";
 import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 import {
-	PANDWIND_NEXT_CSS_ID,
-	planPandwindNextIntegration,
-	rewritePandwindViteConfig,
+	YUMCSS_NEXT_CSS_ID,
+	planYumCSSNextIntegration,
+	rewriteYumCSSViteConfig,
 	withTypeScriptExtensionImports,
 	type HostFileChange,
 } from "./host-integration.ts";
-import { PANDWIND_RAW_PROPERTIES, PANDWIND_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
+import { YUMCSS_RAW_PROPERTIES, YUMCSS_TOKEN_PROPERTIES } from "./adapters/panda/properties.ts";
 import { rewritePandaStylesheetImports } from "./adapters/panda/project-files.ts";
-import { canonicalizePandwindConditions } from "./pandwind-conditions.ts";
-import { presetConditions } from "pandwind/preset";
+import { canonicalizeYumCSSConditions } from "./yumcss-conditions.ts";
+import { presetConditions } from "yumcss/preset";
 
 export interface ProjectBootstrapRequest {
 	readonly moduleLoader?: ProjectModuleLoader;
@@ -45,7 +45,7 @@ export interface ProjectBootstrapRequest {
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 }
 
-export interface PandwindProjectSupport {
+export interface YumCSSProjectSupport {
 	readonly metaDirectory: string;
 	readonly bindings: AdapterProjectBindings;
 	readonly files: readonly AdapterGeneratedFile[];
@@ -55,7 +55,7 @@ export interface PandwindProjectSupport {
 		readonly content: string;
 		readonly expectedContent?: string;
 	}[];
-	readonly meta?: PandwindMeta;
+	readonly meta?: YumCSSMeta;
 	readonly sourceConfig: AdapterProjectConfig;
 }
 
@@ -66,16 +66,16 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 const projectFile = (directory: string, name: string): string =>
 	posixPath(join(directory.replaceAll("\\", "/"), name));
 
-const PANDWIND_PROJECT_TARGETS = [
-	CodemodAdapterId.Pandwind,
+const YUMCSS_PROJECT_TARGETS = [
+	CodemodAdapterId.YumCSS,
 	SwapTargetId.CssClass,
 	SwapTargetId.Tw,
 	SwapTargetId.Dss,
 	SwapTargetId.Design,
 ] as const;
 
-const isPandwindProjectTarget = (target: string): boolean =>
-	PANDWIND_PROJECT_TARGETS.includes(target as (typeof PANDWIND_PROJECT_TARGETS)[number]);
+const isYumCSSProjectTarget = (target: string): boolean =>
+	YUMCSS_PROJECT_TARGETS.includes(target as (typeof YUMCSS_PROJECT_TARGETS)[number]);
 
 const scalarTokenValues = (config: AdapterProjectConfig): Set<string> =>
 	new Set(
@@ -86,15 +86,15 @@ function presetPropertiesSource(
 	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): string {
 	const properties: Record<string, { $tokens: string } | true> = {
-		...PANDWIND_RAW_PROPERTIES,
+		...YUMCSS_RAW_PROPERTIES,
 	};
-	for (const [property, group] of Object.entries(PANDWIND_TOKEN_PROPERTIES)) {
+	for (const [property, group] of Object.entries(YUMCSS_TOKEN_PROPERTIES)) {
 		if (groups[group] !== undefined) properties[property] = { $tokens: group };
 	}
 	return JSON.stringify(properties, null, "\t");
 }
 
-function pandwindTokenGroups(
+function yumcssTokenGroups(
 	groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
 ): Record<string, Record<string, string>> {
 	return Object.fromEntries(
@@ -583,7 +583,7 @@ function rewriteTailwindStylesheets(
 	return changes;
 }
 
-function rewritePandwindViteConfigs(
+function rewriteYumCSSViteConfigs(
 	request: ProjectBootstrapRequest,
 	config: AdapterProjectConfig,
 	outputDirectory: string,
@@ -595,7 +595,7 @@ function rewritePandwindViteConfigs(
 		readonly expectedContent: string;
 	}[];
 } {
-	if (request.targetAdapter !== CodemodAdapterId.Pandwind)
+	if (request.targetAdapter !== CodemodAdapterId.YumCSS)
 		return { enabled: false, fileChanges: [] };
 	const presetPath = resolve(request.root, outputDirectory, "preset");
 	let enabled = false;
@@ -614,7 +614,7 @@ function rewritePandwindViteConfigs(
 			? presetSpecifier
 			: `./${presetSpecifier}`;
 		const typedPresetSpecifier = `${normalizedSpecifier}.ts`;
-		const pandwindPlugin = 'pandwindCssVite(preset, { root: "." })';
+		const yumcssPlugin = 'yumcssExtractVite(preset, { root: "." })';
 		let next: string;
 		if (
 			config.adapter === CodemodAdapterId.Tailwind &&
@@ -624,9 +624,9 @@ function rewritePandwindViteConfigs(
 			next = source
 				.replace(
 					/import\s+tailwindcss\s+from\s+["']@tailwindcss\/vite["'];?/u,
-					`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
+					`import { yumcssExtractVite } from "yumcss/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
 				)
-				.replace(/\btailwindcss\s*\(\s*\)/gu, pandwindPlugin);
+				.replace(/\btailwindcss\s*\(\s*\)/gu, yumcssPlugin);
 		} else if (config.adapter === CodemodAdapterId.UnoCSS) {
 			const unoImport = /import\s+([A-Za-z_$][\w$]*)\s+from\s+["']unocss\/vite["'];?/u.exec(source);
 			const unoBinding = unoImport?.[1];
@@ -636,11 +636,11 @@ function rewritePandwindViteConfigs(
 			next = source
 				.replace(
 					/import\s+[A-Za-z_$][\w$]*\s+from\s+["']unocss\/vite["'];?/u,
-					`import { pandwindCssVite } from "pandwind/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
+					`import { yumcssExtractVite } from "yumcss/vite";\nimport { preset } from "${typedPresetSpecifier}";`,
 				)
-				.replace(call, pandwindPlugin);
+				.replace(call, yumcssPlugin);
 		} else {
-			const rewrite = rewritePandwindViteConfig({
+			const rewrite = rewriteYumCSSViteConfig({
 				projectRoot: request.root,
 				configPath: absoluteFile,
 				outputDirectory: resolve(request.root, outputDirectory),
@@ -649,7 +649,7 @@ function rewritePandwindViteConfigs(
 			if (!rewrite.enabled) continue;
 			next = rewrite.content;
 		}
-		if (next.includes(pandwindPlugin) && next.includes(typedPresetSpecifier)) enabled = true;
+		if (next.includes(yumcssPlugin) && next.includes(typedPresetSpecifier)) enabled = true;
 		if (next === source) continue;
 		changes.push({
 			path: relative(request.root, absoluteFile).replaceAll("\\", "/"),
@@ -700,10 +700,10 @@ function presetSource(
 		config.tokenDefinitions === undefined
 			? {}
 			: flattenSemanticTokenGroups(config.tokenDefinitions.semantic);
-	const componentSourceTokens = pandwindTokenGroups(selectTokenPaths(rawSourceTokens, true));
+	const componentSourceTokens = yumcssTokenGroups(selectTokenPaths(rawSourceTokens, true));
 	const appTokens = withComponentRawAliases(
 		componentSourceTokens,
-		pandwindTokenGroups(selectTokenPaths(rawSourceTokens, false)),
+		yumcssTokenGroups(selectTokenPaths(rawSourceTokens, false)),
 	);
 	const appSemanticTokens = normalizeSemanticTokenGroups(
 		selectSemanticTokenPaths(sourceSemanticTokens, false),
@@ -715,12 +715,12 @@ function presetSource(
 	);
 	const appSemanticGroups = Object.keys(appSemanticTokens);
 	const componentGroups = Object.keys(componentTokens);
-	const presetConditions = canonicalizePandwindConditions({
+	const presetConditions = canonicalizeYumCSSConditions({
 		base: "",
 		...config.conditionCatalog,
 		...conditions,
 	});
-	const typeImports = typescript ? ", type PandwindProperties" : "";
+	const typeImports = typescript ? ", type YumCSSProperties" : "";
 	const literalAssertion = typescript ? " as const" : "";
 	const colorPaletteEntries = Object.entries(config.colorPalettes ?? {}).toSorted(
 		([left], [right]) => left.localeCompare(right),
@@ -734,7 +734,7 @@ function presetSource(
 					"\t",
 				)}${literalAssertion});\n`;
 	const colorPaletteProperty = colorPaletteEntries.length === 0 ? "" : "\n\t\tcolorPalettes,";
-	const configDeclaration = typescript ? "\nconst cssConfig: PandwindProperties = {};\n" : "";
+	const configDeclaration = typescript ? "\nconst cssConfig: YumCSSProperties = {};\n" : "";
 	const configReference = typescript ? "cssConfig" : "{}";
 	const appSemanticDeclaration =
 		appSemanticGroups.length === 0
@@ -758,7 +758,7 @@ function presetSource(
 			: appSemanticGroups.length > 0
 				? "const tokens = appSemanticTokens;"
 				: "const tokens = appTokens;";
-	return `import { define${typeImports} } from "pandwind/preset";
+	return `import { define${typeImports} } from "yumcss/preset";
 
 const conditions = define.conditions(${JSON.stringify(presetConditions, null, "\t")}${literalAssertion});
 const appTokens = define.tokens(${JSON.stringify(appTokens, null, "\t")}${literalAssertion});
@@ -781,10 +781,10 @@ export const preset = define.preset(
 }
 
 function cssSource(nextHost: boolean): string {
-	const virtualId = nextHost ? PANDWIND_NEXT_CSS_ID : "pandwind:css";
+	const virtualId = nextHost ? YUMCSS_NEXT_CSS_ID : "yumcss:css";
 	return `/// <reference path="./vite-env.d.ts" />
 import "${virtualId}";
-import { createCss, type AtomicStyleProps } from "pandwind/css";
+import { createCss, type AtomicStyleProps } from "yumcss/css";
 import { preset } from "./preset";
 
 export const css = createCss(preset);
@@ -793,26 +793,26 @@ export type StyleProps = AtomicStyleProps<typeof css>;
 }
 
 function stackSource(): string {
-	return `import { createStack } from "pandwind/stack/react";
+	return `import { createStack } from "yumcss/stack/react";
 import { css } from "./css";
 
 export const Stack = createStack(css);
-export type { StackComponentProps, StackProps } from "pandwind/stack/react";
+export type { StackComponentProps, StackProps } from "yumcss/stack/react";
 `;
 }
 
 function viteEnvSource(): string {
 	return `/// <reference types="vite/client" />
 
-/** Virtual CSS module served by \`pandwindCssVite\`. */
-declare module "pandwind:css";
-/** File-like virtual CSS module served by \`pandwindWebpackCss\`. */
-declare module "${PANDWIND_NEXT_CSS_ID}";
+/** Virtual CSS module served by \`yumcssExtractVite\`. */
+declare module "yumcss:css";
+/** File-like virtual CSS module served by \`yumcssWebpackCss\`. */
+declare module "${YUMCSS_NEXT_CSS_ID}";
 `;
 }
 
 function runtimeCssSource(): string {
-	return `import { createRuntimeCss } from "pandwind/css/runtime";
+	return `import { createRuntimeCss } from "yumcss/css/runtime";
 import { preset } from "./preset";
 
 export const runtimeCss = createRuntimeCss(preset);
@@ -820,7 +820,7 @@ export const runtimeCss = createRuntimeCss(preset);
 }
 
 function dssSource(): string {
-	return `import { createDesignCss } from "pandwind/design";
+	return `import { createDesignCss } from "yumcss/design";
 import { preset } from "./preset";
 
 export const dss = createDesignCss(preset);
@@ -828,7 +828,7 @@ export const dss = createDesignCss(preset);
 }
 
 function cxSource(): string {
-	return `import { createCx } from "pandwind/cx";
+	return `import { createCx } from "yumcss/cx";
 import { css } from "./css";
 
 export const cx = createCx({ css });
@@ -842,7 +842,7 @@ function bridgeSource(
 ): string {
 	const config = extractTwConfigFromSources(twSources);
 	if (config === undefined) throw new Error("codemod: generated tw config is not readable");
-	return `import { createTwAdapter } from "pandwind/tw";
+	return `import { createTwAdapter } from "yumcss/tw";
 import { preset } from "${presetImport}";
 
 export const bridge = ${JSON.stringify(bridge)} as const;
@@ -886,12 +886,12 @@ function loadGeneratedMeta(
 	files: readonly AdapterGeneratedFile[],
 	directory: string,
 	tokens: Readonly<Record<string, Readonly<Record<string, string>>>> | undefined,
-): PandwindMeta {
-	const temp = mkdtempSync(join(tmpdir(), "pandwind-codemod-meta-"));
+): YumCSSMeta {
+	const temp = mkdtempSync(join(tmpdir(), "yumcss-codemod-meta-"));
 	try {
 		for (const file of files) {
 			if (
-				!/\/(?:types\.d\.ts|tw\.ts|tw\.runtime\.ts|tw\.conflicts\.ts|tw\.build\.ts|bridge\.ts|pandwind\.interop\.json)$/u.test(
+				!/\/(?:types\.d\.ts|tw\.ts|tw\.runtime\.ts|tw\.conflicts\.ts|tw\.build\.ts|bridge\.ts|yumcss\.interop\.json)$/u.test(
 					`/${file.path}`,
 				)
 			)
@@ -909,23 +909,23 @@ function loadGeneratedMeta(
 			typesDtsPath: join(temp, "types.d.ts"),
 			twTsPath: join(temp, "tw.ts"),
 			bridgePath: join(temp, "bridge.ts"),
-			interopPath: join(temp, "pandwind.interop.json"),
-			tokens: tokens === undefined ? undefined : pandwindTokenGroups(tokens),
+			interopPath: join(temp, "yumcss.interop.json"),
+			tokens: tokens === undefined ? undefined : yumcssTokenGroups(tokens),
 		});
 	} finally {
 		rmSync(temp, { recursive: true, force: true });
 	}
 }
 
-/** Build project-owned Pandwind modules from the source adapter's evidence. */
-export async function createPandwindProjectSupport(
+/** Build project-owned YumCSS modules from the source adapter's evidence. */
+export async function createYumCSSProjectSupport(
 	request: ProjectBootstrapRequest,
-): Promise<PandwindProjectSupport> {
+): Promise<YumCSSProjectSupport> {
 	const sourceConfig = await loadSourceConfig(request);
 	const directory = posixPath(request.outputDirectory).replace(/\/$/u, "");
-	const canonicalPandwindTarget = request.targetAdapter === CodemodAdapterId.Pandwind;
-	const nextIntegration = isPandwindProjectTarget(request.targetAdapter)
-		? planPandwindNextIntegration({
+	const canonicalYumCSSTarget = request.targetAdapter === CodemodAdapterId.YumCSS;
+	const nextIntegration = isYumCSSProjectTarget(request.targetAdapter)
+		? planYumCSSNextIntegration({
 				projectRoot: request.root,
 				outputDirectory: directory,
 				fileSystem: {
@@ -951,7 +951,7 @@ export async function createPandwindProjectSupport(
 	const cssEntry = sourceConfig.files.find((file) => file.endsWith(".css"));
 	const stylesheet = cssEntry === undefined ? undefined : request.readFile(cssEntry);
 	const customConditions = stylesheet === undefined ? {} : customVariantConditions(stylesheet);
-	const targetConditionCatalog = canonicalizePandwindConditions({
+	const targetConditionCatalog = canonicalizeYumCSSConditions({
 		...presetConditions,
 		...sourceConfig.conditionCatalog,
 		...customConditions,
@@ -962,7 +962,7 @@ export async function createPandwindProjectSupport(
 				generatedFile(
 					preset,
 					presetSource(sourceConfig, targetConditionCatalog),
-					"Pandwind target preset",
+					"YumCSS target preset",
 				),
 				...(nextIntegration.enabled
 					? [
@@ -975,12 +975,12 @@ export async function createPandwindProjectSupport(
 					: []),
 				generatedFile(css, cssSource(nextIntegration.enabled), "shared extracted css() binding"),
 				generatedFile(stack, stackSource(), "shared configured Stack binding"),
-				generatedFile(viteEnv, viteEnvSource(), "Pandwind Vite virtual-module types"),
+				generatedFile(viteEnv, viteEnvSource(), "YumCSS Vite virtual-module types"),
 				generatedFile(runtimeCss, runtimeCssSource(), "shared runtimeCss binding"),
 				...(needsDssBinding
 					? [generatedFile(dss, dssSource(), "shared design-system dss() binding")]
 					: []),
-				...(canonicalPandwindTarget ? [] : [generatedFile(cx, cxSource(), "shared cx() binding")]),
+				...(canonicalYumCSSTarget ? [] : [generatedFile(cx, cxSource(), "shared cx() binding")]),
 			];
 	const derivedFiles: AdapterGeneratedFile[] = [];
 
@@ -990,7 +990,7 @@ export async function createPandwindProjectSupport(
 		files[files.indexOf(presetFile)] = generatedFile(
 			preset,
 			withConditions,
-			"Pandwind target preset",
+			"YumCSS target preset",
 		);
 		const runtimePresetFile = files.find((file) => file.path === runtimePreset);
 		if (runtimePresetFile !== undefined) {
@@ -1013,7 +1013,7 @@ export async function createPandwindProjectSupport(
 		const twBuild = projectFile(directory, "tw.build.ts");
 		const bridgeFile = projectFile(directory, "bridge.ts");
 		const theme = buildThemeBlock(sourceConfig.tokenCatalog?.groups ?? {});
-		const interop = buildPandwindInteropArtifact({
+		const interop = buildYumCSSInteropArtifact({
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			twRuntimeTs: generated.twRuntimeTs,
@@ -1042,30 +1042,30 @@ export async function createPandwindProjectSupport(
 				"Tailwind-derived css() utility bridge",
 			),
 			generatedFile(
-				projectFile(directory, "pandwind.interop.json"),
+				projectFile(directory, "yumcss.interop.json"),
 				`${JSON.stringify(interop, null, "\t")}\n`,
-				"versioned Pandwind interop artifact",
+				"versioned YumCSS interop artifact",
 			),
 		);
 		if (theme !== "")
 			derivedFiles.push(
-				generatedFile(projectFile(directory, "pandwind-theme.css"), theme, "derived theme block"),
+				generatedFile(projectFile(directory, "yumcss-theme.css"), theme, "derived theme block"),
 			);
 	}
 
-	const outputFiles = canonicalPandwindTarget ? files : [...files, ...derivedFiles];
+	const outputFiles = canonicalYumCSSTarget ? files : [...files, ...derivedFiles];
 	const metaFiles = derivedFiles.some(
-		(file) => file.path === projectFile(directory, "pandwind.interop.json"),
+		(file) => file.path === projectFile(directory, "yumcss.interop.json"),
 	)
 		? derivedFiles
 		: undefined;
 	const hasGeneratedTw = derivedFiles.some((file) => file.path === projectFile(directory, "tw.ts"));
-	const viteIntegration = rewritePandwindViteConfigs(request, sourceConfig, directory);
+	const viteIntegration = rewriteYumCSSViteConfigs(request, sourceConfig, directory);
 	const viteConfigChanges = viteIntegration.fileChanges;
 	const pandaStylesheetImport = nextIntegration.enabled
-		? PANDWIND_NEXT_CSS_ID
+		? YUMCSS_NEXT_CSS_ID
 		: viteIntegration.enabled
-			? "pandwind:css"
+			? "yumcss:css"
 			: undefined;
 	const hostFileChanges: readonly HostFileChange[] = nextIntegration.fileChanges;
 	const normalizedHostChanges = hostFileChanges.map((change) => ({
@@ -1083,10 +1083,10 @@ export async function createPandwindProjectSupport(
 						stackModule: stack,
 						runtimeCssModule: runtimeCss,
 						runtimeCssBinding: "runtimeCss",
-						...(canonicalPandwindTarget ? {} : { cxModule: cx }),
+						...(canonicalYumCSSTarget ? {} : { cxModule: cx }),
 						...(needsDssBinding ? { dssModule: dss } : {}),
 					}),
-			...(configurationFailed || canonicalPandwindTarget || !hasGeneratedTw
+			...(configurationFailed || canonicalYumCSSTarget || !hasGeneratedTw
 				? {}
 				: { twModule: projectFile(directory, "tw.ts") }),
 		},

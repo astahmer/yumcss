@@ -38,10 +38,10 @@ test("tokenami -> solid-styled: migrates concrete tokenami syntax to solid-style
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> solid-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("tokenami -> solid-styled: carries a documented secondary tokenami API expl
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> solid-styled | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> solid-styled | parse-residual: composition | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],

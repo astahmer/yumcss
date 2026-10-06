@@ -7,8 +7,8 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(new URL("../../../../../package.json", import.meta.url));
 const { chromium } = require("playwright-core");
 const fixtureRoot = resolve(import.meta.dirname, "..");
-const clientOutput = resolve(process.env.PANDWIND_FIXTURE_OUT_DIR ?? ".proof-client");
-const ssrOutput = resolve(process.env.PANDWIND_FIXTURE_SSR_OUT_DIR ?? ".proof-ssr");
+const clientOutput = resolve(process.env.YUMCSS_FIXTURE_OUT_DIR ?? ".proof-client");
+const ssrOutput = resolve(process.env.YUMCSS_FIXTURE_SSR_OUT_DIR ?? ".proof-ssr");
 const port = 4623;
 const url = `http://127.0.0.1:${port}/`;
 const timeout = 30_000;
@@ -77,14 +77,14 @@ try {
 	await page.goto(url, { waitUntil: "networkidle" });
 	const host = page.getByTestId("fixture-host");
 	const control = page.getByTestId("hydration-control");
-	if (!(await host.innerText()).includes("Pandwind package fixture")) {
+	if (!(await host.innerText()).includes("YumCSS package fixture")) {
 		throw new Error("server-rendered fixture content is missing or unexpected");
 	}
 	if ((await control.innerText()) !== "Clicks: 0") {
 		throw new Error("server-rendered hydration control has the wrong initial state");
 	}
 	if ((await host.evaluate((element) => getComputedStyle(element).paddingTop)) !== "16px") {
-		throw new Error("built Pandwind CSS was not applied in Chromium");
+		throw new Error("built YumCSS CSS was not applied in Chromium");
 	}
 	await control.click();
 	if ((await control.innerText()) !== "Clicks: 1") {

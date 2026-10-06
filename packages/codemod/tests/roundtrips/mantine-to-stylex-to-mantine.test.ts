@@ -42,7 +42,7 @@ test("mantine -> stylex -> mantine: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> stylex round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("mantine -> stylex -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => stylex.create({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -155,7 +155,7 @@ test("mantine -> stylex -> mantine: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> stylex | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> stylex | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -191,7 +191,7 @@ test("mantine -> stylex -> mantine: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> stylex | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> stylex | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -273,7 +273,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => stylex.create({ style: { color: "#f97316", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -362,7 +362,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -466,7 +466,7 @@ test("mantine -> stylex -> mantine: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const App = () => stylex.create({ style: { color: "#2563eb", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],

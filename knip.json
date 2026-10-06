@@ -40,7 +40,7 @@
 			"project": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
 			"ignoreDependencies": ["magic-string"]
 		},
-		"packages/pandwind": {
+		"packages/yumcss": {
 			"entry": [
 				"src/index.ts!",
 				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts!",
@@ -73,7 +73,7 @@
 				"src/preset/index.ts!",
 				"src/reset/tailwindcss.css!",
 				"src/reset/panda.css!",
-				"src/reset/pandwind.css!",
+				"src/reset/yumcss.css!",
 				"src/prose/tailwindcss.css!",
 				"src/stack/index.ts!",
 				"src/stack/react.tsx!",
@@ -192,7 +192,7 @@
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
-		"examples/pandwind-example-preset": {
+		"examples/yumcss-example-preset": {
 			"entry": ["src/index.ts!"],
 			"project": ["src/**/*.ts"]
 		},
@@ -222,7 +222,7 @@
 				"goober",
 				"jss",
 				"next-yak",
-				"pandwind",
+				"yumcss",
 				"react-jss",
 				"react-strict-dom",
 				"style9",
@@ -264,15 +264,15 @@
 		"@tailwindcss/typography",
 		"@chakra-ui/react",
 		"@hono/node-server",
-		"@pandwind/example-preset",
+		"@yumcss/example-preset",
 		"@pandacss/config",
 		"@tokenami/config",
 		"@unocss/config",
 		"@unocss/core",
 		"class-variance-authority",
-		"pandwind",
-		"pandwind-codemod",
-		"pandwind-analyze",
+		"yumcss",
+		"yumcss-codemod",
+		"yumcss-analyze",
 		"postcss",
 		"prettier",
 		"react",

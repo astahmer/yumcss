@@ -1,1 +1,1 @@
-declare module "pandwind:css" {}
+declare module "yumcss:css" {}

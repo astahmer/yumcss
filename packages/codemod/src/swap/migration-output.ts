@@ -22,7 +22,7 @@ export class MigrationOutput {
 			.replace(/\b(?:className|class|css)\s*=/gu, "");
 		let excluded: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 		try {
-			excluded = SourcePass.computeExcludedRanges(body, "pandwind-migration-output.ts");
+			excluded = SourcePass.computeExcludedRanges(body, "yumcss-migration-output.ts");
 		} catch {
 			// Import cleanup remains conservative for incomplete snippets.
 		}
@@ -213,7 +213,7 @@ export class MigrationOutput {
 		const normalized = input.filter((statement) => {
 			if (
 				collidingBindings.size > 0 &&
-				statement.trim() === 'import { createUnsafeCss } from "pandwind/unsafe/css";'
+				statement.trim() === 'import { createUnsafeCss } from "yumcss/unsafe/css";'
 			)
 				return false;
 			const staticBinding =
@@ -292,7 +292,7 @@ export class MigrationOutput {
 	): string {
 		let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 		try {
-			mask = SourcePass.computeExcludedRanges(source, "pandwind-migration-output.ts");
+			mask = SourcePass.computeExcludedRanges(source, "yumcss-migration-output.ts");
 		} catch {
 			// Cleanup is best-effort for incomplete source snippets.
 		}

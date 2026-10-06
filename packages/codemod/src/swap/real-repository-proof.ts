@@ -4,7 +4,7 @@ import {
 	RealRepositoryProofStatus,
 } from "./identifiers.ts";
 
-export const REAL_REPOSITORY_PROOF_SCHEMA = "pandwind.real-repository-proof/1" as const;
+export const REAL_REPOSITORY_PROOF_SCHEMA = "yumcss.real-repository-proof/1" as const;
 
 export interface RealRepositoryProofInput {
 	readonly pipelineUnpaired: boolean;

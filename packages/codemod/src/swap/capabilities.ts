@@ -5,7 +5,7 @@ import { AdapterCapabilityTag, StyleDynamicExpressionKind } from "./identifiers.
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
-export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/1" as const;
+export const ADAPTER_CAPABILITIES_SCHEMA = "yumcss.adapter-capabilities/1" as const;
 
 export type AdapterCapability =
 	| "declarations"

@@ -38,10 +38,10 @@ test("solid-styled -> less: migrates concrete solid-styled syntax to less", () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "solid-styled -> less happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("solid-styled -> less: migrates concrete solid-styled syntax to less", () =
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("solid-styled -> less: carries a documented secondary solid-styled API expl
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("solid-styled -> less: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("solid-styled -> less: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("solid-styled -> less: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("solid-styled -> less: preserves malformed concrete solid-styled input", ()
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> less | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> less | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,

@@ -1,5 +1,5 @@
-import { define } from "pandwind/preset";
-import { csstypePreset } from "pandwind/preset/csstype";
+import { define } from "yumcss/preset";
+import { csstypePreset } from "yumcss/preset/csstype";
 
 type InspectorCssConfig = { [Property in keyof typeof csstypePreset._config]?: string | number };
 

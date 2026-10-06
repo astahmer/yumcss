@@ -42,7 +42,7 @@ test("tamagui -> vue-styled -> tamagui: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("tamagui -> vue-styled -> tamagui: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,
@@ -90,7 +90,7 @@ test("tamagui -> vue-styled -> tamagui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,
@@ -120,7 +120,7 @@ test("tamagui -> vue-styled -> tamagui: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,7 +160,7 @@ test("tamagui -> vue-styled -> tamagui: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | parse-residual: function-dynamic | lowering-residual: host-framework | available: residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -205,7 +205,7 @@ test("tamagui -> vue-styled -> tamagui: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		      "converted": 0,
@@ -242,7 +242,7 @@ test("tamagui -> vue-styled -> tamagui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		      "converted": 0,
@@ -259,7 +259,7 @@ test("tamagui -> vue-styled -> tamagui: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		      "converted": 0,
@@ -296,7 +296,7 @@ test("tamagui -> vue-styled -> tamagui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		      "converted": 0,
@@ -328,7 +328,7 @@ test("tamagui -> vue-styled -> tamagui: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,
@@ -365,7 +365,7 @@ test("tamagui -> vue-styled -> tamagui: resolves token values across both concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
+		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <View :class="Card" />;",
 		    "converted": 0,

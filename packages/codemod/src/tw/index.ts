@@ -1,7 +1,7 @@
 /**
  * Tailwind project tooling.
  *
- * Runtime Tailwind APIs stay in `pandwind/tw`. This lane owns loading a real
+ * Runtime Tailwind APIs stay in `yumcss/tw`. This lane owns loading a real
  * Tailwind design system, generating the typed artifacts and inverted bridge,
  * writing interop metadata, scanning dynamic candidates, and pruning themes.
  */
@@ -21,7 +21,7 @@ export {
 } from "./cli.ts";
 export {
 	checkGeneratedArtifactManifest,
-	PANDWIND_GENERATED_BUDGET_SCHEMA,
+	YUMCSS_GENERATED_BUDGET_SCHEMA,
 	type GeneratedArtifactBudget,
 	type GeneratedArtifactBudgetFile,
 	type GeneratedArtifactCheck,
@@ -57,21 +57,21 @@ export {
 export {
 	buildGeneratedArtifactManifest,
 	hashGeneratedContent,
-	PANDWIND_GENERATED_MANIFEST_SCHEMA,
+	YUMCSS_GENERATED_MANIFEST_SCHEMA,
 	GeneratedArtifactOwnershipTag,
 	type GeneratedArtifactInput,
 	type GeneratedArtifactEntry,
 	type GeneratedArtifactManifestOptions,
-	type PandwindGeneratedManifest,
+	type YumCSSGeneratedManifest,
 } from "./artifact-manifest.ts";
 export {
-	buildPandwindInteropArtifact,
-	parsePandwindInteropArtifact,
-	PANDWIND_INTEROP_SCHEMA,
-	type BuildPandwindInteropArtifactOptions,
-	type PandwindInteropArtifact,
-	type PandwindInteropTokenSnapshot,
-	type PandwindInteropUtility,
+	buildYumCSSInteropArtifact,
+	parseYumCSSInteropArtifact,
+	YUMCSS_INTEROP_SCHEMA,
+	type BuildYumCSSInteropArtifactOptions,
+	type YumCSSInteropArtifact,
+	type YumCSSInteropTokenSnapshot,
+	type YumCSSInteropUtility,
 } from "./interop-artifact.ts";
 export {
 	loadTokenDocument,
@@ -89,7 +89,7 @@ export {
 	type TwCollectResult,
 	type TwScanOptions,
 	type TwScanResult,
-} from "pandwind/tw/collect";
+} from "yumcss/tw/collect";
 export {
 	buildTokenGraph,
 	type TokenGraph,

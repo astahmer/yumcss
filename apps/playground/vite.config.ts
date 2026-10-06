@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import react from "@vitejs/plugin-react-swc";
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { defineConfig } from "vite";
 import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";
 import { dss } from "./src/css.ts";
@@ -24,17 +24,17 @@ const wasiBindingDir = dirname(
 export default defineConfig({
 	plugins: [
 		tailwindDefaultCssPlugin,
-		pandwindCssVite(dss, { cssSources: ["css"] }),
-		pandwindCssVite(css, {
+		yumcssExtractVite(dss, { cssSources: ["css"] }),
+		yumcssExtractVite(css, {
 			cssSources: ["ui-css"],
-			virtualId: "pandwind:ui-css",
+			virtualId: "yumcss:ui-css",
 		}),
 		react(),
 	],
 	resolve: {
-		// Workspace packages expose the `pandwind` condition so the playground
+		// Workspace packages expose the `yumcss` condition so the playground
 		// exercises current source during dev instead of a stale dist build.
-		conditions: ["pandwind"],
+		conditions: ["yumcss"],
 		alias: [
 			{
 				find: "@oxc-parser/binding-wasm32-wasi/wasi-worker-browser.mjs",
@@ -42,21 +42,21 @@ export default defineConfig({
 			},
 			{
 				// Workspace source of the shared official-api scenario catalog.
-				// Vitest and the dev server cannot use the package "pandwind"
+				// Vitest and the dev server cannot use the package "yumcss"
 				// export condition, and dist may be stale; alias to source so
 				// tests and the lab always exercise the current catalog.
-				find: "pandwind-codemod/swap/official-api-cases",
+				find: "@yumcss/codemod/swap/official-api-cases",
 				replacement: join(
-					dirname(createRequire(import.meta.url).resolve("pandwind-codemod/package.json")),
+					dirname(createRequire(import.meta.url).resolve("@yumcss/codemod/package.json")),
 					"src/swap/official-api-cases.ts",
 				),
 			},
 			{
 				// Same stale-dist risk as the scenario catalog: the browser-safe
 				// swap surface must stay current with new exports in dev.
-				find: "pandwind-codemod/swap/browser",
+				find: "@yumcss/codemod/swap/browser",
 				replacement: join(
-					dirname(createRequire(import.meta.url).resolve("pandwind-codemod/package.json")),
+					dirname(createRequire(import.meta.url).resolve("@yumcss/codemod/package.json")),
 					"src/swap/browser.ts",
 				),
 			},

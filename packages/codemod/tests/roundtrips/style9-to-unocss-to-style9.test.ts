@@ -42,7 +42,7 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "style9 -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		export const styles = { "card": "[color:red]" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -127,7 +127,7 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("style9 -> unocss -> style9: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: style9 -> unocss | lowering-residual: configuration, validation)
 		export const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

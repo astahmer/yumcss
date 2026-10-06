@@ -38,10 +38,10 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "treat -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("treat -> mui: migrates concrete treat syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("treat -> mui: carries a documented secondary treat API explicitly", () => 
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("treat -> mui: loads concrete theme and project context variants", async ()
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("treat -> mui: resolves concrete token values with project context", async 
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("treat -> mui: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 0,

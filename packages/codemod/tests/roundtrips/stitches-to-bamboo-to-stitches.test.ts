@@ -42,7 +42,7 @@ test("stitches -> bamboo -> stitches: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> bamboo round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -139,7 +139,7 @@ test("stitches -> bamboo -> stitches: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> bamboo | capability-blocked: global-rules: global rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> bamboo | capability-blocked: global-rules: global rule | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("stitches -> bamboo -> stitches: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> bamboo | capability-blocked: global-rules: global rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> bamboo | capability-blocked: global-rules: global rule | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,8 +1,8 @@
 /**
- * Tailwind CSS docs -> Pandwind migration corpus.
+ * Tailwind CSS docs -> YumCSS migration corpus.
  *
  * The upstream checkout is deliberately read-only. This runner builds the
- * Pandwind metadata from the pinned Tailwind stylesheet, applies one lane at
+ * YumCSS metadata from the pinned Tailwind stylesheet, applies one lane at
  * a time through the shared codemod source transformer, and can materialize a
  * complete migrated app in a caller-owned output directory.
  */
@@ -12,15 +12,15 @@ import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import {
-	buildPandwindInteropArtifact,
+	buildYumCSSInteropArtifact,
 	generateDesignSystem,
 	generateUtilityBridge,
-	type PandwindInteropArtifact,
-} from "pandwind-codemod/tw";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
-import { mapClassList } from "pandwind-codemod/migration/map";
-import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
+	type YumCSSInteropArtifact,
+} from "@yumcss/codemod/tw";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { loadMetaFromSources, type YumCSSMeta } from "@yumcss/codemod/migration/meta";
+import { mapClassList } from "@yumcss/codemod/migration/map";
+import { CodemodAdapterId, SwapSourceId } from "@yumcss/codemod/swap";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 import {
 	migrateRegisteredFile,
@@ -67,7 +67,7 @@ interface LaneAdapter {
 	transform(
 		source: string,
 		file: string,
-		meta: PandwindMeta,
+		meta: YumCSSMeta,
 		root: string,
 		files: readonly string[],
 	): Promise<CorpusTransformResult>;
@@ -92,10 +92,10 @@ const tailwindDocsHostAdapter = {
 };
 
 interface GeneratedMetadata {
-	readonly meta: PandwindMeta;
+	readonly meta: YumCSSMeta;
 	readonly typesDts: string;
 	readonly twTs: string;
-	readonly interop: PandwindInteropArtifact;
+	readonly interop: YumCSSInteropArtifact;
 	readonly utilityCount: number;
 	readonly variantCount: number;
 	readonly bridgeEntries: number;
@@ -130,7 +130,7 @@ function bridgeEntryCount(bridge: Record<string, Record<string, string>>): numbe
 }
 
 async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetadata> {
-	const tempRoot = await mkdtemp(join(tmpdir(), "pandwind-tailwind-docs-meta-"));
+	const tempRoot = await mkdtemp(join(tmpdir(), "yumcss-tailwind-docs-meta-"));
 	try {
 		await mkdir(join(tempRoot, "node_modules"), { recursive: true });
 		const sourceCssRoot = join(referenceRoot, "src/app");
@@ -150,7 +150,7 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 		const stylesheet = await readFile(join(tempRoot, "globals.css"), "utf8");
 		const generated = await generateDesignSystem(stylesheet, tempRoot);
 		const bridge = await generateUtilityBridge(stylesheet, tempRoot);
-		const interop = buildPandwindInteropArtifact({
+		const interop = buildYumCSSInteropArtifact({
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			twRuntimeTs: generated.twRuntimeTs,
@@ -158,9 +158,9 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 			twBuildTs: generated.twBuildTs,
 			bridge,
 		});
-		await writeFile(join(tempRoot, "pandwind.interop.json"), `${JSON.stringify(interop)}\n`);
+		await writeFile(join(tempRoot, "yumcss.interop.json"), `${JSON.stringify(interop)}\n`);
 		return {
-			meta: loadMetaFromSources({ interopPath: join(tempRoot, "pandwind.interop.json") }),
+			meta: loadMetaFromSources({ interopPath: join(tempRoot, "yumcss.interop.json") }),
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			interop,
@@ -206,13 +206,13 @@ function createLane(id: TailwindDocsLane): LaneAdapter {
 				files,
 				meta,
 				from: CodemodAdapterId.Tailwind,
-				to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+				to: `${CodemodAdapterId.YumCSS}:${dialect}`,
 				project:
 					id === TailwindDocsLane.Tw
-						? { twModule: "src/pandwind/tw", cxModule: "src/pandwind/cx" }
+						? { twModule: "src/yumcss/tw", cxModule: "src/yumcss/cx" }
 						: id === TailwindDocsLane.CssClass
-							? { cssModule: "src/pandwind/css" }
-							: { dssModule: "src/pandwind/dss" },
+							? { cssModule: "src/yumcss/css" }
+							: { dssModule: "src/yumcss/dss" },
 			});
 		},
 	};
@@ -225,13 +225,13 @@ import { useRef } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 import { ${binding} } from "./${binding}";
 
-export function PandwindStyleSheet() {
+export function YumCSSStyleSheet() {
 	const emitted = useRef<string | undefined>(undefined);
 	useServerInsertedHTML(() => {
 		const value = ${binding}.sheet.css();
 		if (value === emitted.current) return null;
 		emitted.current = value;
-		return <style data-pandwind dangerouslySetInnerHTML={{ __html: value }} />;
+		return <style data-yumcss dangerouslySetInnerHTML={{ __html: value }} />;
 	});
 	return null;
 }
@@ -244,25 +244,25 @@ function laneSupportFiles(
 	mappedTokens: ReadonlySet<string>,
 ): Record<string, string> {
 	const support: Record<string, string> = {
-		"src/pandwind/types.d.ts": metadata.typesDts,
-		"src/pandwind/tw.ts": metadata.twTs,
-		"src/pandwind/pandwind.interop.json": `${JSON.stringify(metadata.interop, null, 2)}\n`,
+		"src/yumcss/types.d.ts": metadata.typesDts,
+		"src/yumcss/tw.ts": metadata.twTs,
+		"src/yumcss/yumcss.interop.json": `${JSON.stringify(metadata.interop, null, 2)}\n`,
 	};
 	if (lane === TailwindDocsLane.Tw) {
-		support["src/app/pandwind-tw-classes.ts"] =
-			`export const pandwindTailwindClasses = ${JSON.stringify(
+		support["src/app/yumcss-tw-classes.ts"] =
+			`export const yumcssTailwindClasses = ${JSON.stringify(
 				[...mappedTokens].toSorted().join(" "),
 			)};\n`;
-		support["src/pandwind/cx.ts"] =
-			'import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n';
+		support["src/yumcss/cx.ts"] =
+			'import { createCx } from "yumcss/cx";\nimport { __yumcssConfig } from "./tw";\n\nexport const cx = createCx(__yumcssConfig);\n';
 	} else if (lane === TailwindDocsLane.CssClass) {
-		support["src/pandwind/css.ts"] =
-			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const css = createRuntimeCss(defaultPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
-		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("css");
+		support["src/yumcss/css.ts"] =
+			'import type { CssFn } from "yumcss/css";\nimport { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\n\nexport const css = createRuntimeCss(defaultPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
+		support["src/yumcss/style-sheet.tsx"] = runtimeStyleSheetSource("css");
 	} else {
-		support["src/pandwind/dss.ts"] =
-			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const dss = createRuntimeDesignCss(defaultPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
-		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("dss");
+		support["src/yumcss/dss.ts"] =
+			'import type { CssFn } from "yumcss/css";\nimport { createRuntimeDesignCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\n\nexport const dss = createRuntimeDesignCss(defaultPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
+		support["src/yumcss/style-sheet.tsx"] = runtimeStyleSheetSource("dss");
 	}
 	return support;
 }
@@ -342,7 +342,7 @@ export class TailwindDocsMigration {
 			};
 			packageJson.dependencies = {
 				...packageJson.dependencies,
-				pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+				yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 			};
 			await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 			const nextConfigFile = join(outputRoot, "next.config.ts");
@@ -352,7 +352,7 @@ export class TailwindDocsMigration {
 					nextConfigFile,
 					nextConfig.replace(
 						"const nextConfig = {",
-						'const nextConfig = {\n  transpilePackages: ["pandwind"],',
+						'const nextConfig = {\n  transpilePackages: ["yumcss"],',
 					),
 				);
 			}
@@ -369,8 +369,8 @@ export class TailwindDocsMigration {
 			await cp(join(referenceRoot, "src"), join(outputRoot, "src"), { recursive: true });
 			const globalStylesheet = join(outputRoot, "src/app/globals.css");
 			const stylesheet = await readFile(globalStylesheet, "utf8");
-			if (!stylesheet.includes('@source not "./../pandwind";')) {
-				await writeFile(globalStylesheet, `${stylesheet}\n@source not "./../pandwind";\n`);
+			if (!stylesheet.includes('@source not "./../yumcss";')) {
+				await writeFile(globalStylesheet, `${stylesheet}\n@source not "./../yumcss";\n`);
 			}
 			for (const [file, code] of outputFiles) {
 				const target = join(outputRoot, file);
@@ -385,14 +385,14 @@ export class TailwindDocsMigration {
 			if (lane !== TailwindDocsLane.Tw) {
 				const layoutFile = join(outputRoot, "src/app/layout.tsx");
 				const layout = await readFile(layoutFile, "utf8");
-				const withStyleSheetImport = layout.includes("PandwindStyleSheet")
+				const withStyleSheetImport = layout.includes("YumCSSStyleSheet")
 					? layout
-					: `import { PandwindStyleSheet } from "../pandwind/style-sheet";\n${layout}`;
+					: `import { YumCSSStyleSheet } from "../yumcss/style-sheet";\n${layout}`;
 				await writeFile(
 					layoutFile,
 					withStyleSheetImport.replace(
 						'        <GoogleAnalytics gaId="G-TMR96VNVMT" />',
-						`        <PandwindStyleSheet />\n        <GoogleAnalytics gaId="G-TMR96VNVMT" />`,
+						`        <YumCSSStyleSheet />\n        <GoogleAnalytics gaId="G-TMR96VNVMT" />`,
 					),
 				);
 			}

@@ -1,5 +1,5 @@
 /**
- * shadcn/ui v4 -> Pandwind migration corpus.
+ * shadcn/ui v4 -> YumCSS migration corpus.
  *
  * The pinned shadcn checkout remains read-only. This runner owns the
  * migration lanes and can materialize a disposable copy of the monorepo for
@@ -12,16 +12,16 @@ import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import {
-	buildPandwindInteropArtifact,
+	buildYumCSSInteropArtifact,
 	generateDesignSystem,
 	generateUtilityBridge,
-} from "pandwind-codemod/tw";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { defaultPreset } from "pandwind/preset/default";
-import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
-import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
+} from "@yumcss/codemod/tw";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import { createCssExtractionService } from "yumcss/vite/css-extract";
+import { defaultPreset } from "yumcss/preset/default";
+import { loadMetaFromSources, type YumCSSMeta } from "@yumcss/codemod/migration/meta";
+import { CodemodAdapterId, SwapSourceId } from "@yumcss/codemod/swap";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 import {
 	discoverProjectFiles,
@@ -37,7 +37,7 @@ const appRootName = "apps/v4";
 // The materializer excludes metadata from Tailwind's automatic source scan;
 // the explicit class catalog lives under app/ so it can still be scanned.
 const supportRoot = `${appRootName}/pw`;
-const sourceCatalogFile = `${appRootName}/pandwind-source.txt`;
+const sourceCatalogFile = `${appRootName}/yumcss-source.txt`;
 
 export enum ShadcnV4MigrationLane {
 	Tw = "tw",
@@ -52,7 +52,7 @@ export interface ShadcnV4MigrationOptions {
 }
 
 export interface ShadcnV4MigrationReport {
-	readonly schema: "pandwind.shadcn-v4-migration/1";
+	readonly schema: "yumcss.shadcn-v4-migration/1";
 	readonly lane: ShadcnV4MigrationLane;
 	readonly referenceCommit: string;
 	readonly sourceFiles: number;
@@ -73,16 +73,16 @@ export interface ShadcnV4MigrationReport {
 }
 
 interface GeneratedMetadata {
-	readonly meta: PandwindMeta;
+	readonly meta: YumCSSMeta;
 	readonly typesDts: string;
 	readonly twTs: string;
-	readonly interop: ReturnType<typeof buildPandwindInteropArtifact>;
+	readonly interop: ReturnType<typeof buildYumCSSInteropArtifact>;
 	readonly variantConditions: Readonly<Record<string, string | readonly string[]>>;
 }
 
 interface LaneAdapter {
 	readonly lane: ShadcnV4MigrationLane;
-	transform(source: string, file: string, metadata: PandwindMeta): Promise<CorpusTransformResult>;
+	transform(source: string, file: string, metadata: YumCSSMeta): Promise<CorpusTransformResult>;
 }
 
 async function collectSourceFiles(root: string): Promise<string[]> {
@@ -132,7 +132,7 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 	const cssBase = dirname(cssEntry);
 	const generated = await generateDesignSystem(css, cssBase);
 	const bridge = await generateUtilityBridge(cssEntry, cssBase);
-	const interop = buildPandwindInteropArtifact({
+	const interop = buildYumCSSInteropArtifact({
 		typesDts: generated.typesDts,
 		twTs: generated.twTs,
 		twRuntimeTs: generated.twRuntimeTs,
@@ -140,13 +140,13 @@ async function generatedMetadata(referenceRoot: string): Promise<GeneratedMetada
 		twBuildTs: generated.twBuildTs,
 		bridge,
 	});
-	const metadataRoot = await mkdtemp(join(tmpdir(), "pandwind-shadcn-v4-metadata-"));
+	const metadataRoot = await mkdtemp(join(tmpdir(), "yumcss-shadcn-v4-metadata-"));
 	try {
 		await writeFile(join(metadataRoot, "types.d.ts"), generated.typesDts);
 		await writeFile(join(metadataRoot, "tw.ts"), generated.twTs);
-		await writeFile(join(metadataRoot, "pandwind.interop.json"), JSON.stringify(interop));
+		await writeFile(join(metadataRoot, "yumcss.interop.json"), JSON.stringify(interop));
 		return {
-			meta: loadMetaFromSources({ interopPath: join(metadataRoot, "pandwind.interop.json") }),
+			meta: loadMetaFromSources({ interopPath: join(metadataRoot, "yumcss.interop.json") }),
 			typesDts: generated.typesDts,
 			twTs: generated.twTs,
 			interop,
@@ -178,7 +178,7 @@ function createLane(
 				files,
 				meta: metadata,
 				from: CodemodAdapterId.Tailwind,
-				to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+				to: `${CodemodAdapterId.YumCSS}:${dialect}`,
 				project:
 					lane === ShadcnV4MigrationLane.Tw
 						? { twModule: `${supportRoot}/tw`, cxModule: `${supportRoot}/cx` }
@@ -192,10 +192,10 @@ function createLane(
 
 function laneSource(lane: ShadcnV4MigrationLane): string {
 	if (lane === ShadcnV4MigrationLane.Tw)
-		return `import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n`;
+		return `import { createCx } from "yumcss/cx";\nimport { __yumcssConfig } from "./tw";\n\nexport const cx = createCx(__yumcssConfig);\n`;
 	if (lane === ShadcnV4MigrationLane.Css)
-		return `import { createCss } from "pandwind/css";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const css = createCss(defaultPreset);\n`;
-	return `import { createDesignCss } from "pandwind/design";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const dss = createDesignCss(defaultPreset);\n`;
+		return `import { createCss } from "yumcss/css";\nimport { defaultPreset } from "yumcss/preset/default";\n\nexport const css = createCss(defaultPreset);\n`;
+	return `import { createDesignCss } from "yumcss/design";\nimport { defaultPreset } from "yumcss/preset/default";\n\nexport const dss = createDesignCss(defaultPreset);\n`;
 }
 
 function staticStylesheetSource(
@@ -253,7 +253,7 @@ function supportFiles(
 	const files: Record<string, string> = {
 		[`${supportRoot}/types.d.ts`]: metadata.typesDts,
 		[`${supportRoot}/tw.ts`]: metadata.twTs,
-		[`${supportRoot}/pandwind.interop.json`]: `${JSON.stringify(metadata.interop, null, 2)}\n`,
+		[`${supportRoot}/yumcss.interop.json`]: `${JSON.stringify(metadata.interop, null, 2)}\n`,
 	};
 	if (lane === ShadcnV4MigrationLane.Tw) {
 		files[`${supportRoot}/cx.ts`] = laneSource(lane);
@@ -299,12 +299,12 @@ async function materialize(
 	}
 	const configFile = join(outputRoot, appRootName, "next.config.mjs");
 	const config = await readFile(configFile, "utf8");
-	if (!config.includes('transpilePackages: ["pandwind"]'))
+	if (!config.includes('transpilePackages: ["yumcss"]'))
 		await writeFile(
 			configFile,
 			config.replace(
 				"const nextConfig = {",
-				'const nextConfig = {\n  transpilePackages: ["pandwind"],',
+				'const nextConfig = {\n  transpilePackages: ["yumcss"],',
 			),
 		);
 	const packageFile = join(outputRoot, appRootName, "package.json");
@@ -313,7 +313,7 @@ async function materialize(
 	};
 	packageJson.dependencies = {
 		...packageJson.dependencies,
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 	const stylesheet = join(outputRoot, appRootName, "app/globals.css");
@@ -402,7 +402,7 @@ export class ShadcnV4Migration {
 				staticCss,
 			);
 		const report: ShadcnV4MigrationReport = {
-			schema: "pandwind.shadcn-v4-migration/1",
+			schema: "yumcss.shadcn-v4-migration/1",
 			lane,
 			referenceCommit,
 			sourceFiles,

@@ -20,7 +20,7 @@
  * sets font-size + line-height).
  */
 /** `property -> resolved value -> utility class`. */
-export type { UtilityBridge } from "pandwind/tw";
+export type { UtilityBridge } from "yumcss/tw";
 export { BRIDGE_PROPS } from "./bridge-generator.ts";
 import { UtilityBridgeGenerator } from "./bridge-generator.ts";
 
@@ -28,6 +28,6 @@ export async function generateUtilityBridge(
 	entry: string,
 	base: string,
 	options: { props?: readonly string[]; values?: ReadonlySet<string> } = {},
-): Promise<import("pandwind/tw").UtilityBridge> {
+): Promise<import("yumcss/tw").UtilityBridge> {
 	return new UtilityBridgeGenerator().generate(entry, base, options);
 }

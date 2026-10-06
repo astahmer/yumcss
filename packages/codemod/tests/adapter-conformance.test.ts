@@ -70,7 +70,7 @@ describe("registered adapter conformance", () => {
 			expect(program, `${adapter.id} direct fixture did not parse`).toBeDefined();
 			if (program === undefined) continue;
 			const policy = adapter.migration?.targetPolicy;
-			for (const targetId of [CodemodAdapterId.Pandwind, adapter.id]) {
+			for (const targetId of [CodemodAdapterId.YumCSS, adapter.id]) {
 				const dynamic = adapter.migration?.prepareDynamic?.({
 					source: fixture.source,
 					file: fixture.file,
@@ -142,7 +142,7 @@ describe("registered adapter conformance", () => {
 					source: fixture.source,
 					code: fixture.source,
 					file: fixture.file,
-					targetId: CodemodAdapterId.Pandwind,
+					targetId: CodemodAdapterId.YumCSS,
 					convertedBindings: new Set(["card", "styles"]),
 					complete: true,
 				});

@@ -38,10 +38,10 @@ test("bamboo -> css-modules: migrates concrete bamboo syntax to css-modules", ()
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "bamboo -> css-modules happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("bamboo -> css-modules: migrates concrete bamboo syntax to css-modules", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("bamboo -> css-modules: carries a documented secondary bamboo API explicitl
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ display: "flex", gap: "4" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("bamboo -> css-modules: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("bamboo -> css-modules: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("bamboo -> css-modules: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("bamboo -> css-modules: preserves malformed concrete bamboo input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: bamboo -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 0,

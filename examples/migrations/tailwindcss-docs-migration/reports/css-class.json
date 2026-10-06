@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.tailwind-docs-lane-report/1",
+	"schema": "yumcss.tailwind-docs-lane-report/1",
 	"lane": "css-class",
 	"referenceCommit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
 	"sourceFiles": 96,

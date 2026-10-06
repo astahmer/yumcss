@@ -42,7 +42,7 @@ test("unocss -> tokenami -> unocss: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> tokenami round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("unocss -> tokenami -> unocss: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "@tokenami/css";
 		export const App = () => <div style={css({ "--display": "flex", "--align-items": "center", "--gap": "1rem" })} />;",
 		    "converted": 0,
@@ -126,7 +126,7 @@ test("unocss -> tokenami -> unocss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | lowering-residual: emission-empty, capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> tokenami | lowering-residual: emission-empty, capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,7 +165,7 @@ test("unocss -> tokenami -> unocss: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> tokenami | lowering-residual: emission-empty, capability | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: unocss -> tokenami | lowering-residual: emission-empty, capability | available: static, named-map, residual)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

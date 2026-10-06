@@ -40,10 +40,10 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", async ()
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "chakra-ui -> treat happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("chakra-ui -> treat: migrates concrete chakra-ui syntax to treat", async ()
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -98,7 +98,7 @@ test("chakra-ui -> treat: carries a documented secondary chakra-ui API explicitl
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,
@@ -157,7 +157,7 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,7 +195,7 @@ test("chakra-ui -> treat: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -245,7 +245,7 @@ test("chakra-ui -> treat: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -292,7 +292,7 @@ test("chakra-ui -> treat: preserves malformed concrete chakra-ui input", async (
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 0,

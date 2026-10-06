@@ -1,5 +1,5 @@
 /**
- * rn-example e2e — pandwind/react-native styles rendered by a REAL
+ * rn-example e2e — yumcss/react-native styles rendered by a REAL
  * react-native-web host in real Chromium.
  *
  * What is proven end-to-end:

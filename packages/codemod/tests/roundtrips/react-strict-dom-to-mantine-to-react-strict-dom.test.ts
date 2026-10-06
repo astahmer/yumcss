@@ -42,7 +42,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves an actionable c
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -102,7 +102,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves an actionable c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,
@@ -162,7 +162,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: retains the documented se
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: rule-level, validation)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -210,7 +210,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: retains the documented se
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: rule-level, validation)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -255,7 +255,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -304,7 +304,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
@@ -351,7 +351,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -400,7 +400,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 1,
@@ -462,7 +462,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -511,7 +511,7 @@ test("react-strict-dom -> mantine -> react-strict-dom: resolves token values acr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-strict-dom -> mantine | lowering-residual: host-framework, validation)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 1,

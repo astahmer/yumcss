@@ -38,10 +38,10 @@ test("goober -> style9: migrates concrete goober syntax to style9", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "goober -> style9 happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("goober -> style9: carries a documented secondary goober API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "goober";
-		// pandwind:migrate-skip (route: goober -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> style9 | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -8,14 +8,14 @@
 	},
 	"source": {
 		"emisoupRevision": "005b44b87470228738873fd66076737a2017b3",
-		"pandwindBeforeRevision": "04fe7147674974a773d958507d7b5e93c76187ef",
-		"pandwindAfterRevision": "94df3c41d5209e92adcadd298d0d246c37932a5a"
+		"yumcssBeforeRevision": "04fe7147674974a773d958507d7b5e93c76187ef",
+		"yumcssAfterRevision": "94df3c41d5209e92adcadd298d0d246c37932a5a"
 	},
 	"currentBuildRecheck": {
 		"measuredAt": "2026-09-25",
 		"source": {
 			"emisoupRevision": "a13301f9a663b2190cdfd9ac4969794b2c3d6b74",
-			"pandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1"
+			"yumcssRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1"
 		},
 		"environment": {
 			"machine": "Apple M4 (arm64), macOS",
@@ -39,8 +39,8 @@
 		"measuredAt": "2026-09-25",
 		"source": {
 			"emisoupRevision": "a13301f9a663b2190cdfd9ac4969794b2c3d6b74",
-			"baselinePandwindRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1",
-			"filteredPandwindRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb"
+			"baselineYumCSSRevision": "180ceaf1a8ab011f62e1a929fbc9a2c56f3da1e1",
+			"filteredYumCSSRevision": "41a909fa9560c1cdd983f998329bf3602b277ccb"
 		},
 		"environment": {
 			"machine": "Apple M4 (arm64), macOS",
@@ -126,7 +126,7 @@
 		},
 		"css": { "files": 2, "rawBytes": 125582, "gzip9Bytes": 21958, "brotli11Bytes": 19146 },
 		"total": { "files": 199, "rawBytes": 3003504, "gzip9Bytes": 894553, "brotli11Bytes": 791621 },
-		"mainPandwindStylesheet": {
+		"mainYumCSSStylesheet": {
 			"rawBytes": 123976,
 			"gzip9Bytes": 21169,
 			"brotli11Bytes": 18496,

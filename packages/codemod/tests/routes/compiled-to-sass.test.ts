@@ -38,10 +38,10 @@ test("compiled -> sass: migrates concrete compiled syntax to sass", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "compiled -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("compiled -> sass: migrates concrete compiled syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("compiled -> sass: carries a documented secondary compiled API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("compiled -> sass: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("compiled -> sass: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("compiled -> sass: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("compiled -> sass: preserves malformed concrete compiled input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 0,

@@ -42,7 +42,7 @@ test("tailwind -> sass -> tailwind: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("tailwind -> sass -> tailwind: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -93,7 +93,7 @@ test("tailwind -> sass -> tailwind: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -121,7 +121,7 @@ test("tailwind -> sass -> tailwind: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -167,7 +167,7 @@ test("tailwind -> sass -> tailwind: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -210,7 +210,7 @@ test("tailwind -> sass -> tailwind: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("tailwind -> sass -> tailwind: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -266,7 +266,7 @@ test("tailwind -> sass -> tailwind: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -307,7 +307,7 @@ test("tailwind -> sass -> tailwind: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -337,7 +337,7 @@ test("tailwind -> sass -> tailwind: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -378,7 +378,7 @@ test("tailwind -> sass -> tailwind: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <div className="text-brand p-card" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -18,7 +18,7 @@ const composeClasses = (base: string, extra: string) => cx(base, extra);
 export function App() {
 	return (
 		<main style={{ fontFamily: "monospace" }}>
-			<h1 data-testid="heading">pandwind css-example</h1>
+			<h1 data-testid="heading">yumcss css-example</h1>
 			{/* A + D: two IDENTICAL literal call sites -> one shared atomic class (dedup). */}
 			<section
 				data-testid="card-a"
@@ -52,7 +52,7 @@ export function App() {
 				data-testid="cva-button"
 				className={composeClasses(cvaButtonClass, dss.class({ $text: { weight: "bold" } }))}
 			>
-				CVA selects Pandwind classes
+				CVA selects YumCSS classes
 			</button>
 		</main>
 	);

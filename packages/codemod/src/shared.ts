@@ -1,7 +1,7 @@
 /** Small helpers shared between the mode passes and the source passes. */
 import { dirnameDocumentPath, joinDocumentPath, relativeDocumentPath } from "./path-utils.ts";
 
-export const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
+export const SKIP_MARKER_DEFAULT = "yumcss:migrate-skip";
 
 /**
  * Relative import specifier from `file`'s directory to `<metaDir>/<moduleName>`.
@@ -9,8 +9,8 @@ export const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
  * relative inputs against the same cwd on both sides, so the offset between
  * them is correct regardless of what that cwd actually is.
  *
- * `pandwind/tw` and `pandwind/cx` only export generic, unconfigured
- * fallbacks (no design-system conflicts/variants wired in — `pandwind/cx`
+ * `yumcss/tw` and `yumcss/cx` only export generic, unconfigured
+ * fallbacks (no design-system conflicts/variants wired in — `yumcss/cx`
  * doesn't even export a `cx`), so migrated call sites must import the app's
  * own generated module instead of the package subpath.
  */

@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"route": {
 		"from": "stitches",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"referenceCommit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
 	"referencePath": "packages/react/tests/basic.js",
@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -30,7 +30,7 @@
 			"targetBytes": 138,
 			"differences": []
 		},
-		"targetUsesPandwind": true,
+		"targetUsesYumCSS": true,
 		"sourceImportRemoved": true,
 		"variantLowered": true,
 		"recipeRuntimeGenerated": true,
@@ -72,6 +72,6 @@
 	"css": {
 		"sourceBytes": 458,
 		"targetBytes": 350,
-		"note": "The tiny fixture compares Stitches' fused SSR sheet with Pandwind's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
+		"note": "The tiny fixture compares Stitches' fused SSR sheet with YumCSS's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
 	}
 }

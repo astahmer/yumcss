@@ -1,10 +1,10 @@
 /**
- * TUI target — the SAME shared vocabulary through pandwind/opentui.
+ * TUI target — the SAME shared vocabulary through yumcss/opentui.
  * Terminal cells: fill -> span backgrounds, corners -> border model,
  * pad [4, 8] -> per-side cell expansion. `_dark` resolves at boot.
  */
-import { createDesignCss } from "pandwind/opentui";
-import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "yumcss/opentui";
+import { examplePreset } from "@yumcss/example-preset";
 import { body, header, status } from "../shared-styles.ts";
 
 export interface AppProps {

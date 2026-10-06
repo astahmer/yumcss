@@ -13,7 +13,7 @@ import { styleProgramFromSwapIR, type StyleProgram } from "../../semantic-ir.ts"
 import { CodemodAdapterId, PandaMigrationStageId } from "../../identifiers.ts";
 
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
-export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/1" as const;
+export const PANDA_MIGRATION_PIPELINE_SCHEMA = "yumcss.panda-migration-pipeline/1" as const;
 
 type PandaMigrationPhase = "discovery" | "conversion" | "emission" | "rewrite" | "validation";
 

@@ -1,6 +1,6 @@
 /**
  * Run the pinned styled-components documentation site through the shared
- * source-adapter -> StyleProgram -> Pandwind target route.
+ * source-adapter -> StyleProgram -> YumCSS target route.
  *
  * The reference checkout is never edited. This script owns disposable
  * materialization and lane evidence so every migration is reproducible from
@@ -17,12 +17,12 @@ import {
 	StyleValueKindTag,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
-} from "pandwind-codemod/swap";
-import type { AdapterMigrationResult, StyleProgram } from "pandwind-codemod/swap";
-import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { createCssSourceScanner } from "pandwind/vite/css-extract";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import type { StyleObject } from "pandwind/types/typings";
+} from "@yumcss/codemod/swap";
+import type { AdapterMigrationResult, StyleProgram } from "@yumcss/codemod/swap";
+import { createCssExtractionService } from "yumcss/vite/css-extract";
+import { createCssSourceScanner } from "yumcss/vite/css-extract";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import type { StyleObject } from "yumcss/types/typings";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 
 export enum StyledComponentsDocsLane {
@@ -60,7 +60,7 @@ export interface StyledComponentsDocsMigrationOptions {
 
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const defaultReferenceRoot = createReferenceWorkspace().path("styled-components-website");
-const supportRoot = "pandwind";
+const supportRoot = "yumcss";
 
 interface LaneAdapter {
 	transform(
@@ -183,7 +183,7 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 		/\bstyled\s*(?:\.|\()/.test(source) && !/\bimport\s+styled\b/.test(source);
 	const normalizedSource = source.replace(
 		/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["'];?/g,
-		'import { ThemeProvider } from "@/pandwind/theme";',
+		'import { ThemeProvider } from "@/yumcss/theme";',
 	);
 	if (
 		!needsRuntime &&
@@ -196,25 +196,25 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 	const runtimeBinding = lane === StyledComponentsDocsLane.DesignCss ? "dss" : "css";
 	const runtimeAlias = keepsSourceCss ? "__sourceCss" : runtimeBinding;
 	const runtimeSource = normalizedSource
-		.replaceAll('from "pandwind/runtime"', 'from "@/pandwind/runtime"')
-		.replaceAll('from "pandwind/theme"', 'from "@/pandwind/theme"');
+		.replaceAll('from "yumcss/runtime"', 'from "@/yumcss/runtime"')
+		.replaceAll('from "yumcss/theme"', 'from "@/yumcss/theme"');
 	const hasRuntime = new RegExp(
-		`import\\s*\\{[^}]*\\b${runtimeAlias}\\b[^}]*\\}\\s*from\\s*["']@/pandwind/runtime["']`,
+		`import\\s*\\{[^}]*\\b${runtimeAlias}\\b[^}]*\\}\\s*from\\s*["']@/yumcss/runtime["']`,
 	).test(runtimeSource);
 	const hasTemplate = runtimeSource.includes("const cssTemplate =");
 	const imports =
 		(needsRuntime || needsTemplate
 			? hasRuntime
 				? ""
-				: `import { ${runtimeAlias === runtimeBinding ? runtimeBinding : `${runtimeBinding} as ${runtimeAlias}`} } from "@/pandwind/runtime";\n`
+				: `import { ${runtimeAlias === runtimeBinding ? runtimeBinding : `${runtimeBinding} as ${runtimeAlias}`} } from "@/yumcss/runtime";\n`
 			: "") +
 		(needsStyledFallback ? 'import styled from "styled-components";\n' : "") +
 		(needsStyledCssFallback ? 'import { css } from "styled-components";\n' : "") +
 		(needsThemeProvider || needsCreateTheme
-			? `import { ${[needsThemeProvider ? "ThemeProvider" : "", needsCreateTheme ? "createTheme" : ""].filter(Boolean).join(", ")} } from "@/pandwind/theme";\n`
+			? `import { ${[needsThemeProvider ? "ThemeProvider" : "", needsCreateTheme ? "createTheme" : ""].filter(Boolean).join(", ")} } from "@/yumcss/theme";\n`
 			: "") +
 		(needsTemplate && !hasTemplate
-			? 'const cssTemplate = (strings, ...values) => values.some((value) => typeof value === "function") ? (props) => strings.reduce((output, string, index) => { const value = values[index]; const resolved = typeof value === "function" ? (value.__pandwindClassName === undefined ? value(props) : "." + value.__pandwindClassName) : value; return output + string + (resolved ?? ""); }, "") : strings.reduce((output, string, index) => output + string + (values[index] ?? ""), "");\n'
+			? 'const cssTemplate = (strings, ...values) => values.some((value) => typeof value === "function") ? (props) => strings.reduce((output, string, index) => { const value = values[index]; const resolved = typeof value === "function" ? (value.__yumcssClassName === undefined ? value(props) : "." + value.__yumcssClassName) : value; return output + string + (resolved ?? ""); }, "") : strings.reduce((output, string, index) => output + string + (values[index] ?? ""), "");\n'
 			: "");
 	const isolatedRuntimeSource =
 		keepsSourceCss && runtimeAlias !== runtimeBinding
@@ -273,16 +273,16 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		).length;
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.StyledComponents,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file,
 			root,
 			mode: "safe",
 		});
 		const normalizedCode = result.code
-			.replaceAll('import { createUnsafeCss } from "pandwind/unsafe/css";\n', "")
+			.replaceAll('import { createUnsafeCss } from "yumcss/unsafe/css";\n', "")
 			.replaceAll("const css = createUnsafeCss();\n", "")
-			.replaceAll('import { createRuntimeCss } from "pandwind/css/runtime";\n', "")
-			.replaceAll('import { defaultPreset } from "pandwind/preset/default";\n', "")
+			.replaceAll('import { createRuntimeCss } from "yumcss/css/runtime";\n', "")
+			.replaceAll('import { defaultPreset } from "yumcss/preset/default";\n', "")
 			.replaceAll("const css = createRuntimeCss(defaultPreset);\n", "");
 		const runtimeCode = withRuntimeImports(normalizedCode, this.lane);
 		if (this.lane === StyledComponentsDocsLane.RuntimeCss)
@@ -318,7 +318,7 @@ async function collectSourceFiles(root: string): Promise<string[]> {
 }
 
 function runtimePreset(): string {
-	return `/** Generated by the Pandwind migration proof runner. */
+	return `/** Generated by the YumCSS migration proof runner. */
 export const preset = {
   strict: false,
   properties: {},
@@ -342,7 +342,7 @@ function runtimeRegistry(): string {
 import { useServerInsertedHTML } from 'next/navigation';
 import React, { useState } from 'react';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
-import { runtimeSheet } from '@/pandwind/runtime';
+import { runtimeSheet } from '@/yumcss/runtime';
 
 export default function StyledComponentsRegistry({ children }: { children: React.ReactNode }) {
   const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
@@ -352,7 +352,7 @@ export default function StyledComponentsRegistry({ children }: { children: React
     runtimeSheet.hydrate({ tokens: '', rules: [] });
     const styles = styledComponentsStyleSheet.getStyleElement();
     styledComponentsStyleSheet.instance.clearTag();
-    return <>{targetCss !== '' && <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: targetCss }} />}{styles}</>;
+    return <>{targetCss !== '' && <style data-yumcss-runtime dangerouslySetInnerHTML={{ __html: targetCss }} />}{styles}</>;
   });
 
   if (typeof window !== 'undefined') return <>{children}</>;
@@ -453,14 +453,14 @@ function runtimeModule(lane: StyledComponentsDocsLane): string {
 	const factory =
 		lane === StyledComponentsDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
 	const binding = lane === StyledComponentsDocsLane.DesignCss ? "dss" : "css";
-	return `import { ${factory}, createRuntimeSheet } from "pandwind/css/runtime";
+	return `import { ${factory}, createRuntimeSheet } from "yumcss/css/runtime";
 import { preset } from "./preset";
 
 const runtimeGlobal = globalThis as typeof globalThis & {
-  __pandwindStyledComponentsDocsSheet?: ReturnType<typeof createRuntimeSheet>;
+  __yumcssStyledComponentsDocsSheet?: ReturnType<typeof createRuntimeSheet>;
 };
 export const runtimeSheet =
-  runtimeGlobal.__pandwindStyledComponentsDocsSheet ??= createRuntimeSheet();
+  runtimeGlobal.__yumcssStyledComponentsDocsSheet ??= createRuntimeSheet();
 export const ${binding} = ${factory}(preset, { sheet: runtimeSheet });
 `;
 }
@@ -469,10 +469,10 @@ function themeModule(): string {
 	return `"use client";
 import { createContext, createElement, useContext } from "react";
 
-const pandwindThemeContext = createContext<unknown>(undefined);
-export const usePandwindTheme = () => useContext(pandwindThemeContext);
+const yumcssThemeContext = createContext<unknown>(undefined);
+export const useYumCSSTheme = () => useContext(yumcssThemeContext);
 export const ThemeProvider = ({ theme, children }: { theme: unknown; children: unknown }) =>
-  createElement(pandwindThemeContext.Provider, { value: theme }, children);
+  createElement(yumcssThemeContext.Provider, { value: theme }, children);
 
 type ThemeValue = string | number | boolean | null | undefined | ThemeRecord | ThemeValue[];
 type ThemeRecord = { [key: string]: ThemeValue };
@@ -539,7 +539,7 @@ async function materialize(
 	};
 	packageJson.dependencies = {
 		...packageJson.dependencies,
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 	await execFileSync("pnpm", ["install", "--no-frozen-lockfile"], {
@@ -554,7 +554,7 @@ async function materialize(
 			nextConfig,
 			nextSource.replace(
 				"const nextConfig = {",
-				'const nextConfig = {\n  transpilePackages: ["pandwind"],',
+				'const nextConfig = {\n  transpilePackages: ["yumcss"],',
 			),
 		);
 
@@ -581,12 +581,12 @@ async function materialize(
 		const sourceTheme = await readFile(sourceThemeFile, "utf8");
 		const migratedTheme = sourceTheme.replace(
 			/import\s+\{\s*createTheme\s*\}\s+from\s+["']styled-components["'];?/g,
-			'import { createTheme } from "@/pandwind/theme";',
+			'import { createTheme } from "@/yumcss/theme";',
 		);
 		const withThemeImport =
 			!migratedTheme.match(/\bimport\s+\{\s*createTheme\s*\}/) &&
 			/\bcreateTheme\s*\(/.test(migratedTheme)
-				? 'import { createTheme } from "@/pandwind/theme";\n' + migratedTheme
+				? 'import { createTheme } from "@/yumcss/theme";\n' + migratedTheme
 				: migratedTheme;
 		if (withThemeImport !== sourceTheme) await writeFile(sourceThemeFile, withThemeImport);
 	} catch {
@@ -614,14 +614,14 @@ async function materialize(
 	} finally {
 		for (const [target, code] of collectorStubs) await writeFile(target, code);
 	}
-	await writeFile(join(outputRoot, "pandwind-static.css"), staticCss);
+	await writeFile(join(outputRoot, "yumcss-static.css"), staticCss);
 	const layoutSource = await readFile(layoutFile, "utf8");
-	if (!layoutSource.includes("../pandwind-static.css"))
+	if (!layoutSource.includes("../yumcss-static.css"))
 		await writeFile(
 			layoutFile,
 			layoutSource.replace(
 				"import './theme-base.css';",
-				"import './theme-base.css';\nimport '../pandwind-static.css';",
+				"import './theme-base.css';\nimport '../yumcss-static.css';",
 			),
 		);
 }

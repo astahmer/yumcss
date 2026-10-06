@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { MixedApisApp } from "./examples/mixed-apis-app.tsx";
-import "pandwind:css";
+import "yumcss:css";
 import "./base.css";
 import "./tailwind.css";
 

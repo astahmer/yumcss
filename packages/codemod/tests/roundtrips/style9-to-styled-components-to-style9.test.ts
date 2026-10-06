@@ -42,7 +42,7 @@ test("style9 -> styled-components -> style9: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "style9 -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("style9 -> styled-components -> style9: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,8 +174,8 @@ test("style9 -> styled-components -> style9: retains the documented secondary AP
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red" }), "muted": styled.div({ opacity: 0.5 }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -299,7 +299,7 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -373,7 +373,7 @@ test("style9 -> styled-components -> style9: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -462,7 +462,7 @@ test("style9 -> styled-components -> style9: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> style9 | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

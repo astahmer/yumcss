@@ -42,7 +42,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves an actionable c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: retains the documented se
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: preserves concrete theme 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("solid-styled -> vanilla-extract -> solid-styled: resolves token values acr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

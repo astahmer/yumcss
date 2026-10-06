@@ -30,7 +30,7 @@ import {
 	pandaSourceModuleOwnershipFromContext,
 	resolvePandaSourceModuleOwnership,
 } from "./panda/source-modules.ts";
-import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { SourceBindingKind, type SourceBinding } from "yumcss/source";
 import type { PandaTheme } from "./panda/theme.ts";
 import {
 	preserveUnsupportedRecipeFields,
@@ -230,7 +230,7 @@ async function officialPandaConfig(
 	// (nub/tests) and dist (browser playground bundle): a relative dynamic
 	// import would break because dist emits .js next to a different folder
 	// depth than the source tree.
-	const { loadPandaTheme } = await import("pandwind-codemod/swap/official/panda");
+	const { loadPandaTheme } = await import("@yumcss/codemod/swap/official/panda");
 	const discovered = context
 		.listFiles?.(context.root)
 		.filter((candidate) => /(?:^|[\\/])panda\.config\.(?:ts|tsx|js|mjs|cjs)$/u.test(candidate));
@@ -416,8 +416,8 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		},
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		preserveNamedRules: ({ program }) =>
-			program.source?.pattern === CodemodPatternId.PandwindRecipe ||
-			program.source?.pattern === CodemodPatternId.PandwindSlotRecipe,
+			program.source?.pattern === CodemodPatternId.YumCSSRecipe ||
+			program.source?.pattern === CodemodPatternId.YumCSSSlotRecipe,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
 			...pandaSourceConditions(context.config.values.pandaTheme as PandaTheme | undefined),
@@ -434,14 +434,14 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		}),
 		emit(program, renderers) {
 			const outputProgram = preservePandaConditionKeys(program);
-			if (program.source?.pattern === CodemodPatternId.PandwindRecipe) {
+			if (program.source?.pattern === CodemodPatternId.YumCSSRecipe) {
 				return {
 					text: `cva(${recipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { cva } from "styled-system/recipes";'],
 					semantic: program,
 				};
 			}
-			if (program.source?.pattern === CodemodPatternId.PandwindSlotRecipe) {
+			if (program.source?.pattern === CodemodPatternId.YumCSSSlotRecipe) {
 				return {
 					text: `sva(${pandaSlotRecipeDefinitionObject(outputProgram, renderers.declarationsObject)})`,
 					imports: ['import { sva } from "styled-system/recipes";'],

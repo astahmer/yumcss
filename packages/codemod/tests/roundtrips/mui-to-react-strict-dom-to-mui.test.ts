@@ -42,7 +42,7 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("mui -> react-strict-dom -> mui: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("mui -> react-strict-dom -> mui: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("mui -> react-strict-dom -> mui: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,7 +200,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -237,7 +237,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -253,7 +253,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -290,7 +290,7 @@ test("mui -> react-strict-dom -> mui: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("mui -> react-strict-dom -> mui: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -358,7 +358,7 @@ test("mui -> react-strict-dom -> mui: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -55,7 +55,7 @@ describe("validator contract suite", () => {
 	test("fails closed when a registered validator is not covered", () => {
 		const registry = createStyleValidatorRegistry([]);
 		registry.register({
-			schema: "pandwind.style-validator/1",
+			schema: "yumcss.style-validator/1",
 			id: "test-validator",
 			validate: () => ({
 				validator: "test-validator",

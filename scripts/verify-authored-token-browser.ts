@@ -1,6 +1,6 @@
 import { chromium } from "playwright-core";
-import { createCss } from "../packages/pandwind/src/css/create-css.ts";
-import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
+import { createCss } from "../packages/yumcss/src/css/create-css.ts";
+import { createStylesheet } from "../packages/yumcss/src/css/create-stylesheet.ts";
 
 const preset = {
 	conditions: {},

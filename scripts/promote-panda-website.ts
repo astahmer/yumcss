@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {
+	normalizeInstalledTargetPackage,
 	copyFileSync,
 	cpSync,
 	existsSync,
@@ -14,7 +15,7 @@ import {
 } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, relative, resolve, sep } from "node:path";
-import { CodemodAdapterId, SwapTargetId } from "pandwind-codemod/swap";
+import { CodemodAdapterId, SwapTargetId } from "@yumcss/codemod/swap";
 import { runCaptured, writeJson } from "./installed-proof.ts";
 import { proveNextInstallation, type NextInstalledProof } from "./next-proof.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
@@ -22,7 +23,7 @@ import { ensureReferenceWorkspace } from "./ensure-reference-workspace.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const pandaCommit = "8a71bff3dc805e247be70d120cf485c8f14f104b";
-const proofSchema = "pandwind.panda-website-proof/1" as const;
+const proofSchema = "yumcss.panda-website-proof/1" as const;
 
 interface PandaMigrationSummary {
 	readonly filesScanned: number;
@@ -42,7 +43,7 @@ interface PandaWebsiteProof {
 	};
 	readonly route: {
 		readonly from: CodemodAdapterId.Panda;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: {
 		readonly isolated: true;
@@ -58,7 +59,7 @@ interface PandaWebsiteProof {
 		readonly converted: number;
 		readonly residuals: number;
 		readonly generatedFiles: readonly string[];
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly remainingPandaImports: number;
 	};
 	readonly checks: {
@@ -106,8 +107,8 @@ function copyWebsite(source: string, target: string): void {
 				".velite",
 				"node_modules",
 				"styled-system",
-				"pandwind",
-				"__pandwind",
+				"yumcss",
+				"__yumcss",
 			]).has(first);
 		},
 	});
@@ -134,13 +135,13 @@ function copyPreparedEntry(source: string, target: string): void {
 function linkPreparedNodeModules(
 	prepared: string,
 	target: string,
-	pandwindRoot: string,
+	yumcssRoot: string,
 	workspaceNodeModules: string,
 ): void {
 	mkdirSync(target, { recursive: true });
 	symlinkSync(resolve(prepared, ".pnpm"), join(target, ".pnpm"), "dir");
 	for (const entry of readdirSync(prepared, { withFileTypes: true })) {
-		if (entry.name === ".pnpm" || entry.name === "pandwind") continue;
+		if (entry.name === ".pnpm" || entry.name === "yumcss") continue;
 		const source = join(prepared, entry.name);
 		const destination = join(target, entry.name);
 		copyPreparedEntry(source, destination);
@@ -156,7 +157,7 @@ function linkPreparedNodeModules(
 		mkdirSync(resolve(destination, ".."), { recursive: true });
 		symlinkSync(source, destination, "dir");
 	}
-	symlinkSync(pandwindRoot, join(target, "pandwind"), "dir");
+	symlinkSync(yumcssRoot, join(target, "yumcss"), "dir");
 }
 
 function cloneGeneratedDirectory(source: string, target: string): void {
@@ -220,12 +221,12 @@ function generatedFiles(root: string): readonly string[] {
 		}
 	};
 	for (const directory of [
-		"pandwind",
-		"__pandwind",
-		"src/pandwind",
-		"src/__pandwind",
-		"app/pandwind",
-		"app/__pandwind",
+		"yumcss",
+		"__yumcss",
+		"src/yumcss",
+		"src/__yumcss",
+		"app/yumcss",
+		"app/__yumcss",
 	]) {
 		const path = join(root, directory);
 		if (existsSync(path)) visit(path);
@@ -244,7 +245,7 @@ async function main(): Promise<void> {
 	if (process.argv.includes("--prepare")) await ensureReferenceWorkspace("panda");
 	const workspace = createReferenceWorkspace();
 	const websiteRoot = resolve(
-		process.env.PANDWIND_PANDA_WEBSITE ?? workspace.path("panda/website"),
+		process.env.YUMCSS_PANDA_WEBSITE ?? workspace.path("panda/website"),
 	);
 	const referenceRoot = resolve(websiteRoot, "..");
 	if (!existsSync(join(referenceRoot, ".git")))
@@ -260,8 +261,8 @@ async function main(): Promise<void> {
 	if (!existsSync(preparedNodeModules))
 		throw new Error(`Panda website dependencies are missing: ${preparedNodeModules}`);
 
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
-	const root = mkdtempSync(join("/tmp", "pandwind-panda-website-"));
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
+	const root = mkdtempSync(join("/tmp", "yumcss-panda-website-"));
 	const sourceRoot = join(root, "source");
 	const targetRoot = join(root, "target");
 	const keep = process.argv.includes("--keep");
@@ -271,13 +272,13 @@ async function main(): Promise<void> {
 		linkPreparedNodeModules(
 			preparedNodeModules,
 			join(sourceRoot, "node_modules"),
-			join(repositoryRoot, "packages/pandwind"),
+			join(repositoryRoot, "packages/yumcss"),
 			join(referenceRoot, "node_modules"),
 		);
 		linkPreparedNodeModules(
 			preparedNodeModules,
 			join(targetRoot, "node_modules"),
-			join(repositoryRoot, "packages/pandwind"),
+			join(repositoryRoot, "packages/yumcss"),
 			join(referenceRoot, "node_modules"),
 		);
 
@@ -297,7 +298,7 @@ async function main(): Promise<void> {
 			"nub",
 			[
 				"--conditions",
-				"pandwind",
+				"yumcss",
 				join(repositoryRoot, "packages/codemod/src/cli.ts"),
 				"migrate",
 				"--from",
@@ -349,7 +350,7 @@ async function main(): Promise<void> {
 				repository: "https://github.com/chakra-ui/panda",
 				commit: pandaCommit,
 			},
-			route: { from: CodemodAdapterId.Panda, to: CodemodAdapterId.Pandwind },
+			route: { from: CodemodAdapterId.Panda, to: CodemodAdapterId.YumCSS },
 			fixture: {
 				isolated: true,
 				sourceProject: "panda/website",
@@ -357,9 +358,11 @@ async function main(): Promise<void> {
 			},
 			dependencies: {
 				referenceInstalled: true,
-				targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
-				targetPackage:
-					targetPackage.dependencies?.pandwind ?? targetPackage.devDependencies?.pandwind ?? "",
+				targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
+				targetPackage: normalizeInstalledTargetPackage(
+					targetPackage.dependencies?.yumcss ?? targetPackage.devDependencies?.yumcss ?? "",
+					repositoryRoot,
+				),
 			},
 			migration: {
 				...migration,
@@ -369,10 +372,10 @@ async function main(): Promise<void> {
 					0,
 				),
 				generatedFiles: generated,
-				targetUsesPandwind:
-					readFileSync(join(targetRoot, "next.config.mjs"), "utf8").includes("pandwind") &&
+				targetUsesYumCSS:
+					readFileSync(join(targetRoot, "next.config.mjs"), "utf8").includes("yumcss") &&
 					migratedFiles(targetRoot).some((path) =>
-						readFileSync(join(targetRoot, path), "utf8").includes("pandwind/css"),
+						readFileSync(join(targetRoot, path), "utf8").includes("yumcss/css"),
 					),
 				remainingPandaImports,
 			},

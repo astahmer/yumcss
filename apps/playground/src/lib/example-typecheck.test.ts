@@ -3,13 +3,13 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { PANDWIND_EDITOR_MODULE_PATHS } from "./editor-types.ts";
+import { YUMCSS_EDITOR_MODULE_PATHS } from "./editor-types.ts";
 import { EXAMPLES } from "./examples.ts";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const playgroundRoot = join(repositoryRoot, "apps/playground");
 const generatedSourceRoot = join(playgroundRoot, "src");
-const examplePresetSource = join(repositoryRoot, "examples/pandwind-example-preset/src/index.ts");
+const examplePresetSource = join(repositoryRoot, "examples/yumcss-example-preset/src/index.ts");
 
 const exampleDirectory = (examplePath: string, api: string): string =>
 	examplePath.slice(1).replaceAll("/", "-") + "-" + api;
@@ -55,7 +55,7 @@ function typecheckExamples(): string {
 		const reactTypes = join(generatedSourceRoot, "generated/dependencies/react/index.d.ts");
 		const csstypeTypes = join(generatedSourceRoot, "generated/dependencies/csstype/index.d.ts");
 		const paths = Object.fromEntries(
-			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, modulePath]) => [
+			Object.entries(YUMCSS_EDITOR_MODULE_PATHS).map(([specifier, modulePath]) => [
 				specifier,
 				[join(generatedSourceRoot, modulePath)],
 			]),
@@ -64,7 +64,7 @@ function typecheckExamples(): string {
 		paths.csstype = [csstypeTypes];
 		paths["react/jsx-runtime"] = [jsxFile];
 		paths["react/jsx-dev-runtime"] = [jsxFile];
-		paths["@pandwind/example-preset"] = [examplePresetSource];
+		paths["@yumcss/example-preset"] = [examplePresetSource];
 		const configFile = join(temporaryRoot, "tsconfig.json");
 		writeFileSync(
 			configFile,

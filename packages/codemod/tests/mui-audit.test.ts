@@ -3,21 +3,21 @@ import { BuiltinHostFramework, CodemodAdapterId } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 import { createAdapterRouteProject, createAdapterRouteSpec } from "./route-spec-support.ts";
 
-const muiToPandwind = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Pandwind);
+const muiToYumCSS = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.YumCSS);
 const muiToTailwind = createAdapterRouteSpec(CodemodAdapterId.Mui, CodemodAdapterId.Tailwind);
-const pandwindToMui = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Mui);
+const yumcssToMui = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.Mui);
 const tailwindToMui = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Mui);
 const reactSemantic = { source: { framework: BuiltinHostFramework.React } };
-const muiPandwindProject = createAdapterRouteProject(
+const muiYumCSSProject = createAdapterRouteProject(
 	CodemodAdapterId.Mui,
-	CodemodAdapterId.Pandwind,
+	CodemodAdapterId.YumCSS,
 	"#2563eb",
 );
 
 test("MUI sx spacing longhands, aliases, and gaps use the source theme scale", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2, rowGap: 0.5, marginX: 1, paddingY: 0.5, marginInline: 1, paddingBlockStart: 0.5 }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
@@ -33,7 +33,7 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 	expect(result.code).toContain('paddingTop: "4px"');
 	expect(result.code).toContain('paddingBottom: "4px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", margin: "8px", gap: "24px", columnGap: "16px", rowGap: "4px", marginLeft: "8px", marginRight: "8px", paddingTop: "4px", paddingBottom: "4px", marginInline: "8px", paddingBlockStart: "4px" })} />;"
 	`);
@@ -42,7 +42,7 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 test("MUI sx sizing and numeric borders become their CSS values", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, border: 1, borderTop: 2, borderRadius: 1 }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
@@ -53,7 +53,7 @@ export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, bo
 	expect(result.code).toContain('borderTop: "2px solid"');
 	expect(result.code).toContain('borderRadius: "4px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ width: "50%", maxWidth: "100%", minHeight: "25%", border: "1px solid", borderTop: "2px solid", borderRadius: "4px" })} />;"
 	`);
@@ -62,7 +62,7 @@ export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, bo
 test("MUI numeric shadow tokens need the effective source theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(0);
 	expect(result.skipped).toBe(1);
@@ -82,11 +82,11 @@ export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md
 			}),
 		]),
 	);
-	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain("yumcss:migrate-skip");
 	expect(result.code).toContain('sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }}');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />;"
 	`);
 });
@@ -96,8 +96,8 @@ test("MUI typography tokens need the effective source theme", () => {
 export const App = () => <Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />;`;
 	const legacySource = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ fontWeight: "fontWeightMedium", fontSize: "fontSize", fontFamily: "fontFamily" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
-	const legacyResult = muiToPandwind.run({
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const legacyResult = muiToYumCSS.run({
 		source: legacySource,
 		file: "App.tsx",
 		semantic: reactSemantic,
@@ -125,7 +125,7 @@ export const App = () => <Box sx={{ fontWeight: "fontWeightMedium", fontSize: "f
 			}),
 		]),
 	);
-	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain("yumcss:migrate-skip");
 	expect(result.code).toContain('typography: "body1"');
 	expect(legacyResult.converted).toBe(0);
 	expect(legacyResult.residuals).toEqual(
@@ -137,12 +137,12 @@ export const App = () => <Box sx={{ fontWeight: "fontWeightMedium", fontSize: "f
 	);
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const App = () => <Box sx={{ fontWeight: "medium", fontSize: "default", fontFamily: "default", typography: "body1" }} />;"
 	`);
 	expect(legacyResult.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const App = () => <Box sx={{ fontWeight: "fontWeightMedium", fontSize: "fontSize", fontFamily: "fontFamily" }} />;"
 	`);
 });
@@ -150,7 +150,7 @@ export const App = () => <Box sx={{ fontWeight: "fontWeightMedium", fontSize: "f
 test("MUI CSS keywords convert without a project theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
@@ -158,7 +158,7 @@ export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth:
 	expect(result.code).toContain('zIndex: "auto"');
 	expect(result.code).toContain('maxWidth: "max-content"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" })} />;"
 	`);
@@ -167,14 +167,14 @@ export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth:
 test("MUI typography CSS keywords stay literal without a project theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ fontFamily: "monospace", fontSize: "small", fontWeight: "normal", fontStyle: "italic", lineHeight: "normal", letterSpacing: "normal", textTransform: "uppercase" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
 	for (const value of ["monospace", "small", "normal", "italic", "uppercase"])
 		expect(result.code).toContain(value);
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ fontFamily: "monospace", fontSize: "small", fontWeight: "normal", fontStyle: "italic", lineHeight: "normal", letterSpacing: "normal", textTransform: "uppercase" })} />;"
 	`);
@@ -183,7 +183,7 @@ export const App = () => <Box sx={{ fontFamily: "monospace", fontSize: "small", 
 test("MUI sx merges static object arrays", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={[{ color: "red", padding: 2 }, ({ margin: 1, color: "blue" })]} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
@@ -192,7 +192,7 @@ export const App = () => <Box sx={[{ color: "red", padding: 2 }, ({ margin: 1, c
 	expect(result.code).toContain('padding: "16px"');
 	expect(result.code).toContain('margin: "8px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", margin: "8px", color: "blue" })} />;"
 	`);
@@ -201,7 +201,7 @@ export const App = () => <Box sx={[{ color: "red", padding: 2 }, ({ margin: 1, c
 test("MUI sx theme callbacks remain typed runtime residuals", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={(theme) => ({ color: theme.palette.primary.main })} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(0);
 	expect(result.skipped).toBe(1);
@@ -215,7 +215,7 @@ export const App = () => <Box sx={(theme) => ({ color: theme.palette.primary.mai
 	);
 	expect(result.code).toContain("theme.palette.primary.main");
 	expect(result.code).toMatchInlineSnapshot(`
-		"// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context)
+		"// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context)
 		import { Box } from "@mui/material";
 		export const App = () => <Box sx={(theme) => ({ color: theme.palette.primary.main })} />;"
 	`);
@@ -224,7 +224,7 @@ export const App = () => <Box sx={(theme) => ({ color: theme.palette.primary.mai
 test("MUI print display shorthand becomes a print media condition", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 	const tailwindResult = muiToTailwind.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
@@ -235,7 +235,7 @@ export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />
 	expect(tailwindResult.residuals).toEqual([]);
 	expect(tailwindResult.code).toContain("print:[display:none]");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ display: "block", _print: { display: "none" } })} />;"
 	`);
@@ -248,7 +248,7 @@ export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />
 test("MUI responsive sx needs the effective breakpoint theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ width: { xs: 0.5, md: 0.75 }, display: ["none", null, "flex"] }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 	const tailwindResult = muiToTailwind.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(0);
@@ -268,7 +268,7 @@ export const App = () => <Box sx={{ width: { xs: 0.5, md: 0.75 }, display: ["non
 	);
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, target-native, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, target-native, residual)
 		export const App = () => <Box sx={{ width: { xs: 0.5, md: 0.75 }, display: ["none", null, "flex"] }} />;"
 	`);
 	expect(tailwindResult.converted).toBe(0);
@@ -322,7 +322,7 @@ export const App = () => <Box sx={{ width: { mobile: 0.5, tablet: 0.75 }, displa
 		moduleLoader,
 		loaderCalls: { packages: [], files: [] },
 	};
-	const result = await muiToPandwind.runAsync({
+	const result = await muiToYumCSS.runAsync({
 		source,
 		file: "App.tsx",
 		project,
@@ -343,7 +343,7 @@ export const App = () => <Box sx={{ width: { mobile: 0.5, tablet: 0.75 }, displa
 	expect(result.code).toContain('display: "flex"');
 	expect(result.code).not.toContain("responsive values");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ "@media (min-width:0px)": { width: "50%", display: "none" }, "@media (min-width:700px)": { width: "75%" }, "@media (min-width:1200px)": { display: "flex" } })} />;"
 	`);
@@ -389,46 +389,46 @@ test("MUI styled declarations preserve component shape and plain CSS semantics",
 	const source = `import { styled } from "@mui/system";
 export const Card = styled("div")({ padding: 2 });
 export const Panel = styled("section")({ margin: 3 });`;
-	const result = muiToPandwind.run({
+	const result = muiToYumCSS.run({
 		source,
 		file: "Card.tsx",
-		project: muiPandwindProject,
+		project: muiYumCSSProject,
 		semantic: reactSemantic,
 	});
 
 	expect(result.converted).toBe(2);
-	expect(result.code).toContain("export const Card = __pandwindSlot(");
-	expect(result.code).toContain("export const Panel = __pandwindSlot(");
-	expect(result.code.match(/__pandwindSlot\(/gu)).toHaveLength(2);
+	expect(result.code).toContain("export const Card = __yumcssSlot(");
+	expect(result.code).toContain("export const Panel = __yumcssSlot(");
+	expect(result.code.match(/__yumcssSlot\(/gu)).toHaveLength(2);
 	expect(result.code).not.toContain("export const Card = css.class");
-	expect(result.code).toContain('from "./__pandwind/slot"');
+	expect(result.code).toContain('from "./__yumcss/slot"');
 	expect(result.generatedFiles).toHaveLength(1);
-	expect(result.generatedFiles?.map((file) => file.path)).toContain("__pandwind/slot.tsx");
+	expect(result.generatedFiles?.map((file) => file.path)).toContain("__yumcss/slot.tsx");
 	expect(
-		result.generatedFiles?.find((file) => file.path === "__pandwind/slot.tsx")?.content,
+		result.generatedFiles?.find((file) => file.path === "__yumcss/slot.tsx")?.content,
 	).toContain("forwardRef");
-	expect(result.generatedFiles?.find((file) => file.path === "__pandwind/slot.tsx")?.content)
+	expect(result.generatedFiles?.find((file) => file.path === "__yumcss/slot.tsx")?.content)
 		.toMatchInlineSnapshot(`
 		"import { createElement, forwardRef } from "react";
 		import type { ComponentPropsWithoutRef, ComponentRef, CSSProperties, ElementType, ReactElement, Ref } from "react";
 
-		type PandwindSlotTransientProps<Prefix extends string> = {
+		type YumCSSSlotTransientProps<Prefix extends string> = {
 			readonly [key in \`\${Prefix}\${string}\`]?: unknown;
 		};
-		type PandwindSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & PandwindSlotTransientProps<Prefix> & {
+		type YumCSSSlotProps<Component extends ElementType, Prefix extends string> = Omit<ComponentPropsWithoutRef<Component>, "as" | "className"> & YumCSSSlotTransientProps<Prefix> & {
 			readonly as?: Component;
 			readonly className?: string;
 			readonly ref?: Ref<ComponentRef<Component>>;
 		};
-		type PandwindSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
-			props: PandwindSlotProps<Component, Prefix>,
+		type YumCSSSlotComponent<DefaultComponent extends ElementType, Prefix extends string> = <Component extends ElementType = DefaultComponent>(
+			props: YumCSSSlotProps<Component, Prefix>,
 		) => ReactElement | null;
-		type PandwindSlotRuntimeProps = Record<string, unknown> & {
+		type YumCSSSlotRuntimeProps = Record<string, unknown> & {
 			readonly as?: ElementType;
 			readonly className?: string;
 			readonly style?: CSSProperties;
 		};
-		type PandwindSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
+		type YumCSSSlotOptions<DefaultComponent extends ElementType, Prefix extends string> = {
 			readonly defaultComponent: DefaultComponent;
 			readonly style: string;
 			readonly stableClass: string;
@@ -442,13 +442,13 @@ export const Panel = styled("section")({ margin: 3 });`;
 			};
 			readonly joinClass: (...values: (string | undefined)[]) => string;
 		};
-		const isPandwindSlotElementType = (value: unknown): value is ElementType =>
+		const isYumCSSSlotElementType = (value: unknown): value is ElementType =>
 			typeof value === "string" ||
 			typeof value === "function" ||
 			typeof value === "symbol" ||
 			(typeof value === "object" && value !== null);
 
-		export const __pandwindSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
+		export const __yumcssSlot = <DefaultComponent extends ElementType, Prefix extends string = never>({
 			defaultComponent,
 			style,
 			stableClass,
@@ -457,9 +457,9 @@ export const Panel = styled("section")({ margin: 3 });`;
 			filteredPropPrefixes,
 			attrs,
 			joinClass,
-		}: PandwindSlotOptions<DefaultComponent, Prefix>) => {
-			const component = forwardRef<unknown, PandwindSlotRuntimeProps>((props, ref) => {
-				const Component = isPandwindSlotElementType(props.as) ? props.as : defaultComponent;
+		}: YumCSSSlotOptions<DefaultComponent, Prefix>) => {
+			const component = forwardRef<unknown, YumCSSSlotRuntimeProps>((props, ref) => {
+				const Component = isYumCSSSlotElementType(props.as) ? props.as : defaultComponent;
 				const { as: _as, ...rest } = props;
 				const { as: _attrsAs, ...attrsProps } = attrs;
 				const forwarded =
@@ -484,8 +484,8 @@ export const Panel = styled("section")({ margin: 3 });`;
 					),
 				});
 			});
-			return Object.assign(component as unknown as PandwindSlotComponent<DefaultComponent, Prefix>, {
-				__pandwindClassName: stableClass,
+			return Object.assign(component as unknown as YumCSSSlotComponent<DefaultComponent, Prefix>, {
+				__yumcssClassName: stableClass,
 			});
 		};
 		"
@@ -493,27 +493,27 @@ export const Panel = styled("section")({ margin: 3 });`;
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
-		import { createCx } from "pandwind/cx";
-		import { __pandwindSlot } from "./__pandwind/slot";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { createCx } from "yumcss/cx";
+		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });
-		export const Panel = __pandwindSlot({ defaultComponent: "section", style: css.class({ margin: 3 }), stableClass: "pw-1yrm3hy", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
+		export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ padding: 2 }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });
+		export const Panel = __yumcssSlot({ defaultComponent: "section", style: css.class({ margin: 3 }), stableClass: "pw-1yrm3hy", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });"
 	`);
 });
 
 test("MUI Box component prop becomes the same intrinsic host", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box component="section" sx={{ color: "red" }} />;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain("<section");
 	expect(result.code).not.toContain('component="section"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <section className={css.class({ color: "red" })} />;"
 	`);
@@ -522,7 +522,7 @@ export const App = () => <Box component="section" sx={{ color: "red" }} />;`;
 test("MUI component behavior survives style extraction", () => {
 	const source = `import { Button } from "@mui/material";
 export const App = () => <Button variant="contained" size="large" sx={{ p: 2 }}>Save</Button>;`;
-	const result = muiToPandwind.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.code).toContain("<Button");
@@ -530,18 +530,18 @@ export const App = () => <Button variant="contained" size="large" sx={{ p: 2 }}>
 	expect(result.code).toContain('size="large"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Button } from "@mui/material";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <Button variant="contained" size="large" className={css.class({ padding: "16px" })}>Save</Button>;"
 	`);
 });
 
-test("Pandwind numeric CSS values stay literal in MUI sx", () => {
-	const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+test("YumCSS numeric CSS values stay literal in MUI sx", () => {
+	const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const card = css.class({ padding: 4, width: 0.5, height: 1, borderRadius: 1, fontSize: 14, letterSpacing: 0.5 });
 export const App = () => <div className={card} />;`;
-	const result = pandwindToMui.run({ source, file: "App.tsx", semantic: reactSemantic });
+	const result = yumcssToMui.run({ source, file: "App.tsx", semantic: reactSemantic });
 
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
@@ -560,10 +560,10 @@ export const App = () => <div className={card} />;`;
 });
 
 test("isolated class styles remain residual until an MUI host can consume sx", () => {
-	const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+	const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 export const card = css.class({ color: "red", padding: "4px" });`;
-	const result = pandwindToMui.run({ source, file: "styles.ts" });
+	const result = yumcssToMui.run({ source, file: "styles.ts" });
 
 	expect(result.converted).toBe(0);
 	expect(result.skipped).toBe(1);
@@ -575,12 +575,12 @@ export const card = css.class({ color: "red", padding: "4px" });`;
 			}),
 		]),
 	);
-	expect(result.code).toContain("pandwind:migrate-skip");
+	expect(result.code).toContain("yumcss:migrate-skip");
 	expect(result.code).toContain('css.class({ color: "red", padding: "4px" })');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "pandwind/unsafe/css";
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: yumcss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css.class({ color: "red", padding: "4px" });"
 	`);
 });
@@ -590,12 +590,12 @@ test("MUI runtime themes remain explicit residuals", () => {
 export const Card = styled("div")((theme) => ({ color: theme.palette.primary.main }));`;
 	const providerSource = `import { ThemeProvider } from "@mui/material/styles";
 export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;`;
-	const styledResult = muiToPandwind.run({
+	const styledResult = muiToYumCSS.run({
 		source: styledSource,
 		file: "Card.tsx",
 		semantic: reactSemantic,
 	});
-	const providerResult = muiToPandwind.run({
+	const providerResult = muiToYumCSS.run({
 		source: providerSource,
 		file: "App.tsx",
 		semantic: reactSemantic,
@@ -611,7 +611,7 @@ export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;`
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expect(styledResult.code).toContain(
 		'styled("div")((theme) => ({ color: theme.palette.primary.main }))',
@@ -619,12 +619,12 @@ export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;`
 	expect(providerResult.code).toContain("<ThemeProvider theme={theme}>");
 	expect({ styled: styledResult.code, provider: providerResult.code }).toMatchInlineSnapshot(`
 		{
-		  "provider": "// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		  "provider": "// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		import { ThemeProvider } from "@mui/material/styles";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const App = () => <ThemeProvider theme={theme}><main /></ThemeProvider>;",
 		  "styled": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const Card = styled("div")((theme) => ({ color: theme.palette.primary.main }));",
 		}
 	`);
@@ -640,7 +640,7 @@ export const theme = createTheme({
 		},
 	},
 });`;
-	const result = muiToPandwind.run({ source, file: "theme.ts" });
+	const result = muiToYumCSS.run({ source, file: "theme.ts" });
 	const tailwindResult = muiToTailwind.run({ source, file: "theme.ts" });
 
 	expect(result.converted).toBe(0);
@@ -659,7 +659,7 @@ export const theme = createTheme({
 	expect(result.code).toContain('variant: "dashed"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createTheme } from "@mui/material/styles";
-		// pandwind:migrate-skip (route: mui -> pandwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 		export const theme = createTheme({
 			components: {
 				MuiButton: {
@@ -694,7 +694,7 @@ export const App = () => <Box sx={{ color: "brand.main" }} />;`;
 	expect(result.code).not.toContain("var(--mui-");
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> tailwind | parse-residual: runtime-context | available: named-map, residual)
+		// yumcss:migrate-skip (route: mui -> tailwind | parse-residual: runtime-context | available: named-map, residual)
 		export const App = () => <Box sx={{ color: "brand.main" }} />;"
 	`);
 });

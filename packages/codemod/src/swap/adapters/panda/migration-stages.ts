@@ -1,6 +1,6 @@
 /** Replaceable, independently testable stages used by Panda migration. */
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import type { PandwindMeta } from "../../../meta.ts";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import type { YumCSSMeta } from "../../../meta.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { emitCssClass } from "../../emit.ts";
 import { parseObjectLiteral } from "../../parse.ts";
@@ -8,7 +8,7 @@ import type { PandaTheme } from "./theme.ts";
 import { pandaRecipeToIr, pandaStyleToIr } from "./parse.ts";
 import type { TokenReferenceFormat } from "../../tokens.ts";
 
-export const PANDA_MIGRATION_STAGES_SCHEMA = "pandwind.panda-migration-stages/1" as const;
+export const PANDA_MIGRATION_STAGES_SCHEMA = "yumcss.panda-migration-stages/1" as const;
 
 export function convertPandaStyle(
 	style: Record<string, unknown>,
@@ -30,7 +30,7 @@ export function convertPandaRecipe(
 
 export function emitPandaStyle(
 	ir: Parameters<typeof emitCssClass>[0],
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	tokenReferenceFormat?: TokenReferenceFormat,
 ): string {
 	return emitCssClass(ir, meta, {

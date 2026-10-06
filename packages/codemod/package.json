@@ -1,5 +1,5 @@
 {
-	"name": "pandwind-codemod",
+	"name": "@yumcss/codemod",
 	"version": "0.1.0",
 	"keywords": [
 		"codemod",
@@ -12,11 +12,11 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/astahmer/pandwind.git",
+		"url": "git+https://github.com/astahmer/yumcss.git",
 		"directory": "packages/codemod"
 	},
 	"bin": {
-		"pandwind-codemod": "./dist/cli.js"
+		"yumcss-codemod": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -26,145 +26,145 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"pandwind": "./src/cli.ts",
+			"yumcss": "./src/cli.ts",
 			"types": "./dist/cli.d.ts",
 			"import": "./dist/cli.js",
 			"default": "./dist/cli.js"
 		},
 		"./diff": {
-			"pandwind": "./src/diff.ts",
+			"yumcss": "./src/diff.ts",
 			"types": "./dist/diff.d.ts",
 			"import": "./dist/diff.js",
 			"default": "./dist/diff.js"
 		},
 		"./swap": {
-			"pandwind": "./src/swap/index.ts",
+			"yumcss": "./src/swap/index.ts",
 			"types": "./dist/swap/index.d.ts",
 			"import": "./dist/swap/index.js",
 			"default": "./dist/swap/index.js"
 		},
 		"./swap/semantic-ir": {
-			"pandwind": "./src/swap/semantic-ir.ts",
+			"yumcss": "./src/swap/semantic-ir.ts",
 			"types": "./dist/swap/semantic-ir.d.ts",
 			"import": "./dist/swap/semantic-ir.js",
 			"default": "./dist/swap/semantic-ir.js"
 		},
 		"./swap/official-api-cases": {
-			"pandwind": "./src/swap/official-api-cases.ts",
+			"yumcss": "./src/swap/official-api-cases.ts",
 			"types": "./dist/swap/official-api-cases.d.ts",
 			"import": "./dist/swap/official-api-cases.js",
 			"default": "./dist/swap/official-api-cases.js"
 		},
 		"./swap/identifiers": {
-			"pandwind": "./src/swap/identifiers.ts",
+			"yumcss": "./src/swap/identifiers.ts",
 			"types": "./dist/swap/identifiers.d.ts",
 			"import": "./dist/swap/identifiers.js",
 			"default": "./dist/swap/identifiers.js"
 		},
 		"./swap/official/panda": {
-			"pandwind": "./src/swap/adapters/panda/theme.ts",
+			"yumcss": "./src/swap/adapters/panda/theme.ts",
 			"types": "./dist/swap/adapters/panda/theme.d.ts",
 			"import": "./dist/swap/adapters/panda/theme.js",
 			"default": "./dist/swap/adapters/panda/theme.js"
 		},
 		"./swap/corpus": {
-			"pandwind": "./src/swap/real-repository-corpus.ts",
+			"yumcss": "./src/swap/real-repository-corpus.ts",
 			"types": "./dist/swap/real-repository-corpus.d.ts",
 			"import": "./dist/swap/real-repository-corpus.js",
 			"default": "./dist/swap/real-repository-corpus.js"
 		},
 		"./migration/meta": {
-			"pandwind": "./src/meta.ts",
+			"yumcss": "./src/meta.ts",
 			"types": "./dist/meta.d.ts",
 			"import": "./dist/meta.js",
 			"default": "./dist/meta.js"
 		},
 		"./migration/map": {
-			"pandwind": "./src/map.ts",
+			"yumcss": "./src/map.ts",
 			"types": "./dist/map.d.ts",
 			"import": "./dist/map.js",
 			"default": "./dist/map.js"
 		},
 		"./migration/shared": {
-			"pandwind": "./src/shared.ts",
+			"yumcss": "./src/shared.ts",
 			"types": "./dist/shared.d.ts",
 			"import": "./dist/shared.js",
 			"default": "./dist/shared.js"
 		},
 		"./migration/tokens": {
-			"pandwind": "./src/tokens.ts",
+			"yumcss": "./src/tokens.ts",
 			"types": "./dist/tokens.d.ts",
 			"import": "./dist/tokens.js",
 			"default": "./dist/tokens.js"
 		},
 		"./migration/class-sorter": {
-			"pandwind": "./src/class-sorter.ts",
+			"yumcss": "./src/class-sorter.ts",
 			"types": "./dist/class-sorter.d.ts",
 			"import": "./dist/class-sorter.js",
 			"default": "./dist/class-sorter.js"
 		},
 		"./migration/arbitrary-values": {
-			"pandwind": "./src/arbitrary-values.ts",
+			"yumcss": "./src/arbitrary-values.ts",
 			"types": "./dist/arbitrary-values.d.ts",
 			"import": "./dist/arbitrary-values.js",
 			"default": "./dist/arbitrary-values.js"
 		},
 		"./swap/variant-hoisting": {
-			"pandwind": "./src/swap/variant-hoisting.ts",
+			"yumcss": "./src/swap/variant-hoisting.ts",
 			"types": "./dist/swap/variant-hoisting.d.ts",
 			"import": "./dist/swap/variant-hoisting.js",
 			"default": "./dist/swap/variant-hoisting.js"
 		},
 		"./swap/token-document": {
-			"pandwind": "./src/swap/token-document-codec.ts",
+			"yumcss": "./src/swap/token-document-codec.ts",
 			"types": "./dist/swap/token-document-codec.d.ts",
 			"import": "./dist/swap/token-document-codec.js",
 			"default": "./dist/swap/token-document-codec.js"
 		},
 		"./swap/token-document/serializer": {
-			"pandwind": "./src/swap/token-document-serializer.ts",
+			"yumcss": "./src/swap/token-document-serializer.ts",
 			"types": "./dist/swap/token-document-serializer.d.ts",
 			"import": "./dist/swap/token-document-serializer.js",
 			"default": "./dist/swap/token-document-serializer.js"
 		},
 		"./swap/unplugin": {
-			"pandwind": "./src/swap/unplugin.ts",
+			"yumcss": "./src/swap/unplugin.ts",
 			"types": "./dist/swap/unplugin.d.ts",
 			"import": "./dist/swap/unplugin.js",
 			"default": "./dist/swap/unplugin.js"
 		},
 		"./swap/vite": {
-			"pandwind": "./src/swap/vite.ts",
+			"yumcss": "./src/swap/vite.ts",
 			"types": "./dist/swap/vite.d.ts",
 			"import": "./dist/swap/vite.js",
 			"default": "./dist/swap/vite.js"
 		},
 		"./swap/browser": {
-			"pandwind": "./src/swap/browser.ts",
+			"yumcss": "./src/swap/browser.ts",
 			"types": "./dist/swap/browser.d.ts",
 			"import": "./dist/swap/browser.js",
 			"default": "./dist/swap/browser.js"
 		},
 		"./tw": {
-			"pandwind": "./src/tw/index.ts",
+			"yumcss": "./src/tw/index.ts",
 			"types": "./dist/tw/index.d.ts",
 			"import": "./dist/tw/index.js",
 			"default": "./dist/tw/index.js"
 		},
 		"./runtime": {
-			"pandwind": "./src/runtime/index.ts",
+			"yumcss": "./src/runtime/index.ts",
 			"types": "./dist/runtime/index.d.ts",
 			"import": "./dist/runtime/index.js",
 			"default": "./dist/runtime/index.js"
 		},
 		"./lib": {
-			"pandwind": "./src/lib/index.ts",
+			"yumcss": "./src/lib/index.ts",
 			"types": "./dist/lib/index.d.ts",
 			"import": "./dist/lib/index.js",
 			"default": "./dist/lib/index.js"
 		},
 		"./css": {
-			"pandwind": "./src/css/index.ts",
+			"yumcss": "./src/css/index.ts",
 			"types": "./dist/css/index.d.ts",
 			"import": "./dist/css/index.js",
 			"default": "./dist/css/index.js"
@@ -197,7 +197,7 @@
 		"esbuild": "0.28.2",
 		"magic-string": "1.2.3",
 		"oxc-parser": "0.148.0",
-		"pandwind": "workspace:*",
+		"yumcss": "workspace:*",
 		"postcss": "8.5.28",
 		"tailwind-merge": "3.6.0",
 		"unplugin": "3.3.0",
@@ -206,7 +206,7 @@
 	"devDependencies": {
 		"@chakra-ui/react": "3.37.0",
 		"@mantine/core": "9.6.0",
-		"@pandwind/example-preset": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
 		"@types/node": "26.4.1",
 		"@vitest/coverage-v8": "5.0.0",
 		"jss": "10.10.0",

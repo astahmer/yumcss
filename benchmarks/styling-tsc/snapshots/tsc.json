@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.styling-tsc/1",
+	"schema": "yumcss.styling-tsc/1",
 	"source": "runner/generate-fixtures.mts",
 	"updatedAt": "2026-09-23",
 	"samples": 5,
@@ -31,7 +31,7 @@
 		"goober": "2.1.19",
 		"jss": "10.10.0",
 		"next-yak": "9.10.0",
-		"pandwind": "workspace:*",
+		"yumcss": "workspace:*",
 		"react": "19.2.8",
 		"react-jss": "10.10.0",
 		"react-strict-dom": "0.0.55",
@@ -47,7 +47,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/aphrodite/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/natural/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 33145,
@@ -63,7 +63,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/compiled/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/natural/tsconfig.json",
 			"metrics": {
 				"files": 76,
 				"symbols": 52636,
@@ -79,7 +79,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/emotion/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/natural/tsconfig.json",
 			"metrics": {
 				"files": 92,
 				"symbols": 45537,
@@ -95,7 +95,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/fela/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/natural/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 39313,
@@ -111,7 +111,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/goober/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/natural/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 38652,
@@ -127,7 +127,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/griffel/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/natural/tsconfig.json",
 			"metrics": {
 				"files": 137,
 				"symbols": 44355,
@@ -143,7 +143,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/jss/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/natural/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 39480,
@@ -159,7 +159,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/linaria/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/natural/tsconfig.json",
 			"metrics": {
 				"files": 82,
 				"symbols": 41186,
@@ -175,7 +175,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/next-yak/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/natural/tsconfig.json",
 			"metrics": {
 				"files": 63,
 				"symbols": 40359,
@@ -191,7 +191,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/panda/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/natural/tsconfig.json",
 			"metrics": {
 				"files": 136,
 				"symbols": 73275,
@@ -203,11 +203,11 @@
 			}
 		},
 		{
-			"library": "pandwind",
+			"library": "yumcss",
 			"scenario": "natural",
 			"samples": 5,
-			"project": ".generated/pandwind/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/natural/tsconfig.json",
+			"project": ".generated/yumcss/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/yumcss/natural/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 47286,
@@ -219,11 +219,11 @@
 			}
 		},
 		{
-			"library": "pandwind-generated",
+			"library": "yumcss-generated",
 			"scenario": "natural",
 			"samples": 5,
-			"project": ".generated/pandwind-generated/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind-generated/natural/tsconfig.json",
+			"project": ".generated/yumcss-generated/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/yumcss-generated/natural/tsconfig.json",
 			"metrics": {
 				"files": 91,
 				"symbols": 46073,
@@ -239,7 +239,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/react-jss/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/natural/tsconfig.json",
 			"metrics": {
 				"files": 65,
 				"symbols": 43630,
@@ -255,7 +255,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/react-strict-dom/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/natural/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 46699,
@@ -271,7 +271,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/sprinkles/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/natural/tsconfig.json",
 			"metrics": {
 				"files": 63,
 				"symbols": 48437,
@@ -287,7 +287,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/stitches/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/natural/tsconfig.json",
 			"metrics": {
 				"files": 70,
 				"symbols": 53398,
@@ -303,7 +303,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/style9/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/natural/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 39367,
@@ -319,7 +319,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/styled-components/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/natural/tsconfig.json",
 			"metrics": {
 				"files": 92,
 				"symbols": 50946,
@@ -335,7 +335,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/stylex/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/natural/tsconfig.json",
 			"metrics": {
 				"files": 64,
 				"symbols": 37408,
@@ -351,7 +351,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/treat/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/natural/tsconfig.json",
 			"metrics": {
 				"files": 68,
 				"symbols": 41957,
@@ -367,7 +367,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/typestyle/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/natural/tsconfig.json",
 			"metrics": {
 				"files": 64,
 				"symbols": 38862,
@@ -383,7 +383,7 @@
 			"scenario": "natural",
 			"samples": 5,
 			"project": ".generated/vanilla-extract/natural/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/natural/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/natural/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 42769,
@@ -399,7 +399,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/aphrodite/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/aphrodite/stress/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 40145,
@@ -415,7 +415,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/compiled/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/compiled/stress/tsconfig.json",
 			"metrics": {
 				"files": 76,
 				"symbols": 62996,
@@ -431,7 +431,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/emotion/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/emotion/stress/tsconfig.json",
 			"metrics": {
 				"files": 92,
 				"symbols": 53545,
@@ -447,7 +447,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/fela/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/fela/stress/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 46201,
@@ -463,7 +463,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/goober/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/goober/stress/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 44308,
@@ -479,7 +479,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/griffel/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/griffel/stress/tsconfig.json",
 			"metrics": {
 				"files": 137,
 				"symbols": 53763,
@@ -495,7 +495,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/jss/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/jss/stress/tsconfig.json",
 			"metrics": {
 				"files": 61,
 				"symbols": 49168,
@@ -511,7 +511,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/linaria/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/linaria/stress/tsconfig.json",
 			"metrics": {
 				"files": 82,
 				"symbols": 41186,
@@ -527,7 +527,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/next-yak/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/next-yak/stress/tsconfig.json",
 			"metrics": {
 				"files": 63,
 				"symbols": 40359,
@@ -543,7 +543,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/panda/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/panda/stress/tsconfig.json",
 			"metrics": {
 				"files": 136,
 				"symbols": 78483,
@@ -555,11 +555,11 @@
 			}
 		},
 		{
-			"library": "pandwind",
+			"library": "yumcss",
 			"scenario": "stress",
 			"samples": 5,
-			"project": ".generated/pandwind/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind/stress/tsconfig.json",
+			"project": ".generated/yumcss/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/yumcss/stress/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 53558,
@@ -571,11 +571,11 @@
 			}
 		},
 		{
-			"library": "pandwind-generated",
+			"library": "yumcss-generated",
 			"scenario": "stress",
 			"samples": 5,
-			"project": ".generated/pandwind-generated/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/pandwind-generated/stress/tsconfig.json",
+			"project": ".generated/yumcss-generated/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/yumcss-generated/stress/tsconfig.json",
 			"metrics": {
 				"files": 91,
 				"symbols": 51897,
@@ -591,7 +591,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/react-jss/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-jss/stress/tsconfig.json",
 			"metrics": {
 				"files": 65,
 				"symbols": 53374,
@@ -607,7 +607,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/react-strict-dom/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/react-strict-dom/stress/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 62379,
@@ -623,7 +623,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/sprinkles/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/sprinkles/stress/tsconfig.json",
 			"metrics": {
 				"files": 63,
 				"symbols": 54597,
@@ -639,7 +639,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/stitches/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stitches/stress/tsconfig.json",
 			"metrics": {
 				"files": 70,
 				"symbols": 156942,
@@ -655,7 +655,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/style9/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/style9/stress/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 46367,
@@ -671,7 +671,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/styled-components/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/styled-components/stress/tsconfig.json",
 			"metrics": {
 				"files": 92,
 				"symbols": 58954,
@@ -687,7 +687,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/stylex/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/stylex/stress/tsconfig.json",
 			"metrics": {
 				"files": 64,
 				"symbols": 46760,
@@ -703,7 +703,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/treat/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/treat/stress/tsconfig.json",
 			"metrics": {
 				"files": 68,
 				"symbols": 49629,
@@ -719,7 +719,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/typestyle/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/typestyle/stress/tsconfig.json",
 			"metrics": {
 				"files": 64,
 				"symbols": 44966,
@@ -735,7 +735,7 @@
 			"scenario": "stress",
 			"samples": 5,
 			"project": ".generated/vanilla-extract/stress/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/stress/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/vanilla-extract/stress/tsconfig.json",
 			"metrics": {
 				"files": 62,
 				"symbols": 49097,
@@ -748,7 +748,7 @@
 		}
 	],
 	"tolerances": {
-		"pandwind": {
+		"yumcss": {
 			"instantiations": 0.1,
 			"memoryUsedKiB": 0.1,
 			"checkTimeSeconds": 0.5,

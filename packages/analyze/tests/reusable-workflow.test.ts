@@ -7,10 +7,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const workflow = readFileSync(resolve(root, ".github/workflows/analyze-comment.yml"), "utf8");
 
 describe("reusable analyze workflow", () => {
-	test("is independent of the caller's Pandwind source tree", () => {
-		expect(workflow).toContain("pandwind-version:");
+	test("is independent of the caller's YumCSS source tree", () => {
+		expect(workflow).toContain("yumcss-version:");
 		expect(workflow).toContain(
-			'pnpm dlx --package "pandwind-analyze@$PANDWIND_VERSION" pandwind-analyze',
+			'pnpm dlx --package "yumcss-analyze@$YUMCSS_VERSION" yumcss-analyze',
 		);
 		expect(workflow).not.toContain("../../packages/analyze/src/cli.ts");
 		expect(workflow).not.toContain("nub .github/scripts/analyze-comment.mjs");

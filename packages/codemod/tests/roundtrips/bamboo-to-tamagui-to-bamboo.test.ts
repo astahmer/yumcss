@@ -42,7 +42,7 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "bamboo -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -170,7 +170,7 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { display: "flex", gap: "4" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -270,7 +270,7 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -341,7 +341,7 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -427,7 +427,7 @@ test("bamboo -> tamagui -> bamboo: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 0,
 		    "generatedFiles": [],

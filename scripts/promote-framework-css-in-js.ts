@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	allFiles,
 	browserProof,
@@ -17,8 +18,8 @@ import {
 import { readPinnedSource } from "./adapter-proof-harness.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 
 type ScenarioId = "linaria" | "solid-styled" | "vue-styled";
 type Framework = "solid" | "vue";
@@ -50,7 +51,7 @@ interface FrameworkInstalledProof {
 		readonly commit: string;
 		readonly sourceEntry: string;
 	};
-	readonly route: { readonly from: CodemodAdapterId; readonly to: CodemodAdapterId.Pandwind };
+	readonly route: { readonly from: CodemodAdapterId; readonly to: CodemodAdapterId.YumCSS };
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
 		readonly installed: true;
@@ -62,7 +63,7 @@ interface FrameworkInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 	};
 	readonly checks: {
 		readonly sourceTypecheck: true;
@@ -102,7 +103,7 @@ const versions = {
 	"vue-tsc": "3.0.5",
 	"vue-typescript": "5.9.3",
 	"@wyw-in-js/vite": "2.4.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 } as const;
 
 const solidViteConfig = `import solid from "vite-plugin-solid";
@@ -133,12 +134,12 @@ import { defineConfig } from "vite";
 export default defineConfig({ plugins: [vue()] });
 `;
 
-const vuePandwindViteConfig = `import vue from "@vitejs/plugin-vue";
-import { pandwindCssVite } from "pandwind/vite";
-import { preset } from "./pandwind/preset";
+const vueYumCSSViteConfig = `import vue from "@vitejs/plugin-vue";
+import { yumcssExtractVite } from "yumcss/vite";
+import { preset } from "./yumcss/preset";
 import { defineConfig } from "vite";
 
-export default defineConfig({ plugins: [vue(), pandwindCssVite(preset, { root: "." })] });
+export default defineConfig({ plugins: [vue(), yumcssExtractVite(preset, { root: "." })] });
 `;
 
 const solidTsConfig = {
@@ -434,12 +435,12 @@ export const render = () => renderToString(createSSRApp(App));
 	},
 };
 
-const packageJson = (scenario: Scenario, includePandwind: boolean): Record<string, unknown> => {
+const packageJson = (scenario: Scenario, includeYumCSS: boolean): Record<string, unknown> => {
 	const dependencies: Record<string, string> = { ...scenario.sourceDependencies };
-	if (includePandwind) {
+	if (includeYumCSS) {
 		for (const name of ["@linaria/core", "@wyw-in-js/vite", "babel-preset-solid"])
 			if (scenario.id === "linaria") delete dependencies[name];
-		dependencies.pandwind = versions.pandwind;
+		dependencies.yumcss = versions.yumcss;
 	}
 	const devDependencies: Record<string, string> = {
 		"@types/node": versions["@types/node"],
@@ -448,10 +449,10 @@ const packageJson = (scenario: Scenario, includePandwind: boolean): Record<strin
 	};
 	if (scenario.sourceDevDependencies !== undefined)
 		Object.assign(devDependencies, scenario.sourceDevDependencies);
-	if (includePandwind) devDependencies["oxc-parser"] = versions["oxc-parser"];
+	if (includeYumCSS) devDependencies["oxc-parser"] = versions["oxc-parser"];
 	if (scenario.framework === "vue") devDependencies["vue-tsc"] = versions["vue-tsc"];
 	return {
-		name: `pandwind-${scenario.id}-proof`,
+		name: `yumcss-${scenario.id}-proof`,
 		private: true,
 		type: "module",
 		scripts: {
@@ -464,12 +465,12 @@ const packageJson = (scenario: Scenario, includePandwind: boolean): Record<strin
 	};
 };
 
-const createFixture = (root: string, scenario: Scenario, includePandwind: boolean): void => {
-	const files = includePandwind
+const createFixture = (root: string, scenario: Scenario, includeYumCSS: boolean): void => {
+	const files = includeYumCSS
 		? { ...scenario.sourceFiles, ...scenario.targetFiles }
 		: scenario.sourceFiles;
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(scenario, includePandwind));
+	writeJson(join(root, "package.json"), packageJson(scenario, includeYumCSS));
 	writeJson(
 		join(root, "tsconfig.json"),
 		scenario.framework === "vue" ? vueTsConfig : solidTsConfig,
@@ -477,10 +478,10 @@ const createFixture = (root: string, scenario: Scenario, includePandwind: boolea
 	writeFileSync(
 		join(root, "vite.config.ts"),
 		scenario.framework === "vue"
-			? includePandwind
-				? vuePandwindViteConfig
+			? includeYumCSS
+				? vueYumCSSViteConfig
 				: vueViteConfig
-			: scenario.id === "linaria" && !includePandwind
+			: scenario.id === "linaria" && !includeYumCSS
 				? linariaViteConfig
 				: solidViteConfig,
 	);
@@ -519,10 +520,10 @@ const runSsr = (root: string): { readonly markup: string; readonly css: string }
 	return JSON.parse(output) as { readonly markup: string; readonly css: string };
 };
 
-const targetUsesPandwind = (root: string): boolean =>
+const targetUsesYumCSS = (root: string): boolean =>
 	allFiles(root)
 		.filter((file) => /\.(?:[cm]?[jt]sx?|vue)$/u.test(file))
-		.some((file) => readFileSync(file, "utf8").includes("pandwind"));
+		.some((file) => readFileSync(file, "utf8").includes("yumcss"));
 
 const proofIsComplete = (report: FrameworkInstalledProof, scenario: Scenario): boolean =>
 	report.migration.converted > 0 &&
@@ -530,7 +531,7 @@ const proofIsComplete = (report: FrameworkInstalledProof, scenario: Scenario): b
 	report.migration.residuals === 0 &&
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
-	report.migration.targetUsesPandwind &&
+	report.migration.targetUsesYumCSS &&
 	report.dependencies.targetNodeModule &&
 	report.checks.hydration &&
 	report.ssr.markupEquivalent &&
@@ -541,9 +542,9 @@ const proofIsComplete = (report: FrameworkInstalledProof, scenario: Scenario): b
 		(scenario.allowDiagnosticCssSize === true && report.css.comparison === "diagnostic"));
 
 const runScenario = async (scenario: Scenario): Promise<FrameworkInstalledProof> => {
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
-		`pandwind-${scenario.id}-installed-proof-`,
+		`yumcss-${scenario.id}-installed-proof-`,
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, scenario, false);
 			createFixture(targetRoot, scenario, true);
@@ -557,13 +558,13 @@ const runScenario = async (scenario: Scenario): Promise<FrameworkInstalledProof>
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						scenario.adapter,
 						"--to",
-						"pandwind",
+						"yumcss",
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -604,16 +605,16 @@ const runScenario = async (scenario: Scenario): Promise<FrameworkInstalledProof>
 					commit: scenario.reference.commit,
 					sourceEntry: scenario.reference.path,
 				},
-				route: { from: scenario.adapter, to: CodemodAdapterId.Pandwind },
+				route: { from: scenario.adapter, to: CodemodAdapterId.YumCSS },
 				fixture: { files: scenario.fixtureFiles, isolated: true },
 				dependencies: {
 					installed: true,
-					targetPackage: versions.pandwind,
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: targetUsesPandwind(targetRoot),
+					targetUsesYumCSS: targetUsesYumCSS(targetRoot),
 				},
 				checks: {
 					sourceTypecheck: true,

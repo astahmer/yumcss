@@ -38,10 +38,10 @@ test("compiled -> tamagui: migrates concrete compiled syntax to tamagui", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "compiled -> tamagui happy");
 	expectExplicitResidualEvidence(result);
@@ -91,7 +91,7 @@ test("compiled -> tamagui: carries a documented secondary compiled API explicitl
 		{
 		  "changed": true,
 		  "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// yumcss:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],

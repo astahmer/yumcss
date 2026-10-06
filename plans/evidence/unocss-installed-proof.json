@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"route": {
 		"from": "unocss",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -28,7 +28,7 @@
 			"targetBytes": 168,
 			"differences": []
 		},
-		"targetUsesPandwind": true,
+		"targetUsesYumCSS": true,
 		"customTokenPreserved": true,
 		"sourceStylesheetImportRemoved": true,
 		"generatedVitePresetImportIsExplicit": true,

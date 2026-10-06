@@ -23,7 +23,7 @@ const read = async (path: string) => {
 };
 
 export const presetTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/1",
+	schema: "yumcss.token-format/1",
 	id: TokenFormatId.Preset,
 	canImport: true,
 	canExport: true,
@@ -44,7 +44,7 @@ export const presetTokenFormat: TokenFormatAdapter = {
 		return scalarFormatOutput(
 			document,
 			(groups) =>
-				`import { define } from "pandwind/preset";\n\nexport const tokens = define.tokens({\n${Object.entries(
+				`import { define } from "yumcss/preset";\n\nexport const tokens = define.tokens({\n${Object.entries(
 					groups,
 				)
 					.map(

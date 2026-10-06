@@ -42,7 +42,7 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -101,7 +101,7 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -130,7 +130,7 @@ test("react-native -> mantine -> react-native: retains the documented secondary 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("react-native -> mantine -> react-native: retains the documented secondary 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -223,7 +223,7 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -271,7 +271,7 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -366,7 +366,7 @@ test("react-native -> mantine -> react-native: resolves token values across both
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -414,7 +414,7 @@ test("react-native -> mantine -> react-native: resolves token values across both
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

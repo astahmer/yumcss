@@ -1,6 +1,6 @@
 /**
  * NATIVE target — the SAME shared vocabulary objects consumed through
- * pandwind/react-native: RN StyleSheet objects (unitless dp numbers,
+ * yumcss/react-native: RN StyleSheet objects (unitless dp numbers,
  * per-side padding expansion) rendered by a react-native-web host.
  *
  * `_dark` resolves at render time via the injected resolver — flipping
@@ -8,8 +8,8 @@
  */
 import { useState } from "react";
 import { Text, View } from "react-native";
-import { createDesignCss } from "pandwind/react-native";
-import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "yumcss/react-native";
+import { examplePreset } from "@yumcss/example-preset";
 import { body, header, status } from "../shared-styles.ts";
 
 let isDark = false;

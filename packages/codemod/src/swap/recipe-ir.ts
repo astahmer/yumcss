@@ -1,6 +1,6 @@
 import type { StyleProgram, StyleProgramSource } from "./semantic-ir.ts";
 
-export const STYLE_RECIPE_SCHEMA = "pandwind.style-recipe/1" as const;
+export const STYLE_RECIPE_SCHEMA = "yumcss.style-recipe/1" as const;
 
 export interface StyleRecipeVariant {
 	readonly name: string;

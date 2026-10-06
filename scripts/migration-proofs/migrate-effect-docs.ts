@@ -1,5 +1,5 @@
 /**
- * Effect website -> Pandwind migration corpus.
+ * Effect website -> YumCSS migration corpus.
  *
  * The upstream checkout is a pinned, read-only reference. This runner creates
  * disposable worktrees for each migration lane, preserves the original static
@@ -11,12 +11,12 @@ import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
-import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
-import { mapClassList } from "pandwind-codemod/migration/map";
-import { relativeModuleImport } from "pandwind-codemod/migration/shared";
-import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
-import { tokenizeClassList } from "pandwind-codemod/migration/tokens";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { loadMetaFromSources, type YumCSSMeta } from "@yumcss/codemod/migration/meta";
+import { mapClassList } from "@yumcss/codemod/migration/map";
+import { relativeModuleImport } from "@yumcss/codemod/migration/shared";
+import { CodemodAdapterId, SwapSourceId } from "@yumcss/codemod/swap";
+import { tokenizeClassList } from "@yumcss/codemod/migration/tokens";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 import {
 	migrateRegisteredFile,
@@ -62,12 +62,12 @@ async function sourceFiles(root: string): Promise<string[]> {
 	return files.toSorted();
 }
 
-function metadata(): PandwindMeta {
+function metadata(): YumCSSMeta {
 	return loadMetaFromSources({
 		typesDtsPath: join(metadataRoot, "types.d.ts"),
 		twTsPath: join(metadataRoot, "tw.ts"),
 		bridgePath: join(metadataRoot, "bridge.ts"),
-		interopPath: join(metadataRoot, "pandwind.interop.json"),
+		interopPath: join(metadataRoot, "yumcss.interop.json"),
 	});
 }
 
@@ -177,7 +177,7 @@ const camelProperty = (property: string): string =>
 
 function serializeDeclarations(
 	classString: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 ): { body: string; residual: string; mapped: number } {
 	const declarations: Array<[string, string]> = [];
 	const residual: string[] = [];
@@ -211,7 +211,7 @@ function applyAstroLane(
 	file: string,
 	importFile: string,
 	lane: EffectDocsLane,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 ): CorpusTransformResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const unmappedTokens: Array<EffectDocsMigrationReport["residuals"][number]> = [];
@@ -266,8 +266,8 @@ function applyAstroLane(
 		return { code: source, changed: false, converted: 0, unmappedTokens, skippedByMarker: 0 };
 	let code = applyEdits(source, edits);
 	const api = lane === EffectDocsLane.Tw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dss";
-	const apiImport = `import { ${api} } from "${relativeModuleImport(importFile, "proof/pandwind", api)}";`;
-	const cxImport = `import { cx } from "${relativeModuleImport(importFile, "proof/pandwind", "cx")}";`;
+	const apiImport = `import { ${api} } from "${relativeModuleImport(importFile, "proof/yumcss", api)}";`;
+	const cxImport = `import { cx } from "${relativeModuleImport(importFile, "proof/yumcss", "cx")}";`;
 	const frontmatter = code.startsWith("---") ? code.indexOf("\n---", 3) : -1;
 	if (frontmatter !== -1) {
 		const insertion = `\n${apiImport}${needsCx ? `\n${cxImport}` : ""}`;
@@ -292,7 +292,7 @@ function transformFile(
 	lane: EffectDocsLane,
 	source: string,
 	file: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	root: string,
 	files: readonly string[],
 ): Promise<CorpusTransformResult> {
@@ -306,10 +306,10 @@ function transformFile(
 				: SwapSourceId.Dss;
 	const project =
 		lane === EffectDocsLane.Tw
-			? { twModule: "proof/pandwind/tw.ts", cxModule: "proof/pandwind/cx.ts" }
+			? { twModule: "proof/yumcss/tw.ts", cxModule: "proof/yumcss/cx.ts" }
 			: lane === EffectDocsLane.Css
-				? { cssModule: "proof/pandwind/css.ts", cxModule: "proof/pandwind/cx.ts" }
-				: { dssModule: "proof/pandwind/dss.ts", cxModule: "proof/pandwind/cx.ts" };
+				? { cssModule: "proof/yumcss/css.ts", cxModule: "proof/yumcss/cx.ts" }
+				: { dssModule: "proof/yumcss/dss.ts", cxModule: "proof/yumcss/cx.ts" };
 	return migrateRegisteredFile({
 		source,
 		file,
@@ -317,7 +317,7 @@ function transformFile(
 		files,
 		meta,
 		from: CodemodAdapterId.Tailwind,
-		to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+		to: `${CodemodAdapterId.YumCSS}:${dialect}`,
 		project,
 	});
 }
@@ -327,28 +327,28 @@ function supportFiles(lane: EffectDocsLane): Record<string, string> {
 	const typesSource = readCheckedIn(join(metadataRoot, "types.d.ts"));
 	const bridgeSource = readCheckedIn(join(metadataRoot, "bridge.ts"));
 	const files: Record<string, string> = {
-		"proof/pandwind/tw.generated.ts": twSource,
-		"proof/pandwind/types.d.ts": typesSource,
-		"proof/pandwind/bridge.ts": bridgeSource,
-		"proof/pandwind/tw.ts": [
-			'import { createTw, type TwOptions } from "pandwind/tw";',
+		"proof/yumcss/tw.generated.ts": twSource,
+		"proof/yumcss/types.d.ts": typesSource,
+		"proof/yumcss/bridge.ts": bridgeSource,
+		"proof/yumcss/tw.ts": [
+			'import { createTw, type TwOptions } from "yumcss/tw";',
 			'import type { WindVariants } from "./types";',
-			'import { __pandwindConfig as generatedConfig } from "./tw.generated";',
+			'import { __yumcssConfig as generatedConfig } from "./tw.generated";',
 			"",
 			"// The original utility vocabulary remains authoritative for cascade order.",
-			"export const __pandwindConfig: TwOptions = { variants: generatedConfig.variants };",
-			"export const tw = createTw<WindVariants>(__pandwindConfig);",
+			"export const __yumcssConfig: TwOptions = { variants: generatedConfig.variants };",
+			"export const tw = createTw<WindVariants>(__yumcssConfig);",
 			"",
 		].join("\n"),
-		"proof/pandwind/cx.ts":
-			'import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n',
+		"proof/yumcss/cx.ts":
+			'import { createCx } from "yumcss/cx";\nimport { __yumcssConfig } from "./tw";\n\nexport const cx = createCx(__yumcssConfig);\n',
 	};
 	if (lane === EffectDocsLane.Css)
-		files["proof/pandwind/css.ts"] =
-			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
+		files["proof/yumcss/css.ts"] =
+			'import { createCss } from "yumcss/css";\nimport { examplePreset } from "@yumcss/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
 	if (lane === EffectDocsLane.DesignCss)
-		files["proof/pandwind/dss.ts"] =
-			'import { createDesignCss } from "pandwind/design";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter });\n';
+		files["proof/yumcss/dss.ts"] =
+			'import { createDesignCss } from "yumcss/design";\nimport { examplePreset } from "@yumcss/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter });\n';
 	return files;
 }
 
@@ -411,12 +411,12 @@ async function materialize(
 	};
 	packageJson.dependencies = {
 		...packageJson.dependencies,
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
-	await mkdir(join(outputRoot, "apps/web/src/pandwind"), { recursive: true });
+	await mkdir(join(outputRoot, "apps/web/src/yumcss"), { recursive: true });
 	await writeFile(
-		join(outputRoot, "apps/web/src/pandwind/source-tokens.ts"),
+		join(outputRoot, "apps/web/src/yumcss/source-tokens.ts"),
 		`export const effectSourceTokens = ${JSON.stringify([...tokens].toSorted().join(" "))};\n`,
 	);
 	console.log(`materialized ${lane} lane at ${outputRoot}`);
@@ -441,7 +441,7 @@ export class EffectDocsMigration {
 		if (!EffectDocsMigration.lanes.includes(lane))
 			throw new Error(`unsupported Effect lane: ${lane}`);
 		const referenceRoot = resolve(
-			options.referenceRoot ?? process.env.PANDWIND_EFFECT_REFERENCE ?? defaultReferenceRoot,
+			options.referenceRoot ?? process.env.YUMCSS_EFFECT_REFERENCE ?? defaultReferenceRoot,
 		);
 		const sourceRoot = join(referenceRoot, "apps/web/src");
 		const files = await sourceFiles(sourceRoot);

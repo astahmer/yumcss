@@ -13,7 +13,7 @@
  *   `text-lg` -> ["font-size","line-height"] -> `textSize`);
  * - `bridge.ts` — an optional (property, resolved value) -> utility map,
  *   inverted for `css()` mode so emitted declarations carry exact resolved
- *   values. Pandwind does not import this artifact automatically; it is a
+ *   values. YumCSS does not import this artifact automatically; it is a
  *   runtime dependency only when an app explicitly selects its `twAdapter`.
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -21,9 +21,9 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
-import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
-import { parsePandwindInteropArtifact, type PandwindInteropArtifact } from "./tw/index.ts";
-import type { AnyTokens } from "pandwind/types/typings";
+import { UTILITY_SUBKEYS } from "yumcss/tw/compile";
+import { parseYumCSSInteropArtifact, type YumCSSInteropArtifact } from "./tw/index.ts";
+import type { AnyTokens } from "yumcss/types/typings";
 
 interface VariantMeta {
 	join: ":" | "-" | "";
@@ -38,7 +38,7 @@ interface KeyInfo {
 	valueType: string | undefined;
 }
 
-export interface PandwindMeta {
+export interface YumCSSMeta {
 	/** Interface-order list of tw keys with their dashed bases. */
 	keys: KeyInfo[];
 	/** dashed base -> keys emitting it. */
@@ -55,11 +55,11 @@ export interface PandwindMeta {
 	/** Exact conditions from the source project's resolved preset, when available. */
 	conditions: Readonly<Record<string, string | readonly string[]>>;
 	/** Versioned generated artifact used when available; useful for diagnostics. */
-	interop: PandwindInteropArtifact | undefined;
+	interop: YumCSSInteropArtifact | undefined;
 }
 
 /** Empty target metadata for project migrations that do not consume a bridge. */
-export function createEmptyPandwindMeta(): PandwindMeta {
+export function createEmptyYumCSSMeta(): YumCSSMeta {
 	return {
 		keys: [],
 		keysByBase: new Map(),
@@ -185,10 +185,10 @@ export interface LoadMetaOptions {
 	conditions?: Readonly<Record<string, string | readonly string[]>>;
 }
 
-function readInterop(path: string | undefined): PandwindInteropArtifact | undefined {
+function readInterop(path: string | undefined): YumCSSInteropArtifact | undefined {
 	if (path === undefined) return undefined;
 	try {
-		return parsePandwindInteropArtifact(JSON.parse(readFileSync(path, "utf8")));
+		return parseYumCSSInteropArtifact(JSON.parse(readFileSync(path, "utf8")));
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
 		throw error;
@@ -196,7 +196,7 @@ function readInterop(path: string | undefined): PandwindInteropArtifact | undefi
 }
 
 function bridgeInverseFromArtifact(
-	bridge: PandwindInteropArtifact["bridge"],
+	bridge: YumCSSInteropArtifact["bridge"],
 ): Map<string, { property: string; value: string }> {
 	const inverse = new Map<string, { property: string; value: string }>();
 	for (const [property, values] of Object.entries(bridge)) {
@@ -207,9 +207,9 @@ function bridgeInverseFromArtifact(
 	return inverse;
 }
 
-export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
+export function loadMetaFromSources(options: LoadMetaOptions): YumCSSMeta {
 	const metadataDir = dirname(options.typesDtsPath ?? options.twTsPath ?? process.cwd());
-	const interop = readInterop(options.interopPath ?? resolve(metadataDir, "pandwind.interop.json"));
+	const interop = readInterop(options.interopPath ?? resolve(metadataDir, "yumcss.interop.json"));
 	const typesDts =
 		options.typesDtsPath === undefined ? undefined : readFileSync(options.typesDtsPath, "utf8");
 	const twTs = options.twTsPath === undefined ? undefined : readFileSync(options.twTsPath, "utf8");
@@ -226,7 +226,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 	);
 	if (interop === undefined && (typesDts === undefined || twTs === undefined)) {
 		throw new Error(
-			"codemod: generated metadata requires pandwind.interop.json or both types.d.ts and tw.ts",
+			"codemod: generated metadata requires yumcss.interop.json or both types.d.ts and tw.ts",
 		);
 	}
 
@@ -274,7 +274,7 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 	};
 }
 
-function valueLiteralsFromInterop(interop: PandwindInteropArtifact): Map<string, Set<string>> {
+function valueLiteralsFromInterop(interop: YumCSSInteropArtifact): Map<string, Set<string>> {
 	const valueLiterals = new Map(
 		Object.entries(interop.valueTypes).map(([valueType, values]) => [valueType, new Set(values)]),
 	);
@@ -341,7 +341,7 @@ async function importProjectModule(fromFile: string, specifier: string): Promise
 }
 
 /** Async project-aware loader used by the CLI. */
-export async function loadMetaFromSourcesAsync(options: LoadMetaOptions): Promise<PandwindMeta> {
+export async function loadMetaFromSourcesAsync(options: LoadMetaOptions): Promise<YumCSSMeta> {
 	const preset =
 		options.bridgePath === undefined
 			? { tokens: undefined, conditions: {} }

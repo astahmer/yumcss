@@ -22,7 +22,7 @@ const emitContext = {
 describe("StyleProgramBuilder", () => {
 	test("builds the existing rule-level IR with tokens, ordering, and metadata", () => {
 		const program = StyleProgramBuilder.create({
-			source: { file: "Card.tsx", adapter: CodemodAdapterId.Pandwind },
+			source: { file: "Card.tsx", adapter: CodemodAdapterId.YumCSS },
 		})
 			.style({
 				color: "red",
@@ -47,7 +47,7 @@ describe("StyleProgramBuilder", () => {
 			})
 			.build();
 
-		expect(program.schema).toBe("pandwind.style-program/1");
+		expect(program.schema).toBe("yumcss.style-program/1");
 		expect(program.rules.map((rule) => rule.kind)).toEqual([
 			"style",
 			"global",

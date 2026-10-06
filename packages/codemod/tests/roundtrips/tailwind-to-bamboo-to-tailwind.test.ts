@@ -42,7 +42,7 @@ test("tailwind -> bamboo -> tailwind: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> bamboo round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -137,7 +137,7 @@ test("tailwind -> bamboo -> tailwind: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -171,7 +171,7 @@ test("tailwind -> bamboo -> tailwind: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> bamboo | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

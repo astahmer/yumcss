@@ -9,13 +9,13 @@
  */
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { presetTokenVocabularyByProperty } from "pandwind/vite/preset-context";
+import { presetTokenVocabularyByProperty } from "yumcss/vite/preset-context";
 import type { TokenPolicySnapshot } from "./contracts.ts";
 import type { EffectiveTokenContextInputs } from "./effective-token-context.ts";
 
 type PresetModule = Record<string, unknown>;
 
-export const DEFAULT_GOVERNANCE_PRESET = "pandwind/preset/default";
+export const DEFAULT_GOVERNANCE_PRESET = "yumcss/preset/default";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -70,7 +70,7 @@ function derivePolicySnapshot(
 		if (allowed.length > 0) allowedRawValuesByProperty[prop] = allowed;
 	}
 	return {
-		owner: "pandwind",
+		owner: "yumcss",
 		resolved: true,
 		allowedRawPrefixes: [],
 		strictProperties,

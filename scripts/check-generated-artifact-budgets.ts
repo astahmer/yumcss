@@ -4,8 +4,8 @@ import { join, resolve } from "node:path";
 import {
 	hashGeneratedContent,
 	type GeneratedArtifactOwnershipTag,
-	type PandwindGeneratedManifest,
-} from "pandwind-codemod/tw";
+	type YumCSSGeneratedManifest,
+} from "@yumcss/codemod/tw";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const budgetPath = resolve(repositoryRoot, "plans/evidence/generated-artifact-budgets.json");
@@ -24,7 +24,7 @@ interface AppBudget {
 }
 
 interface BudgetFile {
-	readonly schema: "pandwind.generated-budget/1";
+	readonly schema: "yumcss.generated-budget/1";
 	readonly baseline: string;
 	readonly apps: readonly AppBudget[];
 }
@@ -49,7 +49,7 @@ interface AppReport {
 }
 
 interface BudgetReport {
-	readonly schema: "pandwind.generated-budget/1";
+	readonly schema: "yumcss.generated-budget/1";
 	readonly baseline: string;
 	readonly apps: readonly AppReport[];
 	readonly failures: readonly string[];
@@ -65,9 +65,9 @@ const measure = (content: string): { readonly rawBytes: number; readonly gzipByt
 const checkApp = (app: AppBudget): AppReport => {
 	const appRoot = resolve(repositoryRoot, app.root);
 	const manifestPath = join(appRoot, app.manifest);
-	const manifest = readJson<PandwindGeneratedManifest>(manifestPath);
+	const manifest = readJson<YumCSSGeneratedManifest>(manifestPath);
 	const failures: string[] = [];
-	if (manifest.schema !== "pandwind.generated/1")
+	if (manifest.schema !== "yumcss.generated/1")
 		failures.push(`${app.id}: unsupported generated manifest schema ${manifest.schema}`);
 
 	const inputs = manifest.inputs.map((input) => {
@@ -135,7 +135,7 @@ const checkApp = (app: AppBudget): AppReport => {
 };
 
 const budget = readJson<BudgetFile>(budgetPath);
-if (budget.schema !== "pandwind.generated-budget/1")
+if (budget.schema !== "yumcss.generated-budget/1")
 	throw new Error(`unsupported generated artifact budget schema: ${budget.schema}`);
 const apps = budget.apps.map(checkApp);
 const failures = apps.flatMap((app) => app.failures);

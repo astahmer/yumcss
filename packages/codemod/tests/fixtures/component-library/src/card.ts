@@ -1,5 +1,5 @@
-import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "yumcss/design";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createDesignCss(examplePreset);
 

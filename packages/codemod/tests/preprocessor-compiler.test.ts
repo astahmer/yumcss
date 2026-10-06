@@ -59,7 +59,7 @@ describe("official stylesheet compiler integrations", () => {
 		expect(result.skipped, testCase.name).toBe(0);
 		expect(result.residuals, testCase.name).toEqual([]);
 		expect(result.outputExtension, testCase.name).toBe(".css");
-		expect(result.code, testCase.name).not.toContain("pandwind:migrate-skip");
+		expect(result.code, testCase.name).not.toContain("yumcss:migrate-skip");
 		for (const expected of testCase.expectations)
 			expect(result.code, testCase.name).toContain(expected);
 		expect(result.code, testCase.name).not.toMatch(

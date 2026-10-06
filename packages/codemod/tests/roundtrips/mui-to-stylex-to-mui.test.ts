@@ -42,7 +42,7 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", async 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> stylex round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("mui -> stylex -> mui: preserves an actionable concrete round trip", async 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("mui -> stylex -> mui: retains the documented secondary API without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework)
+		    "code": "// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework)
 		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "8px" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
@@ -275,7 +275,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => stylex.create({ style: { color: "#f97316", padding: "16px" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -349,7 +349,7 @@ test("mui -> stylex -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -438,7 +438,7 @@ test("mui -> stylex -> mui: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stylex -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		    "converted": 0,
 		    "generatedFiles": [],

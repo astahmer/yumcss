@@ -5,7 +5,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const NEXT_PROOF_SCHEMA = "pandwind.next-installed-proof/1" as const;
+const NEXT_PROOF_SCHEMA = "yumcss.next-installed-proof/1" as const;
 
 export interface NextProofFailure {
 	readonly path: string;

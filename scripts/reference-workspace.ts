@@ -25,7 +25,7 @@ export interface ReferenceAvailability {
 
 export function createReferenceWorkspace(root?: string): ReferenceWorkspace {
 	const workspaceRoot = resolve(
-		root ?? process.env.PANDWIND_REFERENCE_ROOT ?? join(homedir(), ".references"),
+		root ?? process.env.YUMCSS_REFERENCE_ROOT ?? join(homedir(), ".references"),
 	);
 	return {
 		root: workspaceRoot,

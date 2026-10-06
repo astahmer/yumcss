@@ -3,7 +3,7 @@ import {
 	createTokenDocument,
 	TokenFormatId,
 	TOKEN_RESOLVER_SCHEMA,
-} from "pandwind-codemod/swap/token-document";
+} from "@yumcss/codemod/swap/token-document";
 import { buildTokenGovernanceReport } from "./report.ts";
 import { compareTokenRelease } from "./release.ts";
 import type { TokenDefinition, TokenUsage } from "./contracts.ts";
@@ -31,7 +31,7 @@ const document = (options: {
 }) =>
 	createTokenDocument({
 		format: TokenFormatId.Preset,
-		formatVersion: "pandwind.preset/1",
+		formatVersion: "yumcss.preset/1",
 		root: {
 			kind: "group",
 			children: {
@@ -113,7 +113,7 @@ describe("compareTokenRelease", () => {
 			consumers: [governance()],
 			generatedAt: "2026-01-01T00:00:00.000Z",
 		});
-		expect(report.schema).toBe("pandwind.token-release/1");
+		expect(report.schema).toBe("yumcss.token-release/1");
 		expect(report.changes.filter(({ path }) => path.endsWith("/old"))).toMatchObject([
 			{ kind: "removed", path: "/colors/old", tokenIds: [] },
 		]);

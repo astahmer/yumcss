@@ -34,7 +34,7 @@ export type {
 export const MCP_COMMAND = "mcp" as const;
 
 export const MCP_SERVER_INFO = {
-	name: "pandwind-analyze",
+	name: "yumcss-analyze",
 	version: "0.1.0",
 } as const;
 
@@ -183,7 +183,7 @@ export function createMcpServer(root: string, options: McpServerOptions = {}): M
 		{
 			title: "Analyze project",
 			description:
-				"Run Pandwind's existing fold and CSS analysis over project-relative source files and return its versioned JSON report.",
+				"Run YumCSS's existing fold and CSS analysis over project-relative source files and return its versioned JSON report.",
 			inputSchema: analyzeProjectSchema,
 		},
 		async (input) => service.call(MCP_TOOL.AnalyzeProject, input),
@@ -226,14 +226,14 @@ export async function runMcpServer(root: string, options: McpServerOptions = {})
 }
 
 export async function runMcpCommand(argv: readonly string[]): Promise<void> {
-	const cli = cac("pandwind-analyze mcp");
+	const cli = cac("yumcss-analyze mcp");
 	cli.option("--root <dir>", "Project root", { default: "." });
 	cli.option(
 		"--host-checks",
 		"Run declared project validation scripts in an isolated temporary workspace",
 	);
 	cli.help();
-	cli.parse(["node", "pandwind-analyze mcp", ...argv], { run: false });
+	cli.parse(["node", "yumcss-analyze mcp", ...argv], { run: false });
 	if (cli.matchedCommand !== undefined) return;
 	cli.globalCommand.checkUnknownOptions();
 	cli.globalCommand.checkOptionValue();

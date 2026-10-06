@@ -1,7 +1,7 @@
-import { createCss } from "pandwind/css";
-import { createUnsafeCss } from "pandwind/unsafe/css";
-import { createRuntimeCss } from "pandwind/css/runtime";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { createUnsafeCss } from "yumcss/unsafe/css";
+import { createRuntimeCss } from "yumcss/css/runtime";
+import { examplePreset } from "@yumcss/example-preset";
 
 /**
  * Strict preset-bound CSS. Tokens and the configured condition names are part
@@ -11,7 +11,7 @@ export const css = createCss(examplePreset);
 
 /**
  * The explicit runtime-sheet variant. Prefer `css` above in applications
- * using `pandwindCssVite`: `css.vars()` and `css.input()` keep runtime values
+ * using `yumcssExtractVite`: `css.vars()` and `css.input()` keep runtime values
  * inline while the plugin emits their value-independent rules. Use this
  * variant when code must register CSS without a build-time extractor, or when
  * the caller needs the `sheet` for SSR extraction, hydration, or inspection.

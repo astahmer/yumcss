@@ -7,7 +7,7 @@ import {
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	type AdapterMigrationResult,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 
 /** Public migration lanes for the pinned Astryx docsite corpus. */
@@ -23,7 +23,7 @@ export interface AstryxDocsMigrationOptions {
 }
 
 export interface AstryxDocsLaneReport {
-	readonly schema: "pandwind.astryx-docs-migration/1";
+	readonly schema: "yumcss.astryx-docs-migration/1";
 	readonly lane: AstryxDocsLane;
 	readonly referenceCommit: string;
 	readonly sourceRoot: string;
@@ -152,8 +152,8 @@ function wrapDesignRawObjects(source: string): string {
 function useDesignApi(source: string): string {
 	let output = wrapDesignRawObjects(source);
 	output = output.replace(
-		/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
-		'import { createDesignCss } from "pandwind/design";\nimport { defaultPreset } from "pandwind/preset/default";',
+		/import \{ createUnsafeCss \} from "yumcss\/unsafe\/css";/g,
+		'import { createDesignCss } from "yumcss/design";\nimport { defaultPreset } from "yumcss/preset/default";',
 	);
 	output = output.replace(
 		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
@@ -165,8 +165,8 @@ function useDesignApi(source: string): string {
 function useRuntimeApi(source: string): string {
 	return source
 		.replace(
-			/import \{ createUnsafeCss \} from "pandwind\/unsafe\/css";/g,
-			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";',
+			/import \{ createUnsafeCss \} from "yumcss\/unsafe\/css";/g,
+			'import { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";',
 		)
 		.replace(
 			/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createUnsafeCss\(\);/g,
@@ -180,7 +180,7 @@ function createLaneAdapter(lane: AstryxDocsLane): AstryxLaneAdapter {
 		transform(source, context) {
 			const result = runAdapterMigration(source, {
 				from: CodemodAdapterId.StyleX,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: context.file,
 				root: context.root,
 				mode: "safe",
@@ -231,7 +231,7 @@ function rewriteRequired(
 
 /**
  * Lower the few source-level dynamic carriers that the StyleX adapter cannot
- * represent as static Pandwind rules. Their values are already ordinary host
+ * represent as static YumCSS rules. Their values are already ordinary host
  * styles; retaining them as `style` props keeps the dynamic boundary explicit
  * without keeping the StyleX compiler in the migrated application.
  */
@@ -280,7 +280,7 @@ function lowerAstryxDynamicHosts(source: string, file: string): string {
 		);
 		output = rewriteRequired(
 			output,
-			/const styles = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			/const styles = \/\/ yumcss:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
 			"const styles = css.group(",
 			file,
 		);
@@ -330,7 +330,7 @@ function lowerAstryxDynamicHosts(source: string, file: string): string {
 		);
 		output = rewriteRequired(
 			output,
-			/const row = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			/const row = \/\/ yumcss:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
 			"const row = css.group(",
 			file,
 		);
@@ -345,7 +345,7 @@ function lowerAstryxDynamicHosts(source: string, file: string): string {
 		);
 		output = rewriteRequired(
 			output,
-			/const metricsGridStyles = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			/const metricsGridStyles = \/\/ yumcss:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
 			"const metricsGridStyles = css.group(",
 			file,
 		);
@@ -359,15 +359,15 @@ function lowerAstryxDynamicHosts(source: string, file: string): string {
 			file,
 		);
 		output = output.replaceAll(
-			"const styles = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
+			"const styles = // yumcss:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
 			"const styles = css.group(",
 		);
 		output = output.replaceAll(
-			"const reorderStyles = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
+			"const reorderStyles = // yumcss:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
 			"const reorderStyles = css.group(",
 		);
 		output = output.replace(
-			"const skeletonCell = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create({",
+			"const skeletonCell = // yumcss:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create({",
 			"const skeletonCell = {",
 		);
 		output = rewriteRequired(
@@ -414,8 +414,8 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 			(async () => {
 				const configFile = join(outputRoot, "next.config.mjs");
 				let config = await readFile(configFile, "utf8");
-				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { defaultPreset } from "pandwind/preset/default";\nconst cssPlugin = pandwindWebpackCss({ preset: defaultPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
+				if (!config.includes("yumcssWebpackCss")) {
+					config = `import { yumcssWebpackCss } from "yumcss/unplugin";\nimport { defaultPreset } from "yumcss/preset/default";\nconst cssPlugin = yumcssWebpackCss({ preset: defaultPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/yumcss\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
 					config = config.replace(
 						"    return config;",
 						"    config.plugins.push(cssPlugin);\n    return config;",
@@ -426,22 +426,22 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 			(async () => {
 				const layoutFile = join(outputRoot, "src/app/layout.tsx");
 				let layout = await readFile(layoutFile, "utf8");
-				if (!layout.includes('"pandwind:css"')) {
+				if (!layout.includes('"yumcss:css"')) {
 					layout = layout.replace(
 						"import './globals.css';",
-						"import './globals.css';\nimport 'pandwind:css';",
+						"import './globals.css';\nimport 'yumcss:css';",
 					);
 					layout = layout.replace(
 						'import "./globals.css";',
-						'import "./globals.css";\nimport "pandwind:css";',
+						'import "./globals.css";\nimport "yumcss:css";',
 					);
 				}
 				await writeFile(layoutFile, layout);
 			})(),
 			(async () => {
 				await writeFile(
-					join(outputRoot, "src/pandwind-css.d.ts"),
-					'declare module "pandwind:css";\n',
+					join(outputRoot, "src/yumcss-css.d.ts"),
+					'declare module "yumcss:css";\n',
 				);
 			})(),
 			(async () => {
@@ -469,7 +469,7 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 		};
 		packageJson.dependencies = {
 			...packageJson.dependencies,
-			pandwind: `file:${repositoryRoot}/packages/pandwind`,
+			yumcss: `file:${repositoryRoot}/packages/yumcss`,
 		};
 		await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 	})();
@@ -555,7 +555,7 @@ export class AstryxDocsMigration {
 		}
 		if (outputRoot !== undefined) await installStaticExtractorConfig(outputRoot);
 		const report: AstryxDocsLaneReport = {
-			schema: "pandwind.astryx-docs-migration/1",
+			schema: "yumcss.astryx-docs-migration/1",
 			lane,
 			referenceCommit,
 			sourceRoot: referenceRoot,
@@ -581,7 +581,7 @@ export class AstryxDocsMigration {
 		};
 		if (outputRoot !== undefined)
 			await writeFile(
-				join(outputRoot, `pandwind-${lane}.json`),
+				join(outputRoot, `yumcss-${lane}.json`),
 				`${JSON.stringify(report, null, 2)}\n`,
 			);
 		return report;

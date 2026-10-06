@@ -1,13 +1,13 @@
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, type OxcNode, walk, walkWithParent } from "pandwind/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, type OxcNode, walk, walkWithParent } from "yumcss/tw/literal";
 import { SourcePass, type SourceEdit } from "../source-pass-utils.ts";
 
-export interface PandwindStaticStyleSimplification {
+export interface YumCSSStaticStyleSimplification {
 	readonly code: string;
 	readonly changed: boolean;
 }
 
-export interface SimplifyPandwindStaticStylesOptions {
+export interface SimplifyYumCSSStaticStylesOptions {
 	readonly hoistStaticStyles?: boolean;
 }
 
@@ -376,19 +376,19 @@ const simplifyMixedStaticCxCalls = (source: string, file: string): string => {
 	return SourcePass.applyEdits(source, edits);
 };
 
-const isPandwindStaticCarrier = (value: unknown, bindings: StaticClassBindings): boolean => {
+const isYumCSSStaticCarrier = (value: unknown, bindings: StaticClassBindings): boolean => {
 	const node = unwrapExpression(value);
 	if (node === undefined) return false;
 	if (staticClassCallFor(node, bindings) !== undefined) return true;
 	if (node.type === NodeKind.ConditionalExpression) {
 		return (
-			isPandwindStaticCarrier(node.consequent, bindings) ||
-			isPandwindStaticCarrier(node.alternate, bindings)
+			isYumCSSStaticCarrier(node.consequent, bindings) ||
+			isYumCSSStaticCarrier(node.alternate, bindings)
 		);
 	}
 	if (node.type === NodeKind.LogicalExpression) {
 		return (
-			isPandwindStaticCarrier(node.left, bindings) || isPandwindStaticCarrier(node.right, bindings)
+			isYumCSSStaticCarrier(node.left, bindings) || isYumCSSStaticCarrier(node.right, bindings)
 		);
 	}
 	return false;
@@ -422,7 +422,7 @@ const simplifyCarrierCxCalls = (source: string, file: string): string => {
 		const argumentsList = childNodes(node, "arguments");
 		const range = nodeRange(node);
 		if (argumentsList === undefined || range === undefined) return;
-		if (!argumentsList.some((argument) => isPandwindStaticCarrier(argument, bindings))) return;
+		if (!argumentsList.some((argument) => isYumCSSStaticCarrier(argument, bindings))) return;
 		const flattened = flattenedCxArguments(node, source);
 		if (flattened === undefined || flattened.length === 0) return;
 		edits.push({
@@ -869,9 +869,9 @@ const styleValue = (
 
 const removeUnusedCxBindings = (source: string): string => {
 	const cxImport =
-		/^[ \t]*import\s*\{\s*cx\s*\}\s*from\s*["'][^"']*pandwind\/cx["'];?[ \t]*\r?\n?/gmu;
+		/^[ \t]*import\s*\{\s*cx\s*\}\s*from\s*["'][^"']*yumcss\/cx["'];?[ \t]*\r?\n?/gmu;
 	const createCxImport =
-		/^[ \t]*import\s*\{\s*createCx\s*\}\s*from\s*["'][^"']*pandwind\/cx["'];?[ \t]*\r?\n?/gmu;
+		/^[ \t]*import\s*\{\s*createCx\s*\}\s*from\s*["'][^"']*yumcss\/cx["'];?[ \t]*\r?\n?/gmu;
 	const cxBinding = /^[ \t]*(?:const|let|var)\s+cx\s*=\s*createCx\([^\n;]*\);?[ \t]*\r?\n?/gmu;
 	const withoutCxImport = source.replace(cxImport, "");
 	const withoutCxBinding = withoutCxImport.replace(cxBinding, "");
@@ -883,7 +883,7 @@ const removeUnusedCxBindings = (source: string): string => {
 
 const removeUnusedCssBinding = (source: string): string => {
 	const cssImport =
-		/^[ \t]*import\s*\{\s*css\s*\}\s*from\s*["'][^"']*pandwind\/css["'];?[ \t]*\r?\n?/gmu;
+		/^[ \t]*import\s*\{\s*css\s*\}\s*from\s*["'][^"']*yumcss\/css["'];?[ \t]*\r?\n?/gmu;
 	const withoutCssImport = source.replace(cssImport, "");
 	return /\bcss\b/u.test(withoutCssImport) ? source : withoutCssImport;
 };
@@ -930,11 +930,11 @@ const removeUnusedStaticCssClassBindings = (source: string, file: string): strin
 	return SourcePass.applyEdits(source, edits);
 };
 
-export const simplifyPandwindStaticStyles = (
+export const simplifyYumCSSStaticStyles = (
 	source: string,
 	file = "migration.tsx",
-	options: SimplifyPandwindStaticStylesOptions = {},
-): PandwindStaticStyleSimplification => {
+	options: SimplifyYumCSSStaticStylesOptions = {},
+): YumCSSStaticStyleSimplification => {
 	if (!isScriptFile(file)) return { code: source, changed: false };
 	const composed = simplifyStaticCxCalls(source, file);
 	const stacks = simplifyStackOpening(composed, file);

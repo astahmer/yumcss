@@ -15,7 +15,7 @@ const auditedAdapters = [
 	CodemodAdapterId.ChakraUi,
 	CodemodAdapterId.Tailwind,
 	CodemodAdapterId.StyleX,
-	CodemodAdapterId.Pandwind,
+	CodemodAdapterId.YumCSS,
 	CodemodAdapterId.Tokenami,
 	CodemodAdapterId.UnoCSS,
 	CodemodAdapterId.StyledComponents,
@@ -28,14 +28,14 @@ test("captures configured and missing-context audit scenarios with explicit outc
 	const scenarios = [];
 	for (const adapter of auditedAdapters) {
 		const sourceCase = cases.find((candidate) => candidate.adapter === adapter);
-		const pandwindCase = cases.find((candidate) => candidate.adapter === CodemodAdapterId.Pandwind);
+		const yumcssCase = cases.find((candidate) => candidate.adapter === CodemodAdapterId.YumCSS);
 		expect(sourceCase).toBeDefined();
-		expect(pandwindCase).toBeDefined();
-		if (sourceCase === undefined || pandwindCase === undefined)
+		expect(yumcssCase).toBeDefined();
+		if (sourceCase === undefined || yumcssCase === undefined)
 			throw new Error("missing audit fixture");
 		for (const route of [
-			{ from: adapter, to: CodemodAdapterId.Pandwind, fixture: sourceCase },
-			{ from: CodemodAdapterId.Pandwind, to: adapter, fixture: pandwindCase },
+			{ from: adapter, to: CodemodAdapterId.YumCSS, fixture: sourceCase },
+			{ from: CodemodAdapterId.YumCSS, to: adapter, fixture: yumcssCase },
 		]) {
 			if (route.from === route.to) continue;
 			for (const configuration of ["missing", "configured-blue", "configured-amber"] as const) {
@@ -74,7 +74,7 @@ test("captures configured and missing-context audit scenarios with explicit outc
 								? ["configuration", "validation"]
 								: ["host-framework"],
 					);
-					expect(result.code.replace(/^\/\/ pandwind:migrate-skip[^\n]*\n/gmu, "")).toBe(
+					expect(result.code.replace(/^\/\/ yumcss:migrate-skip[^\n]*\n/gmu, "")).toBe(
 						route.fixture.source,
 					);
 				} else if (unrecognizedChakra) {
@@ -122,20 +122,20 @@ test("captures configured and missing-context audit scenarios with explicit outc
 		}
 	}
 	expect(scenarios).toHaveLength(48);
-	if (process.env.PANDWIND_REFRESH_AUDIT_EVIDENCE !== "1") return;
+	if (process.env.YUMCSS_REFRESH_AUDIT_EVIDENCE !== "1") return;
 	const repositoryRoot = resolve(import.meta.dirname, "../../..");
 	writeFileSync(
 		resolve(repositoryRoot, "plans/evidence/codemod-configured-audit.json"),
 		`${JSON.stringify(
 			{
-				schema: "pandwind.codemod-configured-audit/1",
+				schema: "yumcss.codemod-configured-audit/1",
 				sourceFingerprint: proofSourceFingerprint(repositoryRoot),
 				sourceRevision: execFileSync("jj", ["log", "-r", "@", "--no-graph", "-T", "commit_id"], {
 					cwd: repositoryRoot,
 					encoding: "utf8",
 				}).trim(),
 				scope:
-					"48 primary route scenarios across eight foreign audited families and Pandwind. Configured cases use injected fixture configuration ports; target installation is proved separately. Identity routes excluded.",
+					"48 primary route scenarios across eight foreign audited families and YumCSS. Configured cases use injected fixture configuration ports; target installation is proved separately. Identity routes excluded.",
 				scenarios,
 			},
 			null,

@@ -42,7 +42,7 @@ test("react-native -> react-strict-dom -> react-native: preserves an actionable 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);

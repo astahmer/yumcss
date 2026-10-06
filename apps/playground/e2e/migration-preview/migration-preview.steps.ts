@@ -5,7 +5,7 @@ const { Given, When, Then } = createBdd(test);
 
 Given("I open the local Migration Preview", async ({ page }) => {
 	await page.goto("/?token=migration-preview-test", { waitUntil: "domcontentloaded" });
-	await expect(page.locator("h1")).toHaveText("pandwind / migration preview");
+	await expect(page.locator("h1")).toHaveText("yumcss / migration preview");
 	await expect(page.locator("#file option")).toHaveCount(1);
 });
 

@@ -12,12 +12,12 @@ import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const requireFromPandwind = createRequire(join(pandwindPackageRoot, "package.json"));
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in data module this generator owns. */
 export const pandaPresetModulePath = join(
-	pandwindPackageRoot,
+	yumcssPackageRoot,
 	"src/preset/generated/panda-theme.ts",
 );
 
@@ -118,7 +118,7 @@ const keywordList = (value: unknown, label: string): ReadonlyArray<string> => {
 
 /**
  * Panda's transition keyword vocabulary, composed into the single shorthand
- * Pandwind binds.
+ * YumCSS binds.
  *
  * The utility answers with a property list plus a duration and an easing, each
  * behind a custom property whose fallback is the literal Panda means; the
@@ -178,7 +178,7 @@ export const renderPandaPresetModule = async (): Promise<{
 	contents: string;
 	version: string;
 }> => {
-	const configPackagePath = requireFromPandwind.resolve("@pandacss/config/package.json");
+	const configPackagePath = requireFromYumCSS.resolve("@pandacss/config/package.json");
 	const version = (JSON.parse(readFileSync(configPackagePath, "utf8")) as { version: string })
 		.version;
 	const loader = (await import(
@@ -219,7 +219,7 @@ export const renderPandaPresetModule = async (): Promise<{
 		"// selectors, and the transition and transitionProperty utilities for the two",
 		"// keyword vocabularies. The resolver is handed an absolute config path that",
 		"// need not exist, so no project override can reach this module. Panda's",
-		"// --colors-* variables are never emitted, because Pandwind declares none of",
+		"// --colors-* variables are never emitted, because YumCSS declares none of",
 		"// them.",
 		"//",
 		"// Divergences from Panda's own output, all asserted by the parity test:",
@@ -227,12 +227,12 @@ export const renderPandaPresetModule = async (): Promise<{
 		"// backdropBlur utilities, which set --blur and --backdrop-blur custom",
 		"// properties rather than CSS properties,",
 		"// theme.keyframes, theme.textStyles, theme.containerSizes, the patterns, and the",
-		"// recipes are absent because Pandwind binds no property to them, and the",
+		"// recipes are absent because YumCSS binds no property to them, and the",
 		"// animations group goes with theme.keyframes, because a shorthand whose body",
 		"// no stylesheet declares is a dangling reference rather than a usable token,",
 		"// and the transitions group is composed, not transcribed: each keyword of",
 		"// Panda's transition utility carries a property list, a duration, and an",
-		"// easing, which the single shorthand Pandwind binds joins back together per",
+		"// easing, which the single shorthand YumCSS binds joins back together per",
 		"// property.",
 		"//",
 		"// License: MIT (https://github.com/chakra-ui/panda/blob/main/LICENSE)",

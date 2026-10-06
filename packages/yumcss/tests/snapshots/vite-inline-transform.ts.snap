@@ -1,0 +1,19 @@
+
+import { tw } from "./tw";
+import { dss } from "./design";
+import { cx } from "./cx";
+import "yumcss:css";
+
+export const mainClasses = "bg-red-500 p-4 hover:bg-blue-600 sm:p-6";
+export const headingClasses = "text-gray-900";
+export const buttonClasses = dss.class({
+	$frame: { fill: "$blue-500", corners: "md" },
+	$layout: { flow: "stackX", gap: "2" },
+	$text: { color: "$white", size: "sm" },
+});
+// Mixed tw-string + css-atom merge call: folds entirely at build time
+// (plan 007 item A) — the atom's rule lands in the generated stylesheet.
+export const mixedClasses = "px-2 1pucx05";
+// Consumed at the edge (like a render function would), so the bundler keeps
+// the inlined class strings in the entry chunk.
+console.log(mainClasses, headingClasses, buttonClasses, mixedClasses);

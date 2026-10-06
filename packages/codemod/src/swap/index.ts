@@ -14,10 +14,10 @@ import {
  * and a skip marker documents the residuals. Partial rewrites would silently
  * change styling — never acceptable.
  */
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
-import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
+import { simplifyYumCSSStaticStyles } from "./static-style-simplifier.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import {
@@ -295,7 +295,7 @@ export { createTailwindAdapter } from "./adapters/tailwind.adapter.ts";
 export { createChakraAdapter } from "./adapters/chakra.adapter.ts";
 export { createMuiAdapter } from "./adapters/mui.adapter.ts";
 export { createMantineAdapter } from "./adapters/mantine.adapter.ts";
-export { createPandwindAdapter } from "./adapters/pandwind.adapter.ts";
+export { createYumCSSAdapter } from "./adapters/yumcss.adapter.ts";
 export { createPandaAdapter } from "./adapters/panda.adapter.ts";
 export { createTamaguiAdapter } from "./adapters/tamagui.adapter.ts";
 export { createLessAdapter } from "./adapters/less.adapter.ts";
@@ -314,8 +314,8 @@ export { NODE_PROJECT_MODULE_LOADER, NodeProjectModuleLoader } from "./project-m
 export type { ProjectModuleLoader } from "./project-module-loader.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
 export type { ProjectMigrationCommand, ProjectMigrationContext } from "./project-command.ts";
-export { createPandwindProjectSupport } from "./project-bootstrap.ts";
-export type { PandwindProjectSupport, ProjectBootstrapRequest } from "./project-bootstrap.ts";
+export { createYumCSSProjectSupport } from "./project-bootstrap.ts";
+export type { YumCSSProjectSupport, ProjectBootstrapRequest } from "./project-bootstrap.ts";
 export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);
 export function listCodemodAdapterIds(): readonly string[] {
 	return builtinAdapterIds;
@@ -455,7 +455,7 @@ export { STYLE_SYSTEM_SCHEMA } from "./style-systems.ts";
 export {
 	CORE_STYLE_SYSTEMS,
 	PANDA_STYLE_SYSTEM,
-	PANDWIND_STYLE_SYSTEM,
+	YUMCSS_STYLE_SYSTEM,
 } from "./adapters/core.adapter.ts";
 export {
 	SWAP_REGISTRY,
@@ -666,7 +666,7 @@ export interface SwapOptions {
 	nearestTokens?: boolean;
 	/** Hoist repeated identical literal call sites into module constants. */
 	dedup?: boolean;
-	/** Hoist all static Pandwind style calls to module scope when enabled. */
+	/** Hoist all static YumCSS style calls to module scope when enabled. */
 	hoistStaticStyles?: boolean;
 	/** Optional source condition metadata supplied by a project adapter. */
 	conditionKinds?: StyleProgramOptions["conditionKinds"];
@@ -702,7 +702,7 @@ type MissResolver = (utilityClass: string) => readonly { prop: string; value: st
 function collectMatches(
 	source: string,
 	from: SwapSource,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	file: string,
 	engineResolver?: MissResolver,
 	tokenize?: boolean,
@@ -724,10 +724,10 @@ function collectMatches(
 /** Run one swap pass over a file's source. */
 export function runSwap(
 	source: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	options: SwapOptions,
 ): SwapTransformResult {
-	const marker = options.skipMarker ?? "pandwind:migrate-skip";
+	const marker = options.skipMarker ?? "yumcss:migrate-skip";
 	const file = options.file;
 	const emitter = SWAP_REGISTRY.getTarget(options.to);
 	if (emitter === undefined) throw new Error(`codemod migrate: unknown target '${options.to}'`);
@@ -781,7 +781,7 @@ export function runSwap(
 				continue;
 			}
 		}
-		// Only in-house class-string targets ride an existing pandwind css
+		// Only in-house class-string targets ride an existing yumcss css
 		// binding; external libraries bring their own imports.
 		const needsCssTarget =
 			options.to === SwapTargetId.CssClass || options.to === SwapTargetId.Design;
@@ -791,7 +791,7 @@ export function runSwap(
 		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
 			addSkipMarker(
 				match.start,
-				`${MigrationSkipReason.HostRewriteRequired}: no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
+				`${MigrationSkipReason.HostRewriteRequired}: no local ${needsDssTarget ? "dss" : "yumcss css"} instance to swap into (${options.to})`,
 			);
 			skippedByMarker++;
 			continue;
@@ -888,7 +888,7 @@ export function runSwap(
 	}
 
 	if (options.to === SwapTargetId.CssClass && options.hoistStaticStyles === true)
-		code = simplifyPandwindStaticStyles(code, file, { hoistStaticStyles: true }).code;
+		code = simplifyYumCSSStaticStyles(code, file, { hoistStaticStyles: true }).code;
 	if (options.dedup === true) code = dedupLiteralCallSites(code);
 
 	return {

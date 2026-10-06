@@ -3,7 +3,7 @@
  *
  * Usage (from repo root, under Nub so source imports and TypeScript work):
  *   pnpm release:smoke            (all five publishable packages)
- *   nub scripts/release/smoke-pack.mjs packages/pandwind
+ *   nub scripts/release/smoke-pack.mjs packages/yumcss
  *
  * Steps:
  *  1. `pnpm pack` the package;
@@ -14,7 +14,7 @@
  *     sibling packages are the classic failure mode).
  *
  * Extraction happens in `<pkg>/.pw-smoke/`, outside any `node_modules`
- * directory. The dev-only `pandwind` export condition intentionally points
+ * directory. The dev-only `yumcss` export condition intentionally points
  * at workspace TypeScript and is not part of the published tarball; the
  * default import/types conditions must resolve to built `dist` artifacts.
  */
@@ -42,7 +42,7 @@ function parseExportTargets(value) {
 	if (typeof value === "string") return [value];
 	if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
 	return Object.entries(value)
-		.filter(([condition]) => condition !== "pandwind")
+		.filter(([condition]) => condition !== "yumcss")
 		.map(([, target]) => target)
 		.filter((target) => typeof target === "string");
 }
@@ -83,10 +83,10 @@ async function main() {
 			parsePackageTargets(shipped.bin).map((target) => resolve(extracted, target)),
 		);
 		if (
-			manifest.name === "pandwind-analyze" &&
-			shipped.dependencies?.["@pandwind/example-preset"] !== undefined
+			manifest.name === "@yumcss/analyze" &&
+			shipped.dependencies?.["@yumcss/example-preset"] !== undefined
 		) {
-			broken.push("package.json: depends on private @pandwind/example-preset");
+			broken.push("package.json: depends on private @yumcss/example-preset");
 		}
 		// Resolve optional peer imports (for example React Native's React host)
 		// against the workspace installation while smoke-testing the tarball.
@@ -132,7 +132,7 @@ async function main() {
 		}
 
 		// 4b. whole-tarball module sweep. Tooling stages are side-effect free when
-		// imported; only the `pandwind-codemod tw` entry executes as a CLI. Browser bundles
+		// imported; only the `yumcss-codemod tw` entry executes as a CLI. Browser bundles
 		// are intentionally excluded: importing a Vite client asset in Node is not
 		// a valid package-consumption test because its module-preload bootstrap uses
 		// the browser DOM at module evaluation time.
@@ -140,7 +140,7 @@ async function main() {
 		const pathSeparator = process.platform === "win32" ? "\\" : "/";
 		const browserBundleMarker = `${pathSeparator}dist${pathSeparator}client${pathSeparator}`;
 		const privatePresetImport =
-			/(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()\s*["']@pandwind\/example-preset(?:\/[^"']*)?["']/;
+			/(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()\s*["']@yumcss\/example-preset(?:\/[^"']*)?["']/;
 		const walkModules = async (dir) => {
 			for (const dirEntry of readdirSync(dir, { withFileTypes: true })) {
 				if (dirEntry.name === "node_modules") continue;
@@ -151,8 +151,8 @@ async function main() {
 					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
 					if (path.includes(browserBundleMarker)) continue;
 					if (executableTargets.has(path)) continue;
-					if (manifest.name === "pandwind-analyze" && privatePresetImport.test(readFileSync(path, "utf8"))) {
-						broken.push(`${path.replace(`${extracted}/`, "")}: imports private @pandwind/example-preset`);
+					if (manifest.name === "@yumcss/analyze" && privatePresetImport.test(readFileSync(path, "utf8"))) {
+						broken.push(`${path.replace(`${extracted}/`, "")}: imports private @yumcss/example-preset`);
 					}
 					try {
 						await import(pathToFileURL(path).href);
@@ -171,7 +171,7 @@ async function main() {
 			process.exitCode = 1;
 			return;
 		}
-		if (manifest.name === "pandwind-analyze") {
+		if (manifest.name === "@yumcss/analyze") {
 			cleanConsumerSmoke({ manifest, packageDirectory: pkgDir, tarballPath, workdir });
 		}
 
@@ -235,7 +235,7 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 	const consumerDirectory = join(workdir, "consumer");
 	mkdirSync(consumerDirectory, { recursive: true });
 	const consumerManifest = {
-		name: "pandwind-clean-consumer-smoke",
+		name: "yumcss-clean-consumer-smoke",
 		private: true,
 		type: "module",
 		dependencies: Object.fromEntries(
@@ -251,20 +251,20 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 		stdio: "ignore",
 	});
 	const importCheck = [
-		'import { DEFAULT_GOVERNANCE_PRESET } from "pandwind-analyze";',
-		'import { loadOfficialPresetModule } from "pandwind-analyze/governance";',
-		'await import("pandwind/cx");',
-		'await import("pandwind-codemod/swap");',
+		'import { DEFAULT_GOVERNANCE_PRESET } from "yumcss-analyze";',
+		'import { loadOfficialPresetModule } from "@yumcss/analyze/governance";',
+		'await import("yumcss/cx");',
+		'await import("@yumcss/codemod/swap");',
 		'const preset = await loadOfficialPresetModule(DEFAULT_GOVERNANCE_PRESET, process.cwd());',
 		'if (preset.status !== "loaded") throw new Error(JSON.stringify(preset));',
 	].join("\n");
 	execFileSync(process.execPath, ["--input-type=module", "-e", importCheck], { cwd: consumerDirectory });
 	execFileSync(
 		process.execPath,
-		[join(consumerDirectory, "node_modules/pandwind-analyze/dist/cli.js"), "--help"],
+		[join(consumerDirectory, "node_modules/@yumcss/analyze/dist/cli.js"), "--help"],
 		{ cwd: consumerDirectory, stdio: "ignore" },
 	);
-	console.log("smoke-pack(pandwind-analyze): clean consumer install and default preset load OK");
+	console.log("smoke-pack(yumcss-analyze): clean consumer install and default preset load OK");
 }
 
 await main();

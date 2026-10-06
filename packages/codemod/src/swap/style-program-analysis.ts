@@ -1,5 +1,5 @@
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind, evalLiteralValues } from "pandwind/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, evalLiteralValues } from "yumcss/tw/literal";
 import { StyleValueKindTag } from "./semantic-ir.ts";
 import {
 	type StyleDeclaration,
@@ -58,8 +58,8 @@ const finiteStaticStyleExpression = (value: StyleDynamicValue): boolean => {
 		return false;
 	try {
 		const parsed = SOURCE_SCANNER_SERVICE.parse({
-			file: "pandwind-dynamic-style-expression.tsx",
-			source: `const __pandwindValue = (${value.expression});`,
+			file: "yumcss-dynamic-style-expression.tsx",
+			source: `const __yumcssValue = (${value.expression});`,
 			language: "tsx",
 		});
 		if (parsed.errors.length > 0) return false;

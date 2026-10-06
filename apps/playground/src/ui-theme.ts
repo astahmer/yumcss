@@ -1,5 +1,5 @@
 import type { Properties } from "csstype";
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 
 const rawTokens = define.tokens({
 	colors: {

@@ -38,10 +38,10 @@ test("tailwind -> mui: migrates concrete tailwind syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tailwind -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -91,7 +91,7 @@ test("tailwind -> mui: carries a documented secondary tailwind API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> mui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],

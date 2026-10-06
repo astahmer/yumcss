@@ -42,7 +42,7 @@ test("unocss -> emotion -> unocss: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> emotion round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("unocss -> emotion -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "@emotion/css";
 		export const App = () => <div className={css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 		    "converted": 0,
@@ -160,7 +160,7 @@ test("unocss -> emotion -> unocss: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "@emotion/css";
 		export const App = () => <div className={css({ "&:hover": { backgroundColor: "black" }, "@media (min-width: 48rem)": { display: "flex" } })}/>;",
 		    "converted": 0,

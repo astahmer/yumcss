@@ -42,7 +42,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: preserves an actiona
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -146,7 +146,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: retains the document
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> react-native | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> react-native | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("react-strict-dom -> react-native -> react-strict-dom: retains the document
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> react-native | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> react-native | capability-blocked: rule-level: 1 semantic rules; keyframes: keyframes rule | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

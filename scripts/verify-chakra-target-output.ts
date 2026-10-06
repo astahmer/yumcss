@@ -7,13 +7,13 @@ import {
 	BuiltinHostFramework,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 
 const keepArg = process.argv.indexOf("--keep");
 const sandbox = resolve(
 	keepArg === -1
-		? mkdtempSync(join(tmpdir(), "pandwind-chakra-proof-"))
-		: (process.argv[keepArg + 1] ?? mkdtempSync(join(tmpdir(), "pandwind-chakra-proof-"))),
+		? mkdtempSync(join(tmpdir(), "yumcss-chakra-proof-"))
+		: (process.argv[keepArg + 1] ?? mkdtempSync(join(tmpdir(), "yumcss-chakra-proof-"))),
 );
 const source = `import { css } from "styled-system/css";
 const card = css({ padding: "1rem", color: "red" });
@@ -41,7 +41,7 @@ writeFileSync(
 	join(sandbox, "package.json"),
 	`${JSON.stringify(
 		{
-			name: "pandwind-chakra-target-proof",
+			name: "yumcss-chakra-target-proof",
 			private: true,
 			type: "module",
 			dependencies: { "@chakra-ui/react": "3.37.0", react: "19.2.8", "react-dom": "19.2.8" },

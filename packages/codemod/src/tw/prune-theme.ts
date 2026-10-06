@@ -11,13 +11,13 @@
  * Documented caveat (same as pandabox): pruning breaks DYNAMIC token
  * access — code that builds utility names at runtime (`bg-${color}`) or
  * reads vars via token()-style helpers will reference pruned variables.
- * Opt-in via `pandwind-codemod tw prune` after `pandwind-codemod tw generate`.
+ * Opt-in via `yumcss-codemod tw prune` after `yumcss-codemod tw generate`.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
-import { collectTwClasses } from "pandwind/tw/collect";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { collectTwClasses } from "yumcss/tw/collect";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 
 const PRUNABLE_VAR = /--[\w-]+/g;
 

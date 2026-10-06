@@ -70,7 +70,7 @@ export function formatAnnotations(annotations: Array<Annotation>, truncated: boo
 	);
 	if (truncated) {
 		lines.push(
-			`::warning title=pandwind::annotation cap (${MAX_ANNOTATIONS}) reached — output truncated`,
+			`::warning title=yumcss::annotation cap (${MAX_ANNOTATIONS}) reached — output truncated`,
 		);
 	}
 	return lines.join("\n");

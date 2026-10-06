@@ -7,7 +7,7 @@ import {
 	CodemodAdapterId,
 	createRealRepositoryCorpus,
 	runAdapterMigrationAsync,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 import {
 	checkoutFileProvider,
 	harnessModuleLoader,
@@ -27,20 +27,20 @@ import { createReferenceWorkspace } from "./reference-workspace.ts";
  * installable package.
  *
  * Dependency resolution per generated import:
- *   1. the Pandwind workspace (already installed in CI and development);
+ *   1. the YumCSS workspace (already installed in CI and development);
  *   2. the registry pins in IMPORT_PACKAGES below.
  * All routes in one sandbox group share one npm install; the React host group
  * is the default because every adapter emits the same host contract.
  *
  * Local usage (from the repository root):
- *   nub --conditions pandwind scripts/verify-adapter-reference-output.ts
+ *   nub --conditions yumcss scripts/verify-adapter-reference-output.ts
  *   nub ... --adapter chakra-ui        # one adapter id
  *   nub ... --id mui-box-sx            # one corpus id
  *   nub ... --keep <dir>               # keep sandboxes under <dir> for inspection
  *
  * CI: run without filters on every push to main via the pivot-proof workflow.
  */
-const PROOF_SCHEMA = "pandwind.adapter-executable-proof/1" as const;
+const PROOF_SCHEMA = "yumcss.adapter-executable-proof/1" as const;
 const root = resolve(import.meta.dirname, "..");
 const referencesRoot = createReferenceWorkspace().root;
 
@@ -96,7 +96,7 @@ const IMPORT_PACKAGES: Readonly<Record<string, readonly SandboxEntry[]>> = {
 
 /**
  * Partition generated imports into what the migration added (must resolve to
- * a real installable package: the pinned table, or the Pandwind workspace)
+ * a real installable package: the pinned table, or the YumCSS workspace)
  * and environment imports carried over from the source file (host app
  * context such as a Next.js route module; declared as ambient stubs because
  * installing the whole upstream application is out of scope for a file-level
@@ -128,9 +128,9 @@ function partitionImports(
 	const pinned = (specifier: string): boolean => {
 		const parts = specifier.split("/");
 		const packageName = parts[0]!.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0]!;
-		if (packageName === "pandwind") {
+		if (packageName === "yumcss") {
 			// Never an npm dependency: the harness symlinks the host workspace.
-			packages.set("pandwind", { name: "pandwind", version: "harness-link" });
+			packages.set("yumcss", { name: "yumcss", version: "harness-link" });
 			return true;
 		}
 		const entry = IMPORT_PACKAGES[packageName];
@@ -213,7 +213,7 @@ function typecheckSourceText(referenceId: string, text: string): string {
 	// exists at runtime but is omitted from the package's public barrel types.
 	// Move the fixture's existing source suppression to the import and remove
 	// the now-unused call-site suppressions in the sandbox copy. This keeps the
-	// proof strict for generated Pandwind imports while documenting the one
+	// proof strict for generated YumCSS imports while documenting the one
 	// upstream declaration gap instead of fabricating a package export.
 	return text
 		.replace(
@@ -257,7 +257,7 @@ interface ExecutableProofReport {
 const KEEP_ARG = process.argv.indexOf("--keep");
 const keepRoot =
 	KEEP_ARG !== -1
-		? resolve(process.argv[KEEP_ARG + 1] ?? join(tmpdir(), "pandwind-proof-sandbox"))
+		? resolve(process.argv[KEEP_ARG + 1] ?? join(tmpdir(), "yumcss-proof-sandbox"))
 		: undefined;
 const adapterArg = process.argv.indexOf("--adapter");
 const adapterFilter = adapterArg !== -1 ? process.argv[adapterArg + 1] : undefined;
@@ -351,19 +351,19 @@ function writeSandbox(
 	const dependencies: Record<string, string> = {};
 	const devDependencies: Record<string, string> = {};
 	for (const entry of packages) {
-		// Harness-linked packages (pandwind) must stay out of package.json:
+		// Harness-linked packages (yumcss) must stay out of package.json:
 		// npm rejects foreign protocols and the symlink is authoritative.
 		if (entry.version === "harness-link") continue;
 		if (entry.development === true) devDependencies[entry.name] = entry.version;
 		else dependencies[entry.name] = entry.version;
 	}
-	// Pandwind resolves through the host workspace link, matching a migrated
+	// YumCSS resolves through the host workspace link, matching a migrated
 	// application that depends on the published package.
 	writeFileSync(
 		join(root, "package.json"),
 		`${JSON.stringify(
 			{
-				name: `pandwind-proof-${key}`,
+				name: `yumcss-proof-${key}`,
 				private: true,
 				type: "module",
 				dependencies,
@@ -381,7 +381,7 @@ function writeSandbox(
 					target: "ES2022",
 					module: "ESNext",
 					moduleResolution: "bundler",
-					customConditions: ["pandwind"],
+					customConditions: ["yumcss"],
 					lib: ["ES2023", "DOM"],
 					strict: true,
 					noImplicitAny,
@@ -409,13 +409,13 @@ function writeSandbox(
 }
 
 function linkWorkspacePackages(sandbox: string, repositoryRoot: string): void {
-	// The proof sandbox resolves pandwind and pandwind-codemod from the host
+	// The proof sandbox resolves yumcss and @yumcss/codemod from the host
 	// checkout. npm cannot express a workspace link for a foreign root, so the
 	// harness installs the link after the registry install.
 	mkdirSync(join(sandbox, "node_modules"), { recursive: true });
 	for (const [name, directory] of [
-		["pandwind", "pandwind"],
-		["pandwind-codemod", "codemod"],
+		["yumcss", "yumcss"],
+		["@yumcss/codemod", "codemod"],
 	] as const) {
 		const link = join(sandbox, "node_modules", name);
 		if (existsSync(link)) continue;
@@ -488,7 +488,7 @@ async function verifyReference(reference: {
 				)
 			: partition.packages;
 	const sandboxKey = reference.id.replace(/[^a-z0-9-]+/gi, "-");
-	const baseRoot = keepRoot ?? mkdtempSync(join(tmpdir(), "pandwind-proof-"));
+	const baseRoot = keepRoot ?? mkdtempSync(join(tmpdir(), "yumcss-proof-"));
 	const sandboxRoot = join(baseRoot, sandboxKey);
 	const stubNames = new Map<string, Set<string>>(
 		partition.stubs.map((specifier) => [specifier, new Set<string>()]),
@@ -566,7 +566,7 @@ async function verifyReference(reference: {
 		migrationValid:
 			migration.validations.every((item) => item.valid) &&
 			(migration.skipped === 0 ||
-				(migration.residuals.length > 0 && migration.code.includes("pandwind:migrate-skip"))),
+				(migration.residuals.length > 0 && migration.code.includes("yumcss:migrate-skip"))),
 		imports,
 		sandbox: {
 			sandbox: sandboxRoot,
@@ -619,7 +619,7 @@ async function run(): Promise<ExecutableProofReport> {
 
 if (import.meta.main) {
 	const report = await run();
-	const output = process.env.PANDWIND_ADAPTER_EXECUTABLE_PROOF_OUTPUT;
+	const output = process.env.YUMCSS_ADAPTER_EXECUTABLE_PROOF_OUTPUT;
 	if (output !== undefined) {
 		mkdirSync(dirname(output), { recursive: true });
 		writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);

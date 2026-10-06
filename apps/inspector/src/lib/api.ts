@@ -1,5 +1,5 @@
 import type { InspectorPayload } from "../types.ts";
-import type { TokenReleaseReport } from "pandwind-analyze/governance/browser";
+import type { TokenReleaseReport } from "@yumcss/analyze/governance/browser";
 
 interface DtcgExportOutput {
 	text: string;

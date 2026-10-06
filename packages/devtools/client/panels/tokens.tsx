@@ -45,7 +45,7 @@ export function TokensPanel({ data }: TokensPanelProps): ReactNode {
 		) : (
 			<EmptyState
 				title="No generated token catalog"
-				detail="Generate pandwind.interop.json to make resolved theme variables visible here."
+				detail="Generate yumcss.interop.json to make resolved theme variables visible here."
 			/>
 		);
 

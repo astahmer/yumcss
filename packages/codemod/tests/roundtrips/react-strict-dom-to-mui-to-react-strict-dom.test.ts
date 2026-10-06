@@ -42,7 +42,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves an actionable concr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves an actionable concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -89,7 +89,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves an actionable concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -119,7 +119,7 @@ test("react-strict-dom -> mui -> react-strict-dom: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +154,7 @@ test("react-strict-dom -> mui -> react-strict-dom: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -199,7 +199,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -235,7 +235,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -252,7 +252,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -288,7 +288,7 @@ test("react-strict-dom -> mui -> react-strict-dom: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -320,7 +320,7 @@ test("react-strict-dom -> mui -> react-strict-dom: resolves token values across 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -356,7 +356,7 @@ test("react-strict-dom -> mui -> react-strict-dom: resolves token values across 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,

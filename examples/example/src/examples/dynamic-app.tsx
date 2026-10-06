@@ -8,7 +8,7 @@ type DynamicButtonInput = {
 	padding: string;
 };
 
-// With pandwindCssVite, createCss is enough for typed input groups: the
+// With yumcssExtractVite, createCss is enough for typed input groups: the
 // structural `var(--...)` rules are extracted at build time and only the
 // changing values travel through the host style prop.
 const dynamicButtonGroup = css.group({
@@ -56,7 +56,7 @@ function CompilerCarrierExamples({ accent }: { accent: string }) {
 			<button
 				type="button"
 				className={
-					/* pandwind:migrate-skip (residual: accent is carried by the opt-in dynamic className transform) */ untypedCss.class(
+					/* yumcss:migrate-skip (residual: accent is carried by the opt-in dynamic className transform) */ untypedCss.class(
 						{
 							color: accent,
 							backgroundColor: "white",
@@ -70,7 +70,7 @@ function CompilerCarrierExamples({ accent }: { accent: string }) {
 			</button>
 			<div
 				{
-					/* pandwind:migrate-skip (residual: accent remains a runtime value in the callable host carrier) */ ...untypedCss(
+					/* yumcss:migrate-skip (residual: accent remains a runtime value in the callable host carrier) */ ...untypedCss(
 						{
 							color: "white",
 							backgroundColor: accent,
@@ -99,7 +99,7 @@ const semanticSurfaceClass = untypedCss.class({ backgroundColor: "var(--color-su
  * - state selects finite `tw()` values, so both classes remain discoverable;
  * - `css.vars()` carries a user value through an inline custom property; and
  * - a typed css.input group keeps its class stable while its inputs change;
- *   pandwindCssVite emits the structural rules without a runtime sheet.
+ *   yumcssExtractVite emits the structural rules without a runtime sheet.
  */
 export function DynamicApp() {
 	const [tone, setTone] = useState<Tone>("blue");
@@ -140,7 +140,7 @@ export function DynamicApp() {
 					Dynamic styling
 				</h2>
 				<p className={tw({ mt: "2", textSize: "sm", textColor: "gray-600" })}>
-					React state changes the values at runtime; Pandwind keeps the static and dynamic parts
+					React state changes the values at runtime; YumCSS keeps the static and dynamic parts
 					visible.
 				</p>
 			</header>

@@ -42,7 +42,7 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -85,7 +85,7 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -172,7 +172,7 @@ test("styled-components -> mantine -> styled-components: retains the documented 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -275,7 +275,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "#2563eb", padding: "1rem" }, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -349,7 +349,7 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "1rem" }, ...props.style }} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -438,7 +438,7 @@ test("styled-components -> mantine -> styled-components: resolves token values a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "var(--mantine-color-brand-0)", padding: "1rem" }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

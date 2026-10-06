@@ -1,4 +1,4 @@
-import { type CssConfigReturn } from "pandwind/types/typings";
+import { type CssConfigReturn } from "yumcss/types/typings";
 import { resolve } from "node:path";
 import {
 	NODE_PROJECT_MODULE_LOADER,
@@ -20,15 +20,15 @@ const isPreset = (value: unknown): value is CssConfigReturn =>
 const isPackageSpecifier = (value: string): boolean =>
 	!value.startsWith("/") && !value.startsWith(".");
 
-export interface LoadPandwindPresetOptions {
+export interface LoadYumCSSPresetOptions {
 	readonly root: string;
 	readonly presetImport: string;
 	readonly presetExport: string;
 }
 
-/** Load and validate a Pandwind preset through the host project's module boundary. */
-export const loadPandwindPreset = async (
-	options: LoadPandwindPresetOptions,
+/** Load and validate a YumCSS preset through the host project's module boundary. */
+export const loadYumCSSPreset = async (
+	options: LoadYumCSSPresetOptions,
 	moduleLoader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
 ): Promise<CssConfigReturn> => {
 	const module = isPackageSpecifier(options.presetImport)
@@ -41,7 +41,7 @@ export const loadPandwindPreset = async (
 	const preset = options.presetExport === "default" ? module.default : module[options.presetExport];
 	if (!isPreset(preset))
 		throw new Error(
-			`export ${options.presetExport} from ${options.presetImport} is not a Pandwind preset`,
+			`export ${options.presetExport} from ${options.presetImport} is not a YumCSS preset`,
 		);
 	return preset;
 };

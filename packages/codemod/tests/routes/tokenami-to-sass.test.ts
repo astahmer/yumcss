@@ -38,10 +38,10 @@ test("tokenami -> sass: migrates concrete tokenami syntax to sass", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("tokenami -> sass: migrates concrete tokenami syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("tokenami -> sass: carries a documented secondary tokenami API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -153,7 +153,7 @@ test("tokenami -> sass: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("tokenami -> sass: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -239,7 +239,7 @@ test("tokenami -> sass: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -285,7 +285,7 @@ test("tokenami -> sass: preserves malformed concrete tokenami input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ "--color": "red", "--gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 0,

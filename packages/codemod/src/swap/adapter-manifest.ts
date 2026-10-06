@@ -8,8 +8,8 @@ import { STYLE_PROGRAM_CORE_VERSION } from "./style-program-core.ts";
 import type { AdapterOfficialApiManifest } from "./adapter-evidence.ts";
 
 /** Package metadata convention consumed before an adapter is registered. */
-export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/1" as const;
-export const ADAPTER_PACKAGE_FIELD = "pandwind" as const;
+export const ADAPTER_MANIFEST_SCHEMA = "yumcss.style-adapter-manifest/1" as const;
+export const ADAPTER_PACKAGE_FIELD = "yumcss" as const;
 
 export interface StyleAdapterManifestEntry {
 	readonly id: string;

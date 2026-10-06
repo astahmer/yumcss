@@ -7,7 +7,7 @@ interface ThemeContextValue {
 	setMode: (mode: ThemeMode) => void;
 }
 
-const THEME_STORAGE_KEY = "pandwind-playground-theme";
+const THEME_STORAGE_KEY = "yumcss-playground-theme";
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const readInitialTheme = (): ThemeMode => {

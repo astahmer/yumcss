@@ -42,7 +42,7 @@ test("vanilla-extract -> react-native -> vanilla-extract: preserves an actionabl
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -142,7 +142,7 @@ test("vanilla-extract -> react-native -> vanilla-extract: retains the documented
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -180,7 +180,7 @@ test("vanilla-extract -> react-native -> vanilla-extract: retains the documented
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-native | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],

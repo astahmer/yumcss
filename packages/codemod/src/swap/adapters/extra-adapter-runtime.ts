@@ -703,7 +703,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 					semantic: portableProgram,
 					residuals: [],
 					dependencies: {
-						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+						packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 					},
 				};
 			}

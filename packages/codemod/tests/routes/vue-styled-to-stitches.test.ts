@@ -38,10 +38,10 @@ test("vue-styled -> stitches: migrates concrete vue-styled syntax to stitches", 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vue-styled -> stitches happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("vue-styled -> stitches: migrates concrete vue-styled syntax to stitches", 
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("vue-styled -> stitches: carries a documented secondary vue-styled API expl
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("vue-styled -> stitches: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("vue-styled -> stitches: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("vue-styled -> stitches: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("vue-styled -> stitches: preserves malformed concrete vue-styled input", ()
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 0,

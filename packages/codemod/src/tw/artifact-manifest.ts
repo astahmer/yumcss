@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
-/** Provenance contract for generated Pandwind design-system files. */
-export const PANDWIND_GENERATED_MANIFEST_SCHEMA = "pandwind.generated/1" as const;
+/** Provenance contract for generated YumCSS design-system files. */
+export const YUMCSS_GENERATED_MANIFEST_SCHEMA = "yumcss.generated/1" as const;
 
 /** Runtime-safe ownership tags used by generated-artifact manifests. */
 export const GeneratedArtifactOwnershipTag = {
@@ -25,9 +25,9 @@ export interface GeneratedArtifactEntry {
 	readonly hash: string;
 }
 
-export interface PandwindGeneratedManifest {
-	readonly schema: typeof PANDWIND_GENERATED_MANIFEST_SCHEMA;
-	readonly generator: "pandwind-codemod tw generate";
+export interface YumCSSGeneratedManifest {
+	readonly schema: typeof YUMCSS_GENERATED_MANIFEST_SCHEMA;
+	readonly generator: "yumcss-codemod tw generate";
 	readonly inputs: readonly { readonly path: string; readonly hash: string }[];
 	readonly artifacts: readonly GeneratedArtifactEntry[];
 }
@@ -47,10 +47,10 @@ export function hashGeneratedContent(content: string): string {
 
 export function buildGeneratedArtifactManifest(
 	options: GeneratedArtifactManifestOptions,
-): PandwindGeneratedManifest {
+): YumCSSGeneratedManifest {
 	return {
-		schema: PANDWIND_GENERATED_MANIFEST_SCHEMA,
-		generator: "pandwind-codemod tw generate",
+		schema: YUMCSS_GENERATED_MANIFEST_SCHEMA,
+		generator: "yumcss-codemod tw generate",
 		inputs: options.inputs
 			.map(({ path, content }) => ({ path, hash: hashGeneratedContent(content) }))
 			.toSorted((left, right) => left.path.localeCompare(right.path, "en")),

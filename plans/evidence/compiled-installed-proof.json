@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"reference": {
 		"repository": "https://github.com/atlassian-labs/compiled",
 		"commit": "0f5d2b606471b9fb92c2402d5367c3c23efd1a29",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "compiled",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"files": [
@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -34,7 +34,7 @@
 			"targetBytes": 315,
 			"differences": []
 		},
-		"targetUsesPandwind": true
+		"targetUsesYumCSS": true
 	},
 	"checks": {
 		"sourceTypecheck": true,

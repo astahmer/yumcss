@@ -13,7 +13,7 @@ import {
 import {
 	parseDtcgResolverDocument,
 	parseDtcgTokenDocument,
-} from "pandwind-codemod/swap/token-document";
+} from "@yumcss/codemod/swap/token-document";
 import type { InspectorPayload } from "../types.ts";
 
 const tokenDocument = parseDtcgTokenDocument(
@@ -223,7 +223,7 @@ describe("coverageToMarkdown", () => {
 	const md = coverageToMarkdown(payload);
 
 	test("contains summary, per-file table, warnings and budget", () => {
-		expect(md).toContain("# pandwind inspector report");
+		expect(md).toContain("# yumcss inspector report");
 		expect(md).toContain("| eliminated | 46% (41% entry-level) |");
 		expect(md).toContain("| a.tsx | 100% |");
 		expect(md).toContain("`b.tsx:10` — `bg-surface`");

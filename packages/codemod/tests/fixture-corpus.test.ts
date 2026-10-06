@@ -90,14 +90,14 @@ export const styles = style9.create({ card: { fontSize: 16, opacity: 0.5, lineHe
 		expect(result.residuals.length).toBeGreaterThan(0);
 	});
 
-	test("lowers Style9 group calls into Pandwind group and cx calls", () => {
+	test("lowers Style9 group calls into YumCSS group and cx calls", () => {
 		const source = `import style9 from "style9";
 const styles = style9.create({ title: { color: "red" } });
 const layout = style9.create({ center: { display: "flex" } });
 export const view = <h1 className={style9(styles("title"), layout.center)}>Hello</h1>;`;
 		const result = runAdapterMigration(source, {
 			from: "style9",
-			to: "pandwind",
+			to: "yumcss",
 			file: "View.tsx",
 		});
 		expect(result.skipped).toBe(0);

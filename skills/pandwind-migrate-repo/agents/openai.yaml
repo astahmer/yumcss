@@ -1,6 +1,0 @@
-interface:
-  display_name: "Pandwind repository migration"
-  short_description: "Prove repository styling migrations"
-  default_prompt: "Use $pandwind-migrate-repo to audit and prove a repository styling migration."
-policy:
-  allow_implicit_invocation: true

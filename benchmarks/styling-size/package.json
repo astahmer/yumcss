@@ -1,5 +1,5 @@
 {
-	"name": "pandwind-styling-size-benchmark",
+	"name": "yumcss-styling-size-benchmark",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -22,7 +22,7 @@
 		"@wyw-in-js/vite": "2.5.1",
 		"esbuild": "0.28.2",
 		"goober": "2.1.19",
-		"pandwind": "workspace:*",
+		"yumcss": "workspace:*",
 		"react": "19.2.8",
 		"styled-components": "6.5.3",
 		"tailwindcss": "4.3.3",

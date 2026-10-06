@@ -42,7 +42,7 @@ test("fela -> next-yak -> fela: preserves an actionable concrete round trip", as
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> next-yak round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -176,7 +176,7 @@ test("fela -> next-yak -> fela: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = styled("button")\`color: red;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -494,7 +494,7 @@ describe("typed token documents", () => {
 			kind: "group",
 			children: { brand: { value: { kind: "string", value: "base" } } },
 		});
-		expect(resolver.modifiers.pandwindPresetContexts?.contexts.dark).toHaveLength(1);
+		expect(resolver.modifiers.yumcssPresetContexts?.contexts.dark).toHaveLength(1);
 		expect(output.fidelity).toMatchObject({ status: "lossless", losses: [] });
 
 		const resolved = await resolveTokenContext(
@@ -503,7 +503,7 @@ describe("typed token documents", () => {
 				root: base.root,
 				resolver,
 			}),
-			{ contexts: { pandwindPresetContexts: "dark" } },
+			{ contexts: { yumcssPresetContexts: "dark" } },
 			{
 				load: async () => {
 					throw new Error("inline resolver source expected");

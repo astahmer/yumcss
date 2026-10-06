@@ -14,7 +14,7 @@ const residual = (kind: string) => ({ kind, text: kind });
 describe("migration diagnostics", () => {
 	test("identifies a target capability blocker", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			blockers: [
 				{
 					capability: "dynamic-values",
@@ -26,27 +26,27 @@ describe("migration diagnostics", () => {
 		});
 
 		expect(marker).toBe(
-			"// pandwind:migrate-skip (capability-blocked: dynamic-values: dynamic expression)",
+			"// yumcss:migrate-skip (capability-blocked: dynamic-values: dynamic expression)",
 		);
 		expect(marker).toContain(MigrationSkipReason.CapabilityBlocked);
 	});
 
 	test("does not mislabel source and lowering residuals as capability failures", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			parseResiduals: [residual("unrepresentable")],
 			loweringResiduals: [residual("runtime-context")],
 		});
 
 		expect(marker).toBe(
-			"// pandwind:migrate-skip (parse-residual: unrepresentable | lowering-residual: runtime-context)",
+			"// yumcss:migrate-skip (parse-residual: unrepresentable | lowering-residual: runtime-context)",
 		);
 		expect(marker).not.toContain(MigrationSkipReason.CapabilityBlocked);
 	});
 
 	test("always includes an actionable clause when a reason is supplied", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			loweringResiduals: [residual("dynamic")],
 		});
 
@@ -56,7 +56,7 @@ describe("migration diagnostics", () => {
 
 	test("identifies configuration loading failures", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			configurationResiduals: [residual("configuration")],
 		});
 
@@ -65,7 +65,7 @@ describe("migration diagnostics", () => {
 
 	test("reports the representations the target can negotiate", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			availableRepresentations: [
 				StyleRepresentationKind.Static,
 				StyleRepresentationKind.CustomProperty,
@@ -78,7 +78,7 @@ describe("migration diagnostics", () => {
 
 	test("includes the ordered route when a capability blocks a migration", () => {
 		const marker = MigrationDiagnostics.skipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			sourceAdapter: "styled-components",
 			targetAdapter: "unocss",
 			blockers: [
@@ -102,20 +102,20 @@ describe("migration diagnostics", () => {
 		expect(
 			migrationSkipMarker(
 				{
-					marker: "pandwind:migrate-skip",
+					marker: "yumcss:migrate-skip",
 					loweringResiduals: [residual("capability")],
 				},
 				"block",
 			),
-		).toBe("/* pandwind:migrate-skip (lowering-residual: capability) */");
+		).toBe("/* yumcss:migrate-skip (lowering-residual: capability) */");
 		expect(
 			migrationSkipMarker(
 				{
-					marker: "pandwind:migrate-skip",
+					marker: "yumcss:migrate-skip",
 					loweringResiduals: [residual("capability")],
 				},
 				"markup",
 			),
-		).toBe("<!-- pandwind:migrate-skip (lowering-residual: capability) -->");
+		).toBe("<!-- yumcss:migrate-skip (lowering-residual: capability) -->");
 	});
 });

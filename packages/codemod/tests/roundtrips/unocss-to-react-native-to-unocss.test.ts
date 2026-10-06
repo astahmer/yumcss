@@ -42,7 +42,7 @@ test("unocss -> react-native -> unocss: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("unocss -> react-native -> unocss: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, View } from "react-native";
 		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;",
 		    "converted": 0,
@@ -166,7 +166,7 @@ test("unocss -> react-native -> unocss: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { StyleSheet, View } from "react-native";
 		export const App = () => <View   style={StyleSheet.create({ style: { "&:hover": { "backgroundColor": "black" }, "@media (min-width: 48rem)": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,

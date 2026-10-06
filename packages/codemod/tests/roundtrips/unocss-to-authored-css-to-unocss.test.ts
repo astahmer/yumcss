@@ -42,7 +42,7 @@ test("unocss -> authored-css -> unocss: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -106,7 +106,7 @@ test("unocss -> authored-css -> unocss: preserves an actionable concrete round t
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (configuration-residual: configuration) */
+		      "code": "/* yumcss:migrate-skip (configuration-residual: configuration) */
 		.pw-style0-sh7wts { display: flex; align-items: center; gap: 1rem; }
 		",
 		      "converted": 0,
@@ -201,7 +201,7 @@ test("unocss -> authored-css -> unocss: retains the documented secondary API wit
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (configuration-residual: configuration) */
+		      "code": "/* yumcss:migrate-skip (configuration-residual: configuration) */
 		.pw-style0-sh7wts { &:hover { background-color: black; } @media (min-width: 48rem) { display: flex; } }
 		",
 		      "converted": 0,
@@ -311,7 +311,7 @@ test("unocss -> authored-css -> unocss: preserves concrete theme and project con
 		    "reverseArtifacts": [
 		      {
 		        "changed": true,
-		        "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		        "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.pw-style0-sh7wts { color: #f97316; padding: 1.125rem; }
 		",
 		        "converted": 0,
@@ -406,7 +406,7 @@ test("unocss -> authored-css -> unocss: preserves concrete theme and project con
 		    "reverseArtifacts": [
 		      {
 		        "changed": true,
-		        "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		        "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.pw-style0-sh7wts { color: #2563eb; padding: 1.125rem; }
 		",
 		        "converted": 0,
@@ -516,7 +516,7 @@ test("unocss -> authored-css -> unocss: resolves token values across both concre
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		      "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.pw-style0-sh7wts { color: #2563eb; padding: 1.125rem; }
 		",
 		      "converted": 0,

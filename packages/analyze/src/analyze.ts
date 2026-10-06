@@ -1,5 +1,5 @@
 /**
- * `pandwind analyze` — fold-coverage reporting.
+ * `yumcss analyze` — fold-coverage reporting.
  *
  * Runs the same vite folding passes the build uses (tw() inlining followed
  * by cx() inlining with constant propagation and partial conditional
@@ -18,19 +18,19 @@
  *   eliminated counts (see analyze.test.ts).
  */
 import { dirname, resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
-import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
+import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "yumcss/source";
+import { createSourceWorkspace } from "yumcss/source/workspace";
+import { bindingIsShadowedOrWritten } from "yumcss/vite/cross-module-consts";
 import {
 	collectModuleConstants,
 	evalStaticCx,
 	type ConstantScope,
 	type CxFoldContext,
-} from "pandwind/vite/cx-inline";
-import { extractTwConfigFromSources, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
-import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
-import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
-import { NodeKind } from "pandwind/tw/literal";
+} from "yumcss/vite/cx-inline";
+import { extractTwConfigFromSources, inlineTwCalls, type TwConfig } from "yumcss/vite/inline";
+import { compileStyles, type TwNestedStyles } from "yumcss/tw/compile";
+import { evalLiteral, walk, type OxcNode } from "yumcss/tw/literal";
+import { NodeKind } from "yumcss/tw/literal";
 import {
 	DefaultCssResidualCollector,
 	type ArbitraryValueSite,
@@ -542,7 +542,7 @@ export function loadTwConfig(twPath: string): TwConfig {
 	const config =
 		generatedSources.length === 0 ? undefined : extractTwConfigFromSources(generatedSources);
 	if (config === undefined) {
-		throw new Error(`pandwind analyze: could not extract tw config from ${twPath}`);
+		throw new Error(`yumcss analyze: could not extract tw config from ${twPath}`);
 	}
 	return config;
 }

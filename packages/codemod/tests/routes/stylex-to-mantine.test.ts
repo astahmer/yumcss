@@ -38,10 +38,10 @@ test("stylex -> mantine: migrates concrete stylex syntax to mantine", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "stylex -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("stylex -> mantine: migrates concrete stylex syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -106,7 +106,7 @@ test("stylex -> mantine: carries a documented secondary stylex API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -172,7 +172,7 @@ test("stylex -> mantine: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -220,7 +220,7 @@ test("stylex -> mantine: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -280,7 +280,7 @@ test("stylex -> mantine: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -337,7 +337,7 @@ test("stylex -> mantine: preserves malformed concrete stylex input", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 0,

@@ -33,93 +33,93 @@ describe("migration route proof catalog", () => {
 			),
 		).toMatchObject([
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.TailwindToPandwind,
+				id: MigrationRouteProofRouteId.TailwindToYumCSS,
 				evidenceIds: ["tailwind-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.PandaToPandwind,
+				id: MigrationRouteProofRouteId.PandaToYumCSS,
 				evidenceIds: ["panda-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
+				id: MigrationRouteProofRouteId.StyledComponentsToYumCSS,
 				evidenceIds: ["styled-components-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.UnoCssToPandwind,
+				id: MigrationRouteProofRouteId.UnoCssToYumCSS,
 				evidenceIds: ["unocss-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.VanillaExtractToPandwind,
+				id: MigrationRouteProofRouteId.VanillaExtractToYumCSS,
 				evidenceIds: ["vanilla-extract-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.StitchesToPandwind,
+				id: MigrationRouteProofRouteId.StitchesToYumCSS,
 				evidenceIds: ["stitches-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.MuiToPandwind,
+				id: MigrationRouteProofRouteId.MuiToYumCSS,
 				evidenceIds: ["mui-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.MantineToPandwind,
+				id: MigrationRouteProofRouteId.MantineToYumCSS,
 				evidenceIds: ["mantine-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.TokenamiToPandwind,
+				id: MigrationRouteProofRouteId.TokenamiToYumCSS,
 				evidenceIds: ["tokenami-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.JssToPandwind,
+				id: MigrationRouteProofRouteId.JssToYumCSS,
 				evidenceIds: ["jss-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.FelaToPandwind,
+				id: MigrationRouteProofRouteId.FelaToYumCSS,
 				evidenceIds: ["fela-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.AphroditeToPandwind,
+				id: MigrationRouteProofRouteId.AphroditeToYumCSS,
 				evidenceIds: ["aphrodite-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.CompiledToPandwind,
+				id: MigrationRouteProofRouteId.CompiledToYumCSS,
 				evidenceIds: ["compiled-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.Style9ToPandwind,
+				id: MigrationRouteProofRouteId.Style9ToYumCSS,
 				evidenceIds: ["style9-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.NextYakToPandwind,
+				id: MigrationRouteProofRouteId.NextYakToYumCSS,
 				evidenceIds: ["next-yak-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.LinariaToPandwind,
+				id: MigrationRouteProofRouteId.LinariaToYumCSS,
 				evidenceIds: ["linaria-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.TreatToPandwind,
+				id: MigrationRouteProofRouteId.TreatToYumCSS,
 				evidenceIds: ["treat-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.SolidStyledToPandwind,
+				id: MigrationRouteProofRouteId.SolidStyledToYumCSS,
 				evidenceIds: ["solid-styled-installed-proof"],
 			}),
 			expect.objectContaining({
-				id: MigrationRouteProofRouteId.VueStyledToPandwind,
+				id: MigrationRouteProofRouteId.VueStyledToYumCSS,
 				evidenceIds: ["vue-styled-installed-proof"],
 			}),
 		]);
 	});
 
-	test("matches Pandwind API dialects to the same route policy", () => {
+	test("matches YumCSS API dialects to the same route policy", () => {
 		const route = findMigrationRouteProof(
 			CodemodAdapterId.Tailwind,
-			`${CodemodAdapterId.Pandwind}/tw`,
+			`${CodemodAdapterId.YumCSS}/tw`,
 		);
-		expect(route?.id).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
+		expect(route?.id).toBe(MigrationRouteProofRouteId.TailwindToYumCSS);
 		expect(
-			findMigrationRouteProof(CodemodAdapterId.Tailwind, `${CodemodAdapterId.Pandwind}:tw`)?.id,
-		).toBe(MigrationRouteProofRouteId.TailwindToPandwind);
+			findMigrationRouteProof(CodemodAdapterId.Tailwind, `${CodemodAdapterId.YumCSS}:tw`)?.id,
+		).toBe(MigrationRouteProofRouteId.TailwindToYumCSS);
 		expect(route?.requiredDimensions).toContain(RealRepositoryProofDimension.Typecheck);
 		expect(route?.requiredDimensions).toContain(RealRepositoryProofDimension.Build);
 		expect(route?.evidenceIds).toEqual(["tailwind-installed-proof"]);
@@ -152,7 +152,7 @@ describe("migration route proof catalog", () => {
 
 	test("does not confuse browser parity with canonical CSS proof", () => {
 		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
-			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToPandwind,
+			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToYumCSS,
 		);
 		if (route === undefined) throw new Error("missing Tailwind route");
 		const report = JSON.parse(
@@ -184,13 +184,13 @@ describe("migration route proof catalog", () => {
 				new Map([["tailwind-installed-proof", withoutCanonical]]),
 			),
 		).toContain(
-			"tailwind-to-pandwind: evidence tailwind-installed-proof did not prove canonical CSS equality",
+			"tailwind-to-yumcss: evidence tailwind-installed-proof did not prove canonical CSS equality",
 		);
 	});
 
 	test("requires installed evidence to identify an isolated host fixture", () => {
 		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
-			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToPandwind,
+			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToYumCSS,
 		);
 		if (route === undefined) throw new Error("missing Tailwind route");
 		const evidence = JSON.parse(
@@ -206,10 +206,10 @@ describe("migration route proof catalog", () => {
 		);
 
 		expect(errors).toContain(
-			"tailwind-to-pandwind: evidence tailwind-installed-proof does not prove an isolated fixture",
+			"tailwind-to-yumcss: evidence tailwind-installed-proof does not prove an isolated fixture",
 		);
 		expect(errors).toContain(
-			"tailwind-to-pandwind: evidence tailwind-installed-proof does not declare fixture files",
+			"tailwind-to-yumcss: evidence tailwind-installed-proof does not declare fixture files",
 		);
 	});
 
@@ -246,7 +246,7 @@ describe("migration route proof catalog", () => {
 			validateMigrationRouteProofCatalog(createRealRepositoryCorpus(), expanded.routes),
 		).toEqual([]);
 		expect(
-			findMigrationRouteProof("missing-source", CodemodAdapterId.Pandwind, catalog.registry),
+			findMigrationRouteProof("missing-source", CodemodAdapterId.YumCSS, catalog.registry),
 		).toBeUndefined();
 	});
 });

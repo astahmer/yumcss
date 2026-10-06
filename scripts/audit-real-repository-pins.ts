@@ -29,7 +29,7 @@ const mismatched = entries.filter((entry) => !entry.matched);
 console.log(
 	JSON.stringify(
 		{
-			schema: "pandwind.reference-pin-audit/1",
+			schema: "yumcss.reference-pin-audit/1",
 			cloneRoot,
 			checked: entries.length,
 			matched: entries.length - mismatched.length,

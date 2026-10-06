@@ -1,7 +1,7 @@
 /**
  * Swap suite (plans/022) — the bidirectional API converters.
  *
- * Every pandwind styling surface can be mechanically swapped to another:
+ * Every yumcss styling surface can be mechanically swapped to another:
  * tw() object literals, css.class()/css() literals and the design
  * vocabulary ($frame/$layout/$text). Parsers lower call sites to the swap
  * IR; emitters render the target API; residuals (bridge misses, dynamics,
@@ -16,7 +16,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { loadMetaFromSourcesAsync } from "../src/meta.ts";
 import { runSwap, SWAP_TARGETS, TokenReferenceFormat } from "../src/swap/index.ts";
 
@@ -69,7 +69,7 @@ describe("swap tw -> css.class", () => {
 		const result = swap(source, "css.class");
 		expect(result.converted).toBe(0);
 		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('tw({ gap: "not-a-real-value" })'); // original preserved
 	});
 });
@@ -246,7 +246,7 @@ describe("safety rails", () => {
 		const result = swap(source.replace(WITH_CSS, ""), "css.class");
 		expect(result.converted).toBe(0);
 		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("no local pandwind css instance");
+		expect(result.code).toContain("no local yumcss css instance");
 	});
 
 	test("code inside comments is never touched (oxc mask applies to swap)", () => {
@@ -320,7 +320,7 @@ describe("swap CLI end-to-end", () => {
 });
 
 /* ------------------------------------------------------------------ */
-/* outbound adapters (plans/022): pandwind -> external libraries       */
+/* outbound adapters (plans/022): yumcss -> external libraries       */
 /* ------------------------------------------------------------------ */
 
 import { runSwap as runSwapRaw } from "../src/swap/index.ts";
@@ -492,7 +492,7 @@ describe("outbound: stylex", () => {
 			unmappedTokens: result.unmappedTokens,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (lowering-residual: condition "dark" is not expressible in stylex)
+			  "code": "// yumcss:migrate-skip (lowering-residual: condition "dark" is not expressible in stylex)
 			const card = css.class({ color: "red", _dark: { color: "white" } });",
 			  "converted": 0,
 			  "skippedByMarker": 1,
@@ -512,7 +512,7 @@ describe("outbound: stylex", () => {
 
 		expect(result.converted).toBe(0);
 		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain(source);
 		expect(result.code).not.toContain("stylex.create");
 		expect(result.unmappedTokens).toHaveLength(1);
@@ -524,7 +524,7 @@ describe("outbound: stylex", () => {
 			unmappedTokens: result.unmappedTokens,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (lowering-residual: condition "groupHover" is not expressible in stylex)
+			  "code": "// yumcss:migrate-skip (lowering-residual: condition "groupHover" is not expressible in stylex)
 			const card = css.class({ color: "red", _hover: { color: "blue" }, _groupHover: { color: "green" } });",
 			  "converted": 0,
 			  "skippedByMarker": 1,
@@ -553,7 +553,7 @@ describe("outbound: stylex", () => {
 			unmappedTokens: result.unmappedTokens,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (lowering-residual: condition "focusVisible" is not expressible in stylex)
+			  "code": "// yumcss:migrate-skip (lowering-residual: condition "focusVisible" is not expressible in stylex)
 			const card = css.class({ _focusVisible: { color: "blue" } });",
 			  "converted": 0,
 			  "skippedByMarker": 1,
@@ -723,7 +723,7 @@ describe("TokenDocument conversions", () => {
 	});
 
 	test("define.preset imports via dynamic import of the real preset", async () => {
-		const document = await T.fromFile("preset", "@pandwind/example-preset");
+		const document = await T.fromFile("preset", "@yumcss/example-preset");
 		expect(document.root.children).toMatchObject({
 			colors: {
 				children: { "$blue-500": { kind: "token", value: { kind: "string", value: "#3182ce" } } },

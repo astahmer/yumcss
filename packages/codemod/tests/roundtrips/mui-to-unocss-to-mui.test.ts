@@ -42,7 +42,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", async 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", async 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { Box } from "@mui/material";
 		export const App = () => <Box className={"[color:red] [padding:16px]"}/>;",
 		    "converted": 0,
@@ -129,7 +129,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: mui -> unocss | lowering-residual: configuration, validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -179,7 +179,7 @@ test("mui -> unocss -> mui: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> unocss | lowering-residual: configuration, validation)
+		// yumcss:migrate-skip (route: mui -> unocss | lowering-residual: configuration, validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

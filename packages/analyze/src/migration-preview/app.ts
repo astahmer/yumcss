@@ -85,7 +85,7 @@ export const createMigrationPreviewApp = (
 
 	app.use("*", async (context, next) => {
 		const provided =
-			context.req.header("x-pandwind-migration-preview-token") ??
+			context.req.header("x-yumcss-migration-preview-token") ??
 			new URL(context.req.url).searchParams.get("token");
 		if (provided !== options.token)
 			return context.json({ error: "Migration Preview authorization required" }, 401);

@@ -38,10 +38,10 @@ test("stitches -> css-modules: migrates concrete stitches syntax to css-modules"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "stitches -> css-modules happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("stitches -> css-modules: migrates concrete stitches syntax to css-modules"
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("stitches -> css-modules: carries a documented secondary stitches API expli
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("stitches -> css-modules: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("stitches -> css-modules: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("stitches -> css-modules: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("stitches -> css-modules: preserves malformed concrete stitches input", () 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 0,

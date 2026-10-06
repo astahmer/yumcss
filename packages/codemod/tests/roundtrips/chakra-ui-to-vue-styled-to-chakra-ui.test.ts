@@ -44,7 +44,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "chakra-ui -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -147,7 +147,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -183,7 +183,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains the documented secondary API
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: chakra-ui -> vue-styled | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -264,7 +264,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`background: #f97316; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -343,7 +343,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -437,7 +437,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`background: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,7 +1,7 @@
 // End-to-end: the css-example app on a real Chromium.
 //
 // Proves the CSS backend consumer path end to end: literal css()/design-css()
-// calls in app source are extracted by pandwindCssVite into the atomic
+// calls in app source are extracted by yumcssExtractVite into the atomic
 // stylesheet, class hashes match at runtime, cx resolves conflicts
 // (later wins), and identical literals dedup to one shared class.
 
@@ -106,7 +106,7 @@ try {
 	const cvaPadding = await computed("cva-button", "padding-top");
 	const cvaWeight = await computed("cva-button", "font-weight");
 	check(
-		"CVA composes extracted Pandwind classes",
+		"CVA composes extracted YumCSS classes",
 		cvaPadding === "12px" && cvaWeight === "700",
 		`${cvaPadding} / ${cvaWeight}`,
 	);
@@ -115,7 +115,7 @@ try {
 
 	// Hydration fixture — server markup is hydrated by React in Chromium. The
 	// first client render matches the server, then the effect marks the actual
-	// hydrated state without changing pandwind's class or inline variables.
+	// hydrated state without changing yumcss's class or inline variables.
 	const hydration = await browser.newPage();
 	const hydrationErrors = [];
 	hydration.on("console", (m) => {

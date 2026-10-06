@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
-import { buildGeneratedArtifactManifest, GeneratedArtifactOwnershipTag } from "pandwind-codemod/tw";
+import { buildGeneratedArtifactManifest, GeneratedArtifactOwnershipTag } from "@yumcss/codemod/tw";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const codemodCli = resolve(repositoryRoot, "packages/codemod/dist/cli.js");
@@ -14,9 +14,9 @@ const generatedFiles = [
 	"tw.conflicts.ts",
 	"tw.build.ts",
 	"bridge.ts",
-	"pandwind.interop.json",
-	"pandwind.generated.json",
-	"pandwind-theme.css",
+	"yumcss.interop.json",
+	"yumcss.generated.json",
+	"yumcss-theme.css",
 ] as const;
 
 interface GeneratedApp {
@@ -34,15 +34,15 @@ const apps: readonly GeneratedApp[] = [
 		filter: "example",
 		root: resolve(repositoryRoot, "examples/example"),
 		source: resolve(repositoryRoot, "examples/example/src/tailwind.css"),
-		tokens: "@pandwind/example-preset",
+		tokens: "@yumcss/example-preset",
 		formatFiles: [
 			"tw.ts",
 			"tw.runtime.ts",
 			"tw.conflicts.ts",
 			"tw.build.ts",
 			"bridge.ts",
-			"pandwind-theme.css",
-			"pandwind.interop.json",
+			"yumcss-theme.css",
+			"yumcss.interop.json",
 		],
 	},
 	{
@@ -50,7 +50,7 @@ const apps: readonly GeneratedApp[] = [
 		filter: "playground",
 		root: resolve(repositoryRoot, "apps/playground"),
 		source: resolve(repositoryRoot, "apps/playground/src/tailwind.css"),
-		tokens: "@pandwind/example-preset",
+		tokens: "@yumcss/example-preset",
 		formatFiles: [
 			"types.d.ts",
 			"tw.ts",
@@ -58,7 +58,7 @@ const apps: readonly GeneratedApp[] = [
 			"tw.conflicts.ts",
 			"tw.build.ts",
 			"bridge.ts",
-			"pandwind-theme.css",
+			"yumcss-theme.css",
 		],
 	},
 ];
@@ -96,12 +96,12 @@ const normalizeInterop = (content: string): string => {
 };
 
 const comparableContent = (path: string, content: string): string =>
-	path.endsWith("pandwind.interop.json") ? normalizeInterop(content) : content;
+	path.endsWith("yumcss.interop.json") ? normalizeInterop(content) : content;
 
 const refreshCommand = (app: GeneratedApp): string => `pnpm --filter ${app.filter} run tw:generate`;
 
 const checkApp = (app: GeneratedApp): void => {
-	const temporaryRoot = mkdtempSync(join(tmpdir(), `pandwind-${app.name}-generated-`));
+	const temporaryRoot = mkdtempSync(join(tmpdir(), `yumcss-${app.name}-generated-`));
 	const temporarySourceRoot = join(temporaryRoot, "src");
 	try {
 		run(
@@ -135,9 +135,9 @@ const checkApp = (app: GeneratedApp): void => {
 				["tw.runtime.ts", GeneratedArtifactOwnershipTag.Optional],
 				["tw.conflicts.ts", GeneratedArtifactOwnershipTag.Optional],
 				["tw.build.ts", GeneratedArtifactOwnershipTag.BuildOnly],
-				["pandwind.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
-				["pandwind-theme.css", GeneratedArtifactOwnershipTag.Runtime],
-				["pandwind.agents.json", GeneratedArtifactOwnershipTag.Editor],
+				["yumcss.interop.json", GeneratedArtifactOwnershipTag.BuildOnly],
+				["yumcss-theme.css", GeneratedArtifactOwnershipTag.Runtime],
+				["yumcss.agents.json", GeneratedArtifactOwnershipTag.Editor],
 				["bridge.ts", GeneratedArtifactOwnershipTag.Optional],
 			].flatMap(([name, ownership]) => {
 				const path = join(temporarySourceRoot, name);
@@ -153,7 +153,7 @@ const checkApp = (app: GeneratedApp): void => {
 			}),
 		});
 		writeFileSync(
-			join(temporarySourceRoot, "pandwind.generated.json"),
+			join(temporarySourceRoot, "yumcss.generated.json"),
 			`${JSON.stringify(manifest, null, "\t")}\n`,
 		);
 
@@ -194,7 +194,7 @@ const checkApp = (app: GeneratedApp): void => {
 try {
 	for (const app of apps) checkApp(app);
 	run("pnpm", ["--filter", "playground", "run", "editor:types:check"]);
-	console.log("Generated Pandwind artifacts and playground declarations are fresh.");
+	console.log("Generated YumCSS artifacts and playground declarations are fresh.");
 } catch (error) {
 	console.error(error instanceof Error ? error.message : error);
 	process.exitCode = 1;

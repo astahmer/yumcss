@@ -42,7 +42,7 @@ test("tailwind -> tamagui -> tailwind: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,9 +87,9 @@ test("tailwind -> tamagui -> tailwind: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { forwardRef as __pandwind__componentTamaguiForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwind__componentTamaguiPropsWithoutRef, ComponentRef as __pandwind__componentTamaguiRef, ElementType as __pandwind__componentTamaguiElementType, ReactElement as __pandwind__componentTamaguiReactElement, Ref as __pandwind__componentTamaguiRefProp } from "react";
-		const __componentTamagui = (() => { type __pandwind__componentTamaguiProps<C extends __pandwind__componentTamaguiElementType> = Omit<__pandwind__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwind__componentTamaguiComponent = <C extends __pandwind__componentTamaguiElementType = typeof View>(props: __pandwind__componentTamaguiProps<C> & { ref?: __pandwind__componentTamaguiRefProp<__pandwind__componentTamaguiRef<C>> }) => __pandwind__componentTamaguiReactElement | null; type __pandwind__componentTamaguiRuntimeProps = Record<string, any>; return __pandwind__componentTamaguiForwardRef<__pandwind__componentTamaguiRef<typeof View>, __pandwind__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[display:flex] [align-items:center] [gap:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwind__componentTamaguiComponent; })();
+		import { forwardRef as __yumcss__componentTamaguiForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcss__componentTamaguiPropsWithoutRef, ComponentRef as __yumcss__componentTamaguiRef, ElementType as __yumcss__componentTamaguiElementType, ReactElement as __yumcss__componentTamaguiReactElement, Ref as __yumcss__componentTamaguiRefProp } from "react";
+		const __componentTamagui = (() => { type __yumcss__componentTamaguiProps<C extends __yumcss__componentTamaguiElementType> = Omit<__yumcss__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcss__componentTamaguiComponent = <C extends __yumcss__componentTamaguiElementType = typeof View>(props: __yumcss__componentTamaguiProps<C> & { ref?: __yumcss__componentTamaguiRefProp<__yumcss__componentTamaguiRef<C>> }) => __yumcss__componentTamaguiReactElement | null; type __yumcss__componentTamaguiRuntimeProps = Record<string, any>; return __yumcss__componentTamaguiForwardRef<__yumcss__componentTamaguiRef<typeof View>, __yumcss__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[display:flex] [align-items:center] [gap:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcss__componentTamaguiComponent; })();
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +141,7 @@ test("tailwind -> tamagui -> tailwind: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("tailwind -> tamagui -> tailwind: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> tamagui | capability-blocked: named-conditions: named: md | available: static, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -252,9 +252,9 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
-		import { forwardRef as __pandwind__componentTamaguiForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwind__componentTamaguiPropsWithoutRef, ComponentRef as __pandwind__componentTamaguiRef, ElementType as __pandwind__componentTamaguiElementType, ReactElement as __pandwind__componentTamaguiReactElement, Ref as __pandwind__componentTamaguiRefProp } from "react";
-		const __componentTamagui = (() => { type __pandwind__componentTamaguiProps<C extends __pandwind__componentTamaguiElementType> = Omit<__pandwind__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwind__componentTamaguiComponent = <C extends __pandwind__componentTamaguiElementType = typeof View>(props: __pandwind__componentTamaguiProps<C> & { ref?: __pandwind__componentTamaguiRefProp<__pandwind__componentTamaguiRef<C>> }) => __pandwind__componentTamaguiReactElement | null; type __pandwind__componentTamaguiRuntimeProps = Record<string, any>; return __pandwind__componentTamaguiForwardRef<__pandwind__componentTamaguiRef<typeof View>, __pandwind__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __pandwind__componentTamaguiComponent; })();
+		import { forwardRef as __yumcss__componentTamaguiForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcss__componentTamaguiPropsWithoutRef, ComponentRef as __yumcss__componentTamaguiRef, ElementType as __yumcss__componentTamaguiElementType, ReactElement as __yumcss__componentTamaguiReactElement, Ref as __yumcss__componentTamaguiRefProp } from "react";
+		const __componentTamagui = (() => { type __yumcss__componentTamaguiProps<C extends __yumcss__componentTamaguiElementType> = Omit<__yumcss__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcss__componentTamaguiComponent = <C extends __yumcss__componentTamaguiElementType = typeof View>(props: __yumcss__componentTamaguiProps<C> & { ref?: __yumcss__componentTamaguiRefProp<__yumcss__componentTamaguiRef<C>> }) => __yumcss__componentTamaguiReactElement | null; type __yumcss__componentTamaguiRuntimeProps = Record<string, any>; return __yumcss__componentTamaguiForwardRef<__yumcss__componentTamaguiRef<typeof View>, __yumcss__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __yumcss__componentTamaguiComponent; })();
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -328,9 +328,9 @@ test("tailwind -> tamagui -> tailwind: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
-		import { forwardRef as __pandwind__componentTamaguiForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwind__componentTamaguiPropsWithoutRef, ComponentRef as __pandwind__componentTamaguiRef, ElementType as __pandwind__componentTamaguiElementType, ReactElement as __pandwind__componentTamaguiReactElement, Ref as __pandwind__componentTamaguiRefProp } from "react";
-		const __componentTamagui = (() => { type __pandwind__componentTamaguiProps<C extends __pandwind__componentTamaguiElementType> = Omit<__pandwind__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwind__componentTamaguiComponent = <C extends __pandwind__componentTamaguiElementType = typeof View>(props: __pandwind__componentTamaguiProps<C> & { ref?: __pandwind__componentTamaguiRefProp<__pandwind__componentTamaguiRef<C>> }) => __pandwind__componentTamaguiReactElement | null; type __pandwind__componentTamaguiRuntimeProps = Record<string, any>; return __pandwind__componentTamaguiForwardRef<__pandwind__componentTamaguiRef<typeof View>, __pandwind__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __pandwind__componentTamaguiComponent; })();
+		import { forwardRef as __yumcss__componentTamaguiForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcss__componentTamaguiPropsWithoutRef, ComponentRef as __yumcss__componentTamaguiRef, ElementType as __yumcss__componentTamaguiElementType, ReactElement as __yumcss__componentTamaguiReactElement, Ref as __yumcss__componentTamaguiRefProp } from "react";
+		const __componentTamagui = (() => { type __yumcss__componentTamaguiProps<C extends __yumcss__componentTamaguiElementType> = Omit<__yumcss__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcss__componentTamaguiComponent = <C extends __yumcss__componentTamaguiElementType = typeof View>(props: __yumcss__componentTamaguiProps<C> & { ref?: __yumcss__componentTamaguiRefProp<__yumcss__componentTamaguiRef<C>> }) => __yumcss__componentTamaguiReactElement | null; type __yumcss__componentTamaguiRuntimeProps = Record<string, any>; return __yumcss__componentTamaguiForwardRef<__yumcss__componentTamaguiRef<typeof View>, __yumcss__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __yumcss__componentTamaguiComponent; })();
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -419,9 +419,9 @@ test("tailwind -> tamagui -> tailwind: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { forwardRef as __pandwind__componentTamaguiForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwind__componentTamaguiPropsWithoutRef, ComponentRef as __pandwind__componentTamaguiRef, ElementType as __pandwind__componentTamaguiElementType, ReactElement as __pandwind__componentTamaguiReactElement, Ref as __pandwind__componentTamaguiRefProp } from "react";
-		const __componentTamagui = (() => { type __pandwind__componentTamaguiProps<C extends __pandwind__componentTamaguiElementType> = Omit<__pandwind__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwind__componentTamaguiComponent = <C extends __pandwind__componentTamaguiElementType = typeof View>(props: __pandwind__componentTamaguiProps<C> & { ref?: __pandwind__componentTamaguiRefProp<__pandwind__componentTamaguiRef<C>> }) => __pandwind__componentTamaguiReactElement | null; type __pandwind__componentTamaguiRuntimeProps = Record<string, any>; return __pandwind__componentTamaguiForwardRef<__pandwind__componentTamaguiRef<typeof View>, __pandwind__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __pandwind__componentTamaguiComponent; })();
+		import { forwardRef as __yumcss__componentTamaguiForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcss__componentTamaguiPropsWithoutRef, ComponentRef as __yumcss__componentTamaguiRef, ElementType as __yumcss__componentTamaguiElementType, ReactElement as __yumcss__componentTamaguiReactElement, Ref as __yumcss__componentTamaguiRefProp } from "react";
+		const __componentTamagui = (() => { type __yumcss__componentTamaguiProps<C extends __yumcss__componentTamaguiElementType> = Omit<__yumcss__componentTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcss__componentTamaguiComponent = <C extends __yumcss__componentTamaguiElementType = typeof View>(props: __yumcss__componentTamaguiProps<C> & { ref?: __yumcss__componentTamaguiRefProp<__yumcss__componentTamaguiRef<C>> }) => __yumcss__componentTamaguiReactElement | null; type __yumcss__componentTamaguiRuntimeProps = Record<string, any>; return __yumcss__componentTamaguiForwardRef<__yumcss__componentTamaguiRef<typeof View>, __yumcss__componentTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["text-brand p-card", props.className].filter(Boolean).join(" ")} />; }) as __yumcss__componentTamaguiComponent; })();
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],

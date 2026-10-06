@@ -42,7 +42,7 @@ test("aphrodite -> less -> aphrodite: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("aphrodite -> less -> aphrodite: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("aphrodite -> less -> aphrodite: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("aphrodite -> less -> aphrodite: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("aphrodite -> less -> aphrodite: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | capability-blocked: nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -206,7 +206,7 @@ test("aphrodite -> less -> aphrodite: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -243,7 +243,7 @@ test("aphrodite -> less -> aphrodite: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -259,7 +259,7 @@ test("aphrodite -> less -> aphrodite: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -296,7 +296,7 @@ test("aphrodite -> less -> aphrodite: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -327,7 +327,7 @@ test("aphrodite -> less -> aphrodite: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("aphrodite -> less -> aphrodite: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

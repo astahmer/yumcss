@@ -711,7 +711,7 @@ export function createMantineAdapter(
 		detectPatterns: [/@mantine\/core/, /\b(?:style|sx|maw|fz|c|bg)\s*=/],
 		sourceModules: [],
 		sourceModulesToRemove: (targetId) =>
-			targetId === CodemodAdapterId.Pandwind ? ["@mantine/core"] : [],
+			targetId === CodemodAdapterId.YumCSS ? ["@mantine/core"] : [],
 		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 		...(moduleLoader === undefined
 			? {}
@@ -809,7 +809,7 @@ export function createMantineAdapter(
 					{
 						kind: "host-framework",
 						text: styleObject,
-						hint: "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+						hint: "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 					},
 				],
 			};
@@ -824,7 +824,7 @@ export function createMantineAdapter(
 				...parsed,
 				matches: parsed.matches.map((match) => {
 					const program =
-						context.targetId === CodemodAdapterId.Pandwind
+						context.targetId === CodemodAdapterId.YumCSS
 							? canonicalizeSourceHost(match.program, MANTINE_SOURCE_COMPONENTS, "Mantine")
 							: match.program;
 					const residuals = unresolvedMantineTokenResiduals(program, theme);

@@ -1,0 +1,191 @@
+/**
+ * Cross-bundler smoke tests for the unplugin adapters.
+ *
+ * - rollup: a real `rollup.build()` over a fixture entry proves the inline
+ *   pass folds `tw()` calls outside vite (the fs-fallback resolver finds the
+ *   generated tw module; the bare `yumcss/tw` runtime import is aliased to
+ *   the package source since there is no node-resolve in this minimal setup).
+ * - css extractor: `resolveId`/`load` served through the unplugin-wrapped
+ *   vite slice generate the stylesheet from a temp-dir scan.
+ */
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { rollup } from "rollup";
+import { describe, expect, test } from "vitest";
+import { examplePreset } from "@yumcss/example-preset";
+import { yumcssRollup } from "../src/unplugin.ts";
+import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
+import { createInlineTwPluginCore } from "../src/vite/index.ts";
+import { writeJsTwModule } from "./helpers/generated-tw.ts";
+import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
+
+describe("yumcssRollup", () => {
+	test("folds tw() calls in a real rollup build", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "yumcss-unplugin-rollup-"));
+		try {
+			const twModule = writeJsTwModule(dir);
+			const entry = join(dir, "entry.js");
+			writeFileSync(
+				entry,
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					`export const cls = tw({ p: "6", text: "sm" });`,
+				].join("\n"),
+			);
+
+			const bundle = await rollup({ input: entry, plugins: [yumcssRollup({})] });
+			const { output } = await bundle.generate({ format: "es" });
+			const code = output
+				.filter(
+					(
+						chunkOrAsset,
+					): chunkOrAsset is Extract<
+						typeof chunkOrAsset,
+						{ type: typeof RollupOutputKind.Chunk }
+					> => chunkOrAsset.type === RollupOutputKind.Chunk,
+				)
+				.map((chunk) => chunk.code)
+				.join("\n");
+
+			expect(code).toContain("p-6 text-sm");
+			expect(code).not.toMatch(/\btw\s*\(/);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("erases cross-file static style calls from the final bundle", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "yumcss-unplugin-rollup-static-"));
+		try {
+			const twModule = writeJsTwModule(dir);
+			const constants = join(dir, "tokens.js");
+			const entry = join(dir, "entry.js");
+			writeFileSync(constants, 'export const P = "6";');
+			writeFileSync(
+				entry,
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'import { P } from "./tokens.js";',
+					"export const cls = tw({ p: P });",
+				].join("\n"),
+			);
+
+			const bundle = await rollup({ input: entry, plugins: [yumcssRollup({})] });
+			const { output } = await bundle.generate({ format: "es" });
+			const code = output
+				.filter(
+					(
+						chunkOrAsset,
+					): chunkOrAsset is Extract<
+						typeof chunkOrAsset,
+						{ type: typeof RollupOutputKind.Chunk }
+					> => chunkOrAsset.type === RollupOutputKind.Chunk,
+				)
+				.map((chunk) => chunk.code)
+				.join("\n");
+
+			expect(code).toMatchInlineSnapshot(`
+				"const cls = "p-6";
+
+				export { cls };
+				"
+			`);
+			expect(code).toContain('"p-6"');
+			expect(code).not.toMatch(/\b(?:createTw|tw|P)\b/u);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("watchChange invalidates inline cross-module constants", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "yumcss-unplugin-rollup-inline-watch-"));
+		try {
+			const twModule = writeJsTwModule(dir);
+			const constants = join(dir, "constants.js");
+			const entry = join(dir, "entry.js");
+			writeFileSync(constants, 'export const P = "6";');
+			const source = () =>
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'import { P } from "./constants.js";',
+					"export const cls = tw({ p: P });",
+				].join("\n");
+			writeFileSync(entry, source());
+
+			const plugin = createInlineTwPluginCore();
+			const resolver = {
+				async resolve(source: string) {
+					return source === twModule ? { id: twModule } : null;
+				},
+			};
+			const before = await plugin.transform(readFileSync(entry, "utf8"), entry, resolver);
+			expect(before?.code).toContain('"p-6"');
+
+			writeFileSync(constants, 'export const P = "8";');
+			plugin.invalidate(constants);
+			writeFileSync(entry, source());
+			const after = await plugin.transform(readFileSync(entry, "utf8"), entry, resolver);
+			expect(after?.code).toContain('"p-8"');
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+});
+
+describe("CSS extraction plugin core", () => {
+	test("resolveId maps the virtual stylesheet id", () => {
+		const plugin = createCssExtractorPluginCore(examplePreset, { root: tmpdir() });
+		const resolved = plugin.resolveId("yumcss:css");
+		expect(resolved).toContain("yumcss:css.css");
+	});
+
+	test("load serves the generated stylesheet from a scanned directory", () => {
+		const root = mkdtempSync(join(tmpdir(), "yumcss-unplugin-css-"));
+		try {
+			writeFileSync(
+				join(root, "app.ts"),
+				['import { css } from "./css";', 'export const a = css({ color: "$blue-500" });'].join(
+					"\n",
+				),
+			);
+			mkdirSync(join(root, "keep"), { recursive: true });
+
+			const plugin = createCssExtractorPluginCore(examplePreset, { root, cssSources: ["css"] });
+
+			const id = plugin.resolveId("yumcss:css");
+			expect(id).not.toBeNull();
+			const css = plugin.load(id!);
+			expect(css).toContain("#3182ce");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+
+	test("invalidate refreshes the scanned stylesheet", () => {
+		const root = mkdtempSync(join(tmpdir(), "yumcss-unplugin-rollup-watch-"));
+		try {
+			writeFileSync(
+				join(root, "app.ts"),
+				[
+					'import { css } from "./css";',
+					'export const a = css({ $frame: { fill: "$blue-500" } });',
+				].join("\n"),
+			);
+			const plugin = createCssExtractorPluginCore(examplePreset, { root, cssSources: ["css"] });
+			const id = plugin.resolveId("yumcss:css");
+			expect(id).not.toBeNull();
+			expect(plugin.load(id!)).toContain("#3182ce");
+
+			const extra = join(root, "extra.ts");
+			writeFileSync(
+				extra,
+				['import { css } from "./css";', 'css({ $frame: { fill: "$green-500" } });'].join("\n"),
+			);
+			plugin.invalidate(extra);
+			expect(plugin.load(id!)?.toLowerCase()).toContain("#60a3bc");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+});

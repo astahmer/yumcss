@@ -42,7 +42,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves an actionable con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves an actionable con
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("css-modules -> vanilla-extract -> css-modules: retains the documented seco
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -169,7 +169,7 @@ test("css-modules -> vanilla-extract -> css-modules: retains the documented seco
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -252,7 +252,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -330,7 +330,7 @@ test("css-modules -> vanilla-extract -> css-modules: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -423,7 +423,7 @@ test("css-modules -> vanilla-extract -> css-modules: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": style({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,

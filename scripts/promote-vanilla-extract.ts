@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -19,12 +19,12 @@ import {
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
 const referenceRoot = createReferenceWorkspace().path("vanilla-extract");
 const referenceCommit = "881c256a867f55386f96a7fe95068300bac720e6";
 const referenceStylePath = "examples/next/components/HelloWorld.css.ts";
 const referenceComponentPath = "examples/next/components/HelloWorld.tsx";
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 
 const versions = {
 	"@types/node": "26.4.1",
@@ -34,7 +34,7 @@ const versions = {
 	"@vanilla-extract/vite-plugin": "5.2.6",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "7.0.2",
@@ -60,7 +60,7 @@ interface VanillaExtractInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.VanillaExtract;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly referenceCommit: string;
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
@@ -74,7 +74,7 @@ interface VanillaExtractInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
 		readonly typedVariableLowered: boolean;
 		readonly propertyRegistrationPreserved: boolean;
@@ -114,7 +114,7 @@ const pinnedReferenceFile = (path: string): string => {
 };
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-vanilla-extract-target" : "vanilla-extract-installed-source",
+	name: target ? "yumcss-vanilla-extract-target" : "vanilla-extract-installed-source",
 	private: true,
 	type: "module",
 	scripts: {
@@ -124,7 +124,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 	},
 	dependencies: {
 		...(target
-			? { pandwind: versions.pandwind }
+			? { yumcss: versions.yumcss }
 			: {
 					"@vanilla-extract/css": versions["@vanilla-extract/css"],
 				}),
@@ -165,13 +165,13 @@ const writeFixture = (root: string, target: boolean): void => {
 	writeFileSync(
 		join(root, "src/entry-server.tsx"),
 		target
-			? 'import { runtimeCss } from "../pandwind/runtime";\nexport { App } from "./App";\nexport const pandwindCss = () => runtimeCss.sheet.css();\n'
+			? 'import { runtimeCss } from "../yumcss/runtime";\nexport { App } from "./App";\nexport const yumcssCss = () => runtimeCss.sheet.css();\n'
 			: 'export { App } from "./App";\n',
 	);
 	writeFileSync(
 		join(root, "src/main.tsx"),
 		[
-			...(target ? ['import "pandwind:css";'] : []),
+			...(target ? ['import "yumcss:css";'] : []),
 			'import { hydrateRoot } from "react-dom/client";',
 			'import { App } from "./App";',
 			"",
@@ -180,7 +180,7 @@ const writeFixture = (root: string, target: boolean): void => {
 	);
 	writeFileSync(
 		join(root, "src/vite-env.d.ts"),
-		'/// <reference types="vite/client" />\ndeclare module "pandwind:css";\n',
+		'/// <reference types="vite/client" />\ndeclare module "yumcss:css";\n',
 	);
 	writeFileSync(
 		join(root, "index.html"),
@@ -191,11 +191,11 @@ const writeFixture = (root: string, target: boolean): void => {
 		target
 			? [
 					'import react from "@vitejs/plugin-react-swc";',
-					'import { pandwindCssVite } from "pandwind/vite";',
-					'import { defaultPreset } from "pandwind/preset/default";',
+					'import { yumcssExtractVite } from "yumcss/vite";',
+					'import { defaultPreset } from "yumcss/preset/default";',
 					'import { defineConfig } from "vite";',
 					"",
-					"export default defineConfig({ plugins: [pandwindCssVite(defaultPreset), react()] });",
+					"export default defineConfig({ plugins: [yumcssExtractVite(defaultPreset), react()] });",
 				].join("\n")
 			: [
 					'import react from "@vitejs/plugin-react-swc";',
@@ -213,7 +213,7 @@ const proofIsComplete = (report: VanillaExtractInstalledProof): boolean =>
 	report.migration.residuals === 0 &&
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
-	report.migration.targetUsesPandwind &&
+	report.migration.targetUsesYumCSS &&
 	report.migration.sourceImportRemoved &&
 	report.migration.typedVariableLowered &&
 	report.migration.propertyRegistrationPreserved &&
@@ -236,7 +236,7 @@ const proofIsComplete = (report: VanillaExtractInstalledProof): boolean =>
 
 export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractInstalledProof> {
 	return withInstalledProofProject(
-		"pandwind-vanilla-extract-installed-",
+		"yumcss-vanilla-extract-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			writeFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -253,13 +253,13 @@ export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractI
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						"packages/codemod/src/cli.ts",
 						"migrate",
 						"--from",
 						CodemodAdapterId.VanillaExtract,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -292,7 +292,7 @@ export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractI
 			});
 			const report: VanillaExtractInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.VanillaExtract, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.VanillaExtract, to: CodemodAdapterId.YumCSS },
 				referenceCommit,
 				fixture: {
 					files: ["src/HelloWorld.css.ts", "src/HelloWorld.tsx", "src/App.tsx"],
@@ -300,12 +300,12 @@ export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractI
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@vanilla-extract/css"),
-					targetPackage: "pandwind",
-					targetNodeModule: packageInstalled(targetRoot, "pandwind"),
+					targetPackage: "yumcss",
+					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: migratedStyle.includes("pandwind/"),
+					targetUsesYumCSS: migratedStyle.includes("yumcss/"),
 					sourceImportRemoved: !migratedStyle.includes("@vanilla-extract"),
 					typedVariableLowered:
 						migratedStyle.includes('const color = "--pw-color";') &&
@@ -316,8 +316,8 @@ export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractI
 						migratedStyle.includes('name: "--pw-angle"'),
 					keyframesPreserved:
 						migratedStyle.includes('kind: "keyframes"') && migratedStyle.includes("angleKeyframes"),
-					generatedVitePresetImportIsExplicit: targetViteConfig.includes("pandwindCssVite"),
-					generatedVitePluginPresent: targetViteConfig.includes("pandwind/vite"),
+					generatedVitePresetImportIsExplicit: targetViteConfig.includes("yumcssExtractVite"),
+					generatedVitePluginPresent: targetViteConfig.includes("yumcss/vite"),
 				},
 				checks: {
 					sourceTypecheck: true,
@@ -337,7 +337,7 @@ export async function runVanillaExtractInstalledProof(): Promise<VanillaExtractI
 				css: {
 					sourceBytes: Buffer.byteLength(sourceCss),
 					targetBytes: Buffer.byteLength(targetCss),
-					note: "The tiny fixture compares fused Vanilla Extract CSS with Pandwind's atomic runtime CSS. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget.",
+					note: "The tiny fixture compares fused Vanilla Extract CSS with YumCSS's atomic runtime CSS. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget.",
 				},
 			};
 			if (!proofIsComplete(report))

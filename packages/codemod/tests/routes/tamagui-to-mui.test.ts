@@ -38,10 +38,10 @@ test("tamagui -> mui: migrates concrete tamagui syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tamagui -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("tamagui -> mui: carries a documented secondary tamagui API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> mui | parse-residual: function-dynamic | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> mui | parse-residual: function-dynamic | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -182,7 +182,7 @@ test("tamagui -> mui: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -238,7 +238,7 @@ test("tamagui -> mui: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		  "converted": 0,

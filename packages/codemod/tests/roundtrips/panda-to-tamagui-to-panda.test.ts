@@ -42,7 +42,7 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", a
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -137,7 +137,7 @@ test("panda -> tamagui -> panda: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tamagui | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual)
+		// yumcss:migrate-skip (route: panda -> tamagui | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -171,7 +171,7 @@ test("panda -> tamagui -> panda: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> tamagui | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual)
+		// yumcss:migrate-skip (route: panda -> tamagui | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -248,7 +248,7 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -319,7 +319,7 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -405,7 +405,7 @@ test("panda -> tamagui -> panda: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

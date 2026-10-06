@@ -29,7 +29,7 @@ export type JsxStylePropSelector =
 	| readonly string[]
 	| ((name: string, openingTag?: string) => boolean);
 
-const isPandwindCarrier = (expression: string): boolean =>
+const isYumCSSCarrier = (expression: string): boolean =>
 	/^css\.(?:class|vars)\(/u.test(expression.trim());
 
 const classNameExpression = (expression: string): string => {
@@ -49,7 +49,7 @@ const mergeClassExpression = (
 	generated: string,
 	existing: string,
 ): { readonly expression: string; readonly needsCx: boolean } =>
-	isPandwindCarrier(generated)
+	isYumCSSCarrier(generated)
 		? { expression: `css.props(${generated}, ${existing}).className`, needsCx: false }
 		: { expression: `cx(${generated}, ${existing})`, needsCx: true };
 
@@ -232,7 +232,7 @@ export class JsxStyleHost {
 			(styleAttribute === undefined || styleValue !== undefined) &&
 			(spread === undefined || canCarryClassName(spread[1]!));
 		if (canReuseVars) {
-			const variable = "__pandwindVars";
+			const variable = "__yumcssVars";
 			const styleObject =
 				styleInputs.length === 0
 					? undefined

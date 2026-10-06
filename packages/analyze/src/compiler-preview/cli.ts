@@ -38,7 +38,7 @@ const runCompilerPreview = async (
 		process.chdir(originalWorkingDirectory);
 		throw error;
 	}
-	console.log(`Pandwind Compiler Preview: ${server.address.url}`);
+	console.log(`YumCSS Compiler Preview: ${server.address.url}`);
 	if (shouldOpen) openInBrowser(server.address.url);
 	let closing = false;
 	const close = async (): Promise<void> => {
@@ -56,7 +56,7 @@ const runCompilerPreview = async (
 };
 
 const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<void> => {
-	const cli = cac("pandwind-compiler-preview");
+	const cli = cac("yumcss-compiler-preview");
 	const command = cli.command(
 		"[root]",
 		"Preview Vite-transformed source without writing project files",
@@ -68,7 +68,7 @@ const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<vo
 	command.option("--no-open", "Start the server without opening a browser");
 	cli.help();
 	try {
-		cli.parse(["node", "pandwind-compiler-preview", ...argv], { run: false });
+		cli.parse(["node", "yumcss-compiler-preview", ...argv], { run: false });
 		if (cli.matchedCommand === undefined) return;
 		validateCommand(cli.matchedCommand);
 		const root = resolve(cli.args[0] ?? process.cwd());
@@ -77,7 +77,7 @@ const main = async (argv: readonly string[] = process.argv.slice(2)): Promise<vo
 		await runCompilerPreview(root, configFile, cli.options.open !== false);
 	} catch (error) {
 		console.error(
-			`pandwind compiler preview: ${error instanceof Error ? error.message : String(error)}`,
+			`yumcss compiler preview: ${error instanceof Error ? error.message : String(error)}`,
 		);
 		cli.outputHelp();
 		process.exitCode = 1;

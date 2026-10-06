@@ -40,10 +40,10 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", async () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mui -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", async () => 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("mui -> chakra-ui: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("mui -> chakra-ui: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("mui -> chakra-ui: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("mui -> chakra-ui: preserves malformed concrete mui input", async () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,

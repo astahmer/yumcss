@@ -44,7 +44,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -90,7 +90,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,
@@ -198,8 +198,8 @@ test("css-modules -> chakra-ui -> css-modules: retains the documented secondary 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "primary": defaultSystem.css({ color: "red", fontWeight: "semibold" }) };
 		export default styles;",
 		    "converted": 0,
@@ -325,7 +325,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
@@ -401,7 +401,7 @@ test("css-modules -> chakra-ui -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		      "converted": 0,
@@ -492,7 +492,7 @@ test("css-modules -> chakra-ui -> css-modules: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export default styles;",
 		    "converted": 0,

@@ -51,10 +51,10 @@ describe("codemod architecture boundaries", () => {
 			readSwap("adapter-migration.ts"),
 			readSwap("adapter-catalog.ts"),
 			readSwap("semantic-ir.ts"),
-			readSwap("adapters/pandwind.adapter.ts"),
+			readSwap("adapters/yumcss.adapter.ts"),
 		].join("\n");
 		expect(readSwap("semantic-ir.ts")).not.toContain("stylex");
-		for (const identity of ["stylex", "panda", "pandwind"]) {
+		for (const identity of ["stylex", "panda", "yumcss"]) {
 			expect(orchestration).not.toMatch(new RegExp(`(?:===|!==)\\s*[\\"']${identity}[\\"']`));
 		}
 	});

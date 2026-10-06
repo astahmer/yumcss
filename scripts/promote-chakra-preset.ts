@@ -11,12 +11,12 @@ import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const requireFromPandwind = createRequire(join(pandwindPackageRoot, "package.json"));
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in data module this generator owns. */
 export const chakraPresetModulePath = join(
-	pandwindPackageRoot,
+	yumcssPackageRoot,
 	"src/preset/generated/chakra-theme.ts",
 );
 
@@ -65,7 +65,7 @@ interface ChakraConfig {
  *
  * `blurs` is deliberately absent: Chakra reaches that scale only through its
  * `blur` utility, which writes a `--blur` custom property instead of a CSS
- * property, so no Pandwind property binding can read the group and its `:root`
+ * property, so no YumCSS property binding can read the group and its `:root`
  * declarations would be unreachable bytes.
  *
  * `animations` is absent for the same reason: each entry is a shorthand whose
@@ -108,7 +108,7 @@ const sortedPairs = <TValue>(
 const collapsed = (value: string): string => value.replaceAll(/\s+/gu, " ").trim();
 
 /**
- * Pandwind reads a slash as its color opacity modifier, so Chakra's fraction
+ * YumCSS reads a slash as its color opacity modifier, so Chakra's fraction
  * keys (1/2, 1/3, ...) are renamed to the 1-2 form.
  */
 const safeTokenName = (name: string): string => name.replaceAll("/", "-");
@@ -132,11 +132,11 @@ export const renderChakraPresetModule = async (): Promise<{
 }> => {
 	const chakraVersion = (
 		JSON.parse(
-			readFileSync(requireFromPandwind.resolve("@chakra-ui/react/package.json"), "utf8"),
+			readFileSync(requireFromYumCSS.resolve("@chakra-ui/react/package.json"), "utf8"),
 		) as { version: string }
 	).version;
 
-	const chakra = (await import(requireFromPandwind.resolve("@chakra-ui/react"))) as {
+	const chakra = (await import(requireFromYumCSS.resolve("@chakra-ui/react"))) as {
 		readonly defaultConfig: ChakraConfig;
 		readonly createSystem: (config: ChakraConfig, options: ChakraConfig) => ChakraSystem;
 	};
@@ -150,7 +150,7 @@ export const renderChakraPresetModule = async (): Promise<{
 	/** Chakra custom property to the token path this preset ships. */
 	const pathByVariable = new Map<string, string>();
 
-	const registerStaticPath = (chakraPath: string, pandwindPath: string): void => {
+	const registerStaticPath = (chakraPath: string, yumcssPath: string): void => {
 		const reference = system.token.var(chakraPath);
 		const variable = /^var\((--chakra-.+)\)$/u.exec(reference)?.[1];
 		if (variable === undefined) {
@@ -158,7 +158,7 @@ export const renderChakraPresetModule = async (): Promise<{
 		}
 		const literal = system.token(chakraPath);
 		literalByVariable.set(variable, literal);
-		pathByVariable.set(variable, pandwindPath);
+		pathByVariable.set(variable, yumcssPath);
 	};
 
 	const flattenStaticGroup = (group: string): Record<string, string> => {
@@ -173,9 +173,9 @@ export const renderChakraPresetModule = async (): Promise<{
 			for (const [nestedName, nestedEntry] of Object.entries(entry)) {
 				const chakraPath = group + "." + tokenName + "." + nestedName;
 				const name = safeTokenName(tokenName + "." + nestedName);
-				const pandwindPath = group + "." + tokenKey(group, name);
+				const yumcssPath = group + "." + tokenKey(group, name);
 				entries.push([tokenKey(group, name), collapsed(String(nestedEntry.value))]);
-				registerStaticPath(chakraPath, pandwindPath);
+				registerStaticPath(chakraPath, yumcssPath);
 			}
 		}
 		return sortedPairs(entries);
@@ -187,7 +187,7 @@ export const renderChakraPresetModule = async (): Promise<{
 
 	/**
 	 * The color root a token name belongs to, e.g. `blackAlpha` for
-	 * `$blackAlpha.50`. The `$` sigil is a Pandwind spelling, so it is dropped
+	 * `$blackAlpha.50`. The `$` sigil is a YumCSS spelling, so it is dropped
 	 * from the palette names, which are the values a project writes for
 	 * `colorPalette`.
 	 */
@@ -230,7 +230,7 @@ export const renderChakraPresetModule = async (): Promise<{
 	 * Chakra's `transition` keyword vocabulary, flattened to one shorthand per
 	 * keyword. A keyword expands to a property list whose members all share the
 	 * duration and easing Chakra's utility adds, which is the shorthand a project
-	 * writes by hand; Pandwind binds one property to one token value, so the three
+	 * writes by hand; YumCSS binds one property to one token value, so the three
 	 * declarations Chakra emits have to be composed into one string here.
 	 */
 	const transitions = sortedPairs([
@@ -272,7 +272,7 @@ export const renderChakraPresetModule = async (): Promise<{
 	/**
 	 * Color modes for one semantic token: a single base mode, or Chakra's
 	 * light/dark pair. Mode order is authored, never sorted, so the emitted
-	 * object keeps Pandwind's base-before-modes convention.
+	 * object keeps YumCSS's base-before-modes convention.
 	 *
 	 * The value arrives as `unknown` because a semantic root and a semantic leaf
 	 * are both objects carrying a `value` key, and TypeScript does not narrow an
@@ -377,18 +377,18 @@ export const renderChakraPresetModule = async (): Promise<{
 		"// color-mode tokens (resolved through system.css, so embedded {colors.x.y/10}",
 		"// references become plain color-mix(...) text), theme.breakpoints for the pixel",
 		"// widths, and conditions for the 104 condition selectors. Chakra's --chakra-*",
-		"// variables are never emitted, because Pandwind declares none of them.",
+		"// variables are never emitted, because YumCSS declares none of them.",
 		"//",
 		"// Divergences from Chakra's own output, all asserted by the parity test:",
-		"// every colors key carries Pandwind's `$` sigil ($gray.700, $bg.subtle), which is",
+		"// every colors key carries YumCSS's `$` sigil ($gray.700, $bg.subtle), which is",
 		'// what makes the authored `color: "$gray.700"` a token reference; the bare',
 		"// `gray.700` spelling stays valid as its canonical alias,",
-		"// sizes.1/2 ships as 1-2 (Pandwind reads a slash as its opacity modifier),",
+		"// sizes.1/2 ships as 1-2 (YumCSS reads a slash as its opacity modifier),",
 		"// and the blurs group is absent because Chakra reaches it only through its blur",
 		"// utility, which sets a --blur custom property rather than a CSS property. The",
 		"// transitions group is composed, not transcribed: each keyword of Chakra's",
 		"// transition utility carries a property list, a duration, and an easing, which",
-		"// the single shorthand Pandwind binds joins back together per property. The",
+		"// the single shorthand YumCSS binds joins back together per property. The",
 		"// colorPalette role names are Chakra's own: both sides derive them from the",
 		"// selected root's token paths, so `colorPalette.focusRing` already matches.",
 		"//",

@@ -7,7 +7,7 @@ const stylexReference = await ensureReferenceWorkspace("stylex");
 const root = `${stylexReference.path}/packages/docs`;
 
 describe("StyleX docs migration lanes", () => {
-	test("runtime-css lane emits the Pandwind group API", async () => {
+	test("runtime-css lane emits the YumCSS group API", async () => {
 		const report = await StylexDocsMigration.run(root, StylexDocsLane.RuntimeCss);
 		expect(report.lane).toBe(StylexDocsLane.RuntimeCss);
 		expect(report.invalidValidations).toBe(0);

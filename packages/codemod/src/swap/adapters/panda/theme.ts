@@ -13,7 +13,7 @@
  *
  * Nothing here resolves conditional `{ base, _dark }` VALUES — references
  * stay symbolic so dark-mode switching survives migration (pass 1 lifts the
- * tokens themselves into a pandwind preset).
+ * tokens themselves into a yumcss preset).
  */
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../../../path-utils.ts";
@@ -337,7 +337,7 @@ async function importModule(path: string): Promise<AnyModule> {
 }
 
 async function createDefaultReadFile(): Promise<(file: string) => string | undefined> {
-	const { createSourceWorkspace } = await import(/* @vite-ignore */ "pandwind/source/workspace");
+	const { createSourceWorkspace } = await import(/* @vite-ignore */ "yumcss/source/workspace");
 	const workspace = createSourceWorkspace();
 	return (file) => workspace.read([file])[0]?.source;
 }

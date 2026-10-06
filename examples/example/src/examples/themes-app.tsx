@@ -1,4 +1,4 @@
-import type { exampleThemeScopes } from "@pandwind/example-preset";
+import type { exampleThemeScopes } from "@yumcss/example-preset";
 import { useState } from "react";
 import { untypedCss } from "../css";
 import { cx } from "../cx";

@@ -25,13 +25,13 @@ describe("Hono MCP transport", () => {
 				params: {
 					protocolVersion: "2025-11-25",
 					capabilities: {},
-					clientInfo: { name: "pandwind-http-test", version: "1.0.0" },
+					clientInfo: { name: "yumcss-http-test", version: "1.0.0" },
 				},
 			}),
 		});
 		expect(response.status).toBe(200);
 		const body = await response.text();
-		expect(body).toContain('"serverInfo":{"name":"pandwind-analyze"');
+		expect(body).toContain('"serverInfo":{"name":"yumcss-analyze"');
 		expect(body).toContain('"id":1');
 	});
 

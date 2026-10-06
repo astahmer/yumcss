@@ -38,10 +38,10 @@ test("vanilla-extract -> react-strict-dom: migrates concrete vanilla-extract syn
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> react-strict-dom happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("vanilla-extract -> react-strict-dom: carries a documented secondary vanill
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -2,17 +2,17 @@
  * Promote one pinned Goober corpus entry through an installed browser/SSR
  * proof. The source repository remains external; this harness installs the
  * pinned package into a disposable project and compares its real SSR CSS with
- * Pandwind's extracted CSS for the same semantic style object.
+ * YumCSS's extracted CSS for the same semantic style object.
  */
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import { createCss } from "pandwind/css";
-import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
-import { getCodemodAdapter, runAdapterMigration } from "pandwind-codemod/swap";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import { createCss } from "yumcss/css";
+import { CodemodAdapterId } from "@yumcss/codemod/swap/identifiers";
+import { getCodemodAdapter, runAdapterMigration } from "@yumcss/codemod/swap";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -34,11 +34,11 @@ const preset = {
 const proofHtml = (css: string, className: string): string =>
 	`<!doctype html><style>${css}</style><main><div class="${className}">Installed adapter proof</div></main>`;
 
-const hasPandwindImport = (code: string): boolean =>
-	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']pandwind(?:["/])/u.test(code);
+const hasYumCSSImport = (code: string): boolean =>
+	/(?:\bfrom\s+|\bimport\s*(?:\(\s*)?)["']yumcss(?:["/])/u.test(code);
 
 interface GooberProofReport {
-	readonly schema: "pandwind.installed-adapter-proof/1";
+	readonly schema: "yumcss.installed-adapter-proof/1";
 	readonly adapter: CodemodAdapterId.Goober;
 	readonly referenceCommit: string;
 	readonly sourcePath: string;
@@ -50,7 +50,7 @@ interface GooberProofReport {
 		readonly sourceFixtureContainsStyleCall: boolean;
 		readonly sourceImportReboundToInstalledPackage: boolean;
 		readonly sourceImportRemovedFromTarget: boolean;
-		readonly targetCodeContainsPandwind: boolean;
+		readonly targetCodeContainsYumCSS: boolean;
 	};
 	readonly ssr: {
 		readonly checked: true;
@@ -72,7 +72,7 @@ function installedGoober(): {
 	readonly css: (value: typeof style) => string;
 	readonly extractCss: () => string;
 } {
-	const root = mkdtempSync(join(tmpdir(), "pandwind-goober-proof-"));
+	const root = mkdtempSync(join(tmpdir(), "yumcss-goober-proof-"));
 	writeFileSync(
 		join(root, "package.json"),
 		`${JSON.stringify({ private: true, type: "commonjs", dependencies: { goober: "2.1.19", react: "19.2.8", "react-dom": "19.2.8" } })}\n`,
@@ -177,10 +177,10 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 	].join("\n");
 	const migration = runAdapterMigration(source, {
 		from: CodemodAdapterId.Goober,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: sourcePath,
 	});
-	if (!hasPandwindImport(migration.code)) throw new Error("Goober migration did not emit Pandwind");
+	if (!hasYumCSSImport(migration.code)) throw new Error("Goober migration did not emit YumCSS");
 	const installed = installedGoober();
 	const baselineClass = installed.css(style);
 	const baselineCss = installed.extractCss();
@@ -195,7 +195,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 	const targetMarkup = `<div class="${targetClass}">Installed adapter proof</div>`;
 	const browser = await browserProof(baselineCss, targetCss, baselineClass, targetClass);
 	return {
-		schema: "pandwind.installed-adapter-proof/1",
+		schema: "yumcss.installed-adapter-proof/1",
 		adapter: CodemodAdapterId.Goober,
 		referenceCommit,
 		sourcePath,
@@ -207,7 +207,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 			sourceFixtureContainsStyleCall: /\bcss\s*\(/.test(source) || source.includes("css`"),
 			sourceImportReboundToInstalledPackage: source.includes('from "goober"'),
 			sourceImportRemovedFromTarget: !migration.code.includes('from "goober"'),
-			targetCodeContainsPandwind: hasPandwindImport(migration.code),
+			targetCodeContainsYumCSS: hasYumCSSImport(migration.code),
 		},
 		ssr: {
 			checked: true,
@@ -224,7 +224,7 @@ export async function runGooberInstalledProof(): Promise<GooberProofReport> {
 if (import.meta.main) {
 	const report = await runGooberInstalledProof();
 	if (
-		!report.migration.targetCodeContainsPandwind ||
+		!report.migration.targetCodeContainsYumCSS ||
 		!report.migration.sourceImportRemovedFromTarget ||
 		report.migration.skipped > 0 ||
 		report.migration.residuals > 0
@@ -235,7 +235,7 @@ if (import.meta.main) {
 	if (!report.browser.equivalent || report.browser.errors.length > 0)
 		throw new Error(`Goober browser proof failed: ${JSON.stringify(report.browser)}`);
 	const output =
-		process.env.PANDWIND_PROOF_OUTPUT ??
+		process.env.YUMCSS_PROOF_OUTPUT ??
 		join(repositoryRoot, "plans/evidence/goober-installed-proof.json");
 	mkdirSync(resolve(output, ".."), { recursive: true });
 	writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);

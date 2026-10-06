@@ -38,10 +38,10 @@ test("react-native -> sass: migrates concrete react-native syntax to sass", () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-native -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("react-native -> sass: migrates concrete react-native syntax to sass", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("react-native -> sass: carries a documented secondary react-native API expl
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("react-native -> sass: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("react-native -> sass: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("react-native -> sass: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("react-native -> sass: preserves malformed concrete react-native input", ()
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 0,

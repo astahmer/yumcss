@@ -11,15 +11,15 @@ Feature: Playground migration examples
     Then the page heading is "Migration examples"
     And the editor has no TypeScript error markers
     And the "from · source adapter" selector has value "styled-components"
-    And the "to · target adapter" selector has value "pandwind"
-    And the output pane for "Pandwind" is visible
+    And the "to · target adapter" selector has value "yumcss"
+    And the output pane for "YumCSS" is visible
     And the "Canonical validation" panel is visible
 
-  Scenario: a user can route another source adapter to Pandwind
+  Scenario: a user can route another source adapter to YumCSS
     When I choose "Emotion" from "from · source adapter"
-    And I choose "Pandwind" from "to · target adapter"
+    And I choose "YumCSS" from "to · target adapter"
     Then the "from · source adapter" selector has value "emotion"
-    And the output pane for "Pandwind" contains "pandwind"
+    And the output pane for "YumCSS" contains "yumcss"
     And the migration summary reports "yes" for "changed"
 
   Scenario: resetting a source restores its canonical sample
@@ -30,18 +30,18 @@ Feature: Playground migration examples
 
   Scenario: the browser exposes residual and contract evidence
     Then the "Residual report" panel is visible
-    And the "Target contract · Pandwind" panel is visible
+    And the "Target contract · YumCSS" panel is visible
     And the page contains the text "dynamic-values"
 
-  Scenario Outline: every registered source adapter routes through Pandwind
+  Scenario Outline: every registered source adapter routes through YumCSS
     When I choose "<sourceLabel>" from "from · source adapter"
-    And I choose "Pandwind" from "to · target adapter"
+    And I choose "YumCSS" from "to · target adapter"
     Then the "from · source adapter" selector has value "<sourceId>"
-    And the output pane for "Pandwind" contains "pandwind"
+    And the output pane for "YumCSS" contains "yumcss"
 
     Examples:
       | sourceLabel       | sourceId         |
-      | Pandwind           | pandwind         |
+      | YumCSS           | yumcss         |
       | Panda              | panda            |
       | Tailwind           | tailwind         |
       | Bamboo             | bamboo           |
@@ -75,7 +75,7 @@ Feature: Playground migration examples
 
     Examples:
       | targetLabel       | targetId         |
-      | Pandwind          | pandwind         |
+      | YumCSS          | yumcss         |
       | Panda             | panda            |
       | Tailwind          | tailwind         |
       | Bamboo            | bamboo           |
@@ -102,13 +102,13 @@ Feature: Playground migration examples
       | Tokenami          | tokenami          |
       | Unocss            | unocss            |
 
-  Scenario Outline: every Pandwind API target is reachable in the browser
+  Scenario Outline: every YumCSS API target is reachable in the browser
     When I choose "<targetLabel>" from "to · target adapter"
     Then the "to · target adapter" selector has value "<targetId>"
     And the output pane for "<targetLabel>" is visible
 
     Examples:
       | targetLabel          | targetId     |
-      | Pandwind · css.class | pandwind/css |
-      | Pandwind · dss       | pandwind/dss |
-      | Pandwind · tw        | pandwind/tw  |
+      | YumCSS · css.class | yumcss/css |
+      | YumCSS · dss       | yumcss/dss |
+      | YumCSS · tw        | yumcss/tw  |

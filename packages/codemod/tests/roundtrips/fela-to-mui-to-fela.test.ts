@@ -42,7 +42,7 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", async (
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -54,7 +54,7 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", async (
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("fela -> mui -> fela: preserves an actionable concrete round trip", async (
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -227,7 +227,7 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,7 +263,7 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -280,7 +280,7 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -316,7 +316,7 @@ test("fela -> mui -> fela: preserves concrete theme and project context variants
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -348,7 +348,7 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -384,7 +384,7 @@ test("fela -> mui -> fela: resolves token values across both concrete legs", asy
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],

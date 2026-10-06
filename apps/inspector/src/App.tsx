@@ -10,7 +10,7 @@ import {
 	resolveChain,
 	splitTokenValue,
 	type ThemeVarCategory,
-} from "pandwind-analyze/collect/browser";
+} from "@yumcss/analyze/collect/browser";
 import type { InspectorPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 import {
 	authoredTokenSpelling,
@@ -18,7 +18,7 @@ import {
 	type RemovalSafety,
 	type TokenReleaseReport,
 	type TokenPolicySnapshot,
-} from "pandwind-analyze/governance/browser";
+} from "@yumcss/analyze/governance/browser";
 
 import {
 	CLEANUP_SAFETIES,
@@ -4693,7 +4693,7 @@ export function App() {
 		>
 			<header>
 				<h1>
-					<span className={uiCss.class({ color: "var(--accent)" })}>◆</span> pandwind{" "}
+					<span className={uiCss.class({ color: "var(--accent)" })}>◆</span> yumcss{" "}
 					<span className={uiCss.class({ color: "var(--muted)", fontWeight: 400 })}>Inspector</span>
 				</h1>
 				<nav
@@ -4805,13 +4805,13 @@ export function App() {
 												try {
 													const output = await InspectorApi.exportTokensDtcg();
 													InspectorExport.downloadFile(
-														"pandwind-tokens.tokens.json",
+														"yumcss-tokens.tokens.json",
 														output.text,
 														"application/design-tokens+json",
 													);
 													if (output.resolverText !== undefined) {
 														InspectorExport.downloadFile(
-															"pandwind-tokens.resolver.json",
+															"yumcss-tokens.resolver.json",
 															output.resolverText,
 															"application/design-tokens+json",
 														);
@@ -4829,7 +4829,7 @@ export function App() {
 											title="Download CSS tokens as CSS"
 											onClick={() => {
 												InspectorExport.downloadFile(
-													"pandwind-css-tokens.css",
+													"yumcss-css-tokens.css",
 													`:root {
 ${InspectorExport.themeVarsToCss(data)}}
 `,
@@ -4845,7 +4845,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 											title="Download style utilities as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-style-utilities.json",
+													"yumcss-style-utilities.json",
 													InspectorExport.utilitiesToJson(data),
 													"application/json",
 												)
@@ -4862,7 +4862,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 											title="Download coverage as JSON"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-coverage.json",
+													"yumcss-coverage.json",
 													InspectorExport.coverageToJson(data),
 													"application/json",
 												)
@@ -4876,7 +4876,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 											title="Download per-file coverage as CSV"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-coverage.csv",
+													"yumcss-coverage.csv",
 													InspectorExport.coverageToCsv(data),
 													"text/csv",
 												)
@@ -4890,7 +4890,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 											title="Download coverage report as Markdown"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-report.md",
+													"yumcss-report.md",
 													InspectorExport.coverageToMarkdown(data),
 													"text/markdown",
 												)
@@ -4904,7 +4904,7 @@ ${InspectorExport.themeVarsToCss(data)}}
 											title="Download coverage report as self-contained HTML"
 											onClick={() =>
 												InspectorExport.downloadFile(
-													"pandwind-report.html",
+													"yumcss-report.html",
 													InspectorExport.coverageToHtml(data, new Date().toISOString()),
 													"text/html",
 												)

@@ -8,7 +8,7 @@ import {
 } from "../src/swap/index.ts";
 import { SemanticConditionKindTag } from "../src/swap/semantic-ir.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
-import { createRuntimeSheet } from "pandwind/css/runtime";
+import { createRuntimeSheet } from "yumcss/css/runtime";
 
 type SemanticValue = StyleProgram["declarations"][number]["value"];
 type SemanticCondition = StyleProgram["rules"][number]["conditions"][number];
@@ -150,7 +150,7 @@ describe("CSS-in-JS differential validation", () => {
 
 	test("validates deterministic RSC streaming chunks", () => {
 		const render = (program: StyleProgram): readonly string[] => [
-			"<style data-pandwind>",
+			"<style data-yumcss>",
 			runtimeCss(program),
 			"</style>",
 		];

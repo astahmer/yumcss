@@ -25,7 +25,7 @@ import {
 	type StyleAdapter,
 } from "./adapter-contract.ts";
 import { AdapterCapabilityLevelTag, type AdapterCapabilities } from "./capabilities.ts";
-import type { SourceBinding } from "pandwind/source";
+import type { SourceBinding } from "yumcss/source";
 import type { JsxStyleHostMatch, JsxStylePropSelector } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
 import {
@@ -293,7 +293,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 					...emission,
 					semantic: portableProgram,
 					dependencies: {
-						packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+						packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 					},
 					residuals: [],
 				};

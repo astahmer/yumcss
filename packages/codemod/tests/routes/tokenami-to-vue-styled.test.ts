@@ -38,10 +38,10 @@ test("tokenami -> vue-styled: migrates concrete tokenami syntax to vue-styled", 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tokenami -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("tokenami -> vue-styled: carries a documented secondary tokenami API explic
 		{
 		  "changed": true,
 		  "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],

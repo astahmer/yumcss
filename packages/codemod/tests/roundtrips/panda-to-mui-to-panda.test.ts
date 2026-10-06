@@ -42,7 +42,7 @@ test("panda -> mui -> panda: preserves an actionable concrete round trip", async
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("panda -> mui -> panda: preserves an actionable concrete round trip", async
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("panda -> mui -> panda: preserves an actionable concrete round trip", async
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("panda -> mui -> panda: retains the documented secondary API without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: composition, host-framework | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: composition, host-framework | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -168,7 +168,7 @@ test("panda -> mui -> panda: retains the documented secondary API without silent
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: composition, host-framework | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: composition, host-framework | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -212,7 +212,7 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,7 +263,7 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -298,7 +298,7 @@ test("panda -> mui -> panda: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -329,7 +329,7 @@ test("panda -> mui -> panda: resolves token values across both concrete legs", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("panda -> mui -> panda: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

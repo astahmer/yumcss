@@ -1,16 +1,16 @@
 import { describe, expect, test } from "vitest";
 import {
-	pandwindMigrateBun,
-	pandwindMigrateEsbuild,
-	pandwindMigrateFarm,
-	pandwindMigrateRolldown,
-	pandwindMigrateRollup,
-	pandwindMigrateRsbuild,
-	pandwindMigrateRspack,
-	pandwindMigrateUnloader,
-	pandwindMigrateUnplugin,
-	pandwindMigrateVite,
-	pandwindMigrateWebpack,
+	yumcssMigrateBun,
+	yumcssMigrateEsbuild,
+	yumcssMigrateFarm,
+	yumcssMigrateRolldown,
+	yumcssMigrateRollup,
+	yumcssMigrateRsbuild,
+	yumcssMigrateRspack,
+	yumcssMigrateUnloader,
+	yumcssMigrateUnplugin,
+	yumcssMigrateVite,
+	yumcssMigrateWebpack,
 } from "../src/swap/unplugin.ts";
 import { CodemodAdapterId } from "../src/swap/index.ts";
 import { createVirtualMigrationPlugin } from "../src/swap/virtual-migration-core.ts";
@@ -41,17 +41,17 @@ type HostRecord = { readonly name: string; readonly result: HostResult };
 describe("codemod unplugin factory", () => {
 	test("publishes one factory and every unplugin platform slice", () => {
 		expect({
-			factory: typeof pandwindMigrateUnplugin,
-			vite: typeof pandwindMigrateVite,
-			rollup: typeof pandwindMigrateRollup,
-			rolldown: typeof pandwindMigrateRolldown,
-			webpack: typeof pandwindMigrateWebpack,
-			rspack: typeof pandwindMigrateRspack,
-			rsbuild: typeof pandwindMigrateRsbuild,
-			esbuild: typeof pandwindMigrateEsbuild,
-			farm: typeof pandwindMigrateFarm,
-			bun: typeof pandwindMigrateBun,
-			unloader: typeof pandwindMigrateUnloader,
+			factory: typeof yumcssMigrateUnplugin,
+			vite: typeof yumcssMigrateVite,
+			rollup: typeof yumcssMigrateRollup,
+			rolldown: typeof yumcssMigrateRolldown,
+			webpack: typeof yumcssMigrateWebpack,
+			rspack: typeof yumcssMigrateRspack,
+			rsbuild: typeof yumcssMigrateRsbuild,
+			esbuild: typeof yumcssMigrateEsbuild,
+			farm: typeof yumcssMigrateFarm,
+			bun: typeof yumcssMigrateBun,
+			unloader: typeof yumcssMigrateUnloader,
 		}).toMatchInlineSnapshot(`
 			{
 			  "bun": "function",
@@ -73,7 +73,7 @@ describe("codemod unplugin factory", () => {
 		const results: Record<string, HostRecord> = Object.fromEntries(
 			await Promise.all(
 				standardHosts.map(async (framework) => {
-					const plugin = pandwindMigrateUnplugin.raw(options, {
+					const plugin = yumcssMigrateUnplugin.raw(options, {
 						framework,
 						versions: {},
 					});
@@ -99,12 +99,12 @@ describe("codemod unplugin factory", () => {
 		expect(summaries).toMatchInlineSnapshot(`
 			{
 			  "farm": {
-			    "name": "pandwind:virtual-migration:styled-components->tailwind",
+			    "name": "yumcss:virtual-migration:styled-components->tailwind",
 			    "result": {
-			      "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			      "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -114,12 +114,12 @@ describe("codemod unplugin factory", () => {
 			    },
 			  },
 			  "rolldown": {
-			    "name": "pandwind:virtual-migration:styled-components->tailwind",
+			    "name": "yumcss:virtual-migration:styled-components->tailwind",
 			    "result": {
-			      "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			      "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -129,12 +129,12 @@ describe("codemod unplugin factory", () => {
 			    },
 			  },
 			  "rollup": {
-			    "name": "pandwind:virtual-migration:styled-components->tailwind",
+			    "name": "yumcss:virtual-migration:styled-components->tailwind",
 			    "result": {
-			      "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			      "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -144,12 +144,12 @@ describe("codemod unplugin factory", () => {
 			    },
 			  },
 			  "unloader": {
-			    "name": "pandwind:virtual-migration:styled-components->tailwind",
+			    "name": "yumcss:virtual-migration:styled-components->tailwind",
 			    "result": {
-			      "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			      "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -159,12 +159,12 @@ describe("codemod unplugin factory", () => {
 			    },
 			  },
 			  "vite": {
-			    "name": "pandwind:virtual-migration:styled-components->tailwind",
+			    "name": "yumcss:virtual-migration:styled-components->tailwind",
 			    "result": {
-			      "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
+			      "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...Object.fromEntries(Object.entries(rest).filter(([key]) => !["$"].some((prefix) => key.startsWith(prefix))))} ref={ref} className={["[color:red] [padding:1rem]", props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();
 
 			export function App() {
 				return <Card>content</Card>;
@@ -186,10 +186,10 @@ describe("codemod unplugin factory", () => {
 	});
 
 	test("the Vite platform slice retains config-root lifecycle hooks", () => {
-		const plugin = pandwindMigrateVite(options);
+		const plugin = yumcssMigrateVite(options);
 		expect(plugin).toHaveProperty("configResolved");
 		expect(plugin).toMatchObject({
-			name: "pandwind:virtual-migration:styled-components->tailwind",
+			name: "yumcss:virtual-migration:styled-components->tailwind",
 			enforce: "pre",
 		});
 	});
@@ -243,24 +243,24 @@ describe("codemod unplugin factory", () => {
 			  "stylesheet": ".root { color: red; padding: 1rem; }
 			/*# mapReference=Card.module.css.map */
 			",
-			  "stylesheetId": " pandwind:migration:/virtual/project/src/Card.module.css",
+			  "stylesheetId": " yumcss:migration:/virtual/project/src/Card.module.css",
 			  "stylesheetMap": "present",
-			  "stylesheetMapId": " pandwind:migration:/virtual/project/src/Card.module.css.map",
+			  "stylesheetMapId": " yumcss:migration:/virtual/project/src/Card.module.css.map",
 			  "transformed": {
-			    "code": "import __pandwindCardStyles from "./Card.module.css";
-			import { createElement as __pandwindCardCreateElement, forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentRef as __pandwindCardComponentRef, ComponentPropsWithoutRef as __pandwindCardComponentProps } from "react";
-			export const Card = (() => { type __pandwindCardProps<As extends import("react").ElementType> = Omit<__pandwindCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __pandwindCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __pandwindCardProps<As> & { ref?: import("react").Ref<__pandwindCardComponentRef<As>> }) => import("react").ReactElement | null; type __pandwindCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __pandwindCardForwardRef<unknown, __pandwindCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __pandwindCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__pandwindCardStyles.root, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __pandwindCardPolymorphicComponent; })();
+			    "code": "import __yumcssCardStyles from "./Card.module.css";
+			import { createElement as __yumcssCardCreateElement, forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentRef as __yumcssCardComponentRef, ComponentPropsWithoutRef as __yumcssCardComponentProps } from "react";
+			export const Card = (() => { type __yumcssCardProps<As extends import("react").ElementType> = Omit<__yumcssCardComponentProps<As>, "as" | "forwardedAs" | "className" | "style"> & { as?: As; forwardedAs?: As; className?: string; style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; type __yumcssCardPolymorphicComponent = <As extends import("react").ElementType = "div">(props: __yumcssCardProps<As> & { ref?: import("react").Ref<__yumcssCardComponentRef<As>> }) => import("react").ReactElement | null; type __yumcssCardInternalProps = { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly forwardedAs?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } & { readonly [key in \`$\${string}\`]?: unknown }; return __yumcssCardForwardRef<unknown, __yumcssCardInternalProps>((props, ref) => { const { as: propsAs, forwardedAs: propsForwardedAs, className, style, ...rest } = props; const attrs: { readonly [key: string]: unknown; readonly as?: import("react").ElementType; readonly className?: string; readonly style?: import("react").CSSProperties } = ({}); const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const Component = (attrsAs ?? propsAs ?? propsForwardedAs ?? "div") as import("react").ElementType; return __yumcssCardCreateElement(Component, { ...Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))), ref, className: [__yumcssCardStyles.root, attrsClassName, className].filter(Boolean).join(" "), style: Object.assign({}, style, attrsStyle) } as import("react").ComponentPropsWithRef<import("react").ElementType>); }) as __yumcssCardPolymorphicComponent; })();
 			export const unchanged = "preserved";",
 			    "map": "present",
 			  },
 			}
 		`);
-		expect(transformed?.code).toContain('import __pandwindCardStyles from "./Card.module.css";');
-		expect(stylesheetId).toBe("\0pandwind:migration:/virtual/project/src/Card.module.css");
+		expect(transformed?.code).toContain('import __yumcssCardStyles from "./Card.module.css";');
+		expect(stylesheetId).toBe("\0yumcss:migration:/virtual/project/src/Card.module.css");
 		expect(stylesheet).toContain(".root { color: red; padding: 1rem; }");
 		expect(stylesheet).toContain(sourceMapReference("Card.module.css.map"));
-		expect(stylesheetMapId).toBe("\0pandwind:migration:/virtual/project/src/Card.module.css.map");
+		expect(stylesheetMapId).toBe("\0yumcss:migration:/virtual/project/src/Card.module.css.map");
 		expect(stylesheetMap).toContain('"sources":["Card.tsx"]');
 		expect(stylesheetMap).toContain(JSON.stringify(source));
 		expect(stylesheetMap).not.toContain('"mappings":""');
@@ -274,12 +274,12 @@ describe("codemod unplugin factory", () => {
 
 	test("native platform slices are generated by the same factory", () => {
 		expect({
-			webpack: typeof pandwindMigrateWebpack(options).apply,
-			rspack: typeof pandwindMigrateRspack(options).apply,
-			rsbuild: typeof pandwindMigrateRsbuild(options).setup,
-			esbuild: typeof pandwindMigrateEsbuild(options).setup,
-			farm: typeof pandwindMigrateFarm(options),
-			bun: typeof pandwindMigrateBun,
+			webpack: typeof yumcssMigrateWebpack(options).apply,
+			rspack: typeof yumcssMigrateRspack(options).apply,
+			rsbuild: typeof yumcssMigrateRsbuild(options).setup,
+			esbuild: typeof yumcssMigrateEsbuild(options).setup,
+			farm: typeof yumcssMigrateFarm(options),
+			bun: typeof yumcssMigrateBun,
 		}).toMatchInlineSnapshot(`
 			{
 			  "bun": "function",

@@ -10,10 +10,10 @@
  * most call sites are one-liners in real code and the user reformats via
  * their own tooling afterwards.
  */
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import { mapClassList, mapToken, type MappedToken } from "../map.ts";
 import { tokenizeClassList } from "../tokens.ts";
-import type { AnyTokens } from "pandwind/types/typings";
+import type { AnyTokens } from "yumcss/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import {
 	authoredTokenRef,
@@ -55,7 +55,7 @@ export interface EmitterContext {
 	capabilities?: AdapterCapabilities;
 	capabilityReport?: AdapterCapabilityReport;
 	/** Project metadata needed by token-aware core emitters. */
-	meta?: PandwindMeta;
+	meta?: YumCSSMeta;
 }
 
 /**
@@ -148,7 +148,7 @@ export interface EmitterResult {
 	imports?: string[];
 }
 
-export type Emitter = (ir: SwapIR, meta: PandwindMeta, ctx: EmitterContext) => EmitterResult;
+export type Emitter = (ir: SwapIR, meta: YumCSSMeta, ctx: EmitterContext) => EmitterResult;
 
 const conditionKey = (conditions: string[]): string =>
 	conditions.length === 0 ? "" : conditions.join("__");
@@ -235,7 +235,7 @@ const wrapCall = (callee: string, inner: string): string => `${callee}({ ${inner
 /* css.class                                                           */
 /* ------------------------------------------------------------------ */
 
-function bridgeContainsValue(meta: PandwindMeta, entry: SwapEntry): boolean {
+function bridgeContainsValue(meta: YumCSSMeta, entry: SwapEntry): boolean {
 	const property = camel(entry.prop);
 	const value = String(entry.value);
 	for (const resolved of meta.bridgeInverse.values()) {
@@ -244,7 +244,7 @@ function bridgeContainsValue(meta: PandwindMeta, entry: SwapEntry): boolean {
 	return false;
 }
 
-function isGeneratedLiteral(meta: PandwindMeta, value: SwapEntry["value"]): boolean {
+function isGeneratedLiteral(meta: YumCSSMeta, value: SwapEntry["value"]): boolean {
 	if (typeof value !== "string") return false;
 	for (const literals of meta.valueLiterals.values()) {
 		if (literals.has(value)) return true;
@@ -289,8 +289,8 @@ const camel = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
 /** Forward bridge: camelProp|value -> utility class (WeakMap-cached). */
-const forwardIndexCache = new WeakMap<PandwindMeta, Map<string, string>>();
-function forwardIndex(meta: PandwindMeta): Map<string, string> {
+const forwardIndexCache = new WeakMap<YumCSSMeta, Map<string, string>>();
+function forwardIndex(meta: YumCSSMeta): Map<string, string> {
 	let index = forwardIndexCache.get(meta);
 	if (index !== undefined) return index;
 	index = new Map();
@@ -305,9 +305,9 @@ function forwardIndex(meta: PandwindMeta): Map<string, string> {
 const dashedProperty = (property: string): string =>
 	property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
-const mappedUtilityCache = new WeakMap<PandwindMeta, Map<string, string | null>>();
+const mappedUtilityCache = new WeakMap<YumCSSMeta, Map<string, string | null>>();
 
-function typedUtilityForEntry(meta: PandwindMeta, entry: SwapEntry): string | undefined {
+function typedUtilityForEntry(meta: YumCSSMeta, entry: SwapEntry): string | undefined {
 	const key = `${entry.prop}|${String(entry.value)}`;
 	let cache = mappedUtilityCache.get(meta);
 	if (cache === undefined) {
@@ -355,7 +355,7 @@ interface TwSlot {
 }
 type TwTree = Map<string, TwTree | TwSlot[]>;
 
-function insertIntoTree(meta: PandwindMeta, tree: TwTree, entry: SwapEntry): string | null {
+function insertIntoTree(meta: YumCSSMeta, tree: TwTree, entry: SwapEntry): string | null {
 	let node = tree;
 	const conditions = normalizeVariantPath(meta, entry.conditions);
 	if (conditions === undefined) {
@@ -433,7 +433,7 @@ function staticClassValue(program: StyleProgram): string | undefined {
 
 function emitTailwindClassCarrier(
 	ir: SwapIR,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	program: StyleProgram,
 ): EmitterResult | undefined {
 	const classString = staticClassValue(program);
@@ -730,7 +730,7 @@ const nearestTokenHint = (
 function emitDesignVocabWithCallee(
 	callee: "css.class" | "dss",
 	ir: SwapIR,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	ctx: EmitterContext,
 ): EmitterResult {
 	const residuals: SwapIR["residuals"] = [];

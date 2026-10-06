@@ -14,12 +14,12 @@
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import type { PandwindMeta } from "../../../meta.ts";
+import type { YumCSSMeta } from "../../../meta.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import {
-	PANDWIND_NEXT_CSS_ID,
-	planPandwindNextIntegration,
-	planPandwindViteIntegration,
+	YUMCSS_NEXT_CSS_ID,
+	planYumCSSNextIntegration,
+	planYumCSSViteIntegration,
 	withTypeScriptExtensionImports,
 } from "../../host-integration.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
@@ -39,10 +39,10 @@ import { parseObjectLiteral } from "../../parse.ts";
 import { PandaCallKindTag, PandaRecipeKindTag } from "./parse.ts";
 import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
-import { createSourceWorkspace } from "pandwind/source/workspace";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { walk } from "pandwind/tw/literal";
-import { NodeKind } from "pandwind/tw/literal";
+import { createSourceWorkspace } from "yumcss/source/workspace";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { walk } from "yumcss/tw/literal";
+import { NodeKind } from "yumcss/tw/literal";
 import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
 import {
 	hasPandaStylesheetImport,
@@ -64,13 +64,13 @@ import {
 	TokenReferenceFormat,
 	type TokenReferenceFormat as TokenReferenceFormatValue,
 } from "../../tokens.ts";
-import { simplifyPandwindStaticStyles } from "../../static-style-simplifier.ts";
+import { simplifyYumCSSStaticStyles } from "../../static-style-simplifier.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
 	patterns: Array<string>;
-	meta: PandwindMeta;
-	/** Output folder name under the alias root (default "pandwind"). */
+	meta: YumCSSMeta;
+	/** Output folder name under the alias root (default "yumcss"). */
 	outDirName?: string;
 	write: boolean;
 	diff: boolean;
@@ -83,7 +83,7 @@ export interface PandaMigrateOptions {
 	fileSystem?: PandaProjectFileSystem;
 	/** Installed dependencies used to select a host integration when no config exists. */
 	packageJson?: Readonly<Record<string, unknown>>;
-	/** Token spelling policy used by generated Pandwind sources and modules. */
+	/** Token spelling policy used by generated YumCSS sources and modules. */
 	tokenReferenceFormat?: TokenReferenceFormatValue;
 	/** Keep static style calls colocated unless module-scope hoisting is requested. */
 	hoistStaticStyles?: boolean;
@@ -113,7 +113,7 @@ type FileEntry = PandaMigrationFile;
 
 function irToText(
 	ir: SwapIrLike,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	tokenReferenceFormat?: TokenReferenceFormatValue,
 ): string {
 	return emitPandaStyle(ir, meta, tokenReferenceFormat);
@@ -123,9 +123,9 @@ const cssImportFor = (depth: number): string =>
 	depth <= 0 ? "./css" : `${"../".repeat(depth)}css`;
 
 const uniquePandaCssBinding = (source: string): string => {
-	let binding = "pandwindCss";
+	let binding = "yumcssCss";
 	let suffix = 2;
-	while (source.includes(binding)) binding = `pandwindCss${suffix++}`;
+	while (source.includes(binding)) binding = `yumcssCss${suffix++}`;
 	return binding;
 };
 
@@ -739,7 +739,7 @@ const openingAttributePrefix = (
 export function factoryEdits(
 	el: FactoryElement,
 	source: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	theme: PandaTheme,
 	tokenReferenceFormat?: TokenReferenceFormatValue,
 	cssBinding = "css",
@@ -935,7 +935,7 @@ const stackDirectionAttribute = (
 const staticJsxComponentEdits = (
 	element: FactoryElement,
 	source: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	theme: PandaTheme,
 	tokenReferenceFormat: TokenReferenceFormatValue | undefined,
 	component: string,
@@ -1132,7 +1132,7 @@ const rewritePandaPatternImports = (
 export async function runPandaMigration(options: PandaMigrateOptions): Promise<PandaMigrateReport> {
 	const { projectRoot, meta, skipMarker } = options;
 	const tokenReferenceFormat = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
-	const outDirName = options.outDirName || "pandwind";
+	const outDirName = options.outDirName || "yumcss";
 	const report: PandaMigrateReport = {
 		filesScanned: 0,
 		filesChanged: 0,
@@ -1185,7 +1185,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	const completeSourceScope =
 		projectCodeFiles.length > 0 &&
 		projectCodeFiles.every((file) => selectedCodePaths.has(file.path));
-	const nextIntegration = planPandwindNextIntegration({
+	const nextIntegration = planYumCSSNextIntegration({
 		projectRoot,
 		outputDirectory: outDir,
 		fileSystem,
@@ -1194,7 +1194,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	});
 	const viteIntegration = nextIntegration.enabled
 		? { enabled: false, fileChanges: [], notes: [] }
-		: planPandwindViteIntegration({
+		: planYumCSSViteIntegration({
 				projectRoot,
 				outputDirectory: outDir,
 				fileSystem,
@@ -1203,9 +1203,9 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			});
 	report.notes.push(...nextIntegration.notes, ...viteIntegration.notes);
 	const targetCssImport = nextIntegration.enabled
-		? PANDWIND_NEXT_CSS_ID
+		? YUMCSS_NEXT_CSS_ID
 		: viteIntegration.enabled
-			? "pandwind:css"
+			? "yumcss:css"
 			: undefined;
 	if (targetCssImport === undefined) {
 		countResidual(report, SwapResidualKindTag.Unrepresentable);
@@ -1230,14 +1230,14 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	if (sourceStylesheetReference && !sourceStylesheetEntry) {
 		countResidual(report, SwapResidualKindTag.Unrepresentable);
 		report.notes.push(
-			"preserved Panda source because its CSS-only stylesheet entry has no JavaScript entrypoint for Pandwind virtual CSS",
+			"preserved Panda source because its CSS-only stylesheet entry has no JavaScript entrypoint for YumCSS virtual CSS",
 		);
 		return report;
 	}
 	if (!sourceStylesheetEntry && !existingTargetCssEntry) {
 		countResidual(report, SwapResidualKindTag.Unrepresentable);
 		report.notes.push(
-			"preserved Panda source because no verified Panda stylesheet import or Pandwind CSS entrypoint was found",
+			"preserved Panda source because no verified Panda stylesheet import or YumCSS CSS entrypoint was found",
 		);
 		return report;
 	}
@@ -1270,7 +1270,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	/* ---- tier decisions ---- */
 	// Put generated files under the alias target (e.g. @/* -> src/*), so
-	// `@/pandwind/...` resolves to the files we actually emit.
+	// `@/yumcss/...` resolves to the files we actually emit.
 	const pandaModuleSpecifier = (filePath: string, subpath: string): string => {
 		if (aliasInfo.alias !== "") return aliasSpecifier(aliasInfo, outDirName, subpath);
 		const modulePath = relative(dirname(filePath), join(outDir, subpath)).split(sep).join("/");
@@ -1349,7 +1349,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		if (strippedBody !== null) {
 			bodyText = strippedBody;
 			report.notes.push(
-				`definition '${def.name}': anatomy/spread elements dropped (parts() has no pandwind runtime meaning)`,
+				`definition '${def.name}': anatomy/spread elements dropped (parts() has no yumcss runtime meaning)`,
 			);
 		}
 		const ir = convertPandaRecipe(bodyText, def.kind, theme, tokenReferenceFormat);
@@ -1545,8 +1545,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			join(outDir, "token.ts"),
 			[
 				"/**",
-				" * Generated by pandwind-codemod: Panda token() replacement.",
-				" * Known paths resolve to Pandwind-owned token references.",
+				" * Generated by yumcss-codemod: Panda token() replacement.",
+				" * Known paths resolve to YumCSS-owned token references.",
 				" * Unknown paths fail closed instead of inventing a CSS variable.",
 				" */",
 				"const KNOWN: Record<string, string> = {",
@@ -1558,7 +1558,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				"export function token(path: string): string {",
 				"\tconst resolved = KNOWN[path];",
 				"\tif (resolved === undefined)",
-				'\t\tthrow new Error(`Unknown migrated Pandwind token path "${path}"`);',
+				'\t\tthrow new Error(`Unknown migrated YumCSS token path "${path}"`);',
 				"\treturn resolved;",
 				"}",
 				"",
@@ -1824,7 +1824,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// panda-only named imports; leaving them would create unresolved exports.
 		next = removeUnusedVariantImports(next, pandaModuleSpecifier(file.path, "css"));
 		next = removeUnusedFactoryImports(next);
-		next = simplifyPandwindStaticStyles(next, file.path, {
+		next = simplifyYumCSSStaticStyles(next, file.path, {
 			hoistStaticStyles: options.hoistStaticStyles,
 		}).code;
 		const validation = validatePandaSource(file.path, next);
@@ -1952,7 +1952,7 @@ function removeUnusedVariantImports(source: string, cssImportPath: string): stri
 		return [...source.matchAll(re)].some((match) => !excluded.isExcluded(match.index ?? -1));
 	};
 	return source.replace(
-		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/css)\2[ \t]*;?/g,
+		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/yumcss\/css)\2[ \t]*;?/g,
 		(_full, specifiers: string, quote: string, path: string, offset: number) => {
 			if (excluded.isExcluded(offset) && !isActualImportSpecifier(source, offset)) return _full;
 			const kept = specifiers
@@ -1977,7 +1977,7 @@ function removeUnusedFactoryImports(source: string): string {
 		(match) => !excluded.isExcluded(match.index ?? -1),
 	);
 	return source.replace(
-		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/pandwind\/jsx)\2[ \t]*;?/g,
+		/import\s*\{([^}]+)\}\s*from\s*(["'])([^"']*\/yumcss\/jsx)\2[ \t]*;?/g,
 		(_full, specifiers: string, quote: string, path: string, offset: number) => {
 			if (excluded.isExcluded(offset) && !isActualImportSpecifier(source, offset)) return _full;
 			const kept = specifiers

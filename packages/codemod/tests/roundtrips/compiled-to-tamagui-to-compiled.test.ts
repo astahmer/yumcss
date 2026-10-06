@@ -42,7 +42,7 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "compiled -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,9 +87,9 @@ test("compiled -> tamagui -> compiled: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { css } from "@compiled/react";
-		import { forwardRef as __pandwindcardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
-		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "red", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		import { forwardRef as __yumcsscardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcsscardPropsWithoutRef, ComponentRef as __yumcsscardRef, ElementType as __yumcsscardElementType, ReactElement as __yumcsscardReactElement, Ref as __yumcsscardRefProp } from "react";
+		export const card = (() => { type __yumcsscardProps<C extends __yumcsscardElementType> = Omit<__yumcsscardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcsscardComponent = <C extends __yumcsscardElementType = typeof View>(props: __yumcsscardProps<C> & { ref?: __yumcsscardRefProp<__yumcsscardRef<C>> }) => __yumcsscardReactElement | null; type __yumcsscardRuntimeProps = Record<string, any>; return __yumcsscardForwardRef<__yumcsscardRef<typeof View>, __yumcsscardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "red", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __yumcsscardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -141,7 +141,7 @@ test("compiled -> tamagui -> compiled: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// yumcss:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -175,7 +175,7 @@ test("compiled -> tamagui -> compiled: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
+		// yumcss:migrate-skip (route: compiled -> tamagui | capability-blocked: named-rules: named style rule: red | available: static, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -254,9 +254,9 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { css } from "@compiled/react";
-		import { forwardRef as __pandwindcardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
-		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		import { forwardRef as __yumcsscardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcsscardPropsWithoutRef, ComponentRef as __yumcsscardRef, ElementType as __yumcsscardElementType, ReactElement as __yumcsscardReactElement, Ref as __yumcsscardRefProp } from "react";
+		export const card = (() => { type __yumcsscardProps<C extends __yumcsscardElementType> = Omit<__yumcsscardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcsscardComponent = <C extends __yumcsscardElementType = typeof View>(props: __yumcsscardProps<C> & { ref?: __yumcsscardRefProp<__yumcsscardRef<C>> }) => __yumcsscardReactElement | null; type __yumcsscardRuntimeProps = Record<string, any>; return __yumcsscardForwardRef<__yumcsscardRef<typeof View>, __yumcsscardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __yumcsscardComponent; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,9 +329,9 @@ test("compiled -> tamagui -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { View } from "@tamagui/core";
 		import { css } from "@compiled/react";
-		import { forwardRef as __pandwindcardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
-		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		import { forwardRef as __yumcsscardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcsscardPropsWithoutRef, ComponentRef as __yumcsscardRef, ElementType as __yumcsscardElementType, ReactElement as __yumcsscardReactElement, Ref as __yumcsscardRefProp } from "react";
+		export const card = (() => { type __yumcsscardProps<C extends __yumcsscardElementType> = Omit<__yumcsscardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcsscardComponent = <C extends __yumcsscardElementType = typeof View>(props: __yumcsscardProps<C> & { ref?: __yumcsscardRefProp<__yumcsscardRef<C>> }) => __yumcsscardReactElement | null; type __yumcsscardRuntimeProps = Record<string, any>; return __yumcsscardForwardRef<__yumcsscardRef<typeof View>, __yumcsscardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __yumcsscardComponent; })();",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -419,9 +419,9 @@ test("compiled -> tamagui -> compiled: resolves token values across both concret
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
 		import { css } from "@compiled/react";
-		import { forwardRef as __pandwindcardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindcardPropsWithoutRef, ComponentRef as __pandwindcardRef, ElementType as __pandwindcardElementType, ReactElement as __pandwindcardReactElement, Ref as __pandwindcardRefProp } from "react";
-		export const card = (() => { type __pandwindcardProps<C extends __pandwindcardElementType> = Omit<__pandwindcardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindcardComponent = <C extends __pandwindcardElementType = typeof View>(props: __pandwindcardProps<C> & { ref?: __pandwindcardRefProp<__pandwindcardRef<C>> }) => __pandwindcardReactElement | null; type __pandwindcardRuntimeProps = Record<string, any>; return __pandwindcardForwardRef<__pandwindcardRef<typeof View>, __pandwindcardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindcardComponent; })();",
+		import { forwardRef as __yumcsscardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcsscardPropsWithoutRef, ComponentRef as __yumcsscardRef, ElementType as __yumcsscardElementType, ReactElement as __yumcsscardReactElement, Ref as __yumcsscardRefProp } from "react";
+		export const card = (() => { type __yumcsscardProps<C extends __yumcsscardElementType> = Omit<__yumcsscardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcsscardComponent = <C extends __yumcsscardElementType = typeof View>(props: __yumcsscardProps<C> & { ref?: __yumcsscardRefProp<__yumcsscardRef<C>> }) => __yumcsscardReactElement | null; type __yumcsscardRuntimeProps = Record<string, any>; return __yumcsscardForwardRef<__yumcsscardRef<typeof View>, __yumcsscardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "#2563eb", "padding": "8px" }), props.className].filter(Boolean).join(" ")} />; }) as __yumcsscardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -38,10 +38,10 @@ test("fela -> sass: migrates concrete fela syntax to sass", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "fela -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -50,7 +50,7 @@ test("fela -> sass: migrates concrete fela syntax to sass", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -96,7 +96,7 @@ test("fela -> sass: carries a documented secondary fela API explicitly", () => {
 		{
 		  "changed": true,
 		  "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -157,7 +157,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -195,7 +195,7 @@ test("fela -> sass: loads concrete theme and project context variants", async ()
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -245,7 +245,7 @@ test("fela -> sass: resolves concrete token values with project context", async 
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -292,7 +292,7 @@ test("fela -> sass: preserves malformed concrete fela input", () => {
 		  "changed": true,
 		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = renderer.renderRule(() => ({ color: "red" }));
 		const unfinished = { /* unfinished fela */",
 		  "converted": 0,

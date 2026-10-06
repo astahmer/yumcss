@@ -25,7 +25,7 @@ const numberOption = (name: string, fallback: number): number => {
 
 const files = numberOption("--files", 100);
 const samples = numberOption("--samples", 5);
-const root = mkdtempSync(join(tmpdir(), "pandwind-migration-preview-benchmark-"));
+const root = mkdtempSync(join(tmpdir(), "yumcss-migration-preview-benchmark-"));
 const writeSource = (index: number, color: string): string =>
 	`import { css } from "@emotion/css";\nexport const Card${index} = css({ color: "${color}", padding: "1rem" });`;
 
@@ -95,7 +95,7 @@ try {
 		outputBytes,
 		rssDeltaMiB: Math.round(((process.memoryUsage().rss - rssBefore) / 1024 / 1024) * 100) / 100,
 	};
-	const output = process.env.PANDWIND_MIGRATION_PREVIEW_BENCHMARK_OUTPUT;
+	const output = process.env.YUMCSS_MIGRATION_PREVIEW_BENCHMARK_OUTPUT;
 	if (output !== undefined) writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
 	console.log(JSON.stringify(report, null, 2));
 } finally {

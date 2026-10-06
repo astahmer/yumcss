@@ -100,7 +100,7 @@ function configurationResult(
 function configurationFailure(
 	source: string,
 	detail: string,
-	marker = "pandwind:migrate-skip",
+	marker = "yumcss:migrate-skip",
 	commentStyle: MigrationCommentStyle = "line",
 ): AdapterMigrationResult {
 	return configurationResult(
@@ -175,7 +175,7 @@ function prepareResolvedMigration(
 		return configurationResiduals(
 			source,
 			residuals,
-			options.skipMarker ?? "pandwind:migrate-skip",
+			options.skipMarker ?? "yumcss:migrate-skip",
 			migrationCommentStyleForFile(options.file),
 		);
 	return {

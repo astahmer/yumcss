@@ -139,7 +139,7 @@ describe("resolveTokenGroups", () => {
 	});
 
 	test("loads the example preset with valid semantic CSS references", async () => {
-		const themeBlock = await loadThemeBlock("@pandwind/example-preset", app);
+		const themeBlock = await loadThemeBlock("@yumcss/example-preset", app);
 
 		expect(themeBlock).toContain("--color-surface: var(--color-gray-50);");
 		expect(themeBlock).toContain("--color-surface: var(--color-gray-900);");
@@ -304,17 +304,17 @@ describe("resolvePresetConditions", () => {
 
 describe("loadThemeBlock package-specifier resolution", () => {
 	// Regression: the generate CLI resolved bare package specifiers (e.g.
-	// `@pandwind/example-preset`) via a bare dynamic import, so Node's
+	// `@yumcss/example-preset`) via a bare dynamic import, so Node's
 	// self-reference resolution used the *nearest* package.json. A stray
-	// manifest inside the pandwind dist tree then redirected the specifier to
+	// manifest inside the yumcss dist tree then redirected the specifier to
 	// a nonexistent `dist/dist/...` path and broke generate. Resolution must
 	// anchor on the CLI project root instead.
 	// The hazard only triggers when the *importing module* lives inside
-	// packages/pandwind/dist (the built CLI), because that is when Node
+	// packages/yumcss/dist (the built CLI), because that is when Node
 	// consults a stray dist/package.json as the nearest manifest. Source-level
 	// callers are immune, so this test drives the built module. CI builds
-	// pandwind before testing; locally the test skips when dist is absent.
-	test("resolves pandwind preset through the project root despite a stray package manifest", async (ctx) => {
+	// yumcss before testing; locally the test skips when dist is absent.
+	test("resolves yumcss preset through the project root despite a stray package manifest", async (ctx) => {
 		const packageRoot = resolve(import.meta.dirname, "..");
 		const distRoot = resolve(packageRoot, "dist");
 		const builtModule = resolve(distRoot, "tw/codegen-theme-input.js");
@@ -327,7 +327,7 @@ describe("loadThemeBlock package-specifier resolution", () => {
 		// package root — doubling the path to dist/dist/... — exactly what the
 		// recurring playground generate failure produced.
 		const poison = JSON.stringify({
-			name: "pandwind",
+			name: "yumcss",
 			type: "module",
 			exports: { "./preset/example-preset": "./dist/preset/example-preset.js" },
 		});
@@ -340,7 +340,7 @@ describe("loadThemeBlock package-specifier resolution", () => {
 			// base = the app calling the CLI; the stray dist manifest must be
 			// irrelevant because resolution goes through createRequire(base).
 			const themeBlock = await built.loadThemeBlock(
-				"@pandwind/example-preset",
+				"@yumcss/example-preset",
 				resolve(import.meta.dirname, "../../../examples/example"),
 			);
 			expect(themeBlock).toContain("--color");

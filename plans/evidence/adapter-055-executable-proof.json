@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.plan-055-executable-proof/1",
+	"schema": "yumcss.plan-055-executable-proof/1",
 	"generatedAt": "2026-09-06",
 	"adapterReferenceProof": {
 		"source": "plans/evidence/adapter-reference-proof.json",
@@ -15,7 +15,7 @@
 		]
 	},
 	"executablePackageProof": {
-		"command": "nub --conditions pandwind scripts/verify-adapter-reference-output.ts",
+		"command": "nub --conditions yumcss scripts/verify-adapter-reference-output.ts",
 		"results": [
 			{ "adapter": "tamagui", "passed": 1, "failed": 0 },
 			{ "adapter": "css-modules", "passed": 1, "failed": 0 },

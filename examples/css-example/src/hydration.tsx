@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { hydrateRoot } from "react-dom/client";
-import "pandwind:css";
+import "yumcss:css";
 import { css } from "./css.ts";
 
 function HydrationFixture() {

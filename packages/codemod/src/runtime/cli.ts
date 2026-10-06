@@ -10,9 +10,9 @@ import {
 	RUNTIME_CSS_GENERATED_HEADER,
 	runtimeMethodSummary,
 } from "./codegen.ts";
-import type { CssRuntimeMethod } from "pandwind/_runtime/css-codegen";
-import type { CssPreset } from "pandwind/vite/css-extract";
-import type { RuntimePruningExplanation } from "pandwind/vite/runtime-pruner";
+import type { CssRuntimeMethod } from "yumcss/_runtime/css-codegen";
+import type { CssPreset } from "yumcss/vite/css-extract";
+import type { RuntimePruningExplanation } from "yumcss/vite/runtime-pruner";
 
 /** Runtime-safe identity values for the Node CLI boundary. */
 export const RuntimeCommand = {
@@ -148,7 +148,7 @@ export const formatRuntimeExplanation = ({
 	if (json)
 		return JSON.stringify(
 			{
-				schema: "pandwind.runtime-explain/1",
+				schema: "yumcss.runtime-explain/1",
 				sourceFile,
 				factories: explanations,
 			},
@@ -184,7 +184,7 @@ export const formatRuntimeExplanation = ({
 };
 
 const createRuntimeCliApp = (handlers: RuntimeCliHandlers, cwd: string): CAC => {
-	const cli = cac("pandwind-codemod runtime");
+	const cli = cac("yumcss-codemod runtime");
 	const generate = cli.command(
 		"generate [out-file]",
 		"Generate a specialized typed createCss runtime module",
@@ -216,10 +216,10 @@ export function parseRuntimeCommand(
 ): RuntimeCommandInvocation {
 	const effectiveArgv = argv.length === 0 ? [RuntimeCommand.Generate] : [...argv];
 	const cli = createRuntimeCliApp({ generate: async () => {}, explain: async () => {} }, cwd);
-	cli.parse(["node", "pandwind-codemod runtime", ...effectiveArgv], { run: false });
+	cli.parse(["node", "yumcss-codemod runtime", ...effectiveArgv], { run: false });
 	if (cli.matchedCommand === undefined)
 		throw new Error(
-			`pandwind-codemod runtime: unknown command '${effectiveArgv[0] ?? ""}'. Expected generate or explain`,
+			`yumcss-codemod runtime: unknown command '${effectiveArgv[0] ?? ""}'. Expected generate or explain`,
 		);
 	cli.matchedCommand.checkUnknownOptions();
 	cli.matchedCommand.checkOptionValue();
@@ -239,9 +239,9 @@ const defaultHandlers: RuntimeCliHandlers = {
 			const current = readFileSync(command.outFile, "utf8");
 			if (current !== source)
 				throw new Error(
-					`generated runtime is stale: ${command.outFile}; run pandwind-codemod runtime generate to refresh it`,
+					`generated runtime is stale: ${command.outFile}; run yumcss-codemod runtime generate to refresh it`,
 				);
-			console.log(`pandwind: generated runtime is up to date (${command.outFile})`);
+			console.log(`yumcss: generated runtime is up to date (${command.outFile})`);
 			return;
 		}
 
@@ -255,11 +255,11 @@ const defaultHandlers: RuntimeCliHandlers = {
 		mkdirSync(dirname(command.outFile), { recursive: true });
 		writeFileSync(command.outFile, source);
 		console.log(
-			`pandwind: generated ${runtimeMethodSummary(command.methods)} runtime at ${command.outFile}`,
+			`yumcss: generated ${runtimeMethodSummary(command.methods)} runtime at ${command.outFile}`,
 		);
 	},
 	async explain(command) {
-		const { explainRuntimePruning } = await import("pandwind/vite/runtime-pruner");
+		const { explainRuntimePruning } = await import("yumcss/vite/runtime-pruner");
 		const preset =
 			command.presetSpecifier === undefined
 				? undefined
@@ -292,11 +292,11 @@ class DefaultRuntimeCli implements RuntimeCli {
 		const cli = createRuntimeCliApp(this.handlers, this.cwd);
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [RuntimeCommand.Generate] : [...argv];
-		cli.parse(["node", "pandwind-codemod runtime", ...effectiveArgv], { run: false });
+		cli.parse(["node", "yumcss-codemod runtime", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-codemod runtime: unknown command '${argv[0] ?? ""}'. Expected generate or explain`,
+				`yumcss-codemod runtime: unknown command '${argv[0] ?? ""}'. Expected generate or explain`,
 			);
 		}
 		await cli.runMatchedCommand();

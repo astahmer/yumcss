@@ -42,7 +42,7 @@ test("solid-styled -> styled-components -> solid-styled: preserves an actionable
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);

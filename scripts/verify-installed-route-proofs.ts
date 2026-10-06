@@ -8,72 +8,72 @@ import {
 	evaluateMigrationRouteProof,
 	validateMigrationRouteProofEvidence,
 	type MigrationRouteProofEvaluation,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const runProofs = process.argv.includes("--run");
 
 const installedProofCommands: ReadonlyMap<MigrationRouteProofRouteId, readonly string[]> = new Map([
 	[
-		MigrationRouteProofRouteId.TailwindToPandwind,
-		["--conditions", "pandwind", "scripts/promote-tailwind-fixture.ts"],
+		MigrationRouteProofRouteId.TailwindToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-tailwind-fixture.ts"],
 	],
 	[
-		MigrationRouteProofRouteId.PandaToPandwind,
-		["--conditions", "pandwind", "scripts/promote-panda-fixture.ts"],
+		MigrationRouteProofRouteId.PandaToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-panda-fixture.ts"],
 	],
 	[
-		MigrationRouteProofRouteId.StyledComponentsToPandwind,
-		["--conditions", "pandwind", "scripts/promote-styled-components-fixture.ts"],
+		MigrationRouteProofRouteId.StyledComponentsToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-styled-components-fixture.ts"],
 	],
 	[
-		MigrationRouteProofRouteId.UnoCssToPandwind,
-		["--conditions", "pandwind", "scripts/promote-unocss-fixture.ts"],
+		MigrationRouteProofRouteId.UnoCssToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-unocss-fixture.ts"],
 	],
-	[MigrationRouteProofRouteId.VanillaExtractToPandwind, ["scripts/promote-vanilla-extract.ts"]],
-	[MigrationRouteProofRouteId.StitchesToPandwind, ["scripts/promote-stitches.ts"]],
-	[MigrationRouteProofRouteId.MuiToPandwind, ["scripts/promote-mui.ts"]],
-	[MigrationRouteProofRouteId.MantineToPandwind, ["scripts/promote-mantine.ts"]],
-	[MigrationRouteProofRouteId.TokenamiToPandwind, ["scripts/promote-tokenami.ts"]],
+	[MigrationRouteProofRouteId.VanillaExtractToYumCSS, ["scripts/promote-vanilla-extract.ts"]],
+	[MigrationRouteProofRouteId.StitchesToYumCSS, ["scripts/promote-stitches.ts"]],
+	[MigrationRouteProofRouteId.MuiToYumCSS, ["scripts/promote-mui.ts"]],
+	[MigrationRouteProofRouteId.MantineToYumCSS, ["scripts/promote-mantine.ts"]],
+	[MigrationRouteProofRouteId.TokenamiToYumCSS, ["scripts/promote-tokenami.ts"]],
 	[
-		MigrationRouteProofRouteId.JssToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "jss"],
-	],
-	[
-		MigrationRouteProofRouteId.FelaToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "fela"],
+		MigrationRouteProofRouteId.JssToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "jss"],
 	],
 	[
-		MigrationRouteProofRouteId.AphroditeToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "aphrodite"],
+		MigrationRouteProofRouteId.FelaToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "fela"],
 	],
 	[
-		MigrationRouteProofRouteId.CompiledToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "compiled"],
+		MigrationRouteProofRouteId.AphroditeToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "aphrodite"],
 	],
 	[
-		MigrationRouteProofRouteId.Style9ToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "style9"],
+		MigrationRouteProofRouteId.CompiledToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "compiled"],
 	],
 	[
-		MigrationRouteProofRouteId.NextYakToPandwind,
-		["--conditions", "pandwind", "scripts/promote-css-in-js.ts", "next-yak"],
+		MigrationRouteProofRouteId.Style9ToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "style9"],
 	],
 	[
-		MigrationRouteProofRouteId.LinariaToPandwind,
-		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "linaria"],
+		MigrationRouteProofRouteId.NextYakToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-css-in-js.ts", "next-yak"],
 	],
 	[
-		MigrationRouteProofRouteId.TreatToPandwind,
-		["--conditions", "pandwind", "scripts/promote-treat.ts"],
+		MigrationRouteProofRouteId.LinariaToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-framework-css-in-js.ts", "linaria"],
 	],
 	[
-		MigrationRouteProofRouteId.SolidStyledToPandwind,
-		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "solid-styled"],
+		MigrationRouteProofRouteId.TreatToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-treat.ts"],
 	],
 	[
-		MigrationRouteProofRouteId.VueStyledToPandwind,
-		["--conditions", "pandwind", "scripts/promote-framework-css-in-js.ts", "vue-styled"],
+		MigrationRouteProofRouteId.SolidStyledToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-framework-css-in-js.ts", "solid-styled"],
+	],
+	[
+		MigrationRouteProofRouteId.VueStyledToYumCSS,
+		["--conditions", "yumcss", "scripts/promote-framework-css-in-js.ts", "vue-styled"],
 	],
 ]);
 
@@ -121,7 +121,7 @@ function verifyEvidence(): readonly MigrationRouteProofEvaluation[] {
 		console.error(
 			JSON.stringify(
 				{
-					schema: "pandwind.installed-route-proof-gate/1",
+					schema: "yumcss.installed-route-proof-gate/1",
 					mode: runProofs ? "run" : "check",
 					errors: [...new Set(errors)],
 					evaluations,
@@ -142,7 +142,7 @@ if (process.exitCode !== 1) {
 	console.log(
 		JSON.stringify(
 			{
-				schema: "pandwind.installed-route-proof-gate/1",
+				schema: "yumcss.installed-route-proof-gate/1",
 				mode: runProofs ? "run" : "check",
 				routes: evaluations.map(({ route, eligible, reasons, dimensions }) => ({
 					id: route.id,

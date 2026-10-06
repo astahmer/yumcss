@@ -1,12 +1,12 @@
 import react from "@vitejs/plugin-react-swc";
 import { constants, gzipSync } from "node:zlib";
 import { defineConfig, type Plugin } from "vite";
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { css } from "./src/ui-css.ts";
 import { gather } from "./src/server/gather.ts";
-import { buildGovernancePruneChangeset } from "pandwind-analyze/governance";
-import { compareTokenRelease } from "pandwind-analyze/governance";
-import { tokenDocumentCodec, TokenFormatLossError } from "pandwind-codemod/swap/token-document";
+import { buildGovernancePruneChangeset } from "@yumcss/analyze/governance";
+import { compareTokenRelease } from "@yumcss/analyze/governance";
+import { tokenDocumentCodec, TokenFormatLossError } from "@yumcss/codemod/swap/token-document";
 import { persistAnalyticsSnapshot, readAnalyticsSeries } from "./src/server/analytics-history.ts";
 import { persistRun } from "./src/server/history.ts";
 import { z } from "zod";
@@ -228,5 +228,5 @@ const inspectorApi = (): Plugin => ({
 });
 
 export default defineConfig({
-	plugins: [pandwindCssVite(css, { cssSources: ["ui-css"] }), react(), inspectorApi()],
+	plugins: [yumcssExtractVite(css, { cssSources: ["ui-css"] }), react(), inspectorApi()],
 });

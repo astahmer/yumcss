@@ -55,7 +55,7 @@ const inspectHttp = async (baseUrl, routes, expectedStatuses) => {
 		for (const match of html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)) {
 			const bytes = Buffer.byteLength(match[1]);
 			inlineStyleBytes += bytes;
-			if (match[0].includes("data-pandwind-runtime")) runtimeStyleBytes += bytes;
+			if (match[0].includes("data-yumcss-runtime")) runtimeStyleBytes += bytes;
 		}
 	}
 	return {
@@ -97,7 +97,7 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 		};
 		const freezeAnimations = () => {
 			const style = document.createElement("style");
-			style.dataset.pandwindFreeze = "";
+			style.dataset.yumcssFreeze = "";
 			style.textContent =
 				'*,*::before,*::after{animation:none!important;animation-duration:0s!important;animation-delay:0s!important;transition:none!important;}[aria-label^="Company logos carousel"]{transform:none!important;}';
 			document.documentElement.append(style);
@@ -145,7 +145,7 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 			// while preserving the reference stylesheet and cascade for comparison
 			// against static output.
 			const normalized = document.createElement("style");
-			normalized.dataset.pandwindBaselineNormalization = "styled-components";
+			normalized.dataset.yumcssBaselineNormalization = "styled-components";
 			normalized.textContent = bodyStyles.map((style) => style.textContent).join("\n");
 			document.head.append(normalized);
 			bodyStyles.forEach((style) => style.remove());
@@ -423,7 +423,7 @@ await comparisonPageBrowser.close();
 
 const totalBytes = (result) => result.uniqueCssBytes + result.inlineStyleBytes;
 const report = {
-	schema: "pandwind.styled-components-docs-verification/1",
+	schema: "yumcss.styled-components-docs-verification/1",
 	baselineUrl,
 	runtimeUrl,
 	designUrl,

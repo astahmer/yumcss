@@ -42,7 +42,7 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "compiled -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("compiled -> less -> compiled: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("compiled -> less -> compiled: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("compiled -> less -> compiled: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cssMap } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const colors = cssMap({ red: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("compiled -> less -> compiled: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("compiled -> less -> compiled: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("compiled -> less -> compiled: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@compiled/react";
-		// pandwind:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: compiled -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	runAdapterMigrationAsync,
@@ -64,10 +64,10 @@ function migrate(
 	projectFiles: Readonly<Record<string, string>>,
 	moduleLoader: ProjectModuleLoader = loader(),
 ) {
-	const target = createPandwindAdapter({ moduleLoader: null });
+	const target = createYumCSSAdapter({ moduleLoader: null });
 	return runAdapterMigrationAsync(source, {
 		from: CodemodAdapterId.Tailwind,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file,
 		root,
 		readFile: (path) => projectFiles[path],
@@ -213,14 +213,14 @@ describe("Tailwind official CSS context", () => {
 		};
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tailwind,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file,
 			root,
 			readFile: (path) => projectFiles[path],
 			listFiles: () => Object.keys(projectFiles),
 			adapterRegistry: createStyleAdapterRegistry([
 				createTailwindAdapter({ moduleLoader: classicLoader() }),
-				createPandwindAdapter({ moduleLoader: null }),
+				createYumCSSAdapter({ moduleLoader: null }),
 			]),
 		});
 
@@ -230,7 +230,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain('tabSize: "4 !important"');
 		expect(result.validations[0]).toMatchObject({ valid: true, lossiness: "lossless" });
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ tabSize: "4 !important" })}/>;"
 		`);
@@ -249,7 +249,7 @@ describe("Tailwind official CSS context", () => {
 		});
 		expect(result.code).toContain("!important");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ tabSize: "4 !important" })}/>;"
 		`);
@@ -352,7 +352,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain('tabSize: "4"');
 		expect(result.code).toContain('maxWidth: "65ch"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ tabSize: "4", _hover: { tabSize: "4" }, "@media (min-width: 48rem)": { maxWidth: "65ch" } })}/>;"
 		`);
@@ -372,7 +372,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('tabSize: "4"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ "[data-theme=midnight] &": { tabSize: "4" } })}/>;"
 		`);
@@ -408,7 +408,7 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain('"@media (width >= 48rem)"');
 		expect(result.code).not.toContain('className="md:[display:flex]"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ "@media (width >= 48rem)": { display: "flex" } })}/>;"
 		`);
@@ -459,7 +459,7 @@ describe("Tailwind official CSS context", () => {
 	});
 
 	test("reports official engine failures as configuration residuals", async () => {
-		const target = createPandwindAdapter({ moduleLoader: null });
+		const target = createYumCSSAdapter({ moduleLoader: null });
 		const brokenLoader: ProjectModuleLoader = {
 			async importPackage() {
 				return {
@@ -476,7 +476,7 @@ describe("Tailwind official CSS context", () => {
 		const projectFiles = files();
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tailwind,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file,
 			root,
 			readFile: (path) => projectFiles[path as keyof typeof projectFiles],
@@ -488,7 +488,7 @@ describe("Tailwind official CSS context", () => {
 		});
 
 		expect(result.converted).toBe(0);
-		expect(result.code).toContain("pandwind:migrate-skip (configuration-residual: configuration)");
+		expect(result.code).toContain("yumcss:migrate-skip (configuration-residual: configuration)");
 		expect(result.code).toContain(source);
 		expect(result.residuals[0]).toEqual(expect.objectContaining({ kind: "configuration" }));
 	});

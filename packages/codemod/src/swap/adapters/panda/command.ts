@@ -5,9 +5,9 @@ import { CodemodAdapterId, SwapTargetId } from "../../identifiers.ts";
 
 const pandaMigrationCommand: ProjectMigrationCommand = {
 	id: CodemodAdapterId.Panda,
-	targets: [CodemodAdapterId.Pandwind, SwapTargetId.CssClass],
+	targets: [CodemodAdapterId.YumCSS, SwapTargetId.CssClass],
 	dependencies: {
-		packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+		packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 	},
 	async run(context) {
 		if (context.filePaths.length === 0) {
@@ -19,7 +19,7 @@ const pandaMigrationCommand: ProjectMigrationCommand = {
 			projectRoot: context.projectRoot,
 			patterns: [...context.patterns],
 			meta: context.meta,
-			outDirName: context.outDir || "pandwind",
+			outDirName: context.outDir || "yumcss",
 			...(context.packageJson === undefined ? {} : { packageJson: context.packageJson }),
 			write: context.write,
 			diff: context.diff,

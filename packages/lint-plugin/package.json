@@ -1,5 +1,5 @@
 {
-	"name": "@pandwind/lint-plugin",
+	"name": "@yumcss/lint-plugin",
 	"version": "0.0.1",
 	"keywords": [
 		"atomic-css",
@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/astahmer/pandwind.git",
+		"url": "git+https://github.com/astahmer/yumcss.git",
 		"directory": "packages/lint-plugin"
 	},
 	"files": [
@@ -34,7 +34,7 @@
 	},
 	"dependencies": {
 		"oxc-parser": "0.148.0",
-		"pandwind": "workspace:*"
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",

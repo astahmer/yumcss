@@ -38,10 +38,10 @@ test("aphrodite -> style9: migrates concrete aphrodite syntax to style9", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "aphrodite -> style9 happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("aphrodite -> style9: carries a documented secondary aphrodite API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> style9 | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> style9 | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],

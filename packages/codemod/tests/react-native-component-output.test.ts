@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { runAdapterMigration } from "pandwind-codemod/swap";
+import { runAdapterMigration } from "@yumcss/codemod/swap";
 
 const reactNativeProjectRoot = resolve(process.cwd(), "../../examples/rn-example");
 
@@ -46,7 +46,7 @@ describe("React Native component output", () => {
 		expect(result.code).toContain(
 			'import { StyleSheet, View, type ViewProps } from "react-native";',
 		);
-		expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
+		expect(result.code).toContain("__yumcssForwardRef<ComponentRef<typeof View>, ViewProps>");
 		expect(result.code).toContain("style={[style, props.style, attrs.style]}");
 		expect(result.code).toContain('accessibilityLabel: "Saved"');
 		expect(result.code).toContain('<Card accessibilityLabel="Caller" ref={cardRef} />');
@@ -54,9 +54,9 @@ describe("React Native component output", () => {
 		expect(typecheckGeneratedProject(result.code)).toBe("");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createRef } from "react";
-			import { forwardRef as __pandwindForwardRef, type ComponentRef } from "react";
+			import { forwardRef as __yumcssForwardRef, type ComponentRef } from "react";
 			import { StyleSheet, View, type ViewProps } from "react-native";
-			export const Card = ((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => { const attrs: Partial<ViewProps> = ({ accessibilityLabel: "Saved" }); return <View {...props} {...attrs} ref={ref} style={[style, props.style, attrs.style]} />; }))(StyleSheet.create({ style: { "backgroundColor": "red", "padding": 2 } }).style);
+			export const Card = ((style: NonNullable<ViewProps["style"]>) => __yumcssForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => { const attrs: Partial<ViewProps> = ({ accessibilityLabel: "Saved" }); return <View {...props} {...attrs} ref={ref} style={[style, props.style, attrs.style]} />; }))(StyleSheet.create({ style: { "backgroundColor": "red", "padding": 2 } }).style);
 			const cardRef = createRef<HTMLElement>();
 			export const App = () => <Card accessibilityLabel="Caller" ref={cardRef} />;"
 		`);

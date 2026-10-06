@@ -10,7 +10,7 @@ import { StyleValueKindTag } from "./semantic-ir.ts";
  * sites were written for.
  */
 
-import type { AnyTokens } from "pandwind/types/typings";
+import type { AnyTokens } from "yumcss/types/typings";
 import {
 	ADAPTER_TOKEN_CATALOG_SCHEMA,
 	ADAPTER_TOKEN_POLICY_SCHEMA,
@@ -611,7 +611,7 @@ export function qualifyRef(ref: string, group: string): string {
 
 /**
  * Resolved value -> AUTHORED preset token (`#3182ce` -> `$blue-500`).
- * Searches every group; returns the raw key form used by pandwind call sites.
+ * Searches every group; returns the raw key form used by yumcss call sites.
  */
 export function resolvedAuthoredToken(value: string, tokens?: AnyTokens): string | null {
 	if (tokens === undefined) return null;

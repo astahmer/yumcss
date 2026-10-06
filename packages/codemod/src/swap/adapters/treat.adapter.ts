@@ -72,11 +72,11 @@ const treat = makeExtraAdapter({
 	migration: {
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
-				targetId === CodemodAdapterId.Pandwind &&
+				targetId === CodemodAdapterId.YumCSS &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 			standalone:
-				targetId === CodemodAdapterId.Pandwind &&
+				targetId === CodemodAdapterId.YumCSS &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
@@ -111,7 +111,7 @@ const treat = makeExtraAdapter({
 			binding,
 			".treat.ts",
 			".treat",
-			`import { style } from "treat";\nexport const __pandwind${binding}Styles = style(${programObject(program)});\n`,
+			`import { style } from "treat";\nexport const __yumcss${binding}Styles = style(${programObject(program)});\n`,
 			"Treat styles for a migrated React component",
 		);
 		if (artifact === undefined)

@@ -96,7 +96,7 @@ function App() {
 				<div className="brand">
 					<span className="brand-mark">✳</span>
 					<div>
-						<strong>PANDWIND</strong>
+						<strong>YUMCSS</strong>
 						<small>DEVTOOLS</small>
 					</div>
 				</div>
@@ -137,7 +137,7 @@ function App() {
 				<section className="content">
 					<div className="content-intro">
 						<div>
-							<span className="eyebrow">PANDWIND / LIVE WORKSPACE</span>
+							<span className="eyebrow">YUMCSS / LIVE WORKSPACE</span>
 							<h1>{panel.label}</h1>
 							<p>{panel.hint} · backed by shared compiler and migration evidence</p>
 						</div>

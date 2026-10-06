@@ -42,7 +42,7 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stylex -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);

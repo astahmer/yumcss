@@ -38,10 +38,10 @@ test("mantine -> authored-css: migrates concrete mantine syntax to authored-css"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> authored-css happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("mantine -> authored-css: migrates concrete mantine syntax to authored-css"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -100,7 +100,7 @@ test("mantine -> authored-css: carries a documented secondary mantine API explic
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -158,7 +158,7 @@ test("mantine -> authored-css: loads concrete theme and project context variants
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -200,7 +200,7 @@ test("mantine -> authored-css: loads concrete theme and project context variants
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -254,7 +254,7 @@ test("mantine -> authored-css: resolves concrete token values with project conte
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -305,7 +305,7 @@ test("mantine -> authored-css: preserves malformed concrete mantine input", () =
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> authored-css | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,

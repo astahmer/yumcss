@@ -42,7 +42,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves an actionable c
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> emotion round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -177,7 +177,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: retains the documented se
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { keyframes } from "@emotion/css";
-		// pandwind:migrate-skip (route: emotion -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: emotion -> react-strict-dom | lowering-residual: validation)
 		export const pulse = keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,5 +1,5 @@
-import type { SourceScannerService } from "pandwind/source";
-import type { PandwindMeta } from "../meta.ts";
+import type { SourceScannerService } from "yumcss/source";
+import type { YumCSSMeta } from "../meta.ts";
 import type {
 	AdapterDependencies,
 	AdapterGeneratedFile,
@@ -20,7 +20,7 @@ import type { TokenReferenceFormat } from "./tokens.ts";
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 
 /** Versioned application boundary for one source-file style migration. */
-export const STYLE_MIGRATION_USE_CASE_SCHEMA = "pandwind.style-migration-use-case/1" as const;
+export const STYLE_MIGRATION_USE_CASE_SCHEMA = "yumcss.style-migration-use-case/1" as const;
 
 /** Input and infrastructure boundary for one source-file migration. */
 export interface AdapterMigrationOptions {
@@ -28,7 +28,7 @@ export interface AdapterMigrationOptions {
 	readonly to: string;
 	readonly file: string;
 	readonly root?: string;
-	readonly meta?: PandwindMeta;
+	readonly meta?: YumCSSMeta;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly readFile?: (file: string) => string | undefined;
 	readonly listFiles?: (root: string) => readonly string[];

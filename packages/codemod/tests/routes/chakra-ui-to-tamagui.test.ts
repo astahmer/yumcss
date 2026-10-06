@@ -40,10 +40,10 @@ test("chakra-ui -> tamagui: migrates concrete chakra-ui syntax to tamagui", asyn
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "chakra-ui -> tamagui happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("chakra-ui -> tamagui: carries a documented secondary chakra-ui API explici
 		{
 		  "changed": true,
 		  "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> tamagui | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: chakra-ui -> tamagui | parse-residual: composition | available: residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		  "converted": 0,

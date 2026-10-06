@@ -1,6 +1,6 @@
 import { StyleRuleKindTag, StyleValueKindTag } from "../src/swap/semantic-ir.ts";
 import { describe, expect, test } from "vitest";
-import { createRuntimeSheet } from "pandwind/css/runtime";
+import { createRuntimeSheet } from "yumcss/css/runtime";
 import { runDifferentialFixture } from "../src/swap/differential.ts";
 import type { DifferentialRender } from "../src/swap/differential.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
@@ -50,9 +50,9 @@ function hydrate(server: DifferentialRender, _program: StyleProgram): Differenti
 describe("real runtime differential validation", () => {
 	test("exercises canonical CSS, runtime SSR, hydration, and stream chunks", () => {
 		const result = runDifferentialFixture({
-			name: "emotion-to-pandwind-runtime",
+			name: "emotion-to-yumcss-runtime",
 			sourceAdapter: "emotion",
-			targetAdapter: "pandwind",
+			targetAdapter: "yumcss",
 			file: "Card.tsx",
 			source: 'import { css } from "@emotion/css"; const card = css({ color: "red" });',
 			browserStates: [

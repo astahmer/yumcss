@@ -42,7 +42,7 @@ test("tailwind -> react-strict-dom -> tailwind: preserves an actionable concrete
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("tailwind -> react-strict-dom -> tailwind: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tailwind -> react-strict-dom -> tailwind: retains the documented secondary
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> react-strict-dom | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

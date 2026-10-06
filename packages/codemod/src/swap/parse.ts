@@ -17,11 +17,11 @@
  * - design-vocabulary `css.class({ $frame: ... })` — lowered offline via
  *   resolveDesignStyle + the owned flattener, so entries carry concrete values.
  */
-import type { PandwindMeta } from "../meta.ts";
-import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
-import { flattenStyle } from "pandwind/lib/utils";
-import { resolveDesignStyle } from "pandwind/design/resolve";
-import type { AnyTokens } from "pandwind/types/typings";
+import type { YumCSSMeta } from "../meta.ts";
+import { UTILITY_SUBKEYS } from "yumcss/tw/compile";
+import { flattenStyle } from "yumcss/lib/utils";
+import { resolveDesignStyle } from "yumcss/design/resolve";
+import type { AnyTokens } from "yumcss/types/typings";
 import { SourcePass } from "../source-pass-utils.ts";
 import type { SwapIR } from "./ir.ts";
 import { SwapResidualKindTag } from "./ir.ts";
@@ -345,7 +345,7 @@ interface ResolvedTokenUtility {
  * property rule and the suffix must name exactly one configured token.
  */
 function resolveTokenUtility(
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	utilityClass: string,
 ): ResolvedTokenUtility | undefined {
 	if (meta.tokens === undefined) return undefined;
@@ -374,7 +374,7 @@ function resolveTokenUtility(
 }
 
 function walkTwEntries(
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	obj: LiteralObject,
 	conditions: string[],
 	ir: SwapIR,
@@ -452,7 +452,7 @@ const TW_CALL_REGEX = /\btw\s*\(\s*\{/g;
 /** Extract every literal `tw({...})` call into IR. */
 export function parseTwCalls(
 	source: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	excluded: (start: number) => boolean,
 	_missResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null,
 ): Array<{ start: number; end: number; ir: SwapIR }> {

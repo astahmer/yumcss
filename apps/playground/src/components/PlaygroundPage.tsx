@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
-import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
-import type { ClassNameStrategy } from "pandwind/css";
+import { createRuntimeCss, createRuntimeDesignCss } from "yumcss/css/runtime";
+import type { ClassNameStrategy } from "yumcss/css";
 import {
 	PlaygroundApi,
 	type ExampleDef,
@@ -17,8 +17,8 @@ import {
 	type EvalInput,
 	type PlaygroundResult,
 } from "../lib/eval-playground.ts";
-import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "@pandwind/example-preset";
+import { resolveDesignStyle } from "yumcss/design/resolve";
+import { examplePreset } from "@yumcss/example-preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
 import {
 	CLASS_NAME_ADAPTERS,
@@ -274,7 +274,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	);
 	const editorFileLibraries: readonly EditorTypeLibrary[] = activeVariant.files
 		.map((file, index) => ({
-			filePath: `file:///pandwind/playground/${file.name}`,
+			filePath: `file:///yumcss/playground/${file.name}`,
 			content: files[index] ?? file.code,
 		}))
 		.filter((_, index) => index !== activeTab);
@@ -352,7 +352,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 									API
 								</span>
 								<select
-									aria-label="Select Pandwind API"
+									aria-label="Select YumCSS API"
 									value={activeVariant.api}
 									onChange={(event) => selectApi(event.target.value as ExampleVariant["api"])}
 									className={uiCss.class({
@@ -494,7 +494,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 								onChange={onChange}
 								onRun={() => run(files)}
 								filePath={
-									"file:///pandwind/playground/" +
+									"file:///yumcss/playground/" +
 									(activeVariant.files[activeTab]?.name ?? "Example.tsx")
 								}
 								fileLibraries={editorFileLibraries}

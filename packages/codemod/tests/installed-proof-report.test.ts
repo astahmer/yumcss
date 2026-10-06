@@ -16,7 +16,7 @@ interface InstalledProofReport {
 	readonly migration: {
 		readonly skipped: number;
 		readonly residuals: number;
-		readonly targetCodeContainsPandwind: boolean;
+		readonly targetCodeContainsYumCSS: boolean;
 	};
 	readonly ssr: { readonly markupEquivalent: boolean; readonly notLarger: boolean };
 	readonly browser: { readonly equivalent: boolean; readonly errors: readonly string[] };
@@ -31,7 +31,7 @@ interface TailwindInstalledProofReport {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledCanonicalProof;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly customThemeTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
@@ -64,7 +64,7 @@ interface StyledComponentsInstalledProofReport {
 		readonly residuals: number;
 		readonly canonical: InstalledCanonicalProof;
 		readonly generatedSupportFiles: number;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
 		readonly generatedVitePluginPresent: boolean;
@@ -100,7 +100,7 @@ interface PandaInstalledProofReport {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledCanonicalProof;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly customTokenPreserved: boolean;
 		readonly sourceStylesheetImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
@@ -140,12 +140,12 @@ describe("installed adapter proof artifacts", () => {
 				"utf8",
 			),
 		) as InstalledProofReport;
-		expect(report.schema).toBe("pandwind.installed-adapter-proof/1");
+		expect(report.schema).toBe("yumcss.installed-adapter-proof/1");
 		expect(report.adapter).toBe("goober");
 		expect(report.migration).toMatchObject({
 			skipped: 0,
 			residuals: 0,
-			targetCodeContainsPandwind: true,
+			targetCodeContainsYumCSS: true,
 		});
 		expect(report.ssr).toMatchObject({ markupEquivalent: true, notLarger: true });
 		expect(report.browser).toMatchObject({ equivalent: true, errors: [] });
@@ -159,15 +159,15 @@ describe("installed adapter proof artifacts", () => {
 			),
 		) as TailwindInstalledProofReport;
 		expect(report).toMatchObject({
-			schema: "pandwind.installed-project-proof/1",
-			route: { from: "tailwind", to: "pandwind" },
+			schema: "yumcss.installed-project-proof/1",
+			route: { from: "tailwind", to: "yumcss" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
 				converted: 2,
 				skipped: 0,
 				residuals: 0,
 				canonical: { checked: true, equal: true, differences: [] },
-				targetUsesPandwind: true,
+				targetUsesYumCSS: true,
 				customThemeTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
 				generatedVitePresetImportIsExplicit: true,
@@ -199,8 +199,8 @@ describe("installed adapter proof artifacts", () => {
 			),
 		) as StyledComponentsInstalledProofReport;
 		expect(report).toMatchObject({
-			schema: "pandwind.installed-project-proof/1",
-			route: { from: "styled-components", to: "pandwind" },
+			schema: "yumcss.installed-project-proof/1",
+			route: { from: "styled-components", to: "yumcss" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
 				converted: 1,
@@ -208,7 +208,7 @@ describe("installed adapter proof artifacts", () => {
 				residuals: 0,
 				canonical: { checked: true, equal: true, differences: [] },
 				generatedSupportFiles: expect.any(Number),
-				targetUsesPandwind: true,
+				targetUsesYumCSS: true,
 				sourceImportRemoved: true,
 				generatedVitePresetImportIsExplicit: true,
 				generatedVitePluginPresent: true,
@@ -238,15 +238,15 @@ describe("installed adapter proof artifacts", () => {
 			),
 		) as PandaInstalledProofReport;
 		expect(report).toMatchObject({
-			schema: "pandwind.installed-project-proof/1",
-			route: { from: "panda", to: "pandwind" },
+			schema: "yumcss.installed-project-proof/1",
+			route: { from: "panda", to: "yumcss" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
 				canonical: { checked: true, equal: true, differences: [] },
-				targetUsesPandwind: true,
+				targetUsesYumCSS: true,
 				customTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
 				generatedVitePresetImportIsExplicit: true,
@@ -277,15 +277,15 @@ describe("installed adapter proof artifacts", () => {
 			),
 		) as UnoCssInstalledProofReport;
 		expect(report).toMatchObject({
-			schema: "pandwind.installed-project-proof/1",
-			route: { from: "unocss", to: "pandwind" },
+			schema: "yumcss.installed-project-proof/1",
+			route: { from: "unocss", to: "yumcss" },
 			dependencies: { installed: true, targetNodeModule: true },
 			migration: {
 				converted: 1,
 				skipped: 0,
 				residuals: 0,
 				canonical: { checked: true, equal: true, differences: [] },
-				targetUsesPandwind: true,
+				targetUsesYumCSS: true,
 				customTokenPreserved: true,
 				sourceStylesheetImportRemoved: true,
 				generatedVitePresetImportIsExplicit: true,

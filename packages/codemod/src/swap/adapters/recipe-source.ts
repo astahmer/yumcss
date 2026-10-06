@@ -68,8 +68,8 @@ export const slotRecipeSourceObjectOptions = (): AdapterSourceObjectOptions => (
 	compositions: [{ kind: StyleProgramCompositionKind.Slot, reference: "slots" }],
 });
 
-/** Parse Pandwind's runtime slot-recipe carrier back into named slot rules. */
-export const pandwindSlotRecipeSourceObjectOptions = (): AdapterSourceObjectOptions => ({
+/** Parse YumCSS's runtime slot-recipe carrier back into named slot rules. */
+export const yumcssSlotRecipeSourceObjectOptions = (): AdapterSourceObjectOptions => ({
 	namedRuleObjects: true,
 	variantContainerKeys: ["slotVariants"],
 	unwrapNestedObjectKeys: ["slots"],

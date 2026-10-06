@@ -1,21 +1,21 @@
 import { relative, resolve } from "node:path";
-import { createStylesheet } from "pandwind/css/create-stylesheet";
-import type { CssCascade } from "pandwind/css";
-import type { CssConfigReturn } from "pandwind/types/typings";
+import { createStylesheet } from "yumcss/css/create-stylesheet";
+import type { CssCascade } from "yumcss/css";
+import type { CssConfigReturn } from "yumcss/types/typings";
 import {
-	createPandwindLibArtifact,
-	createPandwindLibCompatibility,
-	hashPandwindLibSource,
-	type PandwindLibArtifact,
-} from "pandwind/vite/lib-artifact";
-import { createCssExtractionService } from "pandwind/vite/css-extract";
-import { createSourceWorkspace, type SourceWorkspace } from "pandwind/source/workspace";
+	createYumCSSLibArtifact,
+	createYumCSSLibCompatibility,
+	hashYumCSSLibSource,
+	type YumCSSLibArtifact,
+} from "yumcss/vite/lib-artifact";
+import { createCssExtractionService } from "yumcss/vite/css-extract";
+import { createSourceWorkspace, type SourceWorkspace } from "yumcss/source/workspace";
 
 const DEFAULT_SOURCE_PATTERNS = ["**/*"] as const;
 const DEFAULT_CSS_SOURCES = ["css", "design"] as const;
 const IGNORED_SOURCE = /(?:^|[\\/])(?:node_modules|dist|\.git)(?:[\\/]|$)/u;
 
-export interface BuildPandwindLibOptions {
+export interface BuildYumCSSLibOptions {
 	readonly root: string;
 	readonly preset: CssConfigReturn;
 	readonly sourcePatterns?: readonly string[];
@@ -25,12 +25,12 @@ export interface BuildPandwindLibOptions {
 	readonly sourceWorkspace?: SourceWorkspace;
 }
 
-export interface BuildPandwindLibResult {
-	readonly artifact: PandwindLibArtifact;
+export interface BuildYumCSSLibResult {
+	readonly artifact: YumCSSLibArtifact;
 	readonly files: readonly string[];
 }
 
-export const buildPandwindLib = (options: BuildPandwindLibOptions): BuildPandwindLibResult => {
+export const buildYumCSSLib = (options: BuildYumCSSLibOptions): BuildYumCSSLibResult => {
 	const root = resolve(options.root);
 	const sourcePatterns = options.sourcePatterns ?? DEFAULT_SOURCE_PATTERNS;
 	const cssSources = [...(options.cssSources ?? DEFAULT_CSS_SOURCES)];
@@ -51,7 +51,7 @@ export const buildPandwindLib = (options: BuildPandwindLibOptions): BuildPandwin
 	const documents = files.flatMap((file) => sourceWorkspace.read([file]));
 	const sources = documents.map((document) => ({
 		path: relative(root, document.path).replaceAll("\\", "/"),
-		hash: hashPandwindLibSource(document.source),
+		hash: hashYumCSSLibSource(document.source),
 	}));
 
 	for (const document of documents) {
@@ -62,8 +62,8 @@ export const buildPandwindLib = (options: BuildPandwindLibOptions): BuildPandwin
 	const web = sheet.gen.web();
 
 	return {
-		artifact: createPandwindLibArtifact({
-			compatibility: createPandwindLibCompatibility(options.preset, {
+		artifact: createYumCSSLibArtifact({
+			compatibility: createYumCSSLibCompatibility(options.preset, {
 				namespace: options.namespace,
 				cascade: options.cascade,
 			}),

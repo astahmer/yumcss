@@ -8,7 +8,7 @@ import { createMigrationPreviewServer } from "./server.ts";
 import { createInMemoryMigrationPreviewUiProvider } from "./ui-provider.ts";
 
 const ui = createInMemoryMigrationPreviewUiProvider(
-	"<!doctype html><html><body><h1>pandwind / migration preview</h1></body></html>",
+	"<!doctype html><html><body><h1>yumcss / migration preview</h1></body></html>",
 );
 
 function session(): MigrationPreviewSession {
@@ -87,7 +87,7 @@ describe("createMigrationPreviewServer", () => {
 				    "diagnostics": [],
 				  },
 				  "revision": 1,
-				  "schema": "pandwind.migration-preview-snapshot/1",
+				  "schema": "yumcss.migration-preview-snapshot/1",
 				  "selection": null,
 				  "target": null,
 				  "theme": {
@@ -102,7 +102,7 @@ describe("createMigrationPreviewServer", () => {
 			`);
 			const page = await fetch(`${origin}/?token=test-token`);
 			expect(page.status).toBe(200);
-			expect(await page.text()).toContain("pandwind / migration preview");
+			expect(await page.text()).toContain("yumcss / migration preview");
 
 			const malformed = await fetch(`${origin}/api/migration-preview/open?token=test-token`, {
 				method: "POST",

@@ -42,7 +42,7 @@ test("jss -> authored-css -> jss: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "jss -> authored-css round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("jss -> authored-css -> jss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("jss -> authored-css -> jss: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("jss -> authored-css -> jss: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("jss -> authored-css -> jss: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("jss -> authored-css -> jss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("jss -> authored-css -> jss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("jss -> authored-css -> jss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("jss -> authored-css -> jss: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("jss -> authored-css -> jss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("jss -> authored-css -> jss: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

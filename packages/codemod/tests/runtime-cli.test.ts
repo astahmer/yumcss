@@ -17,7 +17,7 @@ import {
 
 const cwd = "/fixture/project";
 
-describe("pandwind-codemod runtime command", () => {
+describe("yumcss-codemod runtime command", () => {
 	test("parses stable method selections and safe defaults", () => {
 		expect(parseRuntimeMethods()).toEqual([
 			"class",
@@ -75,12 +75,12 @@ describe("pandwind-codemod runtime command", () => {
 			"Unknown CSS runtime method 'missing'",
 		);
 		expect(() => parseRuntimeCommand(["unknown"], cwd)).toThrow(
-			"pandwind-codemod runtime: unknown command 'unknown'",
+			"yumcss-codemod runtime: unknown command 'unknown'",
 		);
 	});
 
 	test("generates deterministic output and supports check mode", async () => {
-		const project = mkdtempSync(join(tmpdir(), "pandwind-runtime-"));
+		const project = mkdtempSync(join(tmpdir(), "yumcss-runtime-"));
 		const output = join(project, "src/runtime.ts");
 		try {
 			const cli = createRuntimeCli(undefined, project);
@@ -128,15 +128,15 @@ describe("pandwind-codemod runtime command", () => {
 				explanations: [explanation],
 				json: true,
 			}),
-		).toContain('"schema": "pandwind.runtime-explain/1"');
+		).toContain('"schema": "yumcss.runtime-explain/1"');
 	});
 
 	test("runs the explanation command against a source file", async () => {
-		const project = mkdtempSync(join(tmpdir(), "pandwind-runtime-explain-"));
+		const project = mkdtempSync(join(tmpdir(), "yumcss-runtime-explain-"));
 		const sourceFile = join(project, "styles.ts");
 		writeFileSync(
 			sourceFile,
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
 				"export const styles = css.class({ color: getColor() });\n",
 		);

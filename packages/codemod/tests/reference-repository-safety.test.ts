@@ -45,13 +45,13 @@ const pandaLoader: ProjectModuleLoader = {
 
 const registry = createStyleAdapterRegistry([
 	createPandaAdapter({ moduleLoader: pandaLoader }),
-	catalog.registry.get(CodemodAdapterId.Pandwind)!,
+	catalog.registry.get(CodemodAdapterId.YumCSS)!,
 ]);
 
 async function migrate(source: string, from: CodemodAdapterId) {
 	return runAdapterMigrationAsync(source, {
 		from,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: "App.tsx",
 		root: "/project",
 		adapterRegistry: registry,
@@ -63,7 +63,7 @@ async function migrate(source: string, from: CodemodAdapterId) {
 function migrateSync(source: string, from: CodemodAdapterId) {
 	return runAdapterMigration(source, {
 		from,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: "App.tsx",
 		adapterRegistry: catalog.registry,
 		readFile: () => undefined,
@@ -86,7 +86,7 @@ export const Button = () => <styled.button color="red" customState="ready" />;`;
 		`);
 	});
 
-	test("lowers Panda JSX style-prop hosts to intrinsic Pandwind hosts", async () => {
+	test("lowers Panda JSX style-prop hosts to intrinsic YumCSS hosts", async () => {
 		const source = `import React from "react";
 import { styled } from "styled-system/jsx";
 
@@ -100,7 +100,7 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.code).toContain("<button className={css.class({");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 
 			const Button = () => <button className={css.class({ color: "red" })} />;"
@@ -119,7 +119,7 @@ export const Button = () =>
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandaStyled");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 
 			export const Button = () =>
@@ -139,10 +139,10 @@ export const App = () => <Card />;`;
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("styled-components");
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 
 			const Card = css.class({ color: "red" });

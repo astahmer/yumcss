@@ -2,7 +2,7 @@ import { proofSourceFingerprint } from "./proof-source-fingerprint.ts";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -16,7 +16,7 @@ import {
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const styles =
 	'{ backgroundColor: "#123456", color: "white", padding: "16px", borderRadius: "6px", "&:hover": { backgroundColor: "#2563eb" } }';
-const pandwindSource = `import { createUnsafeCss } from "pandwind/unsafe/css";
+const yumcssSource = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const card = css.class(${styles});
 export const App = () => <button data-proof className={card}>Proof</button>;
@@ -29,11 +29,11 @@ const chakraSource = `import { Box, ChakraProvider, defaultSystem } from "@chakr
 export const App = () => <ChakraProvider value={defaultSystem}><Box data-proof flex="1" alignSelf="stretch" order={2} backgroundColor="#123456" color="white" padding="16px" borderRadius="6px" _hover={{ backgroundColor: "#2563eb" }}>Proof</Box></ChakraProvider>;
 `;
 const routes = [
-	{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.Mui, source: pandwindSource },
+	{ from: CodemodAdapterId.YumCSS, to: CodemodAdapterId.Mui, source: yumcssSource },
 	{ from: CodemodAdapterId.ChakraUi, to: CodemodAdapterId.Emotion, source: chakraSource },
-	{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.Emotion, source: pandwindSource },
-	{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.CssModules, source: pandwindSource },
-	{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.UnoCSS, source: pandwindSource },
+	{ from: CodemodAdapterId.YumCSS, to: CodemodAdapterId.Emotion, source: yumcssSource },
+	{ from: CodemodAdapterId.YumCSS, to: CodemodAdapterId.CssModules, source: yumcssSource },
+	{ from: CodemodAdapterId.YumCSS, to: CodemodAdapterId.UnoCSS, source: yumcssSource },
 	{ from: CodemodAdapterId.StyledComponents, to: CodemodAdapterId.Emotion, source: styledSource },
 	{
 		from: CodemodAdapterId.StyledComponents,
@@ -71,7 +71,7 @@ const versions = {
 	unocss: "66.10.0",
 	"@unocss/core": "66.10.0",
 	"@unocss/config": "66.10.0",
-	pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+	yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 };
 const digest = (content: string) => createHash("sha256").update(content).digest("hex");
 
@@ -88,7 +88,7 @@ const writeFixture = ({
 }) => {
 	mkdirSync(join(root, "src"), { recursive: true });
 	writeJson(join(root, "package.json"), {
-		name: "pandwind-installed-target-proof",
+		name: "yumcss-installed-target-proof",
 		private: true,
 		type: "module",
 		packageManager: "pnpm@12.3.4",
@@ -118,7 +118,7 @@ const writeFixture = ({
 		},
 		include: ["src"],
 	});
-	const pandwind = to === undefined && from === CodemodAdapterId.Pandwind;
+	const yumcss = to === undefined && from === CodemodAdapterId.YumCSS;
 	const vanillaExtract = to === CodemodAdapterId.VanillaExtract;
 	const unoCss = to === CodemodAdapterId.UnoCSS;
 	if (unoCss)
@@ -130,17 +130,17 @@ const writeFixture = ({
 		join(root, "vite.config.ts"),
 		`import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-${pandwind ? 'import { pandwindCssVite } from "pandwind/vite";\nimport { defaultPreset } from "pandwind/preset/default";' : ""}
+${yumcss ? 'import { yumcssExtractVite } from "yumcss/vite";\nimport { defaultPreset } from "yumcss/preset/default";' : ""}
 ${vanillaExtract ? 'import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";' : ""}
 ${unoCss ? 'import unoCss from "unocss/vite";' : ""}
-export default defineConfig({ plugins: [${pandwind ? 'pandwindCssVite(defaultPreset, { root: "." }),' : ""}${vanillaExtract ? "vanillaExtractPlugin()," : ""}${unoCss ? "unoCss()," : ""}react()] });
+export default defineConfig({ plugins: [${yumcss ? 'yumcssExtractVite(defaultPreset, { root: "." }),' : ""}${vanillaExtract ? "vanillaExtractPlugin()," : ""}${unoCss ? "unoCss()," : ""}react()] });
 `,
 	);
 	writeFileSync(join(root, "src/App.tsx"), source);
-	writeFileSync(join(root, "src/virtual.d.ts"), 'declare module "pandwind:css";\n');
+	writeFileSync(join(root, "src/virtual.d.ts"), 'declare module "yumcss:css";\n');
 	writeFileSync(
 		join(root, "src/main.tsx"),
-		`${pandwind ? 'import "pandwind:css";\n' : ""}${unoCss ? 'import "virtual:uno.css";\n' : ""}import { hydrateRoot } from "react-dom/client";
+		`${yumcss ? 'import "yumcss:css";\n' : ""}${unoCss ? 'import "virtual:uno.css";\n' : ""}import { hydrateRoot } from "react-dom/client";
 import { App } from "./App";
 hydrateRoot(document.getElementById("root")!, <App />);
 `,
@@ -153,9 +153,9 @@ hydrateRoot(document.getElementById("root")!, <App />);
 };
 
 const reports = await withInstalledProofProject(
-	"pandwind-outbound-proof-",
+	"yumcss-outbound-proof-",
 	async ({ sourceRoot, targetRoot }) => {
-		writeFixture({ root: sourceRoot, source: pandwindSource, from: CodemodAdapterId.Pandwind });
+		writeFixture({ root: sourceRoot, source: yumcssSource, from: CodemodAdapterId.YumCSS });
 		run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
 		const reports = [];
 		for (const route of routes) {
@@ -263,7 +263,7 @@ const reports = await withInstalledProofProject(
 	{ retainOnError: true },
 );
 const reportBody = {
-	schema: "pandwind.codemod-installed-targets/1",
+	schema: "yumcss.codemod-installed-targets/1",
 	sourceFingerprint: proofSourceFingerprint(repositoryRoot),
 	proofImplementationHash: digest(readFileSync(import.meta.filename, "utf8")),
 	scope:

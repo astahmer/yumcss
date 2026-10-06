@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Token bridge: generated from the example preset by `pandwind-codemod tw generate`
+ * Token bridge: generated from the example preset by `yumcss-codemod tw generate`
  * (same preset as examples/example — identical unions). Do not edit by hand.
  */
-@import "./pandwind-theme.css";
+@import "./yumcss-theme.css";

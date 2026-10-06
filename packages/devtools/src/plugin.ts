@@ -2,15 +2,15 @@ import { globSync, readFileSync } from "node:fs";
 import { basename, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineRpcFunction, type PluginWithDevTools } from "@vitejs/devtools-kit";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import {
 	runAdapterMigrationAsync,
 	type AdapterCapabilityMode,
 	type AdapterMigrationResult,
-} from "pandwind-codemod/swap";
-import { unifiedDiff } from "pandwind-codemod/diff";
-import { createBuiltinCodemodCatalog } from "pandwind-codemod/swap";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+} from "@yumcss/codemod/swap";
+import { unifiedDiff } from "@yumcss/codemod/diff";
+import { createBuiltinCodemodCatalog } from "@yumcss/codemod/swap";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import { createDevtoolsEvidenceStore, type DevtoolsEvidenceStore } from "./evidence/store.ts";
 import {
 	DEVTOOLS_RPC,
@@ -19,7 +19,7 @@ import {
 	type DevtoolsMigrationPreview,
 } from "./rpc.ts";
 
-export interface PandwindDevtoolsOptions {
+export interface YumCSSDevtoolsOptions {
 	/** Disable the integration while keeping the Vite config branch stable. */
 	readonly enabled?: boolean;
 	/** Register the host-page element picker action. */
@@ -34,7 +34,7 @@ const isInspectableFile = (file: string): boolean =>
 	SOURCE_SCANNER_SERVICE.isScriptFile(file);
 
 function loadInteropTokens(root: string, store: DevtoolsEvidenceStore): void {
-	const files = globSync("**/pandwind.interop.json", {
+	const files = globSync("**/yumcss.interop.json", {
 		cwd: root,
 	})
 		.filter((file) => !file.includes("node_modules/") && !file.includes(".git/"))
@@ -144,7 +144,7 @@ async function previewMigration(
 		files.push(serializeMigration(file, result, before));
 	}
 	return {
-		schema: "pandwind.devtools.migration-preview/1",
+		schema: "yumcss.devtools.migration-preview/1",
 		root,
 		from: input.from,
 		to: input.to,
@@ -194,17 +194,17 @@ function elementSelection(input: DevtoolsElementInput, store: DevtoolsEvidenceSt
 	});
 }
 
-export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): PluginWithDevTools {
+export function yumcssDevtools(options: YumCSSDevtoolsOptions = {}): PluginWithDevTools {
 	let root: string | undefined;
 	let store: DevtoolsEvidenceStore | undefined;
 
 	const currentStore = (): DevtoolsEvidenceStore => {
-		if (store === undefined) throw new Error("Pandwind DevTools evidence is not initialized");
+		if (store === undefined) throw new Error("YumCSS DevTools evidence is not initialized");
 		return store;
 	};
 
 	return {
-		name: "pandwind-devtools",
+		name: "yumcss-devtools",
 		apply: "serve",
 		configResolved(resolved) {
 			root = resolved.root;
@@ -252,23 +252,23 @@ export function pandwindDevtools(options: PandwindDevtoolsOptions = {}): PluginW
 				if (options.enabled === false) return;
 				const clientPath = fileURLToPath(new URL("../dist/client", import.meta.url));
 				const modulePath = fileURLToPath(new URL("../dist", import.meta.url));
-				ctx.views.hostStatic("/__pandwind_devtools__", clientPath);
-				ctx.views.hostStatic("/__pandwind_devtools_modules__", modulePath);
+				ctx.views.hostStatic("/__yumcss_devtools__", clientPath);
+				ctx.views.hostStatic("/__yumcss_devtools_modules__", modulePath);
 				ctx.docks.register({
-					id: "pandwind-devtools",
-					title: "Pandwind",
+					id: "yumcss-devtools",
+					title: "YumCSS",
 					icon: "ph:paint-brush-duotone",
 					type: "iframe",
-					url: "/__pandwind_devtools__/",
+					url: "/__yumcss_devtools__/",
 				});
 				if (options.inspect !== false)
 					ctx.docks.register({
-						id: "pandwind-devtools:inspect",
+						id: "yumcss-devtools:inspect",
 						title: "Inspect styles",
 						icon: "ph:cursor-duotone",
 						type: "action",
 						action: {
-							importFrom: "/__pandwind_devtools_modules__/client/inspect-action.js",
+							importFrom: "/__yumcss_devtools_modules__/client/inspect-action.js",
 							importName: "default",
 						},
 					});

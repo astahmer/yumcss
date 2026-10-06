@@ -1,37 +1,37 @@
 import { describe, expect, test } from "vitest";
-import { EDITOR_TYPE_LIBRARIES, PANDWIND_EDITOR_MODULE_PATHS } from "./editor-types.ts";
+import { EDITOR_TYPE_LIBRARIES, YUMCSS_EDITOR_MODULE_PATHS } from "./editor-types.ts";
 
 describe("playground editor declarations", () => {
-	test("mounts the generated public Pandwind declaration graph", () => {
+	test("mounts the generated public YumCSS declaration graph", () => {
 		const cssTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/css/index.d.ts"),
+			library.filePath.endsWith("/yumcss/css/index.d.ts"),
 		);
 		const unsafeCssTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/unsafe/css.d.ts"),
+			library.filePath.endsWith("/yumcss/unsafe/css.d.ts"),
 		);
 		const cxTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/cx/index.d.ts"),
+			library.filePath.endsWith("/yumcss/cx/index.d.ts"),
 		);
 		const presetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/preset/index.d.ts"),
+			library.filePath.endsWith("/yumcss/preset/index.d.ts"),
 		);
 		const csstypePresetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/preset/csstype.d.ts"),
+			library.filePath.endsWith("/yumcss/preset/csstype.d.ts"),
 		);
 		const defaultPresetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/preset/default.d.ts"),
+			library.filePath.endsWith("/yumcss/preset/default.d.ts"),
 		);
 		const defineTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/types/define-preset.d.ts"),
+			library.filePath.endsWith("/yumcss/types/define-preset.d.ts"),
 		);
 		const defineExportTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/types/define-preset.export.d.ts"),
+			library.filePath.endsWith("/yumcss/types/define-preset.export.d.ts"),
 		);
 		const selectorTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
-			library.filePath.endsWith("/pandwind/types/selectors.d.ts"),
+			library.filePath.endsWith("/yumcss/types/selectors.d.ts"),
 		);
 		const modules = EDITOR_TYPE_LIBRARIES.find(
-			(library) => library.filePath === "file:///pandwind/playground/modules.d.ts",
+			(library) => library.filePath === "file:///yumcss/playground/modules.d.ts",
 		);
 
 		expect(cssTypes?.content).toContain('export { createCss } from "./create-css.d.ts";');
@@ -50,36 +50,36 @@ describe("playground editor declarations", () => {
 		expect(defineTypes?.content).toContain("export declare const tokens");
 		expect(defineTypes?.content).toContain("Preserve literal token names");
 		expect(selectorTypes?.content).toContain("AnySelector");
-		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/css"]).toBe("generated/pandwind/css/index.d.ts");
-		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/unsafe/css"]).toBe(
-			"generated/pandwind/unsafe/css.d.ts",
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/css"]).toBe("generated/yumcss/css/index.d.ts");
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/unsafe/css"]).toBe(
+			"generated/yumcss/unsafe/css.d.ts",
 		);
-		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset"]).toBe(
-			"generated/pandwind/preset/index.d.ts",
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset"]).toBe(
+			"generated/yumcss/preset/index.d.ts",
 		);
-		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset/csstype"]).toBe(
-			"generated/pandwind/preset/csstype.d.ts",
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset/csstype"]).toBe(
+			"generated/yumcss/preset/csstype.d.ts",
 		);
-		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset/default"]).toBe(
-			"generated/pandwind/preset/default.d.ts",
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset/default"]).toBe(
+			"generated/yumcss/preset/default.d.ts",
 		);
 		expect(modules?.content).toContain("interface PlaygroundStyledFactory");
 	});
 
-	test("does not reintroduce a hand-maintained Pandwind API shadow", () => {
+	test("does not reintroduce a hand-maintained YumCSS API shadow", () => {
 		const allDeclarations = EDITOR_TYPE_LIBRARIES.map((library) => library.content).join("\n");
 
 		expect(allDeclarations).not.toContain("interface PlaygroundCss");
 		expect(allDeclarations).not.toContain("type PlaygroundStylePrimitive");
-		expect(allDeclarations).toContain('declare const css: import("pandwind/css").CssFn;');
-		expect(allDeclarations).toContain('declare const cx: import("pandwind").CxFn;');
+		expect(allDeclarations).toContain('declare const css: import("yumcss/css").CssFn;');
+		expect(allDeclarations).toContain('declare const cx: import("yumcss").CxFn;');
 	});
 
 	test("keeps generated relative declaration imports mounted", () => {
 		const mountedPaths = new Set(EDITOR_TYPE_LIBRARIES.map((library) => library.filePath));
 
 		for (const library of EDITOR_TYPE_LIBRARIES.filter((entry) =>
-			entry.filePath.includes("/generated/pandwind/"),
+			entry.filePath.includes("/generated/yumcss/"),
 		)) {
 			const declarationCode = library.content
 				.replace(/\/\*[\s\S]*?\*\//g, "")
@@ -100,10 +100,10 @@ describe("playground editor declarations", () => {
 		)?.content;
 
 		expect(dependencyPaths).toContain(
-			"file:///pandwind/playground/generated/dependencies/csstype/index.d.ts",
+			"file:///yumcss/playground/generated/dependencies/csstype/index.d.ts",
 		);
 		expect(dependencyPaths).toContain(
-			"file:///pandwind/playground/generated/dependencies/postcss/lib/postcss.d.ts",
+			"file:///yumcss/playground/generated/dependencies/postcss/lib/postcss.d.ts",
 		);
 		expect(dependencyModules).toContain('declare module "@chakra-ui/react"');
 		expect(dependencyModules).toContain('declare module "@mantine/core"');

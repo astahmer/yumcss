@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * `pandwind analyze` CLI — reports how much class-merging work the build
+ * `yumcss analyze` CLI — reports how much class-merging work the build
  * eliminates for the given files.
  *
  * Usage:
@@ -12,8 +12,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { cac, type CAC, type Command } from "cac";
-import type { createPandwindEngineContext } from "pandwind/vite";
-import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
+import type { createYumCSSEngineContext } from "yumcss/vite";
+import { createCrossModuleConstResolver } from "yumcss/vite/cross-module-consts";
 import { collectFiles, type FoldSummary } from "./analyze.ts";
 import {
 	createAnalysisWorkspace,
@@ -48,7 +48,7 @@ export interface CliArgs {
 	preset: string;
 	/** Explicit baseline token document for read-only release impact analysis. */
 	releaseBaselinePath?: string;
-	/** Optional generated pandwind.interop/1 token snapshot to compare. */
+	/** Optional generated yumcss.interop/1 token snapshot to compare. */
 	releaseCurrentPath?: string;
 	releaseFormat: string;
 	/** Explicit extra consumer roots; empty means the --root project only. */
@@ -63,7 +63,7 @@ export interface BudgetCaps {
 }
 
 export interface AnalyzeCliDependencies {
-	readonly cssPreset?: Parameters<typeof createPandwindEngineContext>[0]["preset"];
+	readonly cssPreset?: Parameters<typeof createYumCSSEngineContext>[0]["preset"];
 }
 
 /** Parse a budgets json file; unknown lanes are ignored, values must be positive numbers. */
@@ -100,9 +100,9 @@ export function evaluateBudget(
 }
 
 /** Version tag stamped into `--json` output for consumers. */
-export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/1";
+export const ANALYZE_JSON_SCHEMA = "yumcss.analyze/1";
 /** Version tag for the governance lane document. */
-export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
+export const GOVERNANCE_JSON_SCHEMA = "yumcss.analyze.governance/1";
 export { DEFAULT_GOVERNANCE_PRESET };
 
 type CliOptions = Readonly<Record<string, unknown>>;
@@ -147,11 +147,11 @@ const configureAnalyzeCommand = (command: Command): void => {
 		})
 		.option(
 			"--release-baseline <path>",
-			"Compare this explicit token document to current pandwind.interop/1 tokens",
+			"Compare this explicit token document to current yumcss.interop/1 tokens",
 		)
 		.option(
 			"--release-current <path>",
-			"Current pandwind.interop/1 artifact; defaults to <consumer>/src/pandwind.interop.json",
+			"Current yumcss.interop/1 artifact; defaults to <consumer>/src/yumcss.interop.json",
 		)
 		.option("--release-format <format>", "Format of the release baseline", { default: "dtcg" })
 		.option(
@@ -163,7 +163,7 @@ const configureAnalyzeCommand = (command: Command): void => {
 };
 
 const createAnalyzeCli = (): CAC => {
-	const cli = cac("pandwind-analyze");
+	const cli = cac("yumcss-analyze");
 	const analyze = cli.command(
 		"[...patterns]",
 		"Analyze source files for fold coverage, CSS provenance, and budgets",
@@ -190,11 +190,11 @@ const validateCommand = (command: Command): void => {
 
 function parseArgs(argv: Array<string>): CliArgs {
 	const cli = createAnalyzeCli();
-	cli.parse(["node", "pandwind-analyze", ...argv], { run: false });
+	cli.parse(["node", "yumcss-analyze", ...argv], { run: false });
 	const command = cli.matchedCommand;
 	if (command === undefined || command.name === MCP_COMMAND) {
 		throw new Error(
-			"analyze: expected analysis arguments; use `pandwind-analyze mcp --help` for MCP",
+			"analyze: expected analysis arguments; use `yumcss-analyze mcp --help` for MCP",
 		);
 	}
 	validateCommand(command);
@@ -242,7 +242,7 @@ function parseArgs(argv: Array<string>): CliArgs {
 /** Shared CSS-budget computation for both output lanes. */
 async function computeCssBudget(args: CliArgs, files: Array<string>) {
 	const budgetService = createCssBudgetService();
-	const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
+	const themeCssPath = resolve(args.root, "src/yumcss-theme.css");
 	let themeCss: string | undefined;
 	try {
 		themeCss = readFileSync(themeCssPath, "utf8");
@@ -291,10 +291,10 @@ async function runAnalysis(
 		cssCollector.add({ file, content });
 	});
 	const cssReport = cssCollector.finish();
-	let cxEngine: ReturnType<typeof createPandwindEngineContext> | undefined;
+	let cxEngine: ReturnType<typeof createYumCSSEngineContext> | undefined;
 	if (dependencies.cssPreset !== undefined) {
-		const vite = await import("pandwind/vite");
-		cxEngine = vite.createPandwindEngineContext({ preset: dependencies.cssPreset });
+		const vite = await import("yumcss/vite");
+		cxEngine = vite.createYumCSSEngineContext({ preset: dependencies.cssPreset });
 	}
 	const stats: ReturnType<typeof analysis.analyze>[] = sources.map(
 		({ absoluteFile, content, scan }) => {
@@ -405,7 +405,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 	const cli = createAnalyzeCli();
 	cli.help();
 	try {
-		cli.parse(["node", "pandwind-analyze", ...argv], { run: false });
+		cli.parse(["node", "yumcss-analyze", ...argv], { run: false });
 		const command = cli.matchedCommand;
 		if (command === undefined) return;
 		validateCommand(command);
@@ -420,7 +420,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		}
 		await runAnalyzeCommand(parseArgs(argv));
 	} catch (error) {
-		console.error(`pandwind-analyze: ${error instanceof Error ? error.message : String(error)}`);
+		console.error(`yumcss-analyze: ${error instanceof Error ? error.message : String(error)}`);
 		cli.outputHelp();
 		process.exitCode = 1;
 	}

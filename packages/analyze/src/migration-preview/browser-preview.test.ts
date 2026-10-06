@@ -37,7 +37,7 @@ describe("Migration Preview browser host", () => {
 		});
 
 		expect(
-			await host.start?.(request(".pandwind-migration-preview-probe { color: red; }")),
+			await host.start?.(request(".yumcss-migration-preview-probe { color: red; }")),
 		).toEqual({
 			host: MigrationPreviewHostId.Browser,
 			status: "ready",
@@ -47,7 +47,7 @@ describe("Migration Preview browser host", () => {
 		});
 		expect(navigated).toBe("http://127.0.0.1:5173/preview");
 		expect(
-			await host.update?.(request(".pandwind-migration-preview-probe { color: blue; }")),
+			await host.update?.(request(".yumcss-migration-preview-probe { color: blue; }")),
 		).toMatchObject({
 			status: "ready",
 			computedStyles: { color: "rgb(239, 68, 68)" },

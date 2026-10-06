@@ -42,7 +42,7 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", async () 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "jss -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", async () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("jss -> mui -> jss: preserves an actionable concrete round trip", async () 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("jss -> mui -> jss: retains the documented secondary API without silent los
 		  "reverse": {
 		    "changed": false,
 		    "code": "import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const sheet = jss.createStyleSheet({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("jss -> mui -> jss: preserves concrete theme and project context variants",
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("jss -> mui -> jss: resolves token values across both concrete legs", async
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,5 +1,5 @@
 import { SourcePass } from "../source-pass-utils.ts";
-import { SourceBindings, SourceHostUseKind } from "pandwind/source";
+import { SourceBindings, SourceHostUseKind } from "yumcss/source";
 import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import type { StyleProgram, StyleProgramResidual } from "./semantic-ir.ts";
 import {
@@ -9,7 +9,7 @@ import {
 } from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
-export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
+export const HOST_COMPONENT_REWRITER_SCHEMA = "yumcss.host-component-rewriter/1" as const;
 
 /** Canonical intrinsic host projection for source component adapters. */
 export function canonicalizeSourceHost(
@@ -126,7 +126,7 @@ export interface StandaloneHostComponentRewriteRequest {
 	readonly file?: string;
 	readonly tag: string;
 	readonly framework: string;
-	/** Expression that evaluates to the generated Pandwind class string. */
+	/** Expression that evaluates to the generated YumCSS class string. */
 	readonly classExpression: string;
 }
 
@@ -135,14 +135,14 @@ export type HostComponentDeclarationPreflightRequest = Omit<
 	"source" | "classExpression"
 >;
 
-const isPandwindCarrier = (expression: string): boolean =>
+const isYumCSSCarrier = (expression: string): boolean =>
 	/^css\.(?:class|vars)\(/u.test(expression.trim());
 
 const mergeClassExpression = (
 	generated: string,
 	existing: string,
 ): { readonly expression: string; readonly needsCx: boolean } =>
-	isPandwindCarrier(generated)
+	isYumCSSCarrier(generated)
 		? { expression: `css.props(${generated}, ${existing}).className`, needsCx: false }
 		: { expression: `[${generated}, ${existing}].filter(Boolean).join(" ")`, needsCx: false };
 
@@ -335,8 +335,8 @@ export function wrapComponentExpressionWithAttrs(request: {
 			],
 		};
 	const moduleName = request.framework === BuiltinHostFramework.Preact ? "preact/compat" : "react";
-	const createElement = "__pandwindCreateElement";
-	const forwardRef = "__pandwindForwardRef";
+	const createElement = "__yumcssCreateElement";
+	const forwardRef = "__yumcssForwardRef";
 	const propFilterPrefixes = JSON.stringify(request.filteredPropPrefixes ?? []);
 	const wrapperBody = `const { as: attrsAs, className: attrsClassName, style: attrsStyle, ...attrsProps } = attrs; const { as: propsAs, className, style, ...rest } = props; const forwardedProps = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !${propFilterPrefixes}.some((prefix) => key.startsWith(prefix)))); return ${createElement}(Component, { ...forwardedProps, ...(propsAs === undefined && attrsAs === undefined ? {} : { as: attrsAs ?? propsAs }), className: [className, attrsClassName].filter(Boolean).join(" ") || undefined, style: Object.assign({}, style, attrsStyle !== null && typeof attrsStyle === "object" ? attrsStyle : {}), ref } as import("${moduleName}").ComponentPropsWithRef<ComponentType>);`;
 	const typescript =
@@ -616,7 +616,7 @@ export function hasComponentAttributeUse(request: {
 }
 
 function hostTagMatches(request: HostComponentRewriteRequest): TagMatch[] {
-	const file = request.file ?? "pandwind-component.tsx";
+	const file = request.file ?? "yumcss-component.tsx";
 	const scanned = scannedTagMatches(request.source, file, request.binding);
 	if (scanned !== undefined) return scanned;
 	if (/\.(?:tsx?|jsx?|mdx)$/iu.test(file)) return [];
@@ -629,7 +629,7 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	let found = false;
 	const mask = SourcePass.computeExcludedRanges(
 		request.source,
-		request.file ?? "pandwind-component.tsx",
+		request.file ?? "yumcss-component.tsx",
 	);
 	const tag = request.tag;
 	const binding = request.binding;
@@ -762,14 +762,14 @@ function rewriteReactComponentDeclaration(
 		localBindings.add(value);
 		return value;
 	};
-	const forwardRefBinding = uniqueBinding(`__pandwind${componentName}ForwardRef`);
-	const componentPropsWithoutRefType = uniqueBinding(`__pandwind${componentName}PropsWithoutRef`);
-	const componentRefType = uniqueBinding(`__pandwind${componentName}Ref`);
-	const componentElementType = uniqueBinding(`__pandwind${componentName}ElementType`);
-	const componentReactElementType = uniqueBinding(`__pandwind${componentName}ReactElement`);
-	const componentPropsType = `__pandwind${componentName}Props`;
-	const componentType = `__pandwind${componentName}Component`;
-	const runtimePropsType = `__pandwind${componentName}RuntimeProps`;
+	const forwardRefBinding = uniqueBinding(`__yumcss${componentName}ForwardRef`);
+	const componentPropsWithoutRefType = uniqueBinding(`__yumcss${componentName}PropsWithoutRef`);
+	const componentRefType = uniqueBinding(`__yumcss${componentName}Ref`);
+	const componentElementType = uniqueBinding(`__yumcss${componentName}ElementType`);
+	const componentReactElementType = uniqueBinding(`__yumcss${componentName}ReactElement`);
+	const componentPropsType = `__yumcss${componentName}Props`;
+	const componentType = `__yumcss${componentName}Component`;
+	const runtimePropsType = `__yumcss${componentName}RuntimeProps`;
 	const defaultComponentType = /^[a-z][a-z\d-]*$/u.test(request.tag)
 		? JSON.stringify(request.tag)
 		: `typeof ${request.tag}`;
@@ -781,7 +781,7 @@ function rewriteReactComponentDeclaration(
 	const forwardRefTypes = typeScript
 		? `<${componentRefType}<${defaultComponentType}>, ${runtimePropsType}>`
 		: "";
-	const componentRefPropType = uniqueBinding(`__pandwind${componentName}RefProp`);
+	const componentRefPropType = uniqueBinding(`__yumcss${componentName}RefProp`);
 	const typeDefinitions = typeScript
 		? `type ${componentPropsType}<C extends ${componentElementType}> = Omit<${componentPropsWithoutRefType}<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }${transientPropsType}; type ${componentType} = <C extends ${componentElementType} = ${defaultComponentType}>(props: ${componentPropsType}<C> & { ref?: ${componentRefPropType}<${componentRefType}<C>> }) => ${componentReactElementType} | null; type ${runtimePropsType} = Record<string, any>;`
 		: "";
@@ -890,10 +890,10 @@ function rewriteSolidComponentDeclaration(
 		localBindings.add(value);
 		return value;
 	};
-	const childrenBinding = uniqueBinding(`__pandwind${componentName}Children`);
-	const splitPropsBinding = uniqueBinding(`__pandwind${componentName}SplitProps`);
-	const jsxTypeBinding = uniqueBinding(`__pandwind${componentName}JSX`);
-	const propsType = `__pandwind${componentName}Props`;
+	const childrenBinding = uniqueBinding(`__yumcss${componentName}Children`);
+	const splitPropsBinding = uniqueBinding(`__yumcss${componentName}SplitProps`);
+	const jsxTypeBinding = uniqueBinding(`__yumcss${componentName}JSX`);
+	const propsType = `__yumcss${componentName}Props`;
 	const classAttribute = "class";
 	const mergedClass = mergeClassExpression(request.classExpression, `local.${classAttribute}`);
 	const typeDefinitions = typeScript
@@ -969,7 +969,7 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 export function preflightHostComponentDeclaration(
 	request: HostComponentDeclarationPreflightRequest,
 ): HostComponentRewriteResult {
-	const classExpression = "__pandwindClassPreflight";
+	const classExpression = "__yumcssClassPreflight";
 	const rewriter = getHostComponentRewriter(request.framework);
 	if (rewriter?.rewriteDeclaration === undefined)
 		return {
@@ -998,7 +998,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
 		const start = match.start;
-		if (excluded(request.source, request.file ?? "pandwind-component.vue", start)) continue;
+		if (excluded(request.source, request.file ?? "yumcss-component.vue", start)) continue;
 		const text = match.text;
 		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });
@@ -1130,11 +1130,11 @@ function rewriteStandaloneJsx(
 			],
 		};
 	}
-	const className = "__pandwindStandaloneClass";
-	const componentName = "__pandwindStandaloneComponent";
-	const forwardRefBinding = "__pandwindStandaloneForwardRef";
-	const componentRefBinding = "__pandwindStandaloneComponentRef";
-	const componentPropsBinding = "__pandwindStandaloneComponentProps";
+	const className = "__yumcssStandaloneClass";
+	const componentName = "__yumcssStandaloneComponent";
+	const forwardRefBinding = "__yumcssStandaloneForwardRef";
+	const componentRefBinding = "__yumcssStandaloneComponentRef";
+	const componentPropsBinding = "__yumcssStandaloneComponentProps";
 	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
 	const mergedClass = mergeClassExpression(className, `props.${classAttribute}`);
 	const typeScript = /\.(?:ts|tsx)$/u.test(request.file ?? "");
@@ -1157,13 +1157,13 @@ function rewriteStandaloneJsx(
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = ${forwardRefBinding}${forwardRefTypes}((props, ref) => <${request.tag} {...props} ref={ref} ` +
-		`${classAttribute}={${isPandwindCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />;\n` +
+		`${classAttribute}={${isYumCSSCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />;\n` +
 		`export default ${componentName};`;
 	const end = expressionStart + expression.length;
 	return {
 		code: request.source.slice(0, exportMatch.index) + replacement + request.source.slice(end),
 		changed: true,
-		needsCx: isPandwindCarrier(request.classExpression) ? false : mergedClass.needsCx,
+		needsCx: isYumCSSCarrier(request.classExpression) ? false : mergedClass.needsCx,
 		imports,
 		residuals: [],
 	};
@@ -1173,7 +1173,7 @@ export function rewriteDynamicCarrier(
 	source: string,
 	binding: string,
 	framework: string,
-	file = "pandwind-dynamic.tsx",
+	file = "yumcss-dynamic.tsx",
 ): HostDynamicCarrierRewriteResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let found = false;
@@ -1232,7 +1232,7 @@ export function rewriteDynamicExpressionCarrier(
 	source: string,
 	expression: string,
 	framework: string,
-	file = "pandwind-dynamic.tsx",
+	file = "yumcss-dynamic.tsx",
 ): HostDynamicCarrierRewriteResult {
 	const escapedExpression = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	if (

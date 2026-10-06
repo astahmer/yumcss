@@ -15,7 +15,7 @@ import { TypedComponentsApp } from "./typed-components-app";
 import typedComponentsSource from "./typed-components-app.tsx?raw";
 import typedTwSource from "./typed-tw-app.tsx?raw";
 
-/** A focused showcase of the distinct Pandwind usage patterns. */
+/** A focused showcase of the distinct YumCSS usage patterns. */
 export function MixedApisApp() {
 	return (
 		<>

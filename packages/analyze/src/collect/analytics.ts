@@ -523,7 +523,7 @@ export function buildPruneChangeset(
 	const list = unusedTokens.map((t) => `- \`${t}\``).join("\n");
 	return [
 		"---",
-		'"pandwind": patch',
+		'"yumcss": patch',
 		"---",
 		"",
 		`Remove ${unusedTokens.length} unused design token(s) from the ${appLabel} preset`,

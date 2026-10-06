@@ -42,7 +42,7 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> treat round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("solid-styled -> treat -> solid-styled: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("solid-styled -> treat -> solid-styled: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("solid-styled -> treat -> solid-styled: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("solid-styled -> treat -> solid-styled: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("solid-styled -> treat -> solid-styled: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("solid-styled -> treat -> solid-styled: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
+		// yumcss:migrate-skip (route: solid-styled -> treat | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

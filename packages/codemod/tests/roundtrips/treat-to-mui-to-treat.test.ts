@@ -42,7 +42,7 @@ test("treat -> mui -> treat: preserves an actionable concrete round trip", async
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "treat -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("treat -> mui -> treat: preserves an actionable concrete round trip", async
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("treat -> mui -> treat: preserves an actionable concrete round trip", async
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -117,7 +117,7 @@ test("treat -> mui -> treat: retains the documented secondary API without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -152,7 +152,7 @@ test("treat -> mui -> treat: retains the documented secondary API without silent
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -197,7 +197,7 @@ test("treat -> mui -> treat: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -232,7 +232,7 @@ test("treat -> mui -> treat: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -248,7 +248,7 @@ test("treat -> mui -> treat: preserves concrete theme and project context varian
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -283,7 +283,7 @@ test("treat -> mui -> treat: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -314,7 +314,7 @@ test("treat -> mui -> treat: resolves token values across both concrete legs", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -349,7 +349,7 @@ test("treat -> mui -> treat: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: treat -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

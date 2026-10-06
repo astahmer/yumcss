@@ -38,10 +38,10 @@ test("treat -> mantine: migrates concrete treat syntax to mantine", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "treat -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("treat -> mantine: migrates concrete treat syntax to mantine", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,7 +73,7 @@ test("treat -> mantine: migrates concrete treat syntax to mantine", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -106,7 +106,7 @@ test("treat -> mantine: carries a documented secondary treat API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -130,7 +130,7 @@ test("treat -> mantine: carries a documented secondary treat API explicitly", ()
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -172,7 +172,7 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -196,7 +196,7 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -220,7 +220,7 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("treat -> mantine: loads concrete theme and project context variants", asyn
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -280,7 +280,7 @@ test("treat -> mantine: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -304,7 +304,7 @@ test("treat -> mantine: resolves concrete token values with project context", as
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -337,7 +337,7 @@ test("treat -> mantine: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-		// pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
 		export const card = style({ color: "red", padding: 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 0,
@@ -362,7 +362,7 @@ test("treat -> mantine: preserves malformed concrete treat input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

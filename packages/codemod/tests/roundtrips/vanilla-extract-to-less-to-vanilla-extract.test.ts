@@ -42,7 +42,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves an actionable concre
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves an actionable concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves an actionable concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("vanilla-extract -> less -> vanilla-extract: retains the documented seconda
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("vanilla-extract -> less -> vanilla-extract: retains the documented seconda
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("vanilla-extract -> less -> vanilla-extract: preserves concrete theme and p
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("vanilla-extract -> less -> vanilla-extract: resolves token values across b
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("vanilla-extract -> less -> vanilla-extract: resolves token values across b
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = style({ color: "#2563eb", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],

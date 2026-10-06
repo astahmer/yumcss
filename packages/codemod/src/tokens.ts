@@ -3,7 +3,7 @@
  * utility/value split. Pure string logic — no AST needed for the codemod's
  * conservative scope.
  */
-import type { PandwindMeta } from "./meta.ts";
+import type { YumCSSMeta } from "./meta.ts";
 
 export interface ParsedToken {
 	/** Original token as written. */
@@ -90,7 +90,7 @@ const variantKey = (name: string): string =>
  * Compound dash forms (`group-hover`) split into a nested chain when both
  * halves are known variants joined by `-`.
  */
-function parseVariants(token: string, meta: PandwindMeta): { variants: string[]; rest: string } {
+function parseVariants(token: string, meta: YumCSSMeta): { variants: string[]; rest: string } {
 	const segments = splitTopLevel(token, ":");
 	const variants: string[] = [];
 	let i = 0;
@@ -135,7 +135,7 @@ function parseVariants(token: string, meta: PandwindMeta): { variants: string[];
 /** Longest-prefix match of the utility against the conflict map keys. */
 function splitPrefix(
 	utility: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 ): { prefix: string; value: string } | null {
 	if (meta.conflicts.has(utility)) return { prefix: utility, value: "" };
 	let best: { prefix: string; value: string } | null = null;
@@ -149,7 +149,7 @@ function splitPrefix(
 	return best;
 }
 
-export function parseToken(raw: string, meta: PandwindMeta): ParsedToken | null {
+export function parseToken(raw: string, meta: YumCSSMeta): ParsedToken | null {
 	const { variants, rest } = parseVariants(raw, meta);
 
 	let important = false;
@@ -196,7 +196,7 @@ export function parseToken(raw: string, meta: PandwindMeta): ParsedToken | null 
 }
 
 /** Parse an arbitrary-value escape hatch without attempting to rewrite it. */
-export function parseArbitraryToken(raw: string, meta: PandwindMeta): ParsedArbitraryToken | null {
+export function parseArbitraryToken(raw: string, meta: YumCSSMeta): ParsedArbitraryToken | null {
 	const { variants, rest } = parseVariants(raw, meta);
 	let important = false;
 	let body = rest;

@@ -42,7 +42,7 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stylex -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -89,7 +89,7 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "red", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -118,7 +118,7 @@ test("stylex -> vue-styled -> stylex: retains the documented secondary API witho
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -154,7 +154,7 @@ test("stylex -> vue-styled -> stylex: retains the documented secondary API witho
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -199,7 +199,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -235,7 +235,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -287,7 +287,7 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": false,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -318,7 +318,7 @@ test("stylex -> vue-styled -> stylex: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -354,7 +354,7 @@ test("stylex -> vue-styled -> stylex: resolves token values across both concrete
 		  "reverse": {
 		    "changed": false,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-		// pandwind:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
+		// yumcss:migrate-skip (route: stylex -> vue-styled | capability-blocked: named-rules: named style rule: card | available: static, residual)
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

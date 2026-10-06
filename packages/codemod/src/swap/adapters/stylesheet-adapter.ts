@@ -141,7 +141,7 @@ const cssModuleClassArtifact = (
 	const fileName = file.split("/").at(-1);
 	if (fileName === undefined) return undefined;
 	const stem = fileName.replace(/\.[^.]+$/u, "");
-	const path = joinDocumentPath(directory, stem + ".pandwind-" + className + outputExtension);
+	const path = joinDocumentPath(directory, stem + ".yumcss-" + className + outputExtension);
 	let specifier = relativeDocumentPath(directory, path);
 	if (!specifier.startsWith(".")) specifier = "./" + specifier;
 	const safeBinding = binding.replace(/[^A-Za-z0-9_$]/gu, "_");
@@ -152,7 +152,7 @@ const cssModuleClassArtifact = (
 			purpose: "CSS Modules styles for a migrated static class",
 		},
 		specifier,
-		local: "__pandwind" + safeBinding + "Styles",
+		local: "__yumcss" + safeBinding + "Styles",
 	};
 };
 

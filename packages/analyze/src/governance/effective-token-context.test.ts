@@ -14,7 +14,7 @@ describe("buildEffectiveTokenContext", () => {
 		expect(ctx.definitions[0]).toMatchObject({
 			layer: "raw",
 			value: "#e11d48",
-			provenance: [{ source: "official-config", origin: "pandwind", detail: "colors.brand" }],
+			provenance: [{ source: "official-config", origin: "yumcss", detail: "colors.brand" }],
 		});
 	});
 

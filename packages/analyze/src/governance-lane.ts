@@ -6,8 +6,8 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parsePandwindInteropArtifact } from "pandwind-codemod/tw";
-import { tokenDocumentCodec } from "pandwind-codemod/swap/token-document";
+import { parseYumCSSInteropArtifact } from "@yumcss/codemod/tw";
+import { tokenDocumentCodec } from "@yumcss/codemod/swap/token-document";
 import { createAnalysisWorkspace } from "./analysis-service.ts";
 import { parseThemeVars } from "./collect/parsers.ts";
 import {
@@ -19,7 +19,7 @@ import {
 } from "./governance/index.ts";
 import { GOVERNANCE_JSON_SCHEMA, type CliArgs } from "./cli.ts";
 
-/** Governance JSON document shape (schema: pandwind.analyze.governance/1). */
+/** Governance JSON document shape (schema: yumcss.analyze.governance/1). */
 interface GovernanceCliDocument {
 	readonly schema: typeof GOVERNANCE_JSON_SCHEMA;
 	readonly governance: ReturnType<typeof analyzeTokenGovernance>;
@@ -42,7 +42,7 @@ function formatGovernanceSummary(
 		.join(" · ");
 	return (
 		[
-			"pandwind analyze — token governance",
+			"yumcss analyze — token governance",
 			"root: " + report.root,
 			policyLine,
 			"tokens: " +
@@ -89,15 +89,15 @@ const governanceForRoot = async (args: CliArgs, root: string) => {
 
 	let themeVars: Array<{ name: string; value: string }> = [];
 	try {
-		themeVars = parseThemeVars(readFileSync(resolve(root, "src/pandwind-theme.css"), "utf8"));
+		themeVars = parseThemeVars(readFileSync(resolve(root, "src/yumcss-theme.css"), "utf8"));
 	} catch {
 		themeVars = [];
 	}
 	let interopVariables: Record<string, string> = {};
 	let interopFailure: string | undefined;
 	try {
-		const interop = parsePandwindInteropArtifact(
-			JSON.parse(readFileSync(resolve(root, "src/pandwind.interop.json"), "utf8")),
+		const interop = parseYumCSSInteropArtifact(
+			JSON.parse(readFileSync(resolve(root, "src/yumcss.interop.json"), "utf8")),
 		);
 		interopVariables = { ...interop.theme.variables };
 	} catch (error) {
@@ -106,7 +106,7 @@ const governanceForRoot = async (args: CliArgs, root: string) => {
 	}
 	let safelistHit = false;
 	try {
-		safelistHit = readFileSync(resolve(root, "src/pandwind.safelist.css"), "utf8").includes(
+		safelistHit = readFileSync(resolve(root, "src/yumcss.safelist.css"), "utf8").includes(
 			'@source inline("',
 		);
 	} catch {
@@ -157,14 +157,14 @@ export async function runTokenReleaseLane(args: CliArgs): Promise<string> {
 		);
 	}
 	const currentPath =
-		args.releaseCurrentPath ?? resolve(consumers[0]!, "src/pandwind.interop.json");
+		args.releaseCurrentPath ?? resolve(consumers[0]!, "src/yumcss.interop.json");
 	const baseline = await tokenDocumentCodec.fromFile(args.releaseFormat, args.releaseBaselinePath);
-	let interop: ReturnType<typeof parsePandwindInteropArtifact>;
+	let interop: ReturnType<typeof parseYumCSSInteropArtifact>;
 	try {
-		interop = parsePandwindInteropArtifact(JSON.parse(readFileSync(currentPath, "utf8")));
+		interop = parseYumCSSInteropArtifact(JSON.parse(readFileSync(currentPath, "utf8")));
 	} catch (error) {
 		throw new Error(
-			`analyze release: could not load current pandwind.interop/1 artifact '${currentPath}': ${error instanceof Error ? error.message : String(error)}`,
+			`analyze release: could not load current yumcss.interop/1 artifact '${currentPath}': ${error instanceof Error ? error.message : String(error)}`,
 			{ cause: error },
 		);
 	}
@@ -206,7 +206,7 @@ export async function runTokenReleaseLane(args: CliArgs): Promise<string> {
 	});
 	return (
 		[
-			"pandwind analyze — token release impact",
+			"yumcss analyze — token release impact",
 			`baseline: ${report.baseline.format}@${report.baseline.formatVersion}`,
 			`current: ${report.current.format}@${report.current.formatVersion}`,
 			`consumers: ${report.consumerRoots.join(", ") || "none"}`,

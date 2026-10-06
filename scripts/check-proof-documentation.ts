@@ -130,7 +130,7 @@ if (failures.length > 0) {
 console.log(
 	JSON.stringify(
 		{
-			schema: "pandwind.proof-documentation-check/1",
+			schema: "yumcss.proof-documentation-check/1",
 			realRepository: expectedRealRepository,
 			adapterReference: expectedAdapterReference,
 			surfaceExports: expectedSurfaceExports,

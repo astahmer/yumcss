@@ -38,10 +38,10 @@ test("linaria -> react-native: migrates concrete linaria syntax to react-native"
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "linaria -> react-native happy");
 	expectExplicitResidualEvidence(result);
@@ -95,7 +95,7 @@ test("linaria -> react-native: carries a documented secondary linaria API explic
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],

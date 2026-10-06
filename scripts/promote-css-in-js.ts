@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	generatedCss,
@@ -17,8 +18,8 @@ import {
 import { readPinnedSource } from "./adapter-proof-harness.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 
 type ScenarioId = "jss" | "fela" | "aphrodite" | "compiled" | "style9" | "next-yak";
 
@@ -49,7 +50,7 @@ interface CssInJsInstalledProof {
 		readonly commit: string;
 		readonly sourceEntry: string;
 	};
-	readonly route: { readonly from: CodemodAdapterId; readonly to: CodemodAdapterId.Pandwind };
+	readonly route: { readonly from: CodemodAdapterId; readonly to: CodemodAdapterId.YumCSS };
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
 		readonly installed: true;
@@ -57,7 +58,7 @@ interface CssInJsInstalledProof {
 		readonly targetNodeModule: boolean;
 	};
 	readonly migration: InstalledProofMigrationSummary & {
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 	};
 	readonly checks: {
 		readonly sourceTypecheck: true;
@@ -99,7 +100,7 @@ const versions = {
 	"jss-plugin-camel-case": "10.10.0",
 	"jss-plugin-nested": "10.10.0",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	"react-dom": "19.2.8",
 	react: "19.2.8",
 	rollup: "4.63.1",
@@ -204,7 +205,7 @@ const compiled = (compiledModule as any).default || compiledModule;
 
 export default defineConfig({
 	plugins: [compiled({ importReact: false, extensions: [".js", ".jsx", ".ts", ".tsx"] }), react()],
-	ssr: { noExternal: ["pandwind"] },
+	ssr: { noExternal: ["yumcss"] },
 });
 `,
 		computedProperties: ["background-color", "color", "padding-left", "border-radius"],
@@ -357,7 +358,7 @@ hydrateRoot(document.getElementById("root")!, <App />);
 import style9Vite from "style9/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({ plugins: [style9Vite(), react()], ssr: { noExternal: ["pandwind"] } });
+export default defineConfig({ plugins: [style9Vite(), react()], ssr: { noExternal: ["yumcss"] } });
 `,
 		computedProperties: ["color", "font-size", "padding-left", "min-height"],
 	},
@@ -400,7 +401,7 @@ export default defineConfig(async () => ({
 	plugins: [await viteYak({ basePath: resolve(here) }), react()],
 	define: { "process.env.NODE_ENV": '"production"' },
 	resolve: { dedupe: ["react", "react-dom"] },
-	ssr: { noExternal: ["pandwind"] },
+	ssr: { noExternal: ["yumcss"] },
 }));
 `,
 		computedProperties: ["transform", "width", "height", "display"],
@@ -408,7 +409,7 @@ export default defineConfig(async () => ({
 	},
 };
 
-const packageJson = (scenario: Scenario, includePandwind: boolean): Record<string, unknown> => ({
+const packageJson = (scenario: Scenario, includeYumCSS: boolean): Record<string, unknown> => ({
 	private: true,
 	type: "module",
 	scripts: {
@@ -418,7 +419,7 @@ const packageJson = (scenario: Scenario, includePandwind: boolean): Record<strin
 	},
 	dependencies: {
 		...scenario.sourceDependencies,
-		...(includePandwind ? { pandwind: versions.pandwind } : {}),
+		...(includeYumCSS ? { yumcss: versions.yumcss } : {}),
 		react: versions.react,
 		"react-dom": versions["react-dom"],
 	},
@@ -428,7 +429,7 @@ const packageJson = (scenario: Scenario, includePandwind: boolean): Record<strin
 		"@types/react-dom": versions["@types/react-dom"],
 		"@vitejs/plugin-react-swc": versions["@vitejs/plugin-react-swc"],
 		rollup: versions.rollup,
-		...(includePandwind ? { "oxc-parser": versions["oxc-parser"] } : {}),
+		...(includeYumCSS ? { "oxc-parser": versions["oxc-parser"] } : {}),
 		...scenario.sourceDevDependencies,
 		typescript: versions.typescript,
 		vite: versions.vite,
@@ -456,9 +457,9 @@ import { App } from "./App";
 hydrateRoot(document.getElementById("root")!, <App />);
 `;
 
-const createFixture = (root: string, scenario: Scenario, includePandwind: boolean): void => {
+const createFixture = (root: string, scenario: Scenario, includeYumCSS: boolean): void => {
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(scenario, includePandwind));
+	writeJson(join(root, "package.json"), packageJson(scenario, includeYumCSS));
 	if (scenario.packageOverrides !== undefined) {
 		writeFileSync(
 			join(root, "pnpm-workspace.yaml"),
@@ -495,7 +496,7 @@ const proofIsComplete = (report: CssInJsInstalledProof, scenario: Scenario): boo
 	report.migration.residuals === 0 &&
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
-	report.migration.targetUsesPandwind &&
+	report.migration.targetUsesYumCSS &&
 	report.dependencies.targetNodeModule &&
 	report.checks.hydration &&
 	report.ssr.markupEquivalent &&
@@ -504,9 +505,9 @@ const proofIsComplete = (report: CssInJsInstalledProof, scenario: Scenario): boo
 	(scenario.allowEmptyTargetCss === true || report.css.targetBytes > 0);
 
 const runScenario = async (scenario: Scenario): Promise<CssInJsInstalledProof> => {
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
-		`pandwind-${scenario.id}-installed-proof-`,
+		`yumcss-${scenario.id}-installed-proof-`,
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, scenario, false);
 			createFixture(targetRoot, scenario, true);
@@ -523,13 +524,13 @@ const runScenario = async (scenario: Scenario): Promise<CssInJsInstalledProof> =
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						scenario.adapter,
 						"--to",
-						"pandwind",
+						"yumcss",
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -569,19 +570,19 @@ const runScenario = async (scenario: Scenario): Promise<CssInJsInstalledProof> =
 					commit: scenario.reference.commit,
 					sourceEntry: scenario.reference.path,
 				},
-				route: { from: scenario.adapter, to: CodemodAdapterId.Pandwind },
+				route: { from: scenario.adapter, to: CodemodAdapterId.YumCSS },
 				fixture: {
 					files: ["src/App.tsx", "src/main.tsx", "src/entry-server.tsx", "vite.config.ts"],
 					isolated: true,
 				},
 				dependencies: {
 					installed: true,
-					targetPackage: versions.pandwind,
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 				},
 				checks: {
 					sourceTypecheck: true,

@@ -1,7 +1,7 @@
 import type { DockClientScriptContext } from "@vitejs/devtools-kit/client";
 import { DEVTOOLS_RPC, type DevtoolsElementInput } from "../rpc.ts";
 
-const OVERLAY_ID = "__pandwind_devtools_inspector__";
+const OVERLAY_ID = "__yumcss_devtools_inspector__";
 
 const COMPUTED_STYLE_PROPERTIES = [
 	"display",

@@ -15,7 +15,7 @@ export interface PortableStyleEmission {
 /**
  * Portable runtime carrier shared by targets that cannot express a dynamic
  * value in their own API. It is deliberately narrow: only residuals produced
- * by Pandwind's dynamic lowering are consumed, and every other residual stays
+ * by YumCSS's dynamic lowering are consumed, and every other residual stays
  * visible to validation.
  */
 export class PortableStyleArtifact {
@@ -40,7 +40,7 @@ export class PortableStyleArtifact {
 			if (
 				value.kind !== StyleValueKindTag.Literal ||
 				typeof value.value !== "string" ||
-				!value.value.startsWith("var(--pandwind-dynamic-")
+				!value.value.startsWith("var(--yumcss-dynamic-")
 			)
 				return value;
 			const expression = expressions.get(value.value.slice(4, -1));
@@ -79,14 +79,14 @@ export class PortableStyleArtifact {
 			? {
 					text: `css.vars(${objectText(program)})`,
 					imports: [
-						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						'import { createUnsafeCss } from "yumcss/unsafe/css";',
 						"const css = createUnsafeCss();",
 					],
 				}
 			: {
 					text: `css.class(${objectText(program)})`,
 					imports: [
-						'import { createUnsafeCss } from "pandwind/unsafe/css";',
+						'import { createUnsafeCss } from "yumcss/unsafe/css";',
 						"const css = createUnsafeCss();",
 					],
 				};

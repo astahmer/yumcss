@@ -22,7 +22,7 @@ const types: Record<string, string> = {
 const reverse = Object.fromEntries(Object.entries(types).map(([key, value]) => [value, key]));
 
 export const figmaTokenFormat: TokenFormatAdapter = {
-	schema: "pandwind.token-format/1",
+	schema: "yumcss.token-format/1",
 	id: TokenFormatId.Figma,
 	canImport: true,
 	canExport: true,

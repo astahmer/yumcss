@@ -40,13 +40,13 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="red.200" p="4" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 		expectStatic(result);
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ background: "#fecaca", padding: "1rem" })} />;",
 			  "converted": 1,
@@ -91,7 +91,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <> <Box p="4" /> <MinMaxInput filter="subscriberCount" /> </>;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('<MinMaxInput filter="subscriberCount" />');
@@ -105,7 +105,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <PageContainer h="full" py="2" />;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -121,7 +121,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <Button bg="accent.solid" variant="ghost" />;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -138,7 +138,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <Box asChild><button variant="solid">Run</button></Box>;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('<Box asChild><button variant="solid">Run</button></Box>');
@@ -149,13 +149,13 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box css={{ color: "red.200", "& svg": { color: "blue.200" } }} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 		expectStatic(result);
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "#fecaca", "& svg": { color: "#bfdbfe" } })} />;",
 			  "converted": 1,
@@ -200,7 +200,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <HStack gap="4" className={card} />;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -222,17 +222,17 @@ describe("Chakra UI official API forms", () => {
 			'export const App = () => <Box p="4" className={pandaClass} />;',
 		].join("\n");
 
-		const chakraFirst = await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind);
+		const chakraFirst = await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.YumCSS);
 		const chakraThenPanda = await migrate(
 			chakraFirst.code,
 			CodemodAdapterId.Panda,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
-		const pandaFirst = await migrate(source, CodemodAdapterId.Panda, CodemodAdapterId.Pandwind);
+		const pandaFirst = await migrate(source, CodemodAdapterId.Panda, CodemodAdapterId.YumCSS);
 		const pandaThenChakra = await migrate(
 			pandaFirst.code,
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
@@ -246,7 +246,7 @@ describe("Chakra UI official API forms", () => {
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
 			for (const sourceAdapter of [CodemodAdapterId.ChakraUi, CodemodAdapterId.Panda]) {
 				expect(
-					(await migrate(result.code, sourceAdapter, CodemodAdapterId.Pandwind)).code,
+					(await migrate(result.code, sourceAdapter, CodemodAdapterId.YumCSS)).code,
 					`${sourceAdapter} second pass`,
 				).toBe(result.code);
 			}
@@ -257,7 +257,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Center } from "@chakra-ui/react";\nexport const App = () => <Center><span>Ready</span></Center>',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expectStatic(result);
@@ -272,7 +272,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Container } from "@chakra-ui/react";\nexport const App = () => <Container maxW="breakpoint-lg" w="full" mx="auto" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -288,7 +288,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Input, Menu } from "@chakra-ui/react";\nexport const App = () => <><Input placeholder="Search" /><Menu.Root open><div /></Menu.Root></>;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('placeholder="Search"');
@@ -301,7 +301,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { SimpleGrid } from "@chakra-ui/react";\nconst count = 3;\nexport const App = () => <SimpleGrid columns={count} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain("repeat(");
@@ -312,7 +312,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Input } from "@chakra-ui/react";\nexport const App = () => <Input placeholder="Search" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -328,7 +328,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Box, Button, Text as ChakraText } from "@chakra-ui/react";\nexport const App = () => <><Box data-box="true" /><Button type="button">Save</Button><ChakraText>Ready</ChakraText></>;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(2);
@@ -348,7 +348,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box ml={2} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expectStatic(result);
@@ -360,7 +360,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box css={{ "@keyframes fade": { from: { opacity: 0 }, to: { opacity: 1 } } }} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -376,11 +376,11 @@ describe("Chakra UI official API forms", () => {
 		expect(result.code).not.toContain("css.class");
 	});
 
-	test("lowers legacy Chakra prop types to native Pandwind types", async () => {
+	test("lowers legacy Chakra prop types to native YumCSS types", async () => {
 		const result = await migrate(
 			'import { Flex, type FlexProps } from "@chakra-ui/react";\nexport const App = (props: FlexProps) => <Flex {...props} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('React.ComponentProps<"div">');
@@ -394,7 +394,7 @@ describe("Chakra UI official API forms", () => {
 				"export type Props = InputProps & { rootProps?: GroupProps };",
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('React.ComponentProps<"input">');
@@ -412,7 +412,7 @@ describe("Chakra UI official API forms", () => {
 				"interface PasswordProps extends InputProps, PasswordVisibilityProps {}",
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain(
@@ -429,7 +429,7 @@ describe("Chakra UI official API forms", () => {
 				'const underlineLinkClass = css(link.raw({ variant: "underline" }));',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -441,7 +441,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Text } from "@chakra-ui/react";\nexport const App = () => <Text fontWeight="700" truncate title="Campaign" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.code).toContain('overflow: "hidden"');
@@ -456,7 +456,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { Heading } from "@chakra-ui/react";\nexport const App = () => <Heading size="lg">Title</Heading>;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -476,7 +476,7 @@ describe("Chakra UI official API forms", () => {
 		const result = adapter.parse(source, {
 			file: "App.tsx",
 			source,
-			targetId: CodemodAdapterId.Pandwind,
+			targetId: CodemodAdapterId.YumCSS,
 			config: {
 				adapter: CodemodAdapterId.ChakraUi,
 				files: [],
@@ -519,7 +519,7 @@ describe("Chakra UI official API forms", () => {
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const App = () => <Box css={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 2 }} />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expectStatic(result);
@@ -537,7 +537,7 @@ describe("Chakra UI official API forms", () => {
 				'export const App = () => <div className={compact ? stack({ alignItems: "flex-start" }) : card} />;',
 			].join("\n"),
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -576,7 +576,7 @@ describe("Chakra UI official API forms", () => {
 			file: "App.tsx",
 			source,
 			config,
-			targetId: CodemodAdapterId.Pandwind,
+			targetId: CodemodAdapterId.YumCSS,
 		});
 		const declarations = parsed.matches[0]?.program.declarations ?? [];
 
@@ -598,13 +598,13 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { chakra } from "@chakra-ui/react";\nexport const App = () => <chakra.button bg="blue.500" color="white" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 		expectStatic(result);
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <button className={css.class({ background: "#3b82f6", color: "#FFFFFF" })} />;",
 			  "converted": 1,
@@ -644,13 +644,13 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { defaultSystem } from "@chakra-ui/react";\nexport const card = defaultSystem.css({ color: "red.200", p: "4" });',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 		expectStatic(result);
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "#fecaca", padding: "1rem" });",
 			  "converted": 1,
@@ -690,13 +690,13 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { createSystem, defaultConfig } from "@chakra-ui/react";\nconst system = createSystem(defaultConfig);\nexport const card = system.css({ color: "red.200", p: "4" });',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 		expectStatic(result);
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "#fecaca", padding: "1rem" });",
 			  "converted": 1,
@@ -736,7 +736,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { AbsoluteCenter } from "@chakra-ui/react";\nexport const App = () => <AbsoluteCenter p="4" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(0);
@@ -757,7 +757,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import {\n\tAbsoluteCenter,\n\tSpinner,\n} from "@chakra-ui/react";\nexport const App = () => <AbsoluteCenter p="4"><Spinner /></AbsoluteCenter>;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.skipped).toBe(1);
@@ -773,7 +773,7 @@ describe("Chakra UI official API forms", () => {
 		const result = await migrate(
 			'import { SimpleGrid } from "@chakra-ui/react";\nexport const App = () => <SimpleGrid columns={2} gap="4" />;',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expectStatic(result);
@@ -786,7 +786,7 @@ describe("Chakra UI official API forms", () => {
 			'import { defaultSystem } from "@chakra-ui/react";\n' +
 				'export const card = defaultSystem.css({ color: defaultSystem.token("colors.red.200"), backgroundColor: defaultSystem.token.var("colors.blue.200") });',
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(1);
@@ -802,7 +802,7 @@ describe("Chakra UI official API forms", () => {
 			{
 			  "changed": true,
 			  "code": "import { defaultSystem } from "@chakra-ui/react";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.vars({ color: defaultSystem.token("colors.red.200"), backgroundColor: defaultSystem.token.var("colors.blue.200") });",
 			  "converted": 1,
@@ -862,7 +862,7 @@ describe("Chakra UI official API forms", () => {
 					async ([name, source]) =>
 						[
 							name,
-							await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind),
+							await migrate(source, CodemodAdapterId.ChakraUi, CodemodAdapterId.YumCSS),
 						] as const,
 				),
 			),
@@ -872,7 +872,7 @@ describe("Chakra UI official API forms", () => {
 			expect(result.converted).toBe(0);
 			expect(result.skipped).toBe(1);
 			expect(result.residuals).toEqual([expect.objectContaining({ kind: "composition" })]);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 		}
 		expect(
 			Object.fromEntries(
@@ -883,7 +883,7 @@ describe("Chakra UI official API forms", () => {
 			  "cva": {
 			    "changed": true,
 			    "code": "import { defaultSystem } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const button = defaultSystem.cva({ base: { color: "white" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -917,7 +917,7 @@ describe("Chakra UI official API forms", () => {
 			  "defineRecipe": {
 			    "changed": true,
 			    "code": "import { defineRecipe } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const button = defineRecipe({ base: { color: "white" }, variants: { size: { sm: { p: "2" } } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -951,7 +951,7 @@ describe("Chakra UI official API forms", () => {
 			  "defineSlotRecipe": {
 			    "changed": true,
 			    "code": "import { defineSlotRecipe } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const alert = defineSlotRecipe({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -985,7 +985,7 @@ describe("Chakra UI official API forms", () => {
 			  "factory": {
 			    "changed": true,
 			    "code": "import { chakra } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const Link = chakra("a", { base: { color: "red.500" } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1019,7 +1019,7 @@ describe("Chakra UI official API forms", () => {
 			  "sva": {
 			    "changed": true,
 			    "code": "import { defaultSystem } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const alert = defaultSystem.sva({ slots: ["title"], base: { title: { color: "red" } } });",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1053,7 +1053,7 @@ describe("Chakra UI official API forms", () => {
 			  "useRecipe": {
 			    "changed": true,
 			    "code": "import { useRecipe } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const styles = useRecipe(button);",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1087,7 +1087,7 @@ describe("Chakra UI official API forms", () => {
 			  "useSlotRecipe": {
 			    "changed": true,
 			    "code": "import { useSlotRecipe } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: composition | available: named-map, residual)
 			export const styles = useSlotRecipe(alert);",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -1124,8 +1124,8 @@ describe("Chakra UI official API forms", () => {
 
 	test("uses Chakra's documented style carriers when targeting Chakra", async () => {
 		const classHost = await migrate(
-			'import { css } from "pandwind/css";\nexport const App = () => <div className={css.class({ color: "red" })} />;',
-			CodemodAdapterId.Pandwind,
+			'import { css } from "yumcss/css";\nexport const App = () => <div className={css.class({ color: "red" })} />;',
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.ChakraUi,
 		);
 		const styledSubject = await migrate(

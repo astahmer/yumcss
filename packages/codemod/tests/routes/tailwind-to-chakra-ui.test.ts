@@ -40,10 +40,10 @@ test("tailwind -> chakra-ui: migrates concrete tailwind syntax to chakra-ui", as
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tailwind -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("tailwind -> chakra-ui: carries a documented secondary tailwind API explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> chakra-ui | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],

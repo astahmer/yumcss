@@ -7,7 +7,7 @@ import { createLocalTokenSourceLoader } from "../src/swap/resolver-file-loader.t
 
 describe("local DTCG Resolver source loader", () => {
 	test("loads files under the project root and rejects external paths and URLs", async () => {
-		const temporaryRoot = mkdtempSync(join(tmpdir(), "pandwind-token-sources-"));
+		const temporaryRoot = mkdtempSync(join(tmpdir(), "yumcss-token-sources-"));
 		const projectRoot = join(temporaryRoot, "project");
 		const tokenDirectory = join(projectRoot, "src", "tokens");
 		const resolverPath = join(tokenDirectory, "tokens.resolver.json");
@@ -39,7 +39,7 @@ describe("local DTCG Resolver source loader", () => {
 	});
 
 	test("resolves symlinks before applying the project-root boundary", async () => {
-		const temporaryRoot = mkdtempSync(join(tmpdir(), "pandwind-token-symlinks-"));
+		const temporaryRoot = mkdtempSync(join(tmpdir(), "yumcss-token-symlinks-"));
 		const projectRoot = join(temporaryRoot, "project");
 		const tokenDirectory = join(projectRoot, "tokens");
 		const resolverPath = join(tokenDirectory, "tokens.resolver.json");

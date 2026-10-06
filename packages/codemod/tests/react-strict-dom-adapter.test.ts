@@ -11,27 +11,27 @@ const migrate = (source: string, from: string, to: string, file = "App.tsx") =>
 	});
 
 describe("react-strict-dom codemod adapter", () => {
-	test("lowers css.create and html style hosts to Pandwind class carriers", () => {
+	test("lowers css.create and html style hosts to YumCSS class carriers", () => {
 		const result = migrate(
 			'import { css, html } from "react-strict-dom";\nconst styles = css.create({ card: { color: "red", padding: "1rem" } });\nexport const Card = () => <html.div style={styles.card} />;',
 			CodemodAdapterId.ReactStrictDom,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toContain('const styles = { "card": css.class');
 		expect(result.code).toContain("<div className={styles.card} />");
 		expect(result.code).not.toContain("react-strict-dom");
 		expect(result.code).not.toContain("<html.");
 	});
 
-	test("emits real RSD css.create and html style syntax from Pandwind", () => {
+	test("emits real RSD css.create and html style syntax from YumCSS", () => {
 		const result = migrate(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();\nexport const Card = () => <div className={css.class({ color: "red", padding: "1rem" })} />;',
-			CodemodAdapterId.Pandwind,
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const Card = () => <div className={css.class({ color: "red", padding: "1rem" })} />;',
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.ReactStrictDom,
 		);
 
@@ -48,7 +48,7 @@ describe("react-strict-dom codemod adapter", () => {
 		const result = migrate(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const Card = () => <Box className={css.class({ color: "red" })} />;',
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.ReactStrictDom,
 		);
 
@@ -57,7 +57,7 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("@chakra-ui/react");
 		expect(result.code).not.toContain('from "react-strict-dom"');
 	});
@@ -66,7 +66,7 @@ describe("react-strict-dom codemod adapter", () => {
 		const result = migrate(
 			'import { css } from "react-strict-dom";\nexport const theme = css.createTheme({ accent: "red" });',
 			CodemodAdapterId.ReactStrictDom,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"theme.ts",
 		);
 
@@ -75,14 +75,14 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	});
 
 	test("preserves compat.native as a typed host-boundary residual", () => {
 		const result = migrate(
 			'import { compat } from "react-strict-dom";\nimport { Text } from "react-native";\nexport const Label = () => <compat.native as="text">{(props) => <Text {...props} />}</compat.native>;',
 			CodemodAdapterId.ReactStrictDom,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"compat.native.tsx",
 		);
 
@@ -91,7 +91,7 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("compat.native");
 	});
 
@@ -99,7 +99,7 @@ describe("react-strict-dom codemod adapter", () => {
 		const result = migrate(
 			'import { css } from "react-strict-dom";\nexport const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });\nexport const theme = css.defineVars({ accent: "red" });',
 			CodemodAdapterId.ReactStrictDom,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"styles.ts",
 		);
 

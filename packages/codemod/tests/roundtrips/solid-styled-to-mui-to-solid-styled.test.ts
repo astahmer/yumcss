@@ -42,7 +42,7 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -314,7 +314,7 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -357,7 +357,7 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -388,7 +388,7 @@ test("solid-styled -> mui -> solid-styled: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -431,7 +431,7 @@ test("solid-styled -> mui -> solid-styled: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

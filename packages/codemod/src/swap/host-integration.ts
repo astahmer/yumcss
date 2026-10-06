@@ -1,10 +1,10 @@
 import { dirname, join, relative, resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { NodeKind } from "pandwind/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind } from "yumcss/tw/literal";
 import { ensureImport } from "../shared.ts";
 
 /** The file-like virtual id used by Next/Webpack, where URI schemes are rejected. */
-export const PANDWIND_NEXT_CSS_ID = "pandwind-css.css" as const;
+export const YUMCSS_NEXT_CSS_ID = "yumcss-css.css" as const;
 
 interface HostProjectFileSystem {
 	read(path: string): string | undefined;
@@ -17,7 +17,7 @@ export interface HostFileChange {
 	readonly expectedContent?: string;
 }
 
-export interface PandwindViteIntegrationRequest {
+export interface YumCSSViteIntegrationRequest {
 	readonly projectRoot: string;
 	readonly outputDirectory: string;
 	readonly fileSystem: HostProjectFileSystem;
@@ -25,14 +25,14 @@ export interface PandwindViteIntegrationRequest {
 	readonly presetBinding?: string;
 }
 
-export interface PandwindViteIntegrationPlan {
+export interface YumCSSViteIntegrationPlan {
 	readonly enabled: boolean;
 	readonly configPath?: string;
 	readonly fileChanges: readonly HostFileChange[];
 	readonly notes: readonly string[];
 }
 
-export interface PandwindNextIntegrationRequest {
+export interface YumCSSNextIntegrationRequest {
 	readonly projectRoot: string;
 	readonly outputDirectory: string;
 	readonly fileSystem: HostProjectFileSystem;
@@ -43,7 +43,7 @@ export interface PandwindNextIntegrationRequest {
 	readonly presetBinding?: string;
 }
 
-export interface PandwindNextIntegrationPlan {
+export interface YumCSSNextIntegrationPlan {
 	readonly enabled: boolean;
 	readonly configPath?: string;
 	readonly presetFile?: string;
@@ -100,7 +100,7 @@ export const withTypeScriptExtensionImports = (source: string): string | undefin
 	return content === source ? undefined : content;
 };
 
-export function rewritePandwindViteConfig(input: {
+export function rewriteYumCSSViteConfig(input: {
 	readonly projectRoot: string;
 	readonly configPath: string;
 	readonly outputDirectory: string;
@@ -118,16 +118,16 @@ export function rewritePandwindViteConfig(input: {
 	const moduleSpecifier = presetSpecifier.startsWith(".")
 		? presetSpecifier
 		: `./${presetSpecifier}`;
-	const pluginImport = 'import { pandwindCssVite } from "pandwind/vite";';
+	const pluginImport = 'import { yumcssExtractVite } from "yumcss/vite";';
 	const presetImport = `import { ${presetBinding} } from "${moduleSpecifier}";`;
-	const pluginCall = `pandwindCssVite(${presetBinding}, { root: "." })`;
+	const pluginCall = `yumcssExtractVite(${presetBinding}, { root: "." })`;
 	if (input.source.includes(pluginCall) && input.source.includes(presetImport))
 		return { enabled: true, content: input.source };
-	if (/\bpandwindCssVite\s*\(/u.test(input.source))
+	if (/\byumcssExtractVite\s*\(/u.test(input.source))
 		return {
 			enabled: false,
 			content: input.source,
-			note: `preserved existing pandwindCssVite configuration in ${relative(input.projectRoot, input.configPath)} because its preset could not be verified`,
+			note: `preserved existing yumcssExtractVite configuration in ${relative(input.projectRoot, input.configPath)} because its preset could not be verified`,
 		};
 
 	let content = input.source;
@@ -142,14 +142,14 @@ export function rewritePandwindViteConfig(input: {
 			return {
 				enabled: false,
 				content: input.source,
-				note: `could not safely register pandwindCssVite in ${relative(input.projectRoot, input.configPath)}`,
+				note: `could not safely register yumcssExtractVite in ${relative(input.projectRoot, input.configPath)}`,
 			};
 		const configObject = /(?:defineConfig\s*\(\s*|export\s+default\s*)\{/u.exec(content);
 		if (configObject === null || configObject.index === undefined)
 			return {
 				enabled: false,
 				content: input.source,
-				note: `could not safely register pandwindCssVite in ${relative(input.projectRoot, input.configPath)}`,
+				note: `could not safely register yumcssExtractVite in ${relative(input.projectRoot, input.configPath)}`,
 			};
 		const insertion = configObject.index + configObject[0].length;
 		content = `${content.slice(0, insertion)}plugins: [${pluginCall}], ${content.slice(insertion)}`;
@@ -159,9 +159,9 @@ export function rewritePandwindViteConfig(input: {
 	return { enabled: true, content };
 }
 
-export function planPandwindViteIntegration(
-	request: PandwindViteIntegrationRequest,
-): PandwindViteIntegrationPlan {
+export function planYumCSSViteIntegration(
+	request: YumCSSViteIntegrationRequest,
+): YumCSSViteIntegrationPlan {
 	const configPath = VITE_CONFIG_NAMES.map((name) => join(request.projectRoot, name)).find((path) =>
 		request.fileSystem.exists(path),
 	);
@@ -169,7 +169,7 @@ export function planPandwindViteIntegration(
 		return {
 			enabled: false,
 			fileChanges: [],
-			notes: ["no root Vite config found for Pandwind CSS extraction"],
+			notes: ["no root Vite config found for YumCSS CSS extraction"],
 		};
 	const source = request.fileSystem.read(configPath);
 	if (source === undefined)
@@ -178,10 +178,10 @@ export function planPandwindViteIntegration(
 			configPath,
 			fileChanges: [],
 			notes: [
-				`could not read ${relative(request.projectRoot, configPath)} for Pandwind CSS extraction`,
+				`could not read ${relative(request.projectRoot, configPath)} for YumCSS CSS extraction`,
 			],
 		};
-	const rewrite = rewritePandwindViteConfig({
+	const rewrite = rewriteYumCSSViteConfig({
 		projectRoot: request.projectRoot,
 		configPath,
 		outputDirectory: request.outputDirectory,
@@ -194,7 +194,7 @@ export function planPandwindViteIntegration(
 			enabled: false,
 			configPath,
 			fileChanges: [],
-			notes: [rewrite.note ?? `could not safely register pandwindCssVite in ${configPath}`],
+			notes: [rewrite.note ?? `could not safely register yumcssExtractVite in ${configPath}`],
 		};
 	const fileChanges =
 		rewrite.content === source
@@ -207,7 +207,7 @@ export function planPandwindViteIntegration(
 		notes:
 			fileChanges.length === 0
 				? []
-				: [`registered pandwindCssVite in ${relative(request.projectRoot, configPath)}`],
+				: [`registered yumcssExtractVite in ${relative(request.projectRoot, configPath)}`],
 	};
 }
 
@@ -232,7 +232,7 @@ function hasNextDependency(packageJson: Readonly<Record<string, unknown>> | unde
 }
 
 function findNextConfig(
-	request: PandwindNextIntegrationRequest,
+	request: YumCSSNextIntegrationRequest,
 ): { readonly path: string; readonly source: string; readonly generated: boolean } | undefined {
 	const existing = NEXT_CONFIG_NAMES.map((name) => join(request.projectRoot, name)).find((path) =>
 		request.fileSystem.exists(path),
@@ -379,7 +379,7 @@ function appendConfigProperty(
 }
 
 function addWebpackPlugin(source: string, webpackBody: string, file: string): string | undefined {
-	if (/\bpandwindWebpackCss\s*\(/u.test(source)) return source;
+	if (/\byumcssWebpackCss\s*\(/u.test(source)) return source;
 	const configObject = findNextConfigObject(source, file);
 	if (configObject === undefined) return undefined;
 	const properties = (configObject.properties as ConfigAstNode[] | undefined) ?? [];
@@ -430,7 +430,7 @@ const existingNextPresetFile = (
 		);
 	});
 	if (importedFile === undefined) return undefined;
-	const callStart = source.indexOf("pandwindWebpackCss(");
+	const callStart = source.indexOf("yumcssWebpackCss(");
 	const callEnd = source.indexOf("})", callStart);
 	if (callStart < 0 || callEnd < 0) return undefined;
 	const options = source.slice(callStart, callEnd);
@@ -439,8 +439,8 @@ const existingNextPresetFile = (
 	);
 	if (!optionBindings.has(presetBinding)) return undefined;
 	const virtualId = /\bvirtualId\s*:\s*["']([^"']+)["']/u.exec(options)?.[1];
-	if (virtualId !== PANDWIND_NEXT_CSS_ID) return undefined;
-	if (!source.includes('import { pandwindWebpackCss } from "pandwind/unplugin";')) return undefined;
+	if (virtualId !== YUMCSS_NEXT_CSS_ID) return undefined;
+	if (!source.includes('import { yumcssWebpackCss } from "yumcss/unplugin";')) return undefined;
 	return importedFile;
 };
 
@@ -453,10 +453,10 @@ function layoutPaths(projectRoot: string, fileSystem: HostProjectFileSystem): re
 	].filter((path) => fileSystem.exists(path));
 }
 
-/** Plan the host wiring required for a Pandwind static stylesheet in Next. */
-export function planPandwindNextIntegration(
-	request: PandwindNextIntegrationRequest,
-): PandwindNextIntegrationPlan {
+/** Plan the host wiring required for a YumCSS static stylesheet in Next. */
+export function planYumCSSNextIntegration(
+	request: YumCSSNextIntegrationRequest,
+): YumCSSNextIntegrationPlan {
 	const next = findNextConfig(request);
 	if (next === undefined) return { enabled: false, fileChanges: [], notes: [] };
 
@@ -470,9 +470,9 @@ export function planPandwindNextIntegration(
 	const normalizedPresetSpecifier = presetSpecifier.startsWith(".")
 		? presetSpecifier
 		: `./${presetSpecifier}`;
-	const pluginImport = 'import { pandwindWebpackCss } from "pandwind/unplugin";';
+	const pluginImport = 'import { yumcssWebpackCss } from "yumcss/unplugin";';
 	const presetImport = `import { ${presetBinding} } from "${normalizedPresetSpecifier}";`;
-	const plugin = `pandwindWebpackCss({ preset: ${presetBinding}, root: process.cwd(), virtualId: "${PANDWIND_NEXT_CSS_ID}" })`;
+	const plugin = `yumcssWebpackCss({ preset: ${presetBinding}, root: process.cwd(), virtualId: "${YUMCSS_NEXT_CSS_ID}" })`;
 	const webpackBody = `\t\tconfig.plugins.push(\n\t\t\t${plugin}\n\t\t);`;
 
 	let config = next.source;
@@ -481,7 +481,7 @@ export function planPandwindNextIntegration(
 		config = generatedWebpackConfig(plugin, pluginImport, presetImport);
 		generatedPresetFile = presetFile;
 	} else {
-		if (/\bpandwindWebpackCss\s*\(/u.test(config)) {
+		if (/\byumcssWebpackCss\s*\(/u.test(config)) {
 			generatedPresetFile = existingNextPresetFile(
 				config,
 				next.path,
@@ -495,7 +495,7 @@ export function planPandwindNextIntegration(
 					configPath: next.path,
 					fileChanges: [],
 					notes: [
-						`preserved existing pandwindWebpackCss configuration in ${relative(request.projectRoot, next.path)} because its preset could not be verified`,
+						`preserved existing yumcssWebpackCss configuration in ${relative(request.projectRoot, next.path)} because its preset could not be verified`,
 					],
 				};
 		} else {
@@ -506,7 +506,7 @@ export function planPandwindNextIntegration(
 					configPath: next.path,
 					fileChanges: [],
 					notes: [
-						`could not safely add pandwindWebpackCss to ${relative(request.projectRoot, next.path)}`,
+						`could not safely add yumcssWebpackCss to ${relative(request.projectRoot, next.path)}`,
 					],
 				};
 			}
@@ -531,11 +531,11 @@ export function planPandwindNextIntegration(
 		if (layout === undefined) continue;
 		const nextLayout = ensureImport(
 			layout
-				.replaceAll('import "pandwind:css";\n', "")
-				.replaceAll('import "pandwind:css";', "")
-				.replaceAll(`import "${PANDWIND_NEXT_CSS_ID}";\n`, "")
-				.replaceAll(`import "${PANDWIND_NEXT_CSS_ID}";`, ""),
-			`import "${PANDWIND_NEXT_CSS_ID}";`,
+				.replaceAll('import "yumcss:css";\n', "")
+				.replaceAll('import "yumcss:css";', "")
+				.replaceAll(`import "${YUMCSS_NEXT_CSS_ID}";\n`, "")
+				.replaceAll(`import "${YUMCSS_NEXT_CSS_ID}";`, ""),
+			`import "${YUMCSS_NEXT_CSS_ID}";`,
 		);
 		if (nextLayout === layout) continue;
 		fileChanges.push({
@@ -551,12 +551,12 @@ export function planPandwindNextIntegration(
 		...(generatedPresetFile === undefined ? {} : { presetFile: generatedPresetFile }),
 		fileChanges,
 		notes: [
-			`registered pandwindWebpackCss in ${relative(request.projectRoot, next.path)}`,
+			`registered yumcssWebpackCss in ${relative(request.projectRoot, next.path)}`,
 			...fileChanges
 				.filter((change) => change.path !== next.path)
 				.map(
 					(change) =>
-						`imported ${PANDWIND_NEXT_CSS_ID} in ${relative(request.projectRoot, change.path)}`,
+						`imported ${YUMCSS_NEXT_CSS_ID} in ${relative(request.projectRoot, change.path)}`,
 				),
 		],
 	};

@@ -1,5 +1,5 @@
 /**
- * pandwind static-extraction discipline rules (TypeScript source for the Oxlint JS plugin).
+ * yumcss static-extraction discipline rules (TypeScript source for the Oxlint JS plugin).
  *
  * The plugin enforces source-level constraints and uses compiler-owned static
  * resolvers when it can prove a project's preset values. Dynamic project
@@ -30,7 +30,7 @@ import {
 	styleBindingPathForCall,
 } from "./project-token-vocabulary.ts";
 import { cssPropertiesMayConflict, isTypedCssStringValue } from "./typed-css-values.ts";
-import type { PresetTokenVocabulary } from "pandwind/vite/preset-context";
+import type { PresetTokenVocabulary } from "yumcss/vite/preset-context";
 import {
 	analyzeCssInlineArguments,
 	canonicalStyleKey,
@@ -41,21 +41,21 @@ import {
 	evalLiteral,
 	findCssFallbackValueNames,
 	isLiteralKeyframeBody,
-} from "pandwind/vite/css-inline-analysis";
+} from "yumcss/vite/css-inline-analysis";
 import {
 	collectModuleConstants,
 	defaultCxCompilerPorts,
 	evalStaticCx,
-} from "pandwind/vite/cx-inline";
-import { evalLiteral as evalTwLiteral } from "pandwind/tw/literal";
+} from "yumcss/vite/cx-inline";
+import { evalLiteral as evalTwLiteral } from "yumcss/tw/literal";
 
 const CX_NOT_STATIC_VALUE = evalStaticCx(undefined);
 
 const SOURCE = Object.freeze({
-	core: "pandwind",
-	css: "pandwind/css",
-	unsafeCss: "pandwind/unsafe/css",
-	design: "pandwind/design",
+	core: "yumcss",
+	css: "yumcss/css",
+	unsafeCss: "yumcss/unsafe/css",
+	design: "yumcss/design",
 });
 
 const API = Object.freeze({
@@ -95,7 +95,7 @@ const RUNTIME_STYLE_METHODS = new Set<string>([
 	STYLE_METHOD.raw,
 ]);
 const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
-const MIGRATION_MARKER = "pandwind:migrate-skip";
+const MIGRATION_MARKER = "yumcss:migrate-skip";
 const AST_IDENTITY_VALUES = new Set(Object.values(NodeKind));
 
 type AstNode = { type: string; [key: string]: any };
@@ -391,16 +391,16 @@ const createApiResolver = (
 		const source = sourceName(node.source);
 		if (source === undefined) return;
 		const configuredCssExports = cssModuleExports.get(source);
-		const isPandwindSource =
+		const isYumCSSSource =
 			source === SOURCE.core ||
 			source === SOURCE.css ||
 			source === SOURCE.unsafeCss ||
 			source === SOURCE.design;
 		const localFactory =
-			isPandwindSource || !includeUnconfiguredStyleFacades
+			isYumCSSSource || !includeUnconfiguredStyleFacades
 				? undefined
 				: conventionalStyleModuleFactory(source);
-		if (!isPandwindSource && configuredCssExports === undefined && localFactory === undefined)
+		if (!isYumCSSSource && configuredCssExports === undefined && localFactory === undefined)
 			return;
 		for (const specifier of node.specifiers ?? []) {
 			if (specifier.importKind === IMPORT_KIND.type) continue;
@@ -613,7 +613,7 @@ const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor
  * Structural mirror of the shared governance `TokenPolicySnapshot` (plans/054).
  * Declared locally because this governance contract is versioned and additive,
  * so structural compatibility is sufficient. The carrier rule imports the
- * shared Pandwind analyzer separately; governance still stays synchronous and
+ * shared YumCSS analyzer separately; governance still stays synchronous and
  * does not load arbitrary project packages. Unknown strictness (resolved:
  * false) stays report-only/fail-open.
  */
@@ -636,7 +636,7 @@ const governancePolicy = (context: RuleContext): TokenPolicySnapshotOption | und
 	if (optionPolicy !== null && typeof optionPolicy === "object" && !Array.isArray(optionPolicy))
 		return optionPolicy as TokenPolicySnapshotOption;
 
-	const settings = context.settings?.["pandwind-extraction"];
+	const settings = context.settings?.["yumcss-extraction"];
 	if (settings === null || typeof settings !== "object" || Array.isArray(settings))
 		return undefined;
 	const settingsPolicy = (settings as Record<string, unknown>)["policy"];
@@ -724,7 +724,7 @@ const tokenPolicy = (context: RuleContext): { allows(value: string): boolean } |
 	};
 };
 
-const callName = (api: ApiReference | undefined): string => api?.name ?? "pandwind";
+const callName = (api: ApiReference | undefined): string => api?.name ?? "yumcss";
 const isIntentionalRuntimeLane = (api: ApiReference | undefined): boolean =>
 	api?.kind === API.style && api.method !== undefined && RUNTIME_STYLE_METHODS.has(api.method);
 const isExtractionLane = (api: ApiReference | undefined): boolean =>
@@ -768,7 +768,7 @@ const walkWithAncestors = (
 const firstThatWorksImports = (program: AstNode): ReadonlySet<string> => {
 	const names = new Set<string>();
 	walkNode(program, (node) => {
-		if (node.type !== NodeKind.ImportDeclaration || sourceName(node.source) !== "pandwind/css")
+		if (node.type !== NodeKind.ImportDeclaration || sourceName(node.source) !== "yumcss/css")
 			return;
 		for (const specifier of node.specifiers ?? []) {
 			if (
@@ -1002,7 +1002,7 @@ const reportCarrierResiduals = (program: AstNode, context: RuleContext): void =>
 			context.report({
 				node: unsupportedAdditionalArgument,
 				message:
-					"pandwind: non-static additional prop in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
+					"yumcss: non-static additional prop in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
 				data: { name: callName(target.api) },
 			});
 			return;
@@ -1033,7 +1033,7 @@ const reportCarrierResiduals = (program: AstNode, context: RuleContext): void =>
 		context.report({
 			node: residual.node ?? target.node,
 			message:
-				"pandwind: {{reason}} in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
+				"yumcss: {{reason}} in {{name}}() cannot use the direct build-time carrier — the Vite transform keeps the runtime path",
 			data: { reason: carrierResidualReason(residual.code), name: callName(target.api) },
 		});
 	});
@@ -1170,7 +1170,7 @@ const configuredCssModuleExports = (option: unknown): CssModuleExports => {
 };
 
 const configuredCssModuleExportsForContext = (context: RuleContext): CssModuleExports => {
-	const settings = context.settings?.["pandwind-extraction"];
+	const settings = context.settings?.["yumcss-extraction"];
 	const settingsExports = configuredCssModuleExports(settings);
 	if (settingsExports.size > 0) return settingsExports;
 	return configuredCssModuleExports(context.options?.[0]);
@@ -1518,7 +1518,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: body ?? current,
 							message:
-								"pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+								"yumcss: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
 							data: { name: callName(api) },
 						});
 					});
@@ -1536,7 +1536,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: inner,
 							message:
-								"pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+								"yumcss: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 							data: { name: callName(api) },
 						});
 					});
@@ -1637,7 +1637,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: property,
 							message:
-								"pandwind: values for {{properties}} are covered by Pandwind's CSS types or the resolved preset — move them into the style object",
+								"yumcss: values for {{properties}} are covered by YumCSS's CSS types or the resolved preset — move them into the style object",
 							data: { properties: [...names].join(", ") },
 							...(plan === undefined
 								? {}
@@ -1762,7 +1762,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: inner,
 							message:
-								'pandwind: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)',
+								'yumcss: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)',
 							data: { value: inner.value, name: callName(api) },
 						});
 					});
@@ -1793,7 +1793,7 @@ const rules: Record<string, RuleDefinition> = {
 								context.report({
 									node: literal,
 									message:
-										'pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch',
+										'yumcss: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch',
 									data: { value: literal.value, property },
 								});
 							},
@@ -1817,7 +1817,7 @@ const rules: Record<string, RuleDefinition> = {
 							context.report({
 								node: literal,
 								message:
-									'pandwind: "{{value}}" is not part of the configured design system — use a verified token or extend the project policy',
+									'yumcss: "{{value}}" is not part of the configured design system — use a verified token or extend the project policy',
 								data: { value: literal.value },
 							});
 						});
@@ -1835,7 +1835,7 @@ const rules: Record<string, RuleDefinition> = {
 					context.report({
 						node: arg,
 						message:
-							"pandwind: spread argument in {{name}}() can never be statically folded — pass explicit arguments",
+							"yumcss: spread argument in {{name}}() can never be statically folded — pass explicit arguments",
 						data: { name: callName(api) },
 					});
 				}
@@ -1890,7 +1890,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: dynamic.node,
 							message:
-								"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+								"yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 							data: { bad: dynamic.bad, name: callName(api) },
 						});
 					}
@@ -1926,7 +1926,7 @@ const rules: Record<string, RuleDefinition> = {
 					context.report({
 						node,
 						message:
-							"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
+							"yumcss: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
 						data: { n: count, name: callName(api) },
 					});
 				},
@@ -1948,7 +1948,7 @@ const rules: Record<string, RuleDefinition> = {
 				context.report({
 					node,
 					message:
-						"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+						"yumcss: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
 				});
 			});
 		},
@@ -1962,7 +1962,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: marker as AstNode,
 							message:
-								"pandwind: migration skip markers must include a reason describing the preserved residual",
+								"yumcss: migration skip markers must include a reason describing the preserved residual",
 							data: { marker: migrationMarkerFor(context) },
 						});
 					}
@@ -1986,7 +1986,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: marker as AstNode,
 							message:
-								"pandwind: migration skip marker is stale because the following call is statically foldable",
+								"yumcss: migration skip marker is stale because the following call is statically foldable",
 							data: { name: callName(call.api) },
 							...(start === undefined || end === undefined
 								? {}
@@ -2011,7 +2011,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: dynamic.node,
 							message:
-								"pandwind: dynamic static-lane output must preserve a typed migration residual with pandwind:migrate-skip",
+								"yumcss: dynamic static-lane output must preserve a typed migration residual with yumcss:migrate-skip",
 							data: { bad: dynamic.bad, name: callName(call.api) },
 							...(call.node.start === undefined
 								? {}
@@ -2057,7 +2057,7 @@ const rules: Record<string, RuleDefinition> = {
 							context.report({
 								node: prop.node,
 								message:
-									"pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+									"yumcss: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
 								data: { prop: prop.name },
 							});
 						}
@@ -2144,7 +2144,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: attribute,
 							message:
-								"pandwind: spread css.props() on the host so its className and style outputs are both preserved",
+								"yumcss: spread css.props() on the host so its className and style outputs are both preserved",
 							fix: (fixer: RuleFixer) => [
 								fixer.replaceTextRange([start, end], `{...${propsCallText}}`),
 							],
@@ -2194,7 +2194,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: inner,
 							message:
-								"pandwind: css.class() returns an opaque string; use css() inside css.props() to preserve authored style composition and support xcss overrides",
+								"yumcss: css.class() returns an opaque string; use css() inside css.props() to preserve authored style composition and support xcss overrides",
 							...(fixRange === undefined
 								? {}
 								: {
@@ -2216,7 +2216,7 @@ const rules: Record<string, RuleDefinition> = {
 						context.report({
 							node: literal,
 							message:
-								"pandwind: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
+								"yumcss: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
 							data: { value: literal.value as string },
 						});
 					});
@@ -2229,7 +2229,7 @@ const rules: Record<string, RuleDefinition> = {
 export default {
 	rules,
 	meta: {
-		name: "pandwind-extraction",
-		docs: { description: "pandwind static-extraction discipline" },
+		name: "yumcss-extraction",
+		docs: { description: "yumcss static-extraction discipline" },
 	},
 };

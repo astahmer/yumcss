@@ -42,7 +42,7 @@ test("vue-styled -> jss -> vue-styled: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> jss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("vue-styled -> jss -> vue-styled: preserves an actionable concrete round tr
 		    "changed": true,
 		    "code": "import jss from "jss";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("vue-styled -> jss -> vue-styled: retains the documented secondary API with
 		    "changed": true,
 		    "code": "import jss from "jss";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -287,7 +287,7 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import jss from "jss";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -364,7 +364,7 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import jss from "jss";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -456,7 +456,7 @@ test("vue-styled -> jss -> vue-styled: resolves token values across both concret
 		    "changed": true,
 		    "code": "import jss from "jss";
 		import { defineComponent, h } from "vue";
-		// pandwind:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],

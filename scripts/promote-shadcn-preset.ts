@@ -34,18 +34,18 @@ import {
 } from "./reference-workspace.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const requireFromPandwind = createRequire(join(pandwindPackageRoot, "package.json"));
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in data module this generator owns. */
 export const shadcnPresetModulePath = join(
-	pandwindPackageRoot,
+	yumcssPackageRoot,
 	"src/preset/generated/shadcn-theme.ts",
 );
 
 /** Checked-in default-only data module this generator owns. */
 export const shadcnDefaultThemeModulePath = join(
-	pandwindPackageRoot,
+	yumcssPackageRoot,
 	"src/preset/generated/shadcn-default-theme.ts",
 );
 
@@ -199,7 +199,7 @@ const defaultRadiusValue = (source: string): string => {
 const bundleReference = async (): Promise<ShadcnReferenceModule> => {
 	const root = referencePath();
 	const appRoot = join(root, appDirectory);
-	const esbuild = (await import(requireFromPandwind.resolve("esbuild"))) as {
+	const esbuild = (await import(requireFromYumCSS.resolve("esbuild"))) as {
 		readonly build: (options: Record<string, unknown>) => Promise<{
 			readonly outputFiles: ReadonlyArray<{ readonly text: string }>;
 		}>;
@@ -250,7 +250,7 @@ const bundleReference = async (): Promise<ShadcnReferenceModule> => {
 			resolveDir: appRoot,
 		},
 	});
-	const bundleDirectory = mkdtempSync(join(tmpdir(), "pandwind-shadcn-registry-"));
+	const bundleDirectory = mkdtempSync(join(tmpdir(), "yumcss-shadcn-registry-"));
 	try {
 		const bundled = join(bundleDirectory, "registry.mjs");
 		writeFileSync(bundled, result.outputFiles[0]?.text ?? "");
@@ -264,7 +264,7 @@ const installedVocabulary = async (): Promise<{
 	vocabulary: ShadcnVocabulary;
 	version: string;
 }> => {
-	const presetEntry = requireFromPandwind.resolve("shadcn/preset");
+	const presetEntry = requireFromYumCSS.resolve("shadcn/preset");
 	return {
 		vocabulary: (await import(pathToFileURL(presetEntry).href)) as ShadcnVocabulary,
 		version: installedVersion(presetEntry),

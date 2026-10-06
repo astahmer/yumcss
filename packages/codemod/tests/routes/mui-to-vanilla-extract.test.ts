@@ -38,10 +38,10 @@ test("mui -> vanilla-extract: migrates concrete mui syntax to vanilla-extract", 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mui -> vanilla-extract happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("mui -> vanilla-extract: migrates concrete mui syntax to vanilla-extract", 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("mui -> vanilla-extract: carries a documented secondary mui API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: component)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -149,7 +149,7 @@ test("mui -> vanilla-extract: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("mui -> vanilla-extract: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -235,7 +235,7 @@ test("mui -> vanilla-extract: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -281,7 +281,7 @@ test("mui -> vanilla-extract: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		// pandwind:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box sx={{ color: "red", p: 2 }} />;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 0,

@@ -130,11 +130,11 @@ function solidStyledEmission(
 			],
 		};
 	return {
-		text: `((Component) => (props) => { const attrs = ${attrsValue}; const { className: _attrsClassName, class: attrsClass, style: attrsStyle, ...attrsProps } = attrs; const { className: _className, class: propsClass, style: propsStyle, ...rest } = props; return __pandwindCreateComponent(Component, { ...rest, ...attrsProps, class: [propsClass, _className, attrsClass, _attrsClassName].filter(Boolean).join(" ") || undefined, style: { ...propsStyle, ...attrsStyle } }); })(${component})`,
+		text: `((Component) => (props) => { const attrs = ${attrsValue}; const { className: _attrsClassName, class: attrsClass, style: attrsStyle, ...attrsProps } = attrs; const { className: _className, class: propsClass, style: propsStyle, ...rest } = props; return __yumcssCreateComponent(Component, { ...rest, ...attrsProps, class: [propsClass, _className, attrsClass, _attrsClassName].filter(Boolean).join(" ") || undefined, style: { ...propsStyle, ...attrsStyle } }); })(${component})`,
 		semantic: program,
 		imports: [
 			'import { styled } from "solid-styled-components";',
-			'import { createComponent as __pandwindCreateComponent } from "solid-js";',
+			'import { createComponent as __yumcssCreateComponent } from "solid-js";',
 		],
 		residuals: [...program.residuals],
 	};

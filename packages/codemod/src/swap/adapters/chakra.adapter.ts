@@ -685,7 +685,7 @@ function rewriteChakraTypeReferences(
 	for (const [name, replacement] of Object.entries(replacements)) {
 		if (!new RegExp(`\\b${name}\\b`, "u").test(rewritten)) continue;
 		if (name === "SystemStyleObject" && styleProps === "StyleObject")
-			imports.push('import type { StyleObject } from "pandwind/types/typings";');
+			imports.push('import type { StyleObject } from "yumcss/types/typings";');
 		rewritten = rewritten.replace(new RegExp(`\\b${name}\\b`, "gu"), replacement);
 	}
 	// An interface extends comma-separated object bases; an intersection is
@@ -699,7 +699,7 @@ function rewriteChakraTypeReferences(
 		"$1, $2",
 	);
 	if (rewritten.match(/\bStackProps\b/u) !== null)
-		imports.push('import type { StackProps } from "pandwind/stack";');
+		imports.push('import type { StackProps } from "yumcss/stack";');
 	return { code: rewritten, imports: [...new Set(imports)] };
 }
 
@@ -755,7 +755,7 @@ function chakraOfficialValue(
 	context: AdapterParseContext,
 ): StyleValue {
 	if (
-		context.targetId === CodemodAdapterId.Pandwind &&
+		context.targetId === CodemodAdapterId.YumCSS &&
 		property === "colorPalette" &&
 		value.kind === StyleValueKindTag.Dynamic
 	)
@@ -1420,7 +1420,7 @@ const hasChakraNativeHostBlockedProp = (
 		(attribute) =>
 			blocked.has(attribute.name) &&
 			!(attribute.name === "as" && !attribute.expression) &&
-			!(context.targetId === CodemodAdapterId.Pandwind && attribute.name === "colorPalette"),
+			!(context.targetId === CodemodAdapterId.YumCSS && attribute.name === "colorPalette"),
 	);
 };
 
@@ -1465,7 +1465,7 @@ const isUnprojectedChakraHost = (
 	host: JsxStyleHostMatch,
 	context: AdapterParseContext,
 ): boolean => {
-	if (context.targetId !== CodemodAdapterId.Pandwind) return false;
+	if (context.targetId !== CodemodAdapterId.YumCSS) return false;
 	if (hasChakraNativeHostBlockedProp(host, context)) return false;
 	const sourceStyleProps = chakraSourceVocabulary(context).styleProps;
 	const hasSourceStyleProps = host.attributes.some((attribute) =>
@@ -1885,7 +1885,7 @@ export function createChakraAdapter(
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		migration: {
 			rewrite: ({ source, code, file, targetId, sourceConfig, project, complete }) => {
-				if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
+				if (targetId !== CodemodAdapterId.YumCSS) return { code, residuals: [] };
 				const variableRewrite = rewriteOwnedChakraCssVariables(code, sourceConfig);
 				const typeRewrite = rewriteChakraTypeReferences(
 					variableRewrite.code,
@@ -1968,7 +1968,7 @@ export function createChakraAdapter(
 		sourceModules: CHAKRA_SOURCE_MODULES,
 		sourceModuleMatchers: [isChakraSourceModule],
 		sourceModulesToRemove: (targetId) =>
-			targetId === CodemodAdapterId.Pandwind ? CHAKRA_SOURCE_MODULES : [],
+			targetId === CodemodAdapterId.YumCSS ? CHAKRA_SOURCE_MODULES : [],
 		configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
 		tokenPolicy: CHAKRA_TOKEN_POLICY,
 		...(moduleLoader === undefined
@@ -2080,7 +2080,7 @@ export function createChakraAdapter(
 			return {
 				...parsed,
 				matches: parsed.matches.map((match) => {
-					if (context.targetId !== CodemodAdapterId.Pandwind)
+					if (context.targetId !== CodemodAdapterId.YumCSS)
 						return { ...match, program: lowerChakraDeclarations(match.program, context) };
 					return {
 						...match,

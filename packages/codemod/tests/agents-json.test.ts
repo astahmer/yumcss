@@ -1,5 +1,5 @@
 /**
- * pandwind.agents.json — determinism + shape of the agent capability file
+ * yumcss.agents.json — determinism + shape of the agent capability file
  * (plans/014 §5). The file is derived from real generated artifacts, so the
  * test runs codegen-shaped inputs through buildAgentsDocument and asserts:
  * stable output across runs, capped value lists with honest counts,
@@ -11,7 +11,7 @@ import {
 	conflictsSummary,
 	utilitiesFromTypesDts,
 } from "../src/tw/agents-json.ts";
-import { extractTwConfig } from "pandwind/vite/inline";
+import { extractTwConfig } from "yumcss/vite/inline";
 
 const TYPES = `
 export type TextValue = WithOpacityModifiers<"sm" | "base" | ${JSON.stringify("xl")} | (string & {})>;
@@ -44,12 +44,12 @@ describe("buildAgentsDocument — determinism + shape", () => {
 	const themeBlock = `@theme {\n\t--color-surface: #fff;\n}\n\n[data-theme="dark"] {\n\t--color-surface: #000;\n}`;
 	const config = extractTwConfig(
 		[
-			"export const __pandwindConfig = {",
+			"export const __yumcssConfig = {",
 			'  variants: { hover: { join: ":" }, dark: { join: "" } },',
 			'  compose: ["shadow"],',
 			'  conflicts: { text: { sm: ["font-size"] } }',
 			"};",
-			"export const tw = createTw(__pandwindConfig);",
+			"export const tw = createTw(__yumcssConfig);",
 		].join("\n"),
 	)!;
 
@@ -60,14 +60,14 @@ describe("buildAgentsDocument — determinism + shape", () => {
 
 	test("shape: schema, workflows, artifactMap, scopes", () => {
 		const doc = buildAgentsDocument({ typesDts: TYPES, config, themeBlock });
-		expect(doc.schema).toBe("pandwind.agents/1");
+		expect(doc.schema).toBe("yumcss.agents/1");
 		expect(doc.variants).toEqual(["hover", "dark"]);
 		expect(doc.compose).toEqual(["shadow"]);
 		expect(doc.themeScopes).toEqual(['[data-theme="dark"]']);
 		expect(doc.semanticTokens["--color-surface"]).toBe("#fff");
 		expect(doc.workflows.verifyTypes).toContain("typecheck");
 		expect(doc.generatedFrom.types).toBe("types.d.ts");
-		expect(doc.generatedFrom.interop).toBe("pandwind.interop.json");
+		expect(doc.generatedFrom.interop).toBe("yumcss.interop.json");
 		expect(Object.keys(doc.utilities)).toContain("text");
 	});
 });

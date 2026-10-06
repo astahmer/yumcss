@@ -42,7 +42,7 @@ test("goober -> mui -> goober: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "goober -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("goober -> mui -> goober: preserves an actionable concrete round trip", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("goober -> mui -> goober: preserves an actionable concrete round trip", asy
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -225,7 +225,7 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -260,7 +260,7 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -276,7 +276,7 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -311,7 +311,7 @@ test("goober -> mui -> goober: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -342,7 +342,7 @@ test("goober -> mui -> goober: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -377,7 +377,7 @@ test("goober -> mui -> goober: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "goober";
-		// pandwind:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

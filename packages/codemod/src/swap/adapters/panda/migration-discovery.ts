@@ -1,12 +1,12 @@
 /** Independently testable Panda migration discovery stage. */
 import { resolve } from "node:path";
-import type { SourceScanResult } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import type { SourceScanResult } from "yumcss/source";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import { detectAlias, scanProjectUsage, type AliasInfo, type ProjectUsage } from "./project.ts";
 import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./theme.ts";
 
-export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/1" as const;
+export const PANDA_DISCOVERY_SCHEMA = "yumcss.panda-discovery/1" as const;
 
 export interface PandaMigrationFile {
 	readonly path: string;
@@ -81,7 +81,7 @@ export async function discoverPandaMigration(
 	const theme = await loadPandaMigrationTheme(options.projectRoot);
 	const sources = scanPandaMigrationSources(files);
 	const usage = extractPandaMigrationUsage(files);
-	const outDirName = options.outDirName || "pandwind";
+	const outDirName = options.outDirName || "yumcss";
 	return {
 		schema: PANDA_DISCOVERY_SCHEMA,
 		files,

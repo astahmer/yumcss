@@ -42,7 +42,7 @@ test("mantine -> sass -> mantine: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> sass round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("mantine -> sass -> mantine: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -95,7 +95,7 @@ test("mantine -> sass -> mantine: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -124,7 +124,7 @@ test("mantine -> sass -> mantine: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -165,7 +165,7 @@ test("mantine -> sass -> mantine: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -209,7 +209,7 @@ test("mantine -> sass -> mantine: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -251,7 +251,7 @@ test("mantine -> sass -> mantine: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -267,7 +267,7 @@ test("mantine -> sass -> mantine: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -309,7 +309,7 @@ test("mantine -> sass -> mantine: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -340,7 +340,7 @@ test("mantine -> sass -> mantine: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -382,7 +382,7 @@ test("mantine -> sass -> mantine: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> sass | lowering-residual: capability, host-framework | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

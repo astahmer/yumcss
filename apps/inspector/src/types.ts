@@ -1,12 +1,12 @@
 /** Shared payload contract — canonical definitions live in the collection
  * layer; re-exported here so UI imports stay unchanged. */
-import type { CollectPayload } from "pandwind-analyze/collect/browser";
+import type { CollectPayload } from "@yumcss/analyze/collect/browser";
 
 export type InspectorPayload = Omit<CollectPayload, "tokenGraph"> & {
 	tokenGraph: TokenGraph;
 };
 
-export type { ThemeVar, TokenSection, UtilityUnion } from "pandwind-analyze/collect/browser";
+export type { ThemeVar, TokenSection, UtilityUnion } from "@yumcss/analyze/collect/browser";
 
 /* ------------------------- inspector-local types ------------------------- */
 

@@ -8,7 +8,7 @@ import { createMigrationPreviewWorkspace } from "./workspace.ts";
 import { createInMemoryMigrationPreviewUiProvider } from "./ui-provider.ts";
 
 const ui = createInMemoryMigrationPreviewUiProvider(
-	"<!doctype html><html><body><h1>pandwind / migration preview</h1></body></html>",
+	"<!doctype html><html><body><h1>yumcss / migration preview</h1></body></html>",
 );
 
 const roots: string[] = [];
@@ -20,7 +20,7 @@ afterEach(() => {
 describe("migration-preview integration", () => {
 	test("evaluates a real adapter through the authenticated HTTP session", async () => {
 		const root = mkdtempSync(
-			join(process.env.TMPDIR ?? "/tmp", "pandwind-migration-preview-http-"),
+			join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-http-"),
 		);
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
@@ -72,7 +72,7 @@ describe("migration-preview integration", () => {
 			expect(first.evaluation.diagnostics).toEqual([]);
 			expect(first.evaluation.artifacts?.targetCode).toMatchInlineSnapshot(`
 				"// src/Card.tsx
-				import { createUnsafeCss } from "pandwind/unsafe/css";
+				import { createUnsafeCss } from "yumcss/unsafe/css";
 				const css = createUnsafeCss();
 				export const card = css.class({ color: "red" });"
 			`);

@@ -44,7 +44,7 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "compiled -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);

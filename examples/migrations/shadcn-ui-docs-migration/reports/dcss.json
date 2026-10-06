@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.shadcn-v4-migration/1",
+	"schema": "yumcss.shadcn-v4-migration/1",
 	"lane": "dcss",
 	"referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
 	"sourceFiles": 235,

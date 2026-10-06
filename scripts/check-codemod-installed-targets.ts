@@ -23,7 +23,7 @@ const JsonValueSchema: z.ZodType<JsonValue> = z.lazy((): z.ZodType<JsonValue> =>
 );
 
 const InstalledTargetProofReportSchema = z.strictObject({
-	schema: z.literal("pandwind.codemod-installed-targets/1"),
+	schema: z.literal("yumcss.codemod-installed-targets/1"),
 	sourceFingerprint: z.string().regex(/^[\da-f]{64}$/u),
 	proofImplementationHash: z.string().regex(/^[\da-f]{64}$/u),
 	scope: z.string().min(1),

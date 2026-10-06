@@ -81,7 +81,7 @@ describe("adapter route round-trip contract", () => {
 		(targetId) => {
 			const result = migrate(
 				'css.class({ color: "red", display: "flex" })',
-				CodemodAdapterId.Pandwind,
+				CodemodAdapterId.YumCSS,
 				targetId,
 				"Card.tsx",
 				undefined,
@@ -90,7 +90,7 @@ describe("adapter route round-trip contract", () => {
 			const reverse = migrate(
 				generated,
 				targetId,
-				CodemodAdapterId.Pandwind,
+				CodemodAdapterId.YumCSS,
 				"Card.tsx",
 				undefined,
 			);
@@ -135,11 +135,11 @@ describe("adapter route round-trip contract", () => {
 		expect(reverse.code).toContain("button");
 	});
 
-	test("removes an aliased Panda generated import without shadowing Pandwind css", () => {
+	test("removes an aliased Panda generated import without shadowing YumCSS css", () => {
 		const result = migrate(
 			'import { css } from "@/styled-system/css";\nconst card = css({ color: "red" });',
 			CodemodAdapterId.Panda,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"Card.tsx",
 			undefined,
 		);
@@ -148,23 +148,23 @@ describe("adapter route round-trip contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.code).not.toContain("styled-system/css");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });"
 		`);
 	});
 
-	test("removes the Pandwind helper when returning to Emotion's css binding", () => {
+	test("removes the YumCSS helper when returning to Emotion's css binding", () => {
 		const forward = migrate(
 			'import { css } from "@emotion/css";\nconst card = css({ color: "red" });',
 			CodemodAdapterId.Emotion,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"Card.tsx",
 			undefined,
 		);
 		const reverse = migrate(
 			forward.code,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Emotion,
 			"Card.tsx",
 			undefined,

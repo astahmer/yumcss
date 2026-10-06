@@ -44,7 +44,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -145,7 +145,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: retains the documented 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -185,7 +185,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: retains the documented 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> chakra-ui | lowering-residual: emission-empty, rule-level | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

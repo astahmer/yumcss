@@ -38,10 +38,10 @@ test("next-yak -> sass: migrates concrete next-yak syntax to sass", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "next-yak -> sass happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("next-yak -> sass: migrates concrete next-yak syntax to sass", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("next-yak -> sass: carries a documented secondary next-yak API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: component | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: component | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("next-yak -> sass: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("next-yak -> sass: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("next-yak -> sass: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("next-yak -> sass: preserves malformed concrete next-yak input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> sass | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 0,

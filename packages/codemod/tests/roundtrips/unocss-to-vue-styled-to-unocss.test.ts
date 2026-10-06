@@ -42,7 +42,7 @@ test("unocss -> vue-styled -> unocss: preserves an actionable concrete round tri
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("unocss -> vue-styled -> unocss: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import styled from "vue-styled-components";
 		export const App = () => styled.div\`display: flex; align-items: center; gap: 1rem;\`;",
 		    "converted": 0,
@@ -127,7 +127,7 @@ test("unocss -> vue-styled -> unocss: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> vue-styled | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: unocss -> vue-styled | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -170,7 +170,7 @@ test("unocss -> vue-styled -> unocss: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> vue-styled | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: unocss -> vue-styled | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -249,7 +249,7 @@ test("unocss -> vue-styled -> unocss: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #f97316; padding: 1.125rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -324,7 +324,7 @@ test("unocss -> vue-styled -> unocss: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 1.125rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -414,7 +414,7 @@ test("unocss -> vue-styled -> unocss: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> unocss | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 1.125rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

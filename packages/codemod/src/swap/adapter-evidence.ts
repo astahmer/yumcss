@@ -8,7 +8,7 @@ import {
 } from "./identifiers.ts";
 
 /** Versioned documentation and project-evidence contract for one adapter. */
-export const ADAPTER_EVIDENCE_SCHEMA = "pandwind.style-adapter-evidence/1" as const;
+export const ADAPTER_EVIDENCE_SCHEMA = "yumcss.style-adapter-evidence/1" as const;
 
 export interface AdapterOfficialApi {
 	readonly name: string;

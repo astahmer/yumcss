@@ -42,7 +42,7 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", asyn
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> tokenami round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("mui -> tokenami -> mui: preserves an actionable concrete round trip", asyn
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box style={css({ "--color": "red", "--padding": "16px" })} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": 8 }), propsStyle)} />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -280,7 +280,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -354,7 +354,7 @@ test("mui -> tokenami -> mui: preserves concrete theme and project context varia
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -443,7 +443,7 @@ test("mui -> tokenami -> mui: resolves token values across both concrete legs", 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tokenami -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box style={css({ "--color": "var(--color_brand)", "--padding": "16px" })} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

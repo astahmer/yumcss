@@ -1,10 +1,10 @@
-import { createNamedAtomsStrategy } from "pandwind/css/named";
-import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
-import { createCx } from "pandwind/cx";
-import { define } from "pandwind/preset";
-import { csstypePreset } from "pandwind/preset/csstype";
-import { defaultPreset } from "pandwind/preset/default";
-import { examplePreset } from "@pandwind/example-preset";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+import { createRuntimeCss, createRuntimeDesignCss } from "yumcss/css/runtime";
+import { createCx } from "yumcss/cx";
+import { define } from "yumcss/preset";
+import { csstypePreset } from "yumcss/preset/csstype";
+import { defaultPreset } from "yumcss/preset/default";
+import { examplePreset } from "@yumcss/example-preset";
 
 // The playground runs both public CSS lanes through runtime sheets so example
 // previews observe the same preset binding and class-name instrumentation.
@@ -17,27 +17,27 @@ const createPlaygroundUnsafeCss = (options: Parameters<typeof createRuntimeCss>[
 	createRuntimeCss(examplePreset, options);
 
 /**
- * Real pandwind subpath modules the sandbox resolves import statements
+ * Real yumcss subpath modules the sandbox resolves import statements
  * against, so generated examples can `import { createDesignCss } from
- * "pandwind/design"` exactly like a user project would.
+ * "yumcss/design"` exactly like a user project would.
  */
 export const SANDBOX_MODULES = {
-	"pandwind/css": { createCss: createPlaygroundCss },
-	"pandwind/css/named": { createNamedAtomsStrategy },
-	"pandwind/unsafe/css": { createUnsafeCss: createPlaygroundUnsafeCss },
-	"pandwind/css/runtime": { createRuntimeCss, createRuntimeDesignCss },
-	"pandwind/design": { createDesignCss: createRuntimeDesignCss },
-	"pandwind/cx": { createCx },
-	"pandwind/preset": {
+	"yumcss/css": { createCss: createPlaygroundCss },
+	"yumcss/css/named": { createNamedAtomsStrategy },
+	"yumcss/unsafe/css": { createUnsafeCss: createPlaygroundUnsafeCss },
+	"yumcss/css/runtime": { createRuntimeCss, createRuntimeDesignCss },
+	"yumcss/design": { createDesignCss: createRuntimeDesignCss },
+	"yumcss/cx": { createCx },
+	"yumcss/preset": {
 		define,
 	},
-	"pandwind/preset/csstype": {
+	"yumcss/preset/csstype": {
 		csstypePreset,
 	},
-	"pandwind/preset/default": {
+	"yumcss/preset/default": {
 		defaultPreset,
 	},
-	"@pandwind/example-preset": {
+	"@yumcss/example-preset": {
 		examplePreset,
 		define,
 	},

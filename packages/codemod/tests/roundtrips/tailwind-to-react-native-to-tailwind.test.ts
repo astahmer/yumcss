@@ -42,7 +42,7 @@ test("tailwind -> react-native -> tailwind: preserves an actionable concrete rou
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -179,7 +179,7 @@ test("tailwind -> react-native -> tailwind: retains the documented secondary API
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
 		export const App = () => <View   style={StyleSheet.create({ style: { "color": "rebeccapurple", "md": { "display": "flex" } } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

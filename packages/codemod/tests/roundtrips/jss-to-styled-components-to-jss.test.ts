@@ -42,7 +42,7 @@ test("jss -> styled-components -> jss: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "jss -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("jss -> styled-components -> jss: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const useStyles = { "card": styled.div({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("jss -> styled-components -> jss: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const sheet = { "card": styled.div({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -277,7 +277,7 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -351,7 +351,7 @@ test("jss -> styled-components -> jss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -440,7 +440,7 @@ test("jss -> styled-components -> jss: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> jss | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const useStyles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

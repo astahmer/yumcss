@@ -53,12 +53,12 @@ async function boot(dark: boolean) {
 
 	check(
 		"labels render",
-		frame.includes("pandwind / opentui") &&
+		frame.includes("yumcss / opentui") &&
 			frame.includes("status: light theme active") &&
 			frame.includes("bordered section") &&
 			frame.includes("unconditional bottom row"),
 	);
-	check("pad [4,8] expands to 2-cell side inset", /^ {2}pandwind \/ opentui/m.test(frame));
+	check("pad [4,8] expands to 2-cell side inset", /^ {2}yumcss \/ opentui/m.test(frame));
 	check("border shorthand draws border glyphs", frame.includes("┌") && frame.includes("│"));
 	check(
 		"token backgrounds exact ($blue-500, $gray-100)",

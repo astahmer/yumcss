@@ -42,7 +42,7 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -143,7 +143,7 @@ test("panda -> styled-components -> panda: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> styled-components | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> styled-components | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("panda -> styled-components -> panda: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> styled-components | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> styled-components | capability-blocked: named-conditions: named: size; composition: 1 composition edge(s) | available: static, named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

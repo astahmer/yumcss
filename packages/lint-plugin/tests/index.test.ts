@@ -3,10 +3,10 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
-import { inlineCxCalls } from "pandwind/vite/cx-inline";
-import { inlineTwCalls } from "pandwind/vite/inline";
-import { presetTokenVocabularyByProperty } from "pandwind/vite/preset-context";
-import { tailwindPreset } from "pandwind/preset/tailwindcss";
+import { inlineCxCalls } from "yumcss/vite/cx-inline";
+import { inlineTwCalls } from "yumcss/vite/inline";
+import { presetTokenVocabularyByProperty } from "yumcss/vite/preset-context";
+import { tailwindPreset } from "yumcss/preset/tailwindcss";
 import { NodeKind } from "../src/ast-node-kind.ts";
 import plugin from "../src/index.ts";
 import { createProjectTokenVocabularyResolver } from "../src/project-token-vocabulary.ts";
@@ -152,7 +152,7 @@ const withProject = <Result>(
 	files: Readonly<Record<string, string>>,
 	run: (directory: string) => Result,
 ): Result => {
-	const directory = mkdtempSync(join(tmpdir(), "pandwind-lint-plugin-"));
+	const directory = mkdtempSync(join(tmpdir(), "yumcss-lint-plugin-"));
 	try {
 		for (const [relativePath, contents] of Object.entries(files)) {
 			const filename = join(directory, relativePath);
@@ -189,17 +189,17 @@ const applyFixes = (source: string, fixes: readonly FixEdit[]): string => {
 
 const staticBindingChain = (size: number): string =>
 	[
-		'import { tw } from "pandwind";',
+		'import { tw } from "yumcss";',
 		...Array.from({ length: size }, (_, index) => `const value${index} = value${index + 1};`),
 		`const value${size} = "static";`,
 		"tw(...values);",
 	].join("\n");
 
-describe("Pandwind Oxlint API binding resolution", () => {
+describe("YumCSS Oxlint API binding resolution", () => {
 	test("flags only single static cx strings that pass through unchanged", () => {
-		const source = `import { cx as merge } from "pandwind";
-import * as pw from "pandwind";
-import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { cx as merge } from "yumcss";
+import * as pw from "yumcss";
+import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 merge("flex");
 pw.cx("items-center");
@@ -213,16 +213,16 @@ css.props(map);`;
 
 		expect(reports).toHaveLength(2);
 		expect(reports.map(({ message }) => message)).toEqual([
-			"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
-			"pandwind: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+			"yumcss: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
+			"yumcss: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging",
 		]);
 	});
 
 	test("recognizes aliases and namespaces, while ignoring unrelated local functions", () => {
 		const reports = runRule(
 			"no-spreads",
-			`import { cx as merge, tw as utility } from "pandwind";
-import * as pw from "pandwind";
+			`import { cx as merge, tw as utility } from "yumcss";
+import * as pw from "yumcss";
 const cx = (...values) => values;
 function render(cx: unknown) { cx(...items); }
 merge(...items);
@@ -259,8 +259,8 @@ cx(...items);`,
 	test("recognizes css and design instances from their real subpath factories", () => {
 		const reports = runRule(
 			"no-dollar-raw",
-			`import * as cssApi from "pandwind/unsafe/css";
-import { createDesignCss as makeDesign } from "pandwind/design";
+			`import * as cssApi from "yumcss/unsafe/css";
+import { createDesignCss as makeDesign } from "yumcss/design";
 const css = cssApi.createUnsafeCss();
 const dss = makeDesign(preset);
 css({ $raw: { color: "green" } });
@@ -277,28 +277,28 @@ dss.class({ $raw: { color: "blue" } });`,
 			    "data": {
 			      "name": "css",
 			    },
-			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+			    "message": "yumcss: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
 			  },
 			  {
 			    "data": {
 			      "name": "dss",
 			    },
-			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+			    "message": "yumcss: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
 			  },
 			  {
 			    "data": {
 			      "name": "css.class",
 			    },
-			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+			    "message": "yumcss: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
 			  },
 			  {
 			    "data": {
 			      "name": "dss.class",
 			    },
-			    "message": "pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+			    "message": "yumcss: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
 			    "nodeType": "Property",
 			  },
 			]
@@ -357,7 +357,7 @@ cssBackend.createCssBackend(options);`,
 	test("does not invent a root css export or classify an unrelated factory", () => {
 		const reports = runRule(
 			"no-spreads",
-			`import { css as rootCss } from "pandwind";
+			`import { css as rootCss } from "yumcss";
 import { createCss as makeCss } from "other-library";
 const css = makeCss();
 css.class(...items);
@@ -368,11 +368,11 @@ rootCss(...items);`,
 
 	test("resolves configured CSS modules for extraction and JSX rules", () => {
 		const settings = {
-			"pandwind-extraction": {
-				cssModules: [{ source: "../pandwind/css", exports: ["css"] }],
+			"yumcss-extraction": {
+				cssModules: [{ source: "../yumcss/css", exports: ["css"] }],
 			},
 		};
-		const code = `import { css } from "../pandwind/css";
+		const code = `import { css } from "../yumcss/css";
 const className = css.class({ color: theme.colors.brand });
 const element = <div {...css.props({ color: "red" })} className="custom" />;`;
 
@@ -389,8 +389,8 @@ const element = <div {...css.props({ color: "red" })} className="custom" />;`;
 	test("limits arbitrary-value checks to class-string lanes", () => {
 		const reports = runRule(
 			"no-arbitrary-values",
-			`import { tw } from "pandwind";
-import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { tw } from "yumcss";
+import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 tw("w-[13px]");
 css.class({ color: "[red]" });`,
@@ -405,7 +405,7 @@ css.class({ color: "[red]" });`,
 			      "name": "tw",
 			      "value": "w-[13px]",
 			    },
-			    "message": "pandwind: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)",
+			    "message": "yumcss: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)",
 			    "nodeType": "Literal",
 			  },
 			]
@@ -415,7 +415,7 @@ css.class({ color: "[red]" });`,
 	test("applies runtime diagnostics to aliased static-lane calls", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import { cx as merge } from "pandwind";
+			`import { cx as merge } from "yumcss";
 merge(
   \`text-\${size}\`,
   props.className,
@@ -436,7 +436,7 @@ merge(
 			      "bad": "template interpolation",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+			    "message": "yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "TemplateLiteral",
 			  },
 			  {
@@ -444,7 +444,7 @@ merge(
 			      "bad": "member expression value",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+			    "message": "yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			  {
@@ -452,7 +452,7 @@ merge(
 			      "bad": "function argument",
 			      "name": "merge",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+			    "message": "yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "ArrowFunctionExpression",
 			  },
 			]
@@ -462,7 +462,7 @@ merge(
 	test("reports more than one partially foldable conditional", () => {
 		const reports = runRule(
 			"no-multiple-conditionals",
-			`import { cx as utility } from "pandwind";
+			`import { cx as utility } from "yumcss";
 utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" : "cursor-pointer");`,
 		);
 
@@ -475,7 +475,7 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 			      "n": 2,
 			      "name": "utility",
 			    },
-			    "message": "pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
+			    "message": "yumcss: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
 			    "nodeType": "CallExpression",
 			  },
 			]
@@ -485,7 +485,7 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 	test("leaves finite CSS declaration branches to style extraction", () => {
 		const reports = runRule(
 			"no-multiple-conditionals",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 css.class({
 	borderColor: editing ? "accent.solid" : "border.muted",
@@ -498,7 +498,7 @@ css.class({
 	});
 });
 
-describe("Pandwind Oxlint static safety rules", () => {
+describe("YumCSS Oxlint static safety rules", () => {
 	test("recognizes and unwraps all values in the typed CSS vocabulary", () => {
 		const cases = [
 			...Array.from(CSS_WIDE_VALUES, (value) => ({ property: "color", value })),
@@ -509,7 +509,7 @@ describe("Pandwind Oxlint static safety rules", () => {
 			{ property: "height", value: -0.5 },
 			{ property: "fontWeight", value: 700 },
 		];
-		const code = `import { createCss } from "pandwind/css";\nconst css = createCss(preset);\n${cases
+		const code = `import { createCss } from "yumcss/css";\nconst css = createCss(preset);\n${cases
 			.map(({ property, value }) => `css({ $raw: { ${property}: ${JSON.stringify(value)} } });`)
 			.join("\n")}`;
 		const reports = runRule("prefer-typed-css-values", code);
@@ -532,13 +532,13 @@ describe("Pandwind Oxlint static safety rules", () => {
 	test("keeps property-specific mismatches quiet and mixed values report-only", () => {
 		const mismatchReports = runRule(
 			"prefer-typed-css-values",
-			`import { createCss } from "pandwind/css";
+			`import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css({ $raw: { width: "transparent", color: "auto", display: "auto", padding: "grid", fontWeight: "700" } });`,
 		);
 		const mixedReports = runRule(
 			"prefer-typed-css-values",
-			`import { createCss } from "pandwind/css";
+			`import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css({ $raw: { width: { _hover: "auto", _focus: "var(--runtime-width)" } } });`,
 		);
@@ -550,7 +550,7 @@ css({ $raw: { width: { _hover: "auto", _focus: "var(--runtime-width)" } } });`,
 	});
 
 	test("unwraps independent typed properties from the middle of a raw object", () => {
-		const code = `import { createCss } from "pandwind/css";
+		const code = `import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css({ $raw: { height: "0.5rem", left: 0, right: 0, top: "-0.5rem" } });`;
 		const reports = runRule("prefer-typed-css-values", code);
@@ -565,21 +565,21 @@ css({ $raw: { height: "0.5rem", left: 0, right: 0, top: "-0.5rem" } });`;
 			),
 		).toContain("left: 0, right: 0, $raw:");
 
-		const mixedCode = `import { createCss } from "pandwind/css";
+		const mixedCode = `import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css({ $raw: { fontWeight: "700", background: { base: "transparent", xl: "transparent" }, borderColor: { base: "transparent", xl: "nav.fg" }, boxShadow: { base: "none", xl: "none" } } });`;
 		const mixedReports = runRule("prefer-typed-css-values", mixedCode);
 		expect(mixedReports).toHaveLength(1);
 		expect(mixedReports[0]?.fixes).toHaveLength(3);
 
-		const tokenDependentCode = `import { createCss } from "pandwind/css";
+		const tokenDependentCode = `import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css.class({ _current: { color: { base: "nav.fg", xl: "component.nav.activeText" }, $raw: { fontWeight: "700", background: { base: "transparent", xl: "component.nav.activeBg" }, borderColor: { base: "transparent", xl: "nav.fg" }, boxShadow: { base: "none", xl: "chip" } } } });`;
 		const tokenDependentReports = runRule("prefer-typed-css-values", tokenDependentCode);
 		expect(tokenDependentReports).toHaveLength(1);
 		expect(tokenDependentReports[0]?.fixes).toBeUndefined();
 
-		const conflictingCode = `import { createCss } from "pandwind/css";
+		const conflictingCode = `import { createCss } from "yumcss/css";
 const css = createCss(preset);
 css({ $raw: { background: "var(--image)", backgroundColor: "transparent", borderRadius: "0" } });`;
 		const conflictingReports = runRule("prefer-typed-css-values", conflictingCode);
@@ -601,14 +601,14 @@ css.class({
 });`;
 		withProject(
 			{
-				"src/theme.ts": `import { define } from "pandwind/preset";
+				"src/theme.ts": `import { define } from "yumcss/preset";
 const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
 export const preset = define.preset({ config: {}, tokens }, {
   strict: true,
   conditions: {},
   properties: { borderColor: { $tokens: "colors" } },
 });`,
-				"src/css.ts": `import { createCss } from "pandwind/css";
+				"src/css.ts": `import { createCss } from "yumcss/css";
 import { preset } from "./theme";
 export const css = createCss(preset);`,
 				"src/app.tsx": code,
@@ -629,8 +629,8 @@ export const css = createCss(preset);`,
 	});
 
 	test("resolves the compiler's built-in preset through its package entry", () => {
-		const code = `import { createCss } from "pandwind/css";
-import { tailwindPreset } from "pandwind/preset/tailwindcss";
+		const code = `import { createCss } from "yumcss/css";
+import { tailwindPreset } from "yumcss/preset/tailwindcss";
 const css = createCss(tailwindPreset);
 css.class({ $raw: { color: "$white" } });`;
 		const filename = resolve(process.cwd(), "tests/preset-resolver.fixture.ts");
@@ -657,7 +657,7 @@ colorCss.class({ $raw: { color: "nav.fg" } });
 backgroundCss.class({ $raw: { color: "nav.fg" } });`;
 		withProject(
 			{
-				"src/theme.ts": `import { define } from "pandwind/preset";
+				"src/theme.ts": `import { define } from "yumcss/preset";
 const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
 const base = { config: {}, tokens };
 export const colorPreset = define.preset(base, {
@@ -666,7 +666,7 @@ export const colorPreset = define.preset(base, {
 export const backgroundPreset = define.preset(base, {
   strict: true, conditions: {}, properties: { backgroundColor: { $tokens: "colors" } },
 });`,
-				"src/css.ts": `import { createCss } from "pandwind/css";
+				"src/css.ts": `import { createCss } from "yumcss/css";
 import { backgroundPreset, colorPreset } from "./theme";
 export const colorCss = createCss(colorPreset);
 export const backgroundCss = createCss(backgroundPreset);`,
@@ -693,7 +693,7 @@ colorCss.class({ ...shared });
 paletteCss.class({ ...shared });`;
 		withProject(
 			{
-				"src/theme.ts": `import { define } from "pandwind/preset";
+				"src/theme.ts": `import { define } from "yumcss/preset";
 const colorTokens = define.tokens({ colors: { "nav.fg": "#123456" } });
 const paletteTokens = define.tokens({ palette: { "nav.fg": "#654321" } });
 export const colorPreset = define.preset({ config: {}, tokens: colorTokens }, {
@@ -702,7 +702,7 @@ export const colorPreset = define.preset({ config: {}, tokens: colorTokens }, {
 export const palettePreset = define.preset({ config: {}, tokens: paletteTokens }, {
   strict: true, conditions: {}, properties: { color: { $tokens: "palette" } },
 });`,
-				"src/css.ts": `import { createCss } from "pandwind/css";
+				"src/css.ts": `import { createCss } from "yumcss/css";
 import { colorPreset, palettePreset } from "./theme";
 export const colorCss = createCss(colorPreset);
 export const paletteCss = createCss(palettePreset);`,
@@ -721,12 +721,12 @@ const shared = { $raw: { borderColor: "nav.fg" } };
 css.class({ ...shared });`;
 		withProject(
 			{
-				"src/theme.ts": `import { define } from "pandwind/preset";
+				"src/theme.ts": `import { define } from "yumcss/preset";
 const tokens = define.tokens({ colors: { "nav.fg": "#123456" } });
 export const preset = define.preset({ config: {}, tokens }, {
   strict: true, conditions: {}, properties: { borderColor: { $tokens: "colors" } },
 });`,
-				"src/css.ts": `import { createCss } from "pandwind/css";
+				"src/css.ts": `import { createCss } from "yumcss/css";
 import { preset } from "./theme";
 export const css = createCss(preset);`,
 				"src/app.tsx": code,
@@ -752,7 +752,7 @@ css.class({ $raw: { borderColor: "nav.fg" } });`;
 		withProject(
 			{
 				"src/theme.ts": `export const preset = loadPreset();`,
-				"src/css.ts": `import { createCss } from "pandwind/css";
+				"src/css.ts": `import { createCss } from "yumcss/css";
 import { preset } from "./theme";
 export const css = createCss(preset);`,
 				"src/app.tsx": code,
@@ -801,7 +801,7 @@ styles.class({ width: "auto" });`,
 	test("shares the Vite carrier analysis and accepts inlineable nested conditions", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const shade = getShade();
 const Nested = () => <div {...css({ _hover: { backgroundColor: shade } })} />;`,
@@ -813,7 +813,7 @@ const Nested = () => <div {...css({ _hover: { backgroundColor: shade } })} />;`,
 	test("accepts inlineable dynamic values inside a raw subtree", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const shade = getShade();
 const Raw = () => <div {...css({ padding: 2, $raw: { borderColor: shade } })} />;`,
@@ -825,7 +825,7 @@ const Raw = () => <div {...css({ padding: 2, $raw: { borderColor: shade } })} />
 	test("reports dynamic spreads and ancestor/descendant collisions", () => {
 		const spreadReports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const styles = getStyles();
 const shade = getShade();
@@ -833,7 +833,7 @@ const Spread = () => <div {...css({ ...styles, color: shade })} />;`,
 		);
 		const collisionReports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const shade = getShade();
 const Collision = () => <div {...css({ _hover: { color: shade }, _hover: "red" })} />;`,
@@ -854,7 +854,7 @@ const Collision = () => <div {...css({ _hover: { color: shade }, _hover: "red" }
 	test("accepts statically provable spreads", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		const base = { padding: 4 };
 		const shade = getShade();
@@ -867,7 +867,7 @@ const Collision = () => <div {...css({ _hover: { color: shade }, _hover: "red" }
 	test("reports unsupported function-valued carrier entries", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		const Card = () => <div {...css({ color: () => "red" })} />;`,
 		);
@@ -882,8 +882,8 @@ const Collision = () => <div {...css({ _hover: { color: shade }, _hover: "red" }
 	test("does not report a statically provable fallback alias", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
-import { firstThatWorks } from "pandwind/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
+import { firstThatWorks } from "yumcss/css";
 const css = createUnsafeCss();
 const displayFallback = firstThatWorks("flex", "block");
 const shade = getShade();
@@ -896,7 +896,7 @@ const Card = () => <div {...css({ display: displayFallback, color: shade })} />;
 	test("reports non-static additional props on an explicit carrier", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		const shade = getShade();
 		const className = getClassName();
@@ -910,8 +910,8 @@ const Card = () => <div {...css({ display: displayFallback, color: shade })} />;
 	test("reports a dynamic fallback alias", () => {
 		const reports = runRule(
 			"no-dynamic-carrier-fallback",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
-import { firstThatWorks } from "pandwind/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
+import { firstThatWorks } from "yumcss/css";
 const css = createUnsafeCss();
 const displayFallback = firstThatWorks(getDisplay(), "block");
 const shade = getShade();
@@ -928,7 +928,7 @@ const Card = () => <div {...css({ display: displayFallback, color: shade })} />;
 	test("requires statically extractable keyframe bodies", () => {
 		const reports = runRule(
 			"no-dynamic-keyframes",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 	const css = createUnsafeCss();
 	const moduleBody = { from: { opacity: 0 }, to: { opacity: 1 } };
 	css.keyframes(moduleBody);
@@ -952,14 +952,14 @@ const Card = () => <div {...css({ display: displayFallback, color: shade })} />;
 			    "data": {
 			      "name": "css.keyframes",
 			    },
-			    "message": "pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+			    "message": "yumcss: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
 			    "nodeType": "Identifier",
 			  },
 			  {
 			    "data": {
 			      "name": "css.keyframes",
 			    },
-			    "message": "pandwind: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
+			    "message": "yumcss: {{name}}() needs one static object literal body — keep every step and declaration literal or move @keyframes to authored CSS",
 			    "nodeType": "ObjectExpression",
 			  },
 			]
@@ -978,13 +978,13 @@ const isTyped = (node) => node.type === NodeKind.CallExpression;`,
 		expect(reports[0]).toMatchObject({
 			data: { value: "CallExpression" },
 			message:
-				"pandwind: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
+				"yumcss: raw parser node identity {{value}} must use NodeKind or the owning typed identity table",
 			nodeType: "Literal",
 		});
 	});
 
 	test("uses an explicit token policy instead of a hardcoded scale vocabulary", () => {
-		const code = `import { createDesignCss } from "pandwind/design";
+		const code = `import { createDesignCss } from "yumcss/design";
 const dss = createDesignCss(preset);
 dss.class({ $frame: { gap: "space-4", align: "center" } });`;
 		const withoutPolicy = runRule("design-tokens-only", code);
@@ -998,7 +998,7 @@ dss.class({ $frame: { gap: "space-4", align: "center" } });`;
 
 		const strictReports = runRule(
 			"design-tokens-only",
-			`import { createDesignCss } from "pandwind/design";
+			`import { createDesignCss } from "yumcss/design";
 const dss = createDesignCss(preset);
 dss.class({ $frame: { gap: "space-5" } });`,
 			[{ allowedPrefixes: ["$"], allowedValues: ["space-4"] }],
@@ -1010,7 +1010,7 @@ dss.class({ $frame: { gap: "space-5" } });`,
 			    "data": {
 			      "value": "space-5",
 			    },
-			    "message": "pandwind: "{{value}}" is not part of the configured design system — use a verified token or extend the project policy",
+			    "message": "yumcss: "{{value}}" is not part of the configured design system — use a verified token or extend the project policy",
 			    "nodeType": "Literal",
 			  },
 			]
@@ -1019,7 +1019,7 @@ dss.class({ $frame: { gap: "space-5" } });`,
 
 	test("consumes the shared governance TokenPolicySnapshot (plans/054)", () => {
 		const policy = {
-			owner: "pandwind",
+			owner: "yumcss",
 			resolved: true,
 			strictProperties: ["padding", "radius", "color"],
 			allowedRawValuesByProperty: { padding: ["4px"] },
@@ -1033,7 +1033,7 @@ dss.class({ $frame: { gap: "space-5" } });`,
 		// verified tokens, declared property escape hatch, and non-strict props stay quiet
 		const ok = runRule(
 			"design-tokens-only",
-			`import { createDesignCss } from "pandwind/design";
+			`import { createDesignCss } from "yumcss/design";
 const dss = createDesignCss(preset);
 dss.class({
   $frame: { padding: "$space.4", padding2: "4px", radius: "$radius.sm" },
@@ -1044,7 +1044,7 @@ dss.class({
 		expect(ok).toEqual([]);
 
 		// unresolved policy is report-only/fail-open
-		const badCode = `import { createDesignCss } from "pandwind/design";
+		const badCode = `import { createDesignCss } from "yumcss/design";
 const dss = createDesignCss(preset);
 dss.class({
   $frame: { padding: "13px" },
@@ -1071,7 +1071,7 @@ dss.class({
 			      "property": "padding",
 			      "value": "13px",
 			    },
-			    "message": "pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
+			    "message": "yumcss: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
 			    "nodeType": "Literal",
 			  },
 			  {
@@ -1079,7 +1079,7 @@ dss.class({
 			      "property": "color",
 			      "value": "chartreuse",
 			    },
-			    "message": "pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
+			    "message": "yumcss: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
 			    "nodeType": "Literal",
 			  },
 			]
@@ -1101,7 +1101,7 @@ dss.class({
 			body: [
 				{
 					type: NodeKind.ImportDeclaration,
-					source: { type: NodeKind.Literal, value: "pandwind" },
+					source: { type: NodeKind.Literal, value: "yumcss" },
 					specifiers: [
 						{
 							type: NodeKind.ImportSpecifier,
@@ -1128,7 +1128,7 @@ dss.class({
 			    "name": "tw",
 			    "value": "w-[13px]",
 			  },
-			  "message": "pandwind: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)",
+			  "message": "yumcss: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)",
 			  "nodeType": "Literal",
 			}
 		`);
@@ -1137,8 +1137,8 @@ dss.class({
 	test("keeps explicit runtime carriers quiet", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import { tw } from "pandwind";
-import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { tw } from "yumcss";
+import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const card = { color: "red", padding: "1rem" };
 css.class(card);
@@ -1156,7 +1156,7 @@ css.raw({ color: theme.color });`,
 	test("accepts static object spreads and reports runtime spread inputs", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const layout = { flex: "1", overflow: "hidden" } as const;
 css.class({ ...layout, display: compact ? "flex" : "block" });
@@ -1173,7 +1173,7 @@ css.class({ ...runtimeLayout });`,
 	test("accepts undefined as a static optional style branch", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 css.class({ backgroundColor: selected ? "bg.subtle" : undefined });`,
 		);
@@ -1191,7 +1191,7 @@ const cls = css.class({
 	borderColor: selected ? "$red-300" : undefined,
 });`;
 		const settings = {
-			"pandwind-extraction": {
+			"yumcss-extraction": {
 				cssModules: [{ source: "./design", exports: ["css"] }],
 			},
 		};
@@ -1202,7 +1202,7 @@ const cls = css.class({
 	test("uses the Tw compiler's module-constant scope", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import { tw } from "pandwind";
+			`import { tw } from "yumcss";
 const moduleColor = "red";
 tw({ color: moduleColor });
 function Card() {
@@ -1222,10 +1222,10 @@ function Card() {
 	});
 
 	test("matches Tw compiler behavior for object constants and finite dynamic values", () => {
-		const objectConstant = `import { tw } from "pandwind";
+		const objectConstant = `import { tw } from "yumcss";
 const card = { color: "red" };
 tw(card);`;
-		const conditionalValue = `import { tw } from "pandwind";
+		const conditionalValue = `import { tw } from "yumcss";
 tw({ color: active ? "red" : "blue" });`;
 
 		expect(inlineTw(objectConstant).inlined).toBe(0);
@@ -1238,7 +1238,7 @@ tw({ color: active ? "red" : "blue" });`;
 	test("reports nested dynamic values", () => {
 		const dynamicReports = runRule(
 			"no-dynamic-values",
-			`import { tw } from "pandwind";
+			`import { tw } from "yumcss";
 tw({ md: { hover: { color: theme.colors.brand } } });`,
 		);
 
@@ -1250,7 +1250,7 @@ tw({ md: { hover: { color: theme.colors.brand } } });`,
 			      "bad": "member expression value",
 			      "name": "tw",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+			    "message": "yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			]
@@ -1311,7 +1311,7 @@ tw({ md: { hover: { color: theme.colors.brand } } });`,
 		];
 
 		for (const { name, expression, inlined, dynamicValues, conditions } of cases) {
-			const source = `import { cx } from "pandwind";\n${expression};`;
+			const source = `import { cx } from "yumcss";\n${expression};`;
 			expect(inlineCx(expression).inlined, name).toBe(inlined);
 			expect(runRule("no-dynamic-values", source), name).toHaveLength(dynamicValues);
 			const reports = runRule("no-multiple-conditionals", source);
@@ -1319,8 +1319,8 @@ tw({ md: { hover: { color: theme.colors.brand } } });`,
 			if (conditions > 0) expect(reports[0]?.data, name).toEqual({ n: conditions, name: "cx" });
 		}
 
-		const namespaceSource = `import * as pandwind from "pandwind";
-pandwind.cx(active ? "grid" : "block", compact ? "flex" : "hidden");`;
+		const namespaceSource = `import * as yumcss from "yumcss";
+yumcss.cx(active ? "grid" : "block", compact ? "flex" : "hidden");`;
 		expect(
 			inlineCxCalls(namespaceSource, "fixture.tsx", { variants: {} }, new Set(["cx"])).inlined,
 		).toBe(0);
@@ -1331,8 +1331,8 @@ pandwind.cx(active ? "grid" : "block", compact ? "flex" : "hidden");`;
 	test("ignores type-only imports and preserves namespace method identity", () => {
 		const reports = runRule(
 			"no-dynamic-values",
-			`import type { tw as TypeOnlyTw } from "pandwind";
-import * as cssApi from "pandwind/unsafe/css";
+			`import type { tw as TypeOnlyTw } from "yumcss";
+import * as cssApi from "yumcss/unsafe/css";
 const css = cssApi.createUnsafeCss();
 TypeOnlyTw(theme.value);
 css.class(theme.value);
@@ -1348,7 +1348,7 @@ css.vars(theme.value);`,
 			      "bad": "member expression value",
 			      "name": "css.class",
 			    },
-			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
+			    "message": "yumcss: {{bad}} in {{name}}() stays at runtime — use a literal, a statically provable const, or a single conditional",
 			    "nodeType": "MemberExpression",
 			  },
 			]
@@ -1358,7 +1358,7 @@ css.vars(theme.value);`,
 	test("finds host prop conflicts created by css.props spreads", () => {
 		const reports = runRule(
 			"no-conflicting-style-props",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 export function Card() {
   return <div {...css.props({ color: "red" })} className="extra" style={inlineStyle} />;
@@ -1373,14 +1373,14 @@ export function Card() {
 			    "data": {
 			      "prop": "className",
 			    },
-			    "message": "pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+			    "message": "yumcss: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
 			    "nodeType": "JSXAttribute",
 			  },
 			  {
 			    "data": {
 			      "prop": "style",
 			    },
-			    "message": "pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+			    "message": "yumcss: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
 			    "nodeType": "JSXAttribute",
 			  },
 			]
@@ -1388,9 +1388,9 @@ export function Card() {
 	});
 });
 
-describe("Pandwind migration hygiene rules", () => {
+describe("YumCSS migration hygiene rules", () => {
 	test("uses mergeable CSS maps inside css.props and autofixes opaque class strings", () => {
-		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const props = css.props(css.class({ color: "red" }), css({ color: "blue" }));`;
 		const reports = runRule("prefer-css-map-in-props", source);
@@ -1406,7 +1406,7 @@ const props = css.props(css.class({ color: "red" }), css({ color: "blue" }));`;
 	});
 
 	test("keeps a unary CSS map projection valid and spreads full props in JSX", () => {
-		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const mapProps = css.props(css({ color: "red" }));
 const element = <td className={css.props(css({ textAlign: "center" })).className} colSpan={2} />;`;
@@ -1423,7 +1423,7 @@ const element = <td className={css.props(css({ textAlign: "center" })).className
 	});
 
 	test("does not spread css.props over an explicit style or unknown host props", () => {
-		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const first = <div className={css.props(css({ color: "red" })).className} style={style} />;
 const second = <div {...rest} className={css.props(css({ color: "blue" })).className} />;`;
@@ -1434,10 +1434,10 @@ const second = <div {...rest} className={css.props(css({ color: "blue" })).class
 	test("requires a reason on migration skip markers", () => {
 		const reports = runRule(
 			"migration-skip-reason",
-			`import { tw } from "pandwind";
-// pandwind:migrate-skip
+			`import { tw } from "yumcss";
+// yumcss:migrate-skip
 tw(theme.color);
-// pandwind:migrate-skip (residual: runtime theme)
+// yumcss:migrate-skip (residual: runtime theme)
 tw(theme.color);`,
 		);
 
@@ -1446,9 +1446,9 @@ tw(theme.color);`,
 			[
 			  {
 			    "data": {
-			      "marker": "pandwind:migrate-skip",
+			      "marker": "yumcss:migrate-skip",
 			    },
-			    "message": "pandwind: migration skip markers must include a reason describing the preserved residual",
+			    "message": "yumcss: migration skip markers must include a reason describing the preserved residual",
 			    "nodeType": "Line",
 			  },
 			]
@@ -1458,14 +1458,14 @@ tw(theme.color);`,
 	test("flags stale skips but accepts a marked genuine residual", () => {
 		const staleReports = runRule(
 			"no-stale-migration-skip",
-			`import { tw } from "pandwind";
-// pandwind:migrate-skip (residual: old workaround)
+			`import { tw } from "yumcss";
+// yumcss:migrate-skip (residual: old workaround)
 tw("text-red-500");`,
 		);
 		const residualReports = runRule(
 			"require-migration-residual",
-			`import { tw } from "pandwind";
-// pandwind:migrate-skip (residual: runtime theme)
+			`import { tw } from "yumcss";
+// yumcss:migrate-skip (residual: runtime theme)
 tw(theme.color);`,
 		);
 		const spreadResidualReports = runRule(
@@ -1473,20 +1473,20 @@ tw(theme.color);`,
 			`import { untypedCss } from "../css";
 const element = <div
 	{
-		/* pandwind:migrate-skip (residual: dynamic color) */ ...untypedCss({ color: theme.color })
+		/* yumcss:migrate-skip (residual: dynamic color) */ ...untypedCss({ color: theme.color })
 	}
 />;`,
 		);
 		const missingReports = runRule(
 			"require-migration-residual",
-			`import { tw } from "pandwind";
+			`import { tw } from "yumcss";
 tw(theme.color);`,
 		);
 		const runtimeSkipReports = runRule(
 			"no-stale-migration-skip",
-			`import { createUnsafeCss } from "pandwind/unsafe/css";
+			`import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
-// pandwind:migrate-skip (residual: runtime value)
+// yumcss:migrate-skip (residual: runtime value)
 css.vars({ color: theme.color });`,
 		);
 
@@ -1502,7 +1502,7 @@ css.vars({ color: theme.color });`,
 			      31,
 			      82,
 			    ],
-			    "message": "pandwind: migration skip marker is stale because the following call is statically foldable",
+			    "message": "yumcss: migration skip marker is stale because the following call is statically foldable",
 			    "nodeType": "Line",
 			  },
 			]
@@ -1515,13 +1515,13 @@ css.vars({ color: theme.color });`,
 	});
 
 	test("offers a safe fixer that records an unmarked residual", () => {
-		const code = `import { tw } from "pandwind";
+		const code = `import { tw } from "yumcss";
 tw(theme.color);`;
 		const reports = runRule("require-migration-residual", code);
 
 		expect(reports).toHaveLength(1);
 		expect(reports[0]?.fixText).toBe(
-			"/* pandwind:migrate-skip (residual: member expression value) */ ",
+			"/* yumcss:migrate-skip (residual: member expression value) */ ",
 		);
 		const fixed = code.replace("tw(theme.color)", `${reports[0]?.fixText ?? ""}tw(theme.color)`);
 		expect(runRule("require-migration-residual", fixed)).toEqual([]);
@@ -1533,8 +1533,8 @@ tw(theme.color);`;
 			      "bad": "member expression value",
 			      "name": "tw",
 			    },
-			    "fixText": "/* pandwind:migrate-skip (residual: member expression value) */ ",
-			    "message": "pandwind: dynamic static-lane output must preserve a typed migration residual with pandwind:migrate-skip",
+			    "fixText": "/* yumcss:migrate-skip (residual: member expression value) */ ",
+			    "message": "yumcss: dynamic static-lane output must preserve a typed migration residual with yumcss:migrate-skip",
 			    "nodeType": "MemberExpression",
 			  },
 			]
@@ -1542,7 +1542,7 @@ tw(theme.color);`;
 	});
 });
 
-describe("Pandwind Oxlint scaling", () => {
+describe("YumCSS Oxlint scaling", () => {
 	test("keeps the full custom rule set linear in static declaration count", () => {
 		const measure = (size: number): number => {
 			const source = staticBindingChain(size).replace("tw(...values);", 'tw({ display: "flex" });');
@@ -1575,7 +1575,7 @@ describe("Pandwind Oxlint scaling", () => {
 	test("scales with many calls that share module constants", () => {
 		const measure = (size: number): number => {
 			const source = [
-				'import { tw } from "pandwind";',
+				'import { tw } from "yumcss";',
 				...Array.from({ length: size }, (_, index) => `const value${index} = "${index}";`),
 				"function Component() {",
 				...Array.from({ length: size }, (_, index) => `tw({ color: value${index} });`),

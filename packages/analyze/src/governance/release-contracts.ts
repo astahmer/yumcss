@@ -2,7 +2,7 @@ import type {
 	TokenDocument,
 	TokenJsonValue,
 	TokenValue,
-} from "pandwind-codemod/swap/token-document";
+} from "@yumcss/codemod/swap/token-document";
 import type {
 	GovernanceCoverageBoundary,
 	RawTokenSuggestion,
@@ -11,7 +11,7 @@ import type {
 	TokenUsage,
 } from "./contracts.ts";
 
-export const TOKEN_RELEASE_REPORT_SCHEMA = "pandwind.token-release/1" as const;
+export const TOKEN_RELEASE_REPORT_SCHEMA = "yumcss.token-release/1" as const;
 
 export const TokenReleaseChangeKind = {
 	Added: "added",

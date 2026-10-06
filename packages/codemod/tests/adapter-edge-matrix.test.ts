@@ -13,7 +13,7 @@ import {
 } from "./route-spec-support.ts";
 
 const catalog = createBuiltinCodemodCatalog();
-const pandwind = CodemodAdapterId.Pandwind;
+const yumcss = CodemodAdapterId.YumCSS;
 const fixtures = new Map(adapterContractFixtures.map((fixture) => [fixture.adapter, fixture]));
 
 function semanticFor(adapter: string): AdapterParseContext["semantic"] | undefined {
@@ -101,7 +101,7 @@ describe("adapter edge and non-happy matrix", () => {
 					`${sourceId} -> ${target.id} silently discarded an edge case`,
 				).toBe(true);
 				if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
-				if (result.code.includes("pandwind:migrate-skip")) {
+				if (result.code.includes("yumcss:migrate-skip")) {
 					expect(result.code).toMatch(
 						/(capability-blocked|parse-residual|lowering-residual|host-rewrite-required|configuration-residual)/,
 					);
@@ -137,8 +137,8 @@ describe("adapter edge and non-happy matrix", () => {
 
 	test("keeps the flat SwapIR route independently available", () => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
-			pandwind,
+			'import { css } from "yumcss/css";\nconst card = css.class({ color: "red" });',
+			yumcss,
 			CodemodAdapterId.Emotion,
 			"Card.tsx",
 		);

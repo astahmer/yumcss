@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
-import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
+import { createCrossModuleConstResolver } from "yumcss/vite/cross-module-consts";
 import { createCodemodAdapterCatalog, type CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 
 export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";

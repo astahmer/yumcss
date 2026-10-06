@@ -44,7 +44,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "chakra-ui -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -55,7 +55,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("chakra-ui -> mui -> chakra-ui: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -159,7 +159,7 @@ test("chakra-ui -> mui -> chakra-ui: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | parse-residual: composition | lowering-residual: host-framework | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -204,7 +204,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -239,7 +239,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -255,7 +255,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -290,7 +290,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -321,7 +321,7 @@ test("chakra-ui -> mui -> chakra-ui: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -356,7 +356,7 @@ test("chakra-ui -> mui -> chakra-ui: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

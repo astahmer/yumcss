@@ -42,7 +42,7 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tokenami -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("tokenami -> vue-styled -> tokenami: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const card = styled.div\`color: red; gap: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -139,7 +139,7 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("tokenami -> vue-styled -> tokenami: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: tokenami -> vue-styled | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -254,7 +254,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const card = styled.div\`color: #f97316; gap: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -328,7 +328,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -417,7 +417,7 @@ test("tokenami -> vue-styled -> tokenami: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const card = styled.div\`color: #2563eb; gap: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

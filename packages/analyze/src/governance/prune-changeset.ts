@@ -34,7 +34,7 @@ export function buildGovernancePruneChangeset(
 		count: safe.length,
 		content: [
 			"---",
-			'"pandwind": patch',
+			'"yumcss": patch',
 			"---",
 			"",
 			"Remove " + safe.length + " unused design token(s) from the " + appLabel + " preset",

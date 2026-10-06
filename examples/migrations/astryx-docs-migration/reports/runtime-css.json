@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.astryx-docs-proof/2",
+	"schema": "yumcss.astryx-docs-proof/2",
 	"lane": "runtime-css",
 	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
 	"migration": {
@@ -26,7 +26,7 @@
 		"bodyHeightMismatches": 0,
 		"linkedCssDelta": -6824,
 		"strictCssNotLarger": true,
-		"report": "/tmp/pandwind-astryx-proof/browser-parity-runtime-production-final.json"
+		"report": "/tmp/yumcss-astryx-proof/browser-parity-runtime-production-final.json"
 	},
 	"fallbackPolicy": "static-first; runtime CSS remains available for the five explicit host-bound dynamic carriers"
 }

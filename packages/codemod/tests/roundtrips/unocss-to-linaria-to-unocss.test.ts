@@ -42,7 +42,7 @@ test("unocss -> linaria -> unocss: preserves an actionable concrete round trip",
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "unocss -> linaria round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("unocss -> linaria -> unocss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { css } from "@linaria/core";
 		export const App = () => <div className={css\`display: flex; align-items: center; gap: 1rem;\`}/>;",
 		    "converted": 0,
@@ -128,7 +128,7 @@ test("unocss -> linaria -> unocss: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> linaria | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: unocss -> linaria | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -172,7 +172,7 @@ test("unocss -> linaria -> unocss: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> linaria | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: unocss -> linaria | lowering-residual: validation)
 		export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

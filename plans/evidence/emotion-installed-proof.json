@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.installed-adapter-proof/1",
+  "schema": "yumcss.installed-adapter-proof/1",
   "adapter": "emotion",
   "referenceCommit": "b882bcba85132554992e4bd49e94c95939bbf810",
   "sourcePath": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
@@ -17,7 +17,7 @@
     "converted": 1,
     "skipped": 0,
     "residuals": 0,
-    "outputContainsPandwind": true,
+    "outputContainsYumCSS": true,
     "sourceImportRemoved": true
   },
   "ssr": {

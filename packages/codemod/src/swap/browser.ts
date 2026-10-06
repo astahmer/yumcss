@@ -9,7 +9,7 @@ export {
 	createBrowserCodemodCatalog,
 	type BrowserCodemodCatalogOptions,
 } from "./browser-adapter-catalog.ts";
-export { PANDWIND_API_DIALECTS } from "./adapters/core.adapter.ts";
+export { YUMCSS_API_DIALECTS } from "./adapters/core.adapter.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
 export { CodemodAdapterId, StyleMigrationOutcome, SwapSourceId } from "./identifiers.ts";

@@ -8,13 +8,13 @@
  */
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { mapToken } from "../src/map.ts";
 import {
 	BuiltinHostFramework,
 	CodemodAdapterId,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	runAdapterMigration,
@@ -30,12 +30,12 @@ const meta = loadMetaFromSources({
 });
 const registry = createStyleAdapterRegistry([
 	createTailwindAdapter({ moduleLoader: null }),
-	createPandwindAdapter({ moduleLoader: null }),
+	createYumCSSAdapter({ moduleLoader: null }),
 ]);
 
 function migrate(
 	source: string,
-	to: `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw | SwapSourceId.Css}` = `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`,
+	to: `${CodemodAdapterId.YumCSS}:${SwapSourceId.Tw | SwapSourceId.Css}` = `${CodemodAdapterId.YumCSS}:${SwapSourceId.Tw}`,
 ) {
 	return runAdapterMigration(source, {
 		from: CodemodAdapterId.Tailwind,
@@ -49,7 +49,7 @@ function migrate(
 	});
 }
 
-describe("Tailwind -> registered Pandwind tw()", () => {
+describe("Tailwind -> registered YumCSS tw()", () => {
 	test("plain and multiple utilities become one typed tw object", () => {
 		const result = migrate('<div className="flex bg-blue-500 text-white" />');
 		expect(result.changed).toBe(true);
@@ -128,11 +128,11 @@ describe("Tailwind -> registered Pandwind tw()", () => {
 	});
 });
 
-describe("Tailwind -> registered Pandwind css.class()", () => {
+describe("Tailwind -> registered YumCSS css.class()", () => {
 	test("bridge-mappable values become exact resolved declarations", () => {
 		const result = migrate(
 			'<div className="bg-blue-500 rounded-base" />',
-			`${CodemodAdapterId.Pandwind}:${SwapSourceId.Css}`,
+			`${CodemodAdapterId.YumCSS}:${SwapSourceId.Css}`,
 		);
 		expect(result.changed).toBe(true);
 		expect(result.skipped).toBe(0);
@@ -145,7 +145,7 @@ describe("Tailwind -> registered Pandwind css.class()", () => {
 	test("values outside the generated bridge remain residuals", () => {
 		const result = migrate(
 			'<div className="bg-blue-500 bg-not-in-this-project" />',
-			`${CodemodAdapterId.Pandwind}:${SwapSourceId.Css}`,
+			`${CodemodAdapterId.YumCSS}:${SwapSourceId.Css}`,
 		);
 		expect(result.code).toContain("bg-not-in-this-project");
 		expect(result.residuals).toEqual(

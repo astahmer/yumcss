@@ -4,7 +4,7 @@ import { parseMigrateArgs } from "../src/swap/cli-args.ts";
 describe("migrate CLI static style hoisting", () => {
 	it("keeps static style calls colocated by default", () => {
 		expect(
-			parseMigrateArgs(["--from=styled-components", "--to=pandwind-css", "src"]),
+			parseMigrateArgs(["--from=styled-components", "--to=yumcss-css", "src"]),
 		).toMatchObject({ hoistStaticStyles: false });
 	});
 
@@ -12,7 +12,7 @@ describe("migrate CLI static style hoisting", () => {
 		expect(
 			parseMigrateArgs([
 				"--from=styled-components",
-				"--to=pandwind-css",
+				"--to=yumcss-css",
 				"--hoist-static-styles",
 				"src",
 			]),
@@ -23,7 +23,7 @@ describe("migrate CLI static style hoisting", () => {
 		expect(
 			parseMigrateArgs([
 				"--from=styled-components",
-				"--to=pandwind-css",
+				"--to=yumcss-css",
 				"--hoist-static-styles=false",
 				"src",
 			]),
@@ -34,7 +34,7 @@ describe("migrate CLI static style hoisting", () => {
 		expect(
 			parseMigrateArgs([
 				"--from=styled-components",
-				"--to=pandwind-css",
+				"--to=yumcss-css",
 				"--hoist-static-styles=true",
 				"src",
 			]),

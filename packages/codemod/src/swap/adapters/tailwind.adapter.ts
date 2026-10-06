@@ -139,7 +139,7 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 }
 
 /**
- * A generated Pandwind interop artifact is enough to parse a static Tailwind
+ * A generated YumCSS interop artifact is enough to parse a static Tailwind
  * class without booting Tailwind's compiler. The bridge carries the resolved
  * declaration for each base utility; generated variants supply the condition
  * names around it. This is the deterministic path used by corpus tooling,
@@ -370,10 +370,10 @@ function materializeTailwindTokens(
 
 function collectTailwindDynamicClassAttributes(source: string): readonly string[] {
 	const attributes = collectDynamicClassAttributes(source);
-	if (!/\bfrom\s*["']pandwind(?:["']|\/)/u.test(source)) return attributes;
-	const pandwindStyleCarrier =
+	if (!/\bfrom\s*["']yumcss(?:["']|\/)/u.test(source)) return attributes;
+	const yumcssStyleCarrier =
 		/\b(?:tw|d?css)\s*(?:\(|\.(?:class|vars|props|group|input|raw)\s*\()/u;
-	return attributes.filter((attribute) => !pandwindStyleCarrier.test(attribute));
+	return attributes.filter((attribute) => !yumcssStyleCarrier.test(attribute));
 }
 
 function standaloneClassMap(
@@ -1817,7 +1817,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 						...(rewritten.imports === undefined ? {} : { imports: rewritten.imports }),
 						...(rewritten.needsCx
 							? {
-									imports: ['import { createCx } from "pandwind/cx";', "const cx = createCx();"],
+									imports: ['import { createCx } from "yumcss/cx";', "const cx = createCx();"],
 								}
 							: {}),
 						residuals: rewritten.residuals,

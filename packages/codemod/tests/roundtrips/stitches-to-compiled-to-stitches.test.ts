@@ -42,7 +42,7 @@ test("stitches -> compiled -> stitches: preserves an actionable concrete round t
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> compiled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("stitches -> compiled -> stitches: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> compiled | lowering-residual: validation)
+		// yumcss:migrate-skip (route: stitches -> compiled | lowering-residual: validation)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("stitches -> compiled -> stitches: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> compiled | lowering-residual: validation)
+		// yumcss:migrate-skip (route: stitches -> compiled | lowering-residual: validation)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

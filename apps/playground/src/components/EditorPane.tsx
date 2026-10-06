@@ -1,7 +1,7 @@
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
 import {
 	EDITOR_TYPE_LIBRARIES,
-	PANDWIND_EDITOR_MODULE_PATHS,
+	YUMCSS_EDITOR_MODULE_PATHS,
 	type EditorTypeLibrary,
 } from "../lib/editor-types.ts";
 import { css as uiCss } from "../ui-css.ts";
@@ -13,7 +13,7 @@ import { Kbd, Pane } from "./ui.tsx";
  * Registered once via beforeMount so the editor never flashes vs-dark.
  */
 function defineTheme(monaco: Monaco): void {
-	monaco.editor.defineTheme("pandwind", {
+	monaco.editor.defineTheme("yumcss", {
 		base: "vs-dark",
 		inherit: true,
 		rules: [
@@ -40,7 +40,7 @@ function defineTheme(monaco: Monaco): void {
 			"scrollbarSlider.hoverBackground": "#33333D80",
 		},
 	});
-	monaco.editor.defineTheme("pandwind-light", {
+	monaco.editor.defineTheme("yumcss-light", {
 		base: "vs",
 		inherit: true,
 		rules: [
@@ -86,9 +86,9 @@ function configureTypeScript(monaco: Monaco, fileLibraries: readonly EditorTypeL
 		module: typescript.ModuleKind.ESNext,
 		moduleResolution: typescript.ModuleResolutionKind.Bundler,
 		allowImportingTsExtensions: true,
-		baseUrl: "file:///pandwind/playground",
+		baseUrl: "file:///yumcss/playground",
 		paths: Object.fromEntries(
-			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, path]) => [specifier, [path]]),
+			Object.entries(YUMCSS_EDITOR_MODULE_PATHS).map(([specifier, path]) => [specifier, [path]]),
 		),
 		target: typescript.ScriptTarget.ES2022,
 		noEmit: true,
@@ -150,7 +150,7 @@ export function EditorPane(props: {
 	className?: string;
 }) {
 	const { mode } = useTheme();
-	const filePath = props.filePath ?? "file:///pandwind/playground/Example.tsx";
+	const filePath = props.filePath ?? "file:///yumcss/playground/Example.tsx";
 	// Monaco's TSX tokenizer currently falls back to default tokens; the .tsx URI still drives TSX diagnostics.
 	const language = "typescript";
 	return (
@@ -188,7 +188,7 @@ export function EditorPane(props: {
 					loading={<EditorBooting />}
 					height="100%"
 					language={language}
-					theme={mode === "light" ? "pandwind-light" : "pandwind"}
+					theme={mode === "light" ? "yumcss-light" : "yumcss"}
 					path={filePath}
 					beforeMount={(monaco: Monaco) => {
 						defineTheme(monaco);

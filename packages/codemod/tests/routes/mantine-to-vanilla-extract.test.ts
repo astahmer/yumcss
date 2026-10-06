@@ -38,10 +38,10 @@ test("mantine -> vanilla-extract: migrates concrete mantine syntax to vanilla-ex
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> vanilla-extract happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("mantine -> vanilla-extract: migrates concrete mantine syntax to vanilla-ex
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("mantine -> vanilla-extract: carries a documented secondary mantine API exp
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -153,7 +153,7 @@ test("mantine -> vanilla-extract: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -190,7 +190,7 @@ test("mantine -> vanilla-extract: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -239,7 +239,7 @@ test("mantine -> vanilla-extract: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -285,7 +285,7 @@ test("mantine -> vanilla-extract: preserves malformed concrete mantine input", (
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 0,

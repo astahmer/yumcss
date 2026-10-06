@@ -2,8 +2,8 @@ import { execFile } from "node:child_process";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
-import { runAdapterMigrationAsync, type AdapterMigrationResult } from "pandwind-codemod/swap";
-import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
+import { runAdapterMigrationAsync, type AdapterMigrationResult } from "@yumcss/codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap/identifiers";
 
 export enum StylexDocsLane {
 	RuntimeCss = "runtime-css",
@@ -37,41 +37,41 @@ const execFileAsync = promisify(execFile);
 async function ensureRuntimeHost(outputRoot: string): Promise<void> {
 	const file = join(outputRoot, "src/pages/_layout.tsx");
 	let source = await readFile(file, "utf8");
-	if (!source.includes("data-pandwind-runtime")) {
+	if (!source.includes("data-yumcss-runtime")) {
 		source = source.replace(
 			"import coverImageUrl from '@/static/img/stylex-cover-photo.png';",
-			'import coverImageUrl from \'@/static/img/stylex-cover-photo.png\';\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nconst pandwindRuntime = createRuntimeCss(defaultPreset);\n\nfunction PandwindRuntimeStyles() {\n  const css = pandwindRuntime.sheet.css().replaceAll("</style", "<\\\\/style");\n  return css === "" ? null : <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: css }} />;\n}',
+			'import coverImageUrl from \'@/static/img/stylex-cover-photo.png\';\nimport { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\n\nconst yumcssRuntime = createRuntimeCss(defaultPreset);\n\nfunction YumCSSRuntimeStyles() {\n  const css = yumcssRuntime.sheet.css().replaceAll("</style", "<\\\\/style");\n  return css === "" ? null : <style data-yumcss-runtime dangerouslySetInnerHTML={{ __html: css }} />;\n}',
 		);
 		source = source.replace(
 			"      </Provider>\n",
-			"      </Provider>\n      <PandwindRuntimeStyles />\n",
+			"      </Provider>\n      <YumCSSRuntimeStyles />\n",
 		);
 		source = source.replace(
-			"<style data-pandwind-runtime",
-			'<style data-pandwind-sheet="pandwind" data-pandwind-runtime',
+			"<style data-yumcss-runtime",
+			'<style data-yumcss-sheet="yumcss" data-yumcss-runtime',
 		);
 		source = source.replace(
-			/import \{ createRuntimeCss \} from "pandwind\/css\/runtime";\nimport \{ defaultPreset \} from "pandwind\/preset\/default";\n\nconst pandwindRuntime = createRuntimeCss\(defaultPreset\);\n\n/g,
+			/import \{ createRuntimeCss \} from "yumcss\/css\/runtime";\nimport \{ defaultPreset \} from "yumcss\/preset\/default";\n\nconst yumcssRuntime = createRuntimeCss\(defaultPreset\);\n\n/g,
 			"",
 		);
 		source = source.replace(
-			'import { pandwindRuntime } from "../pandwind-runtime";',
-			'import "../pandwind-static.css";\nimport { pandwindRuntime } from "../pandwind-runtime";',
+			'import { yumcssRuntime } from "../yumcss-runtime";',
+			'import "../yumcss-static.css";\nimport { yumcssRuntime } from "../yumcss-runtime";',
 		);
 		source = source.replace(
-			"const css = pandwindRuntime.sheet.css().replaceAll",
-			"const css = pandwindRuntime.sheet.css().replaceAll",
+			"const css = yumcssRuntime.sheet.css().replaceAll",
+			"const css = yumcssRuntime.sheet.css().replaceAll",
 		);
 		await writeFile(file, source);
 	}
-	if (source.includes("pandwindStaticCss")) {
+	if (source.includes("yumcssStaticCss")) {
 		source = source.replace(
-			'import pandwindStaticCss from "../pandwind-static.css?raw";\n',
-			'import "../pandwind-static.css";\n',
+			'import yumcssStaticCss from "../yumcss-static.css?raw";\n',
+			'import "../yumcss-static.css";\n',
 		);
 		source = source.replace(
-			'const css = [pandwindStaticCss, pandwindRuntime.sheet.css()].filter(Boolean).join("\\n").replaceAll',
-			"const css = pandwindRuntime.sheet.css().replaceAll",
+			'const css = [yumcssStaticCss, yumcssRuntime.sheet.css()].filter(Boolean).join("\\n").replaceAll',
+			"const css = yumcssRuntime.sheet.css().replaceAll",
 		);
 		await writeFile(file, source);
 	}
@@ -79,8 +79,8 @@ async function ensureRuntimeHost(outputRoot: string): Promise<void> {
 
 async function ensureRuntimeModule(outputRoot: string): Promise<void> {
 	await writeFile(
-		join(outputRoot, "src/pandwind-runtime.ts"),
-		'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\n\nexport const pandwindRuntime = createRuntimeCss(defaultPreset);\n',
+		join(outputRoot, "src/yumcss-runtime.ts"),
+		'import { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\n\nexport const yumcssRuntime = createRuntimeCss(defaultPreset);\n',
 	);
 }
 
@@ -91,60 +91,60 @@ async function ensureRuntimeStaticCss(
 	lane: StylexDocsLane,
 ): Promise<void> {
 	const imports = files
-		.filter((file) => file !== "src/pandwind-runtime.ts")
+		.filter((file) => file !== "src/yumcss-runtime.ts")
 		.map((file) => `import ${JSON.stringify(`./${file.slice(4)}`)};`)
 		.join("\n");
 	const factory =
 		lane === StylexDocsLane.DesignDss
-			? 'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset, { sheet: pandwindRuntime.sheet });'
-			: 'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });';
+			? 'import { createRuntimeDesignCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset, { sheet: yumcssRuntime.sheet });'
+			: 'import { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\nconst css = createRuntimeCss(defaultPreset, { sheet: yumcssRuntime.sheet });';
 	const api = lane === StylexDocsLane.DesignDss ? "dss" : "css";
 	const groups = staticGroupCalls
 		.map((call) => call.replace(/^\b(?:css|dss)\.group/, `${api}.group`))
 		.join("\n");
-	const collector = `import { pandwindRuntime } from "./pandwind-runtime";\n${factory}\n${imports}\n${groups}\nprocess.stdout.write(pandwindRuntime.sheet.css());\n`;
-	const collectorFile = join(outputRoot, "src/pandwind-style-collector.ts");
+	const collector = `import { yumcssRuntime } from "./yumcss-runtime";\n${factory}\n${imports}\n${groups}\nprocess.stdout.write(yumcssRuntime.sheet.css());\n`;
+	const collectorFile = join(outputRoot, "src/yumcss-style-collector.ts");
 	await writeFile(collectorFile, collector);
 	const { stdout } = await execFileAsync("nub", [collectorFile], {
 		cwd: outputRoot,
 		maxBuffer: 16 * 1024 * 1024,
 	});
-	await writeFile(join(outputRoot, "src/pandwind-static.css"), stdout);
+	await writeFile(join(outputRoot, "src/yumcss-static.css"), stdout);
 }
 
 function runtimeModuleImport(root: string, file: string): string {
-	const target = join(root, "src/pandwind-runtime");
+	const target = join(root, "src/yumcss-runtime");
 	let specifier = relative(dirname(join(root, file)), target).replaceAll("\\", "/");
 	if (!specifier.startsWith(".")) specifier = `./${specifier}`;
-	return `import { pandwindRuntime } from ${JSON.stringify(specifier)};`;
+	return `import { yumcssRuntime } from ${JSON.stringify(specifier)};`;
 }
 
 function bindRuntimeSheet(source: string, root: string, file: string): string {
 	let output = source;
 	output = output.replace(
-		'import { createUnsafeCss } from "pandwind/unsafe/css";',
-		'import { createRuntimeCss } from "pandwind/css/runtime";',
+		'import { createUnsafeCss } from "yumcss/unsafe/css";',
+		'import { createRuntimeCss } from "yumcss/css/runtime";',
 	);
 	output = output.replace(
 		"const css = createUnsafeCss();",
-		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
+		"const css = createRuntimeCss(defaultPreset, { sheet: yumcssRuntime.sheet });",
 	);
-	if (!output.includes("pandwindRuntime")) {
+	if (!output.includes("yumcssRuntime")) {
 		output = `${runtimeModuleImport(root, file)}\n${output}`;
 	}
 	if (
 		(output.includes("createRuntimeCss") || output.includes("createRuntimeDesignCss")) &&
-		!output.includes('from "pandwind/preset/default"')
+		!output.includes('from "yumcss/preset/default"')
 	) {
-		output = `import { defaultPreset } from "pandwind/preset/default";\n${output}`;
+		output = `import { defaultPreset } from "yumcss/preset/default";\n${output}`;
 	}
 	output = output.replace(
 		/const css = createRuntimeCss\(defaultPreset\);/g,
-		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
+		"const css = createRuntimeCss(defaultPreset, { sheet: yumcssRuntime.sheet });",
 	);
 	output = output.replace(
 		/const dss = createRuntimeDesignCss\(defaultPreset\);/g,
-		"const dss = createRuntimeDesignCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
+		"const dss = createRuntimeDesignCss(defaultPreset, { sheet: yumcssRuntime.sheet });",
 	);
 	return output;
 }
@@ -253,18 +253,18 @@ function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 	}
 	if (mode === StylexDocsMode.Design) {
 		output = output.replaceAll(
-			/import \{ create(?:Runtime)?Css \} from "pandwind\/css(?:\/runtime)?";/g,
-			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
+			/import \{ create(?:Runtime)?Css \} from "yumcss\/css(?:\/runtime)?";/g,
+			'import { createRuntimeDesignCss } from "yumcss/css/runtime";',
 		);
 		output = output.replaceAll(
 			/const css = create(?:Runtime)?Css\(defaultPreset\);/g,
 			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replaceAll(/\bcss\./g, "dss.");
-		if (!output.includes('from "pandwind/preset/default"')) {
+		if (!output.includes('from "yumcss/preset/default"')) {
 			output = output.replace(
-				'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
-				'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";',
+				'import { createRuntimeDesignCss } from "yumcss/css/runtime";',
+				'import { createRuntimeDesignCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";',
 			);
 		}
 	}
@@ -274,13 +274,13 @@ function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): string {
 	if (!source.includes("INITIAL_INPUT_FILES")) return source;
 	let output = source.replace(
-		"const css = createRuntimeCss(defaultPreset, { sheet: pandwindRuntime.sheet });",
+		"const css = createRuntimeCss(defaultPreset, { sheet: yumcssRuntime.sheet });",
 		"const css = createRuntimeCss(defaultPreset);",
 	);
 	// The interactive sandbox still compiles its source with StyleX's Babel
 	// plugin. Keep migrated token literals in the token-definition shape that
 	// compiler understands so the preview exercises the same values as the
-	// reference playground while the host page uses Pandwind.
+	// reference playground while the host page uses YumCSS.
 	output = output.replaceAll(
 		"export const colors = ({",
 		"export const colors = stylex.defineVars({",
@@ -288,33 +288,33 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	if (lane === StylexDocsLane.DesignDss) {
 		output = output.replaceAll("createRuntimeCss", "createRuntimeDesignCss");
 		output = output.replace(
-			/const css = createRuntimeDesignCss\(defaultPreset(?:, \{ sheet: pandwindRuntime\.sheet \})?\);/g,
+			/const css = createRuntimeDesignCss\(defaultPreset(?:, \{ sheet: yumcssRuntime\.sheet \})?\);/g,
 			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replace(
-			/const dss = createRuntimeDesignCss\(defaultPreset, \{ sheet: pandwindRuntime\.sheet \}\);/g,
+			/const dss = createRuntimeDesignCss\(defaultPreset, \{ sheet: yumcssRuntime\.sheet \}\);/g,
 			"const dss = createRuntimeDesignCss(defaultPreset);",
 		);
 		output = output.replaceAll(/\bcss\./g, "dss.");
 	}
-	if (!output.includes("/node_modules/pandwind/package.json")) {
+	if (!output.includes("/node_modules/yumcss/package.json")) {
 		const runtime = `import * as stylex from "@stylexjs/stylex";\nconst props = (...styles) => { const result = stylex.props(...styles); return result.style === undefined ? result : { ...result, style: undefined }; };\nconst css = { ...stylex, props };\nexport const createRuntimeCss = () => css;\nexport const createRuntimeDesignCss = () => css;`;
 		const index = `import * as stylex from "@stylexjs/stylex";\nconst props = (...styles) => { const result = stylex.props(...styles); return result.style === undefined ? result : { ...result, style: undefined }; };\nexport const css = { ...stylex, props };\nexport const createCss = () => css;\nexport const createRuntimeCss = () => css;\nexport const createRuntimeDesignCss = () => css;`;
 		const preset = "export const defaultPreset = {};";
 		const virtualFiles = [
 			[
-				"  '/node_modules/pandwind/package.json': {",
-				`    code: ${JSON.stringify(JSON.stringify({ name: "pandwind", main: "./index.js" }, null, 2))},`,
+				"  '/node_modules/yumcss/package.json': {",
+				`    code: ${JSON.stringify(JSON.stringify({ name: "yumcss", main: "./index.js" }, null, 2))},`,
 				"  },",
 			],
-			["  '/node_modules/pandwind/index.js': {", `    code: ${JSON.stringify(index)},`, "  },"],
+			["  '/node_modules/yumcss/index.js': {", `    code: ${JSON.stringify(index)},`, "  },"],
 			[
-				"  '/node_modules/pandwind/css/runtime.js': {",
+				"  '/node_modules/yumcss/css/runtime.js': {",
 				`    code: ${JSON.stringify(runtime)},`,
 				"  },",
 			],
 			[
-				"  '/node_modules/pandwind/preset/default.js': {",
+				"  '/node_modules/yumcss/preset/default.js': {",
 				`    code: ${JSON.stringify(preset)},`,
 				"  },",
 			],
@@ -329,8 +329,8 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	output = output.replace(
 		'import * as stylex from "@stylexjs/stylex";\n\nexport default function Logo',
 		lane === StylexDocsLane.DesignDss
-			? 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset);\n\nexport default function Logo'
-			: 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { defaultPreset } from "pandwind/preset/default";\nconst css = createRuntimeCss(defaultPreset);\n\nexport default function Logo',
+			? 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeDesignCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\nconst dss = createRuntimeDesignCss(defaultPreset);\n\nexport default function Logo'
+			: 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeCss } from "yumcss/css/runtime";\nimport { defaultPreset } from "yumcss/preset/default";\nconst css = createRuntimeCss(defaultPreset);\n\nexport default function Logo',
 	);
 	return output;
 }
@@ -341,7 +341,7 @@ function createLane(id: StylexDocsLane): StylexDocsMigrationLane {
 		async migrate(source, context) {
 			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.StyleX,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: context.file,
 				root: context.root,
 				mode: "safe",
@@ -413,7 +413,7 @@ export class StylexDocsMigration {
 				await mkdir(resolve(outputFile, ".."), { recursive: true });
 				const code = rewritePlaygroundTemplates(bindRuntimeSheet(result.code, root, file), laneId);
 				if (
-					code.includes("pandwindRuntime") &&
+					code.includes("yumcssRuntime") &&
 					file !== "src/pages/_layout.tsx" &&
 					!file.startsWith("src/pages/blog/") &&
 					!file.startsWith("src/pages/(playground)/") &&

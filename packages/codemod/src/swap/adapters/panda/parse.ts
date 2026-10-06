@@ -87,7 +87,7 @@ const RADIUS_EXPANSIONS: ReadonlyMap<string, string[]> = new Map([
 /**
  * Lower Panda utility transforms that are not ordinary CSS aliases. This is
  * shared by factory output and generated runtime pattern modules so a
- * rerun never leaves Panda-only keys behind in a Pandwind style object.
+ * rerun never leaves Panda-only keys behind in a YumCSS style object.
  */
 export function normalizePandaStyleObject(
 	style: Record<string, unknown>,
@@ -186,7 +186,7 @@ const SIMPLE_TOKEN_PROPS = new Set([
 	"zIndex",
 ]);
 
-/** Authored Pandwind token ref for a known host-theme path (`fg.muted` -> `fg.muted`). */
+/** Authored YumCSS token ref for a known host-theme path (`fg.muted` -> `fg.muted`). */
 function authoredRefForPath(path: string, format: TokenReferenceFormatValue): string {
 	return formatTokenPath(path, format);
 }
@@ -218,7 +218,7 @@ function resolveValue(
 			residual: {
 				kind: SwapResidualKindTag.UnknownValue,
 				text: `${prop}: '${raw}'`,
-				hint: `token "${bare}" is not in the ingested panda theme; add it to the Pandwind preset before migration`,
+				hint: `token "${bare}" is not in the ingested panda theme; add it to the YumCSS preset before migration`,
 			},
 		};
 	} else {
@@ -274,7 +274,7 @@ function walkStyle(
 		const { key, raw, conditions: activeConditions } = task;
 		if (key.startsWith("&") || key.startsWith("@")) {
 			if (isPlainObject(raw)) {
-				// Pandwind's stylesheet engine can preserve nested selectors and
+				// YumCSS's stylesheet engine can preserve nested selectors and
 				// at-rules as condition paths; keep walking so Panda aliases inside
 				// them are canonicalized instead of leaving a runtime Panda call.
 				tasks.push({

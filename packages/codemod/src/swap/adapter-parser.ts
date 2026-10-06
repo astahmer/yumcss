@@ -13,7 +13,7 @@ import {
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
 import { SourcePass } from "../source-pass-utils.ts";
-import { SourceBindingKind, type SourceBinding, type SourceCallSite } from "pandwind/source";
+import { SourceBindingKind, type SourceBinding, type SourceCallSite } from "yumcss/source";
 import type { AdapterMatch, AdapterParseContext, AdapterParseResult } from "./adapter-contract.ts";
 import {
 	findTemplateLiteralEnd,

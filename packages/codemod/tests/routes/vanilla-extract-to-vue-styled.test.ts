@@ -38,10 +38,10 @@ test("vanilla-extract -> vue-styled: migrates concrete vanilla-extract syntax to
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("vanilla-extract -> vue-styled: carries a documented secondary vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],

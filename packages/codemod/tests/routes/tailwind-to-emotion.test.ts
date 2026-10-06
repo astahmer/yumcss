@@ -38,10 +38,10 @@ test("tailwind -> emotion: migrates concrete tailwind syntax to emotion", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "tailwind -> emotion happy");
 	expectExplicitResidualEvidence(result);
@@ -91,7 +91,7 @@ test("tailwind -> emotion: carries a documented secondary tailwind API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "// pandwind:migrate-skip (route: tailwind -> emotion | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
+		  "code": "// yumcss:migrate-skip (route: tailwind -> emotion | capability-blocked: named-conditions: named: md | available: static, named-map, residual)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		  "converted": 0,
 		  "generatedFiles": [],

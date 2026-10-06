@@ -62,7 +62,7 @@ describe("Panda generated-system source ownership", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Panda,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: `${root}/card.tsx`,
 			root,
 			packageJson: {
@@ -76,7 +76,7 @@ describe("Panda generated-system source ownership", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toContain("css.class");
 		expect(result.code).not.toContain("#design-system/css");
 	});
@@ -91,7 +91,7 @@ describe("Panda generated-system source ownership", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Panda,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: `${root}/card.tsx`,
 			root,
 			readFile: (file) => files.get(file),
@@ -120,22 +120,22 @@ describe("Panda generated-system source ownership", () => {
 		const chakraFirst = runAdapterMigration(source, {
 			...options,
 			from: CodemodAdapterId.ChakraUi,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 		});
 		const chakraThenPanda = runAdapterMigration(chakraFirst.code, {
 			...options,
 			from: CodemodAdapterId.Panda,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 		});
 		const pandaFirst = runAdapterMigration(source, {
 			...options,
 			from: CodemodAdapterId.Panda,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 		});
 		const pandaThenChakra = runAdapterMigration(pandaFirst.code, {
 			...options,
 			from: CodemodAdapterId.ChakraUi,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 		});
 
 		expect(chakraThenPanda.residuals).toEqual([]);

@@ -40,7 +40,7 @@ const host = createBrowserMigrationPreviewHost({
 const request = {
 	evaluation: {
 		artifacts: {
-			targetCss: ".pandwind-migration-preview-probe { color: rgb(239, 68, 68); padding: 4px; }",
+			targetCss: ".yumcss-migration-preview-probe { color: rgb(239, 68, 68); padding: 4px; }",
 			files: [],
 		},
 		diagnostics: [],
@@ -59,7 +59,7 @@ try {
 			`Migration preview host proof expected computed color, received ${color ?? "<missing>"}`,
 		);
 	const report = {
-		schema: "pandwind.migration-preview-host-proof/1",
+		schema: "yumcss.migration-preview-host-proof/1",
 		host: snapshot.host,
 		status: snapshot.status,
 		computedColor: color,
@@ -67,7 +67,7 @@ try {
 		stylesheetBytes: snapshot.stylesheetBytes,
 	};
 	const output =
-		process.env.PANDWIND_MIGRATION_PREVIEW_HOST_PROOF_OUTPUT ??
+		process.env.YUMCSS_MIGRATION_PREVIEW_HOST_PROOF_OUTPUT ??
 		resolve(root, "plans/evidence/migration-preview-host-proof.json");
 	writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
 	console.log(JSON.stringify(report, null, 2));

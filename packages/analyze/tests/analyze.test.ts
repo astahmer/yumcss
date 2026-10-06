@@ -14,7 +14,7 @@ import {
 	summarize,
 	type FileFoldStats,
 } from "../src/analyze.ts";
-import { inlineCxCalls } from "pandwind/vite/cx-inline";
+import { inlineCxCalls } from "yumcss/vite/cx-inline";
 
 const app = resolve(import.meta.dirname, "../../../examples/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
@@ -103,7 +103,7 @@ describe("classification agrees with the real passes", () => {
 });
 
 describe("collectFiles + summarize + formatReport", () => {
-	const root = resolve(tmpdir(), `pandwind-analyze-test-${process.pid}`);
+	const root = resolve(tmpdir(), `yumcss-analyze-test-${process.pid}`);
 	let stats: Array<FileFoldStats>;
 	let summary: ReturnType<typeof summarize>;
 
@@ -149,7 +149,7 @@ describe("collectFiles + summarize + formatReport", () => {
 
 	test("report contains table rows, runtime reasons and totals", () => {
 		const report = formatReport(summary);
-		expect(report).toContain("pandwind analyze — fold coverage");
+		expect(report).toContain("yumcss analyze — fold coverage");
 		expect(report).toContain("cx(): 100% of 7 calls eliminated at build time");
 	});
 });

@@ -5,18 +5,18 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const packageRoot = join(repositoryRoot, "packages/pandwind");
+const packageRoot = join(repositoryRoot, "packages/yumcss");
 const sourceRevision = process.argv[2];
 if (!/^[\da-f]{8,40}$/iu.test(sourceRevision ?? "")) {
-	throw new Error("Usage: node scripts/pack-benchmark.mjs <pandwind-revision> [output-directory]");
+	throw new Error("Usage: node scripts/pack-benchmark.mjs <yumcss-revision> [output-directory]");
 }
 const revision = sourceRevision.slice(0, 8);
 const outputDirectory = resolve(process.argv[3] ?? ".");
 const releaseFiles = ["dist", "README.md", "LICENSE"];
 const benchmarkPackages = [
-	{ filename: `pandwind-0.1.0-${revision}.tgz`, files: releaseFiles },
+	{ filename: `yumcss-0.1.0-${revision}.tgz`, files: releaseFiles },
 	{
-		filename: `pandwind-0.1.0-${revision}-buildtime.tgz`,
+		filename: `yumcss-0.1.0-${revision}-buildtime.tgz`,
 		files: [...releaseFiles, "src"],
 	},
 ];
@@ -24,7 +24,7 @@ const benchmarkPackages = [
 mkdirSync(outputDirectory, { recursive: true });
 
 for (const benchmarkPackage of benchmarkPackages) {
-	const packDirectory = mkdtempSync(join(tmpdir(), "pandwind-benchmark-pack-"));
+	const packDirectory = mkdtempSync(join(tmpdir(), "yumcss-benchmark-pack-"));
 
 	try {
 		const manifest = JSON.parse(readFileSync(join(packageRoot, "package.json"), "utf8"));

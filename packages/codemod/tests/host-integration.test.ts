@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { planPandwindViteIntegration } from "../src/swap/host-integration.ts";
+import { planYumCSSViteIntegration } from "../src/swap/host-integration.ts";
 
-describe("Pandwind Vite integration", () => {
+describe("YumCSS Vite integration", () => {
 	test("registers the generated preset before framework plugins and is idempotent", () => {
 		const root = "/project";
 		const configPath = `${root}/vite.config.ts`;
@@ -15,21 +15,21 @@ describe("Pandwind Vite integration", () => {
 			read: (path: string) => (path === configPath ? currentSource : undefined),
 			exists: (path: string) => path === configPath,
 		};
-		const request = { projectRoot: root, outputDirectory: "pandwind", fileSystem };
-		const plan = planPandwindViteIntegration(request);
+		const request = { projectRoot: root, outputDirectory: "yumcss", fileSystem };
+		const plan = planYumCSSViteIntegration(request);
 
 		expect(plan.enabled).toBe(true);
 		expect(plan.fileChanges).toHaveLength(1);
 		expect(plan.fileChanges[0]?.content).toMatchInlineSnapshot(`
 			"import { defineConfig } from "vite";
 			import react from "@vitejs/plugin-react";
-			import { pandwindCssVite } from "pandwind/vite";
-			import { preset } from "./pandwind/preset.ts";
-			export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." }), react()] });"
+			import { yumcssExtractVite } from "yumcss/vite";
+			import { preset } from "./yumcss/preset.ts";
+			export default defineConfig({ plugins: [yumcssExtractVite(preset, { root: "." }), react()] });"
 		`);
 		currentSource = plan.fileChanges[0]?.content ?? source;
 
-		const repeatedPlan = planPandwindViteIntegration(request);
+		const repeatedPlan = planYumCSSViteIntegration(request);
 		expect(repeatedPlan.enabled).toBe(true);
 		expect(repeatedPlan.fileChanges).toEqual([]);
 	});
@@ -38,9 +38,9 @@ describe("Pandwind Vite integration", () => {
 		const root = "/project";
 		const configPath = `${root}/vite.config.ts`;
 		const source = "export default { plugins: createPlugins() };";
-		const plan = planPandwindViteIntegration({
+		const plan = planYumCSSViteIntegration({
 			projectRoot: root,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			fileSystem: {
 				read: (path) => (path === configPath ? source : undefined),
 				exists: (path) => path === configPath,
@@ -49,20 +49,20 @@ describe("Pandwind Vite integration", () => {
 
 		expect(plan.enabled).toBe(false);
 		expect(plan.fileChanges).toEqual([]);
-		expect(plan.notes).toContain("could not safely register pandwindCssVite in vite.config.ts");
+		expect(plan.notes).toContain("could not safely register yumcssExtractVite in vite.config.ts");
 	});
 
-	test("does not attach a second extractor to an unrelated Pandwind preset", () => {
+	test("does not attach a second extractor to an unrelated YumCSS preset", () => {
 		const root = "/project";
 		const configPath = `${root}/vite.config.ts`;
 		const source = [
-			'import { pandwindCssVite } from "pandwind/vite";',
+			'import { yumcssExtractVite } from "yumcss/vite";',
 			'import { css } from "./src/css";',
-			"export default { plugins: [pandwindCssVite(css)] };",
+			"export default { plugins: [yumcssExtractVite(css)] };",
 		].join("\n");
-		const plan = planPandwindViteIntegration({
+		const plan = planYumCSSViteIntegration({
 			projectRoot: root,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			fileSystem: {
 				read: (path) => (path === configPath ? source : undefined),
 				exists: (path) => path === configPath,

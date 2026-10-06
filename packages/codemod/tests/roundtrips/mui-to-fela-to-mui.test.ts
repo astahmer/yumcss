@@ -42,7 +42,7 @@ test("mui -> fela -> mui: preserves an actionable concrete round trip", async ()
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("mui -> fela -> mui: preserves an actionable concrete round trip", async ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => renderer.renderRule({ "color": "red", "padding": "16px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -137,9 +137,9 @@ test("mui -> fela -> mui: retains the documented secondary API without silent lo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[renderer.renderRule({ "color": "red", "padding": 8 }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		    "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[renderer.renderRule({ "color": "red", "padding": 8 }), props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -174,10 +174,10 @@ test("mui -> fela -> mui: retains the documented secondary API without silent lo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-		// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[renderer.renderRule({ "color": "red", "padding": 8 }), props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		    "code": "import { forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+		// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[renderer.renderRule({ "color": "red", "padding": 8 }), props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -276,7 +276,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => renderer.renderRule({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -348,7 +348,7 @@ test("mui -> fela -> mui: preserves concrete theme and project context variants"
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		      "code": "// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -435,7 +435,7 @@ test("mui -> fela -> mui: resolves token values across both concrete legs", asyn
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		    "code": "// yumcss:migrate-skip (route: fela -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => renderer.renderRule({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

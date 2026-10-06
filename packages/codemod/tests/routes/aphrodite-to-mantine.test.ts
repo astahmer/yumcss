@@ -38,10 +38,10 @@ test("aphrodite -> mantine: migrates concrete aphrodite syntax to mantine", () =
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "aphrodite -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("aphrodite -> mantine: migrates concrete aphrodite syntax to mantine", () =
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -106,7 +106,7 @@ test("aphrodite -> mantine: carries a documented secondary aphrodite API explici
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -172,7 +172,7 @@ test("aphrodite -> mantine: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -220,7 +220,7 @@ test("aphrodite -> mantine: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -280,7 +280,7 @@ test("aphrodite -> mantine: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "#2563eb", padding: 8 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -337,7 +337,7 @@ test("aphrodite -> mantine: preserves malformed concrete aphrodite input", () =>
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
 		export const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 0,

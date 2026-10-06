@@ -38,10 +38,10 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "styled-components -> react-strict-dom happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("styled-components -> react-strict-dom: migrates concrete styled-components
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -95,7 +95,7 @@ test("styled-components -> react-strict-dom: carries a documented secondary styl
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -150,7 +150,7 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("styled-components -> react-strict-dom: loads concrete theme and project co
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -236,7 +236,7 @@ test("styled-components -> react-strict-dom: resolves concrete token values with
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -282,7 +282,7 @@ test("styled-components -> react-strict-dom: preserves malformed concrete styled
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 0,

@@ -42,7 +42,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -90,7 +90,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves an ac
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -183,7 +183,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: retains the doc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { keyframes } from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: validation)
 		export const pulse = keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -297,7 +297,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -380,7 +380,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: preserves concr
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -478,7 +478,7 @@ test("react-strict-dom -> styled-components -> react-strict-dom: resolves token 
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
 		import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		const styles = { "card": styled.div({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,

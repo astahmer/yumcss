@@ -38,10 +38,10 @@ test("react-strict-dom -> authored-css: migrates concrete react-strict-dom synta
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-strict-dom -> authored-css happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("react-strict-dom -> authored-css: migrates concrete react-strict-dom synta
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -96,7 +96,7 @@ test("react-strict-dom -> authored-css: carries a documented secondary react-str
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		export const pulse = css.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -151,7 +151,7 @@ test("react-strict-dom -> authored-css: loads concrete theme and project context
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -189,7 +189,7 @@ test("react-strict-dom -> authored-css: loads concrete theme and project context
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -239,7 +239,7 @@ test("react-strict-dom -> authored-css: resolves concrete token values with proj
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -286,7 +286,7 @@ test("react-strict-dom -> authored-css: preserves malformed concrete react-stric
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> authored-css | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",

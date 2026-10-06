@@ -11,7 +11,7 @@ name: PR report
 on:
   pull_request:
     paths:
-      - "packages/pandwind/**"
+      - "packages/yumcss/**"
       - "packages/codemod/**"
       - "examples/example/**"
       - ".github/workflows/pr-report.yml"

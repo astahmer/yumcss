@@ -342,7 +342,7 @@ export function buildThemeScopes(
 	for (const scope of Object.keys(themes).toSorted()) {
 		const vars = themes[scope];
 		if (!isThemeScopeRecord(vars)) {
-			warn(`pandwind: theme scope "${scope}" is not an object — skipped`);
+			warn(`yumcss: theme scope "${scope}" is not an object — skipped`);
 			continue;
 		}
 		const lines: string[] = [];
@@ -350,7 +350,7 @@ export function buildThemeScopes(
 			const value = vars[name];
 			if (typeof value !== "string" || value === "" || !name.startsWith("--")) {
 				warn(
-					`pandwind: theme scope "${scope}" entry "${name}" is not a theme variable binding ('"--name": "value"' expected) — skipped`,
+					`yumcss: theme scope "${scope}" entry "${name}" is not a theme variable binding ('"--name": "value"' expected) — skipped`,
 				);
 				continue;
 			}
@@ -434,12 +434,12 @@ export function buildComponentScopes(
 	const blocks: string[] = [];
 	for (const name of Object.keys(components).toSorted()) {
 		if (!/^[a-z][a-z0-9-]*$/.test(name)) {
-			warn(`pandwind: component "${name}" is not a valid class name ([a-z][a-z0-9-]*) — skipped`);
+			warn(`yumcss: component "${name}" is not a valid class name ([a-z][a-z0-9-]*) — skipped`);
 			continue;
 		}
 		const vars = components[name];
 		if (vars === null || typeof vars !== "object" || Array.isArray(vars)) {
-			warn(`pandwind: component "${name}" is not an object — skipped`);
+			warn(`yumcss: component "${name}" is not an object — skipped`);
 			continue;
 		}
 		const cls = `.pwc-${name}`;
@@ -449,7 +449,7 @@ export function buildComponentScopes(
 			const varName = componentVarName(key);
 			if (!/^--[a-z0-9-]+$/.test(varName) || varName === "--") {
 				warn(
-					`pandwind: component "${name}" key "${key}" maps to an invalid custom property — skipped`,
+					`yumcss: component "${name}" key "${key}" maps to an invalid custom property — skipped`,
 				);
 				continue;
 			}
@@ -462,7 +462,7 @@ export function buildComponentScopes(
 				// can never ship dead CSS.
 				if (resolveCondition === undefined) {
 					warn(
-						`pandwind: component "${name}" key "${key}" is condition-bound but no preset conditions resolve — skipped`,
+						`yumcss: component "${name}" key "${key}" is condition-bound but no preset conditions resolve — skipped`,
 					);
 					continue;
 				}
@@ -486,7 +486,7 @@ export function buildComponentScopes(
 					const parts = resolveCondition(condKey);
 					if (parts === null || (parts.atRules.length === 0 && parts.selectors.length === 0)) {
 						warn(
-							`pandwind: component "${name}" key "${key}" variant "${condKey}" does not resolve through preset conditions — variant skipped`,
+							`yumcss: component "${name}" key "${key}" variant "${condKey}" does not resolve through preset conditions — variant skipped`,
 						);
 						continue;
 					}
@@ -526,7 +526,7 @@ function resolveComponentValue(
 ): string | null {
 	if (typeof value !== "string" || value === "") {
 		warn(
-			`pandwind: component "${component}" key "${key}" is not a non-empty string or condition-bound object — skipped`,
+			`yumcss: component "${component}" key "${key}" is not a non-empty string or condition-bound object — skipped`,
 		);
 		return null;
 	}
@@ -534,12 +534,12 @@ function resolveComponentValue(
 	const target = `--${dashedKey(value.slice(1))}`;
 	if (!existingVars.has(target)) {
 		warn(
-			`pandwind: component "${component}" key "${key}" references $${value.slice(1)} which does not exist in @theme — skipped`,
+			`yumcss: component "${component}" key "${key}" references $${value.slice(1)} which does not exist in @theme — skipped`,
 		);
 		return null;
 	}
 	if (target === varName) {
-		warn(`pandwind: component "${component}" key "${key}" references itself — cycle skipped`);
+		warn(`yumcss: component "${component}" key "${key}" references itself — cycle skipped`);
 		return null;
 	}
 	return `var(${target})`;

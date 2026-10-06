@@ -1,5 +1,5 @@
 import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from "../path-utils.ts";
-import { createSourceProjectBindingIndex } from "pandwind/source";
+import { createSourceProjectBindingIndex } from "yumcss/source";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	AdapterCapabilityLevelTag,

@@ -18,7 +18,7 @@ const catalog = createBuiltinCodemodCatalog();
 function migrate(source: string, from: CodemodAdapterId) {
 	return runAdapterMigration(source, {
 		from,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: "test.tsx",
 		mode: "safe",
 		readFile: () => undefined,
@@ -85,7 +85,7 @@ describe("styled-components source adapter", () => {
 		expect(result.skipped).toBeGreaterThan(0);
 		expect(result.residuals.length).toBeGreaterThan(0);
 		expect(result.code).toContain("ThemeProvider");
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	});
 
 	test("does not treat styled syntax in comments as a source match", () => {
@@ -103,7 +103,7 @@ describe("styled-components source adapter", () => {
 });
 
 describe("StyleX source adapter", () => {
-	test("converts literal stylex.create entries into Pandwind classes", () => {
+	test("converts literal stylex.create entries into YumCSS classes", () => {
 		const result = migrate(
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				'const styles = stylex.create({ card: { color: "#3182ce", padding: "1rem" } });\n' +
@@ -120,7 +120,7 @@ describe("StyleX source adapter", () => {
 		expect(result.code).toContain("css.class");
 	});
 
-	test("lowers a non-literal stylex value through Pandwind's dynamic carrier", () => {
+	test("lowers a non-literal stylex value through YumCSS's dynamic carrier", () => {
 		const result = migrate(
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ card: { color: getColor() } });",
@@ -148,7 +148,7 @@ describe("StyleX source adapter", () => {
 		expect(result.code).not.toContain("sx.create");
 		expect(result.code).not.toContain("sx.props");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 			export const App = () => <div {...css.props(styles.card)} />;"
@@ -169,7 +169,7 @@ describe("StyleX source adapter", () => {
 		expect(result.code).not.toContain("makeStyles");
 		expect(result.code).not.toContain("mergeProps");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 			export const App = () => <div {...css.props(styles.card)} />;"

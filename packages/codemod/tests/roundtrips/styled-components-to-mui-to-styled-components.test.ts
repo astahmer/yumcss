@@ -42,7 +42,7 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "styled-components -> mui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -308,7 +308,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -351,7 +351,7 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -382,7 +382,7 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -425,7 +425,7 @@ test("styled-components -> mui -> styled-components: resolves token values acros
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

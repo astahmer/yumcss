@@ -1,57 +1,57 @@
 import { describe, expect, test } from "vitest";
-import { createPandwindProjectSupport } from "../src/swap/project-bootstrap.ts";
+import { createYumCSSProjectSupport } from "../src/swap/project-bootstrap.ts";
 import { CodemodAdapterId, SwapTargetId } from "../src/swap/identifiers.ts";
-import { planPandwindNextIntegration } from "../src/swap/host-integration.ts";
+import { planYumCSSNextIntegration } from "../src/swap/host-integration.ts";
 
 const TAILWIND_CODEGEN_TEST_TIMEOUT_MS = 30_000;
 
-describe("Pandwind project bootstrap", () => {
+describe("YumCSS project bootstrap", () => {
 	test("does not bind a generated tw module when no Tailwind graph was emitted", async () => {
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: () => undefined,
 			listFiles: () => [],
 		});
 
-		expect(support.files.map((file) => file.path)).not.toContain("pandwind/tw.ts");
+		expect(support.files.map((file) => file.path)).not.toContain("yumcss/tw.ts");
 		expect(support.bindings.twModule).toBeUndefined();
-		expect(support.bindings.cssModule).toBe("pandwind/css.ts");
-		expect(support.bindings.runtimeCssModule).toBe("pandwind/runtime.ts");
+		expect(support.bindings.cssModule).toBe("yumcss/css.ts");
+		expect(support.bindings.runtimeCssModule).toBe("yumcss/runtime.ts");
 		expect(support.bindings.runtimeCssBinding).toBe("runtimeCss");
-		expect(support.files.find((file) => file.path === "pandwind/runtime.ts")?.content).toContain(
+		expect(support.files.find((file) => file.path === "yumcss/runtime.ts")?.content).toContain(
 			"export const runtimeCss = createRuntimeCss(preset);",
 		);
-		expect(support.files.map((file) => file.path)).not.toContain("pandwind/dss.ts");
-		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
-			'import "pandwind:css";',
+		expect(support.files.map((file) => file.path)).not.toContain("yumcss/dss.ts");
+		expect(support.files.find((file) => file.path === "yumcss/css.ts")?.content).toContain(
+			'import "yumcss:css";',
 		);
-		expect(support.files.find((file) => file.path === "pandwind/css.ts")?.content).toContain(
+		expect(support.files.find((file) => file.path === "yumcss/css.ts")?.content).toContain(
 			'reference path="./vite-env.d.ts"',
 		);
-		expect(support.files.find((file) => file.path === "pandwind/vite-env.d.ts")?.content).toContain(
-			'declare module "pandwind:css"',
+		expect(support.files.find((file) => file.path === "yumcss/vite-env.d.ts")?.content).toContain(
+			'declare module "yumcss:css"',
 		);
 		expect(support.bindings.dssModule).toBeUndefined();
 	});
 
 	test("emits a typed app-owned token preset", async () => {
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: () => undefined,
 			listFiles: () => [],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
-		expect(preset).toContain('define, type PandwindProperties } from "pandwind/preset"');
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
+		expect(preset).toContain('define, type YumCSSProperties } from "yumcss/preset"');
 		expect(preset).toContain("const conditions = define.conditions({");
 		expect(preset).toContain("const appTokens = define.tokens({");
-		expect(preset).toContain("const cssConfig: PandwindProperties = {};");
+		expect(preset).toContain("const cssConfig: YumCSSProperties = {};");
 		expect(preset).toContain("config: cssConfig");
 		expect(preset).toContain("export const preset = define.preset(");
 		expect(preset).not.toContain("AnyCssConfig");
@@ -85,17 +85,17 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
 		expect(preset).toContain("defineColorPalettes");
 		expect(preset).toContain("tokens.defineColorPalettes");
 		expect(preset).toContain('"blue": "colors.blue"');
@@ -115,17 +115,17 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
 		expect(preset).toContain('"base": ""');
 		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
 		expect(support.bindings.conditionCatalog).toMatchObject({
@@ -145,17 +145,17 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
 		expect(preset).toContain('\n\t"_hover": "&:focus-visible",');
 		expect(preset).not.toContain('\n\t"hover":');
 		expect(preset).toContain('"midnight": "[data-theme=midnight] &"');
@@ -163,11 +163,11 @@ describe("Pandwind project bootstrap", () => {
 	});
 
 	test("maps generated token groups to the properties that can consume them", async () => {
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) =>
 				file === "/project/styles.css"
 					? "@theme { --color-brand: #123456; --spacing-card: 1rem; }"
@@ -175,7 +175,7 @@ describe("Pandwind project bootstrap", () => {
 			listFiles: () => ["/project/styles.css"],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
 		expect(preset).toContain('"color": {');
 		expect(preset).toContain('"$tokens": "colors"');
 		expect(preset).not.toContain('"$strict": false');
@@ -186,11 +186,11 @@ describe("Pandwind project bootstrap", () => {
 	});
 
 	test("keeps component catalog values in a semantic layer", async () => {
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) =>
 				file === "/project/styles.css"
 					? "@theme { --color-brand: #123456; --color-component-card-border: #654321; }"
@@ -198,7 +198,7 @@ describe("Pandwind project bootstrap", () => {
 			listFiles: () => ["/project/styles.css"],
 		});
 
-		const preset = support.files.find((file) => file.path === "pandwind/preset.ts")?.content;
+		const preset = support.files.find((file) => file.path === "yumcss/preset.ts")?.content;
 		expect(preset).toContain("const componentTokens = appTokens.defineSemanticTokens");
 		expect(preset).toContain('"raw.component-card-border": "#654321"');
 		expect(preset).toContain(
@@ -207,11 +207,11 @@ describe("Pandwind project bootstrap", () => {
 	});
 
 	test("carries generated target token spellings into the migration metadata", async () => {
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.Tailwind,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) =>
 				file === "/project/styles.css"
 					? '@import "tailwindcss";\n@theme { --color-brand: #123456; }'
@@ -224,14 +224,14 @@ describe("Pandwind project bootstrap", () => {
 		});
 		expect(support.files.map((file) => file.path)).not.toEqual(
 			expect.arrayContaining([
-				"pandwind/types.d.ts",
-				"pandwind/tw.ts",
-				"pandwind/bridge.ts",
-				"pandwind/pandwind.interop.json",
-				"pandwind/pandwind-theme.css",
+				"yumcss/types.d.ts",
+				"yumcss/tw.ts",
+				"yumcss/bridge.ts",
+				"yumcss/yumcss.interop.json",
+				"yumcss/yumcss-theme.css",
 			]),
 		);
-		expect(support.files.map((file) => file.path)).not.toContain("pandwind/cx.ts");
+		expect(support.files.map((file) => file.path)).not.toContain("yumcss/cx.ts");
 		expect(support.bindings.cxModule).toBeUndefined();
 		expect(support.bindings.twModule).toBeUndefined();
 	});
@@ -239,11 +239,11 @@ describe("Pandwind project bootstrap", () => {
 	test(
 		"removes Tailwind graph directives while preserving authored CSS",
 		async () => {
-			const support = await createPandwindProjectSupport({
+			const support = await createYumCSSProjectSupport({
 				root: "/project",
 				sourceAdapter: CodemodAdapterId.Tailwind,
-				targetAdapter: CodemodAdapterId.Pandwind,
-				outputDirectory: "pandwind",
+				targetAdapter: CodemodAdapterId.YumCSS,
+				outputDirectory: "yumcss",
 				readFile: (file) =>
 					file === "/project/styles.css"
 						? [
@@ -271,11 +271,11 @@ describe("Pandwind project bootstrap", () => {
 	test(
 		"uses an explicit TypeScript extension in generated Vite config imports",
 		async () => {
-			const support = await createPandwindProjectSupport({
+			const support = await createYumCSSProjectSupport({
 				root: "/project",
 				sourceAdapter: CodemodAdapterId.Tailwind,
-				targetAdapter: CodemodAdapterId.Pandwind,
-				outputDirectory: "pandwind",
+				targetAdapter: CodemodAdapterId.YumCSS,
+				outputDirectory: "yumcss",
 				readFile: (file) => {
 					if (file === "/project/styles.css") return '@import "tailwindcss";';
 					if (file === "/project/vite.config.ts")
@@ -303,10 +303,10 @@ describe("Pandwind project bootstrap", () => {
 						"export default defineConfig({ plugins: [tailwindcss()] });",
 					].join("\n"),
 					content: [
-						'import { pandwindCssVite } from "pandwind/vite";',
-						'import { preset } from "./pandwind/preset.ts";',
+						'import { yumcssExtractVite } from "yumcss/vite";',
+						'import { preset } from "./yumcss/preset.ts";',
 						'import { defineConfig } from "vite";',
-						'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
+						'export default defineConfig({ plugins: [yumcssExtractVite(preset, { root: "." })] });',
 					].join("\n"),
 				},
 				{
@@ -319,12 +319,12 @@ describe("Pandwind project bootstrap", () => {
 		TAILWIND_CODEGEN_TEST_TIMEOUT_MS,
 	);
 
-	test("adds the Pandwind Vite plugin for non-Tailwind sources", async () => {
-		const support = await createPandwindProjectSupport({
+	test("adds the YumCSS Vite plugin for non-Tailwind sources", async () => {
+		const support = await createYumCSSProjectSupport({
 			root: "/project",
 			sourceAdapter: CodemodAdapterId.StyledComponents,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) =>
 				file === "/project/vite.config.ts"
 					? [
@@ -346,9 +346,9 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 				content: [
 					'import { defineConfig } from "vite";',
-					'import { pandwindCssVite } from "pandwind/vite";',
-					'import { preset } from "./pandwind/preset.ts";',
-					'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
+					'import { yumcssExtractVite } from "yumcss/vite";',
+					'import { preset } from "./yumcss/preset.ts";',
+					'export default defineConfig({ plugins: [yumcssExtractVite(preset, { root: "." })] });',
 				].join("\n"),
 			},
 			{
@@ -359,7 +359,7 @@ describe("Pandwind project bootstrap", () => {
 		]);
 	});
 
-	test("removes the generated Panda stylesheet import when bootstrapping Pandwind", async () => {
+	test("removes the generated Panda stylesheet import when bootstrapping YumCSS", async () => {
 		const root = "/project";
 		const files = new Map<string, string>([
 			[
@@ -372,18 +372,18 @@ describe("Pandwind project bootstrap", () => {
 			],
 			[`${root}/styled-system/styles.css`, ".panda { color: red; }\n"],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 		});
 		const change = support.fileChanges.find((candidate) => candidate.path === "src/main.tsx");
 		expect(change).toMatchObject({
-			content: 'import "pandwind:css";\nexport const App = () => null;\n',
+			content: 'import "yumcss:css";\nexport const App = () => null;\n',
 			expectedContent: 'import "../styled-system/styles.css";\nexport const App = () => null;\n',
 		});
 	});
@@ -401,11 +401,11 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			sourceAdapter: CodemodAdapterId.UnoCSS,
-			targetAdapter: CodemodAdapterId.Pandwind,
-			outputDirectory: "pandwind",
+			targetAdapter: CodemodAdapterId.YumCSS,
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 		});
@@ -417,10 +417,10 @@ describe("Pandwind project bootstrap", () => {
 		});
 		expect(support.fileChanges.find((change) => change.path === "vite.config.ts")?.content).toBe(
 			[
-				'import { pandwindCssVite } from "pandwind/vite";',
-				'import { preset } from "./pandwind/preset.ts";',
+				'import { yumcssExtractVite } from "yumcss/vite";',
+				'import { preset } from "./yumcss/preset.ts";',
 				'import { defineConfig } from "vite";',
-				'export default defineConfig({ plugins: [pandwindCssVite(preset, { root: "." })] });',
+				'export default defineConfig({ plugins: [yumcssExtractVite(preset, { root: "." })] });',
 			].join("\n"),
 		);
 	});
@@ -437,45 +437,45 @@ describe("Pandwind project bootstrap", () => {
 				'"use client";\n\nexport default function Layout() { return <html />; }\n',
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 			packageJson: { dependencies: { next: "15.0.0" } },
 		});
 
-		const css = support.files.find((file) => file.path === "pandwind/css.ts")?.content;
-		expect(css).toContain('import "pandwind-css.css";');
-		expect(css).not.toContain('import "pandwind:css";');
-		expect(support.files.map((file) => file.path)).toContain("pandwind/preset.mjs");
+		const css = support.files.find((file) => file.path === "yumcss/css.ts")?.content;
+		expect(css).toContain('import "yumcss-css.css";');
+		expect(css).not.toContain('import "yumcss:css";');
+		expect(support.files.map((file) => file.path)).toContain("yumcss/preset.mjs");
 		expect(support.fileChanges).toContainEqual({
 			path: "next.config.mjs",
 			expectedContent:
 				"const config = { images: { remotePatterns: [] } };\nexport default config;\n",
-			content: expect.stringContaining('import { pandwindWebpackCss } from "pandwind/unplugin";'),
+			content: expect.stringContaining('import { yumcssWebpackCss } from "yumcss/unplugin";'),
 		});
 		expect(
 			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
-		).toContain('import { preset } from "./pandwind/preset.mjs";');
+		).toContain('import { preset } from "./yumcss/preset.mjs";');
 		expect(
 			support.fileChanges.find((change) => change.path === "next.config.mjs")?.content,
-		).toContain('virtualId: "pandwind-css.css"');
+		).toContain('virtualId: "yumcss-css.css"');
 		expect(support.fileChanges).toContainEqual({
 			path: "app/layout.tsx",
 			expectedContent: '"use client";\n\nexport default function Layout() { return <html />; }\n',
 			content:
-				'"use client";\n\nimport "pandwind-css.css";\nexport default function Layout() { return <html />; }\n',
+				'"use client";\n\nimport "yumcss-css.css";\nexport default function Layout() { return <html />; }\n',
 		});
 		const runtimePreset = support.files.find(
-			(file) => file.path === "pandwind/preset.mjs",
+			(file) => file.path === "yumcss/preset.mjs",
 		)?.content;
 		expect(runtimePreset).toBeDefined();
 		expect(runtimePreset).not.toContain(" as const");
-		expect(runtimePreset).not.toContain("type PandwindProperties");
+		expect(runtimePreset).not.toContain("type YumCSSProperties");
 	});
 
 	test("finds wrapped config objects and webpack arrows through the AST", async () => {
@@ -493,12 +493,12 @@ describe("Pandwind project bootstrap", () => {
 				].join("\n"),
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 			packageJson: { dependencies: { next: "15.0.0" } },
@@ -521,27 +521,27 @@ describe("Pandwind project bootstrap", () => {
 				"export default { webpack: (config) => ({ ...config, plugins: [] }) };\n",
 			],
 		]);
-		const support = await createPandwindProjectSupport({
+		const support = await createYumCSSProjectSupport({
 			root,
 			moduleLoader: { importPackage: async () => undefined, importFile: async () => undefined },
 			sourceAdapter: CodemodAdapterId.Panda,
 			targetAdapter: SwapTargetId.CssClass,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			readFile: (file) => files.get(file),
 			listFiles: () => [...files.keys()],
 			packageJson: { dependencies: { next: "15.0.0" } },
 		});
 
 		expect(support.fileChanges).toHaveLength(0);
-		const plan = planPandwindNextIntegration({
+		const plan = planYumCSSNextIntegration({
 			projectRoot: root,
-			outputDirectory: "pandwind",
+			outputDirectory: "yumcss",
 			fileSystem: {
 				read: (file) => files.get(file),
 				exists: (file) => files.has(file),
 			},
 			packageJson: { dependencies: { next: "15.0.0" } },
 		});
-		expect(plan.notes).toContain("could not safely add pandwindWebpackCss to next.config.mjs");
+		expect(plan.notes).toContain("could not safely add yumcssWebpackCss to next.config.mjs");
 	});
 });

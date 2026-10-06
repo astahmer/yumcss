@@ -124,9 +124,6 @@ importers:
       '@pandacss/config':
         specifier: 1.12.1
         version: 1.12.1
-      '@pandwind/example-preset':
-        specifier: workspace:*
-        version: link:examples/pandwind-example-preset
       '@playwright/test':
         specifier: 1.62.1
         version: 1.62.1
@@ -139,6 +136,12 @@ importers:
       '@unocss/core':
         specifier: 66.10.0
         version: 66.10.0
+      '@yumcss/codemod':
+        specifier: workspace:*
+        version: link:packages/codemod
+      '@yumcss/example-preset':
+        specifier: workspace:*
+        version: link:examples/yumcss-example-preset
       cac:
         specifier: 7.0.0
         version: 7.0.0
@@ -160,12 +163,6 @@ importers:
       oxlint:
         specifier: 1.81.0
         version: 1.81.0
-      pandwind:
-        specifier: workspace:*
-        version: link:packages/pandwind
-      pandwind-codemod:
-        specifier: workspace:*
-        version: link:packages/codemod
       pixelmatch:
         specifier: 7.2.0
         version: 7.2.0
@@ -187,16 +184,16 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
+      yumcss:
+        specifier: workspace:*
+        version: link:packages/yumcss
       zod:
         specifier: 3.25.76
         version: 3.25.76
 
   apps/inspector:
     dependencies:
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
-      pandwind-analyze:
+      '@yumcss/analyze':
         specifier: workspace:*
         version: link:../../packages/analyze
       react:
@@ -205,6 +202,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/node':
         specifier: 26.4.1
@@ -239,24 +239,21 @@ importers:
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.56.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@pandwind/example-preset':
-        specifier: workspace:*
-        version: link:../../examples/pandwind-example-preset
       '@tanstack/react-router':
         specifier: 1.170.32
         version: 1.170.32(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@yumcss/codemod':
+        specifier: workspace:*
+        version: link:../../packages/codemod
+      '@yumcss/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/yumcss-example-preset
       csstype:
         specifier: 3.2.3
         version: 3.2.3
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
-      pandwind-codemod:
-        specifier: workspace:*
-        version: link:../../packages/codemod
       prettier:
         specifier: 3.9.6
         version: 3.9.6
@@ -269,6 +266,9 @@ importers:
       shiki:
         specifier: 4.4.3
         version: 4.4.3
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@oxc-parser/binding-wasm32-wasi':
         specifier: 0.148.0
@@ -351,9 +351,6 @@ importers:
       goober:
         specifier: 2.1.19
         version: 2.1.19(csstype@3.2.3)
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -369,6 +366,9 @@ importers:
       vite:
         specifier: 8.2.2
         version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@8.1.1))(sass@1.104.0)(terser@5.51.2)(yaml@2.9.0)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/babel__core':
         specifier: 7.20.5
@@ -427,6 +427,9 @@ importers:
       '@vanilla-extract/sprinkles':
         specifier: 1.7.1
         version: 1.7.1(@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0))
+      '@yumcss/codemod':
+        specifier: workspace:*
+        version: link:../../packages/codemod
       aphrodite:
         specifier: 2.4.0
         version: 2.4.0
@@ -445,12 +448,6 @@ importers:
       next-yak:
         specifier: 9.10.0
         version: 9.10.0(@swc/helpers@0.5.23)(@types/react@19.2.18)(react@19.2.8)(vite@8.2.2)
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
-      pandwind-codemod:
-        specifier: workspace:*
-        version: link:../../packages/codemod
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -472,6 +469,9 @@ importers:
       typestyle:
         specifier: 2.4.0
         version: 2.4.0
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -498,21 +498,21 @@ importers:
 
   examples/css-example:
     dependencies:
-      '@pandwind/example-preset':
+      '@yumcss/example-preset':
         specifier: workspace:*
-        version: link:../pandwind-example-preset
+        version: link:../yumcss-example-preset
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
       react:
         specifier: 19.2.8
         version: 19.2.8
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: 16.0.3
@@ -544,18 +544,18 @@ importers:
 
   examples/example:
     dependencies:
-      '@pandwind/example-preset':
+      '@yumcss/example-preset':
         specifier: workspace:*
-        version: link:../pandwind-example-preset
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
+        version: link:../yumcss-example-preset
       react:
         specifier: 19.2.8
         version: 19.2.8
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -572,10 +572,10 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: 4.3.3
         version: 4.3.3(@swc/helpers@0.5.23)(vite@8.2.2)
-      pandwind-codemod:
+      '@yumcss/codemod':
         specifier: workspace:*
         version: link:../../packages/codemod
-      pandwind-devtools:
+      '@yumcss/devtools':
         specifier: workspace:*
         version: link:../../packages/devtools
       tailwindcss:
@@ -596,15 +596,15 @@ importers:
       '@opentui/react':
         specifier: 0.5.10
         version: 0.5.10(react-devtools-core@7.0.1)(react@19.2.8)(typescript@7.0.2)(web-tree-sitter@0.25.10)(ws@8.21.3)
-      '@pandwind/example-preset':
+      '@yumcss/example-preset':
         specifier: workspace:*
-        version: link:../pandwind-example-preset
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
+        version: link:../yumcss-example-preset
       react:
         specifier: 19.2.8
         version: 19.2.8
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/bun':
         specifier: 1.4.0
@@ -616,20 +616,11 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
-  examples/pandwind-example-preset:
-    dependencies:
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
-
   examples/rn-example:
     dependencies:
-      '@pandwind/example-preset':
+      '@yumcss/example-preset':
         specifier: workspace:*
-        version: link:../pandwind-example-preset
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
+        version: link:../yumcss-example-preset
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -642,6 +633,9 @@ importers:
       react-native-web:
         specifier: 0.21.2
         version: 0.21.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/react':
         specifier: 19.2.18
@@ -667,12 +661,9 @@ importers:
       '@opentui/react':
         specifier: 0.5.10
         version: 0.5.10(react-devtools-core@7.0.1)(react@19.2.8)(typescript@7.0.2)(web-tree-sitter@0.25.10)(ws@8.21.3)
-      '@pandwind/example-preset':
+      '@yumcss/example-preset':
         specifier: workspace:*
-        version: link:../pandwind-example-preset
-      pandwind:
-        specifier: workspace:*
-        version: link:../../packages/pandwind
+        version: link:../yumcss-example-preset
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -685,6 +676,9 @@ importers:
       react-native-web:
         specifier: 0.21.2
         version: 0.21.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
     devDependencies:
       '@types/bun':
         specifier: 1.4.0
@@ -711,6 +705,12 @@ importers:
         specifier: 8.2.2
         version: 8.2.2(@types/node@26.4.1)(@vitejs/devtools@0.7.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@8.1.1))(sass@1.104.0)(terser@5.51.2)(yaml@2.9.0)
 
+  examples/yumcss-example-preset:
+    dependencies:
+      yumcss:
+        specifier: workspace:*
+        version: link:../../packages/yumcss
+
   packages/analyze:
     dependencies:
       '@hono/node-server':
@@ -722,28 +722,25 @@ importers:
       '@tailwindcss/node':
         specifier: 4.3.3
         version: 4.3.3
+      '@yumcss/codemod':
+        specifier: workspace:*
+        version: link:../codemod
       cac:
         specifier: 7.0.0
         version: 7.0.0
       hono:
         specifier: 4.13.5
         version: 4.13.5
-      pandwind:
-        specifier: workspace:*
-        version: link:../pandwind
-      pandwind-codemod:
-        specifier: workspace:*
-        version: link:../codemod
       postcss:
         specifier: 8.5.28
         version: 8.5.28
+      yumcss:
+        specifier: workspace:*
+        version: link:../yumcss
       zod:
         specifier: 4.5.4
         version: 4.5.4
     devDependencies:
-      '@pandwind/example-preset':
-        specifier: workspace:*
-        version: link:../../examples/pandwind-example-preset
       '@pierre/diffs':
         specifier: 1.4.3
         version: 1.4.3(@shikijs/themes@4.4.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -753,6 +750,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 5.0.0
         version: 5.0.0(vitest@5.0.0)
+      '@yumcss/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/yumcss-example-preset
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
@@ -792,9 +792,6 @@ importers:
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
-      pandwind:
-        specifier: workspace:*
-        version: link:../pandwind
       postcss:
         specifier: 8.5.28
         version: 8.5.28
@@ -804,6 +801,9 @@ importers:
       unplugin:
         specifier: 3.3.0
         version: 3.3.0(esbuild@0.28.2)(rolldown@1.2.7)(rollup@4.63.1)(vite@8.2.2)(webpack@5.110.3(@swc/core@1.16.1(@swc/helpers@0.5.23))(cssnano@4.1.11)(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.4(@types/node@26.4.1))(svgo@4.1.0))
+      yumcss:
+        specifier: workspace:*
+        version: link:../yumcss
       zod:
         specifier: 4.5.4
         version: 4.5.4
@@ -814,15 +814,15 @@ importers:
       '@mantine/core':
         specifier: 9.6.0
         version: 9.6.0(@mantine/hooks@9.6.0(react@19.2.8))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@pandwind/example-preset':
-        specifier: workspace:*
-        version: link:../../examples/pandwind-example-preset
       '@types/node':
         specifier: 26.4.1
         version: 26.4.1
       '@vitest/coverage-v8':
         specifier: 5.0.0
         version: 5.0.0(vitest@5.0.0)
+      '@yumcss/example-preset':
+        specifier: workspace:*
+        version: link:../../examples/yumcss-example-preset
       jss:
         specifier: 10.10.0
         version: 10.10.0
@@ -841,10 +841,7 @@ importers:
       '@vitejs/devtools-kit':
         specifier: 0.7.2
         version: 0.7.2(cac@7.0.0)(crossws@0.4.12(srvx@1.0.3))(srvx@1.0.3)(vite@8.2.2)
-      pandwind:
-        specifier: workspace:*
-        version: link:../pandwind
-      pandwind-codemod:
+      '@yumcss/codemod':
         specifier: workspace:*
         version: link:../codemod
       react:
@@ -853,6 +850,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      yumcss:
+        specifier: workspace:*
+        version: link:../yumcss
     devDependencies:
       '@types/node':
         specifier: 26.4.1
@@ -887,9 +887,9 @@ importers:
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
-      pandwind:
+      yumcss:
         specifier: workspace:*
-        version: link:../pandwind
+        version: link:../yumcss
     devDependencies:
       '@types/node':
         specifier: 26.4.1
@@ -904,7 +904,7 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(@types/node@26.4.1)(@vitest/coverage-v8@5.0.0)(happy-dom@10.8.0)(vite@8.2.2)
 
-  packages/pandwind:
+  packages/yumcss:
     dependencies:
       astro:
         specifier: '>=5.0.0'
@@ -20601,7 +20601,7 @@ snapshots:
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.18.0
-      browserslist: 4.28.8
+      browserslist: 4.28.9
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.24.5
       es-module-lexer: 2.3.2
@@ -20640,7 +20640,7 @@ snapshots:
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.18.0
-      browserslist: 4.28.8
+      browserslist: 4.28.9
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.24.5
       es-module-lexer: 2.3.2

@@ -2,7 +2,7 @@ import type { AdapterCapabilities } from "./capabilities.ts";
 import type { StyleAdapter } from "./adapter-contract.ts";
 
 /** Versioned registry contract for style systems and their dialects. */
-export const STYLE_SYSTEM_SCHEMA = "pandwind.style-system/1" as const;
+export const STYLE_SYSTEM_SCHEMA = "yumcss.style-system/1" as const;
 
 export const enum StyleDialectRoleTag {
 	Source = "source",

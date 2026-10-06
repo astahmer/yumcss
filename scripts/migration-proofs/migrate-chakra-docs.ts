@@ -1,18 +1,18 @@
 /**
- * Chakra UI docs -> Pandwind migration corpus.
+ * Chakra UI docs -> YumCSS migration corpus.
  *
  * The upstream checkout is a read-only reference. This corpus owns only the
  * lane adapters, materialized worktree support files, and proof metadata. A
- * lane is a route through the shared Chakra source adapter and one Pandwind
- * target API; it is not a bespoke Chakra-to-Pandwind transformation.
+ * lane is a route through the shared Chakra source adapter and one YumCSS
+ * target API; it is not a bespoke Chakra-to-YumCSS transformation.
  */
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readFile, readdir, symlink, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
-import type { AdapterMigrationResult } from "pandwind-codemod/swap";
-import { relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
+import type { AdapterMigrationResult } from "@yumcss/codemod/swap";
+import { relativeModuleImport } from "@yumcss/codemod/migration/shared";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 
 export enum ChakraDocsLane {
@@ -55,7 +55,7 @@ interface LaneAdapter {
 
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const defaultReferenceRoot = createReferenceWorkspace().path("chakra-ui");
-const pandwindSupportRoot = "apps/www/pandwind";
+const yumcssSupportRoot = "apps/www/yumcss";
 
 async function collectSourceFiles(root: string): Promise<string[]> {
 	const files: string[] = [];
@@ -74,16 +74,16 @@ async function collectSourceFiles(root: string): Promise<string[]> {
 }
 
 function runtimeImports(file: string, lane: ChakraDocsLane): string {
-	const preset = relativeModuleImport(file, pandwindSupportRoot, "preset");
+	const preset = relativeModuleImport(file, yumcssSupportRoot, "preset");
 	if (lane === ChakraDocsLane.DesignCss) {
 		return [
-			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
+			'import { createRuntimeDesignCss } from "yumcss/css/runtime";',
 			`import { preset } from "${preset}";`,
 			"const dss = createRuntimeDesignCss(preset);",
 		].join("\n");
 	}
 	return [
-		'import { createRuntimeCss } from "pandwind/css/runtime";',
+		'import { createRuntimeCss } from "yumcss/css/runtime";',
 		`import { preset } from "${preset}";`,
 		"const css = createRuntimeCss(preset);",
 	].join("\n");
@@ -92,25 +92,25 @@ function runtimeImports(file: string, lane: ChakraDocsLane): string {
 function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): string {
 	const imports = runtimeImports(file, lane);
 	let generated = code.replace(
-		'import { createUnsafeCss } from "pandwind/unsafe/css";\nconst css = createUnsafeCss();',
+		'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();',
 		imports,
 	);
-	if (generated.includes('import { createUnsafeCss } from "pandwind/unsafe/css";')) {
+	if (generated.includes('import { createUnsafeCss } from "yumcss/unsafe/css";')) {
 		generated = generated.replace(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+			'import { createUnsafeCss } from "yumcss/unsafe/css";',
 			imports,
 		);
 		generated = generated.replace("const css = createUnsafeCss();", "");
 	}
 	generated = generated.replace(
-		'import { defaultPreset } from "pandwind/preset/default";',
-		`import { preset } from "${relativeModuleImport(file, pandwindSupportRoot, "preset")}";`,
+		'import { defaultPreset } from "yumcss/preset/default";',
+		`import { preset } from "${relativeModuleImport(file, yumcssSupportRoot, "preset")}";`,
 	);
 	if (lane === ChakraDocsLane.DesignCss) {
 		generated = generated
 			.replaceAll(
-				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
+				'import { createRuntimeCss } from "yumcss/css/runtime";',
+				'import { createRuntimeDesignCss } from "yumcss/css/runtime";',
 			)
 			.replaceAll("createRuntimeCss(preset)", "createRuntimeDesignCss(preset)")
 			.replaceAll(
@@ -138,7 +138,7 @@ function bindMdxRuntime(source: string, lane: ChakraDocsLane): string {
 				'import * as runtime from "react/jsx-runtime"',
 				`import * as runtime from "react/jsx-runtime"\nimport { ${binding} } from "${relativeModuleImport(
 					"apps/www/components/mdx-content.tsx",
-					pandwindSupportRoot,
+					yumcssSupportRoot,
 					binding,
 				)}";`,
 			);
@@ -156,7 +156,7 @@ function createLane(id: ChakraDocsLane): LaneAdapter {
 		async transform(source, file, root, files) {
 			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.ChakraUi,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file,
 				root,
 				readFile: (candidate) => {
@@ -175,7 +175,7 @@ function createLane(id: ChakraDocsLane): LaneAdapter {
 }
 
 function runtimePreset(): string {
-	return `/** Generated by the Pandwind migration proof runner. */
+	return `/** Generated by the YumCSS migration proof runner. */
 export const preset = {
   strict: false,
   properties: {},
@@ -199,18 +199,18 @@ function runtimeSheet(lane: ChakraDocsLane): string {
 
 import { useRef } from "react";
 import { useServerInsertedHTML } from "next/navigation";
-import { ${factory} } from "pandwind/css/runtime";
+import { ${factory} } from "yumcss/css/runtime";
 import { preset } from "./preset";
 
 const runtime = ${factory}(preset);
 
-export function PandwindStyleSheet() {
+export function YumCSSStyleSheet() {
   const emitted = useRef<string | undefined>(undefined);
   useServerInsertedHTML(() => {
     const value = runtime.sheet.css();
     if (value === emitted.current || value === "") return null;
     emitted.current = value;
-    return <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: value }} />;
+    return <style data-yumcss-runtime dangerouslySetInnerHTML={{ __html: value }} />;
   });
   return null;
 }
@@ -219,7 +219,7 @@ export function PandwindStyleSheet() {
 
 function runtimeBinding(binding: "css" | "dss"): string {
 	const factory = binding === "dss" ? "createRuntimeDesignCss" : "createRuntimeCss";
-	return `import { ${factory} } from "pandwind/css/runtime";
+	return `import { ${factory} } from "yumcss/css/runtime";
 import { preset } from "./preset";
 
 export const ${binding} = ${factory}(preset);
@@ -249,7 +249,7 @@ async function materialize(
 	for (const entry of await readdir(join(referenceRoot, "apps/www/node_modules"), {
 		withFileTypes: true,
 	})) {
-		if (entry.name === "pandwind") continue;
+		if (entry.name === "yumcss") continue;
 		await symlink(
 			join(referenceRoot, "apps/www/node_modules", entry.name),
 			join(outputRoot, "apps/www/node_modules", entry.name),
@@ -257,8 +257,8 @@ async function materialize(
 		).catch(() => undefined);
 	}
 	await symlink(
-		join(repositoryRoot, "packages/pandwind"),
-		join(outputRoot, "apps/www/node_modules/pandwind"),
+		join(repositoryRoot, "packages/yumcss"),
+		join(outputRoot, "apps/www/node_modules/yumcss"),
 		"dir",
 	).catch(() => undefined);
 	const packageFile = join(outputRoot, "apps/www/package.json");
@@ -267,7 +267,7 @@ async function materialize(
 	};
 	packageJson.dependencies = {
 		...packageJson.dependencies,
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 	const nextConfig = join(outputRoot, "apps/www/next.config.mjs");
@@ -277,7 +277,7 @@ async function materialize(
 			nextConfig,
 			nextSource.replace(
 				"const nextConfig = {",
-				'const nextConfig = {\n  transpilePackages: ["pandwind"],',
+				'const nextConfig = {\n  transpilePackages: ["yumcss"],',
 			),
 		);
 	}
@@ -293,10 +293,10 @@ async function materialize(
 		await writeFile(target, code);
 	}
 	const support = new Map([
-		[`${pandwindSupportRoot}/preset.ts`, runtimePreset()],
-		[`${pandwindSupportRoot}/style-sheet.tsx`, runtimeSheet(lane)],
-		[`${pandwindSupportRoot}/css.ts`, runtimeBinding("css")],
-		[`${pandwindSupportRoot}/dss.ts`, runtimeBinding("dss")],
+		[`${yumcssSupportRoot}/preset.ts`, runtimePreset()],
+		[`${yumcssSupportRoot}/style-sheet.tsx`, runtimeSheet(lane)],
+		[`${yumcssSupportRoot}/css.ts`, runtimeBinding("css")],
+		[`${yumcssSupportRoot}/dss.ts`, runtimeBinding("dss")],
 	]);
 	for (const [file, code] of support) {
 		const target = join(outputRoot, file);
@@ -305,31 +305,31 @@ async function materialize(
 	}
 	const providerFile = join(outputRoot, "apps/www/app/provider.tsx");
 	const provider = await readFile(providerFile, "utf8");
-	if (!provider.includes("<PandwindStyleSheet")) {
+	if (!provider.includes("<YumCSSStyleSheet")) {
 		const placements = [
 			[
 				"        {props.children}\n        <Toaster />",
-				"        {props.children}\n        <Toaster />\n        <PandwindStyleSheet />",
+				"        {props.children}\n        <Toaster />\n        <YumCSSStyleSheet />",
 			],
 			[
 				"        {props.children}\n      </ColorModeProvider>",
-				"        {props.children}\n        <PandwindStyleSheet />\n      </ColorModeProvider>",
+				"        {props.children}\n        <YumCSSStyleSheet />\n      </ColorModeProvider>",
 			],
 			[
 				"        {children}\n      </Provider>",
-				"        {children}\n        <PandwindStyleSheet />\n      </Provider>",
+				"        {children}\n        <YumCSSStyleSheet />\n      </Provider>",
 			],
 		] as const;
 		const placement = placements.find(([needle]) => provider.includes(needle));
 		if (placement === undefined) {
-			throw new Error("Could not place PandwindStyleSheet in the Chakra root provider");
+			throw new Error("Could not place YumCSSStyleSheet in the Chakra root provider");
 		}
 		await writeFile(
 			providerFile,
 			(() => {
 				const updated = provider.replace(placement[0], placement[1]);
-				if (provider.includes("import { PandwindStyleSheet }")) return updated;
-				const importLine = 'import { PandwindStyleSheet } from "../pandwind/style-sheet";\n';
+				if (provider.includes("import { YumCSSStyleSheet }")) return updated;
+				const importLine = 'import { YumCSSStyleSheet } from "../yumcss/style-sheet";\n';
 				return updated.startsWith('"use client"')
 					? updated.replace('"use client"\n', `"use client"\n${importLine}`)
 					: `${importLine}${updated}`;

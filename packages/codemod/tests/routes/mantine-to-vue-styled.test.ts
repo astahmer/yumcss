@@ -38,10 +38,10 @@ test("mantine -> vue-styled: migrates concrete mantine syntax to vue-styled", ()
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> vue-styled happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("mantine -> vue-styled: carries a documented secondary mantine API explicit
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: residual)
+		// yumcss:migrate-skip (route: mantine -> vue-styled | parse-residual: host-framework | available: residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],

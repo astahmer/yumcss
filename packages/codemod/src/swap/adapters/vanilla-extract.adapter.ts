@@ -60,7 +60,7 @@ const vanillaExtractStyleProgram = (program: StyleProgram): StyleProgram => {
 };
 
 const runtimeFallbackVar =
-	"const __pandwindFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
+	"const __yumcssFallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
 
 const componentResidual = (text: string, hint: string) => ({
 	kind: StyleProgramResidualKindTag.Component,
@@ -217,16 +217,16 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 		},
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
-				targetId === CodemodAdapterId.Pandwind &&
+				targetId === CodemodAdapterId.YumCSS &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 			standalone:
-				targetId === CodemodAdapterId.Pandwind &&
+				targetId === CodemodAdapterId.YumCSS &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
 		rewrite: ({ code, targetId, project }) => {
-			if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.YumCSS) return { code, residuals: [] };
 			if (!/\bcss\.(?:class|vars|group)\s*\(/u.test(code) && !/\bcreateVar\s*\(/u.test(code))
 				return { code, residuals: [] };
 
@@ -297,8 +297,8 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				);
 			}
 			if (/\bfallbackVar\s*\(/u.test(rewritten)) {
-				rewritten = rewritten.replace(/\bfallbackVar\s*\(/gu, "__pandwindFallbackVar(");
-				if (!/\b(?:const|let|var)\s+__pandwindFallbackVar\b/u.test(rewritten))
+				rewritten = rewritten.replace(/\bfallbackVar\s*\(/gu, "__yumcssFallbackVar(");
+				if (!/\b(?:const|let|var)\s+__yumcssFallbackVar\b/u.test(rewritten))
 					rewritten = `${runtimeFallbackVar}\n${rewritten}`;
 			}
 			const descriptors = handledVariables.flatMap((variable) =>
@@ -317,8 +317,8 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 					.join(", ");
 				if (project?.runtimeCssModule === undefined)
 					runtimeImports = [
-						'import { createRuntimeCss } from "pandwind/css/runtime";',
-						'import { defaultPreset } from "pandwind/preset/default";',
+						'import { createRuntimeCss } from "yumcss/css/runtime";',
+						'import { defaultPreset } from "yumcss/preset/default";',
 						`const ${binding} = createRuntimeCss(defaultPreset);`,
 					];
 				rewritten = `${binding}.sheet.registerSemanticRules([${registrations}]);\n${rewritten}`;
@@ -371,7 +371,7 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				binding,
 				".css.ts",
 				".css.ts",
-				`import { style } from "@vanilla-extract/css";\nexport const __pandwind${binding}Styles = style(${programObject(vanillaExtractStyleProgram(program))});\n`,
+				`import { style } from "@vanilla-extract/css";\nexport const __yumcss${binding}Styles = style(${programObject(vanillaExtractStyleProgram(program))});\n`,
 				"Vanilla Extract styles for a migrated React component",
 			);
 			if (artifact === undefined)

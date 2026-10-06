@@ -3,4 +3,4 @@
  * collection layer (plans/023 unification). This file stays as the stable
  * local import seam for vite.config.ts and tests.
  */
-export { gather } from "pandwind-analyze/collect";
+export { gather } from "@yumcss/analyze/collect";

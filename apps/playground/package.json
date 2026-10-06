@@ -11,17 +11,17 @@
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "pnpm run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:generate": "pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens @pandwind/example-preset --preset-import @pandwind/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.conflicts.ts ./src/tw.build.ts ./src/bridge.ts ./src/pandwind-theme.css && pnpm exec pandwind-codemod tw manifest ./src ./src/tailwind.css"
+		"tw:generate": "pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src --tokens @yumcss/example-preset --preset-import @yumcss/example-preset --preset-export examplePreset --bridge && pnpm exec oxfmt ./src/types.d.ts ./src/tw.ts ./src/tw.runtime.ts ./src/tw.conflicts.ts ./src/tw.build.ts ./src/bridge.ts ./src/yumcss-theme.css && pnpm exec yumcss-codemod tw manifest ./src ./src/tailwind.css"
 	},
 	"dependencies": {
 		"@ark-ui/react": "5.39.0",
 		"@monaco-editor/react": "4.7.0",
-		"@pandwind/example-preset": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
 		"@tanstack/react-router": "1.170.32",
 		"csstype": "3.2.3",
 		"oxc-parser": "0.148.0",
-		"pandwind": "workspace:*",
-		"pandwind-codemod": "workspace:*",
+		"yumcss": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
 		"prettier": "3.9.6",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",

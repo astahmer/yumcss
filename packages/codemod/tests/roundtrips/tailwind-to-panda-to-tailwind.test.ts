@@ -42,7 +42,7 @@ test("tailwind -> panda -> tailwind: preserves an actionable concrete round trip
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> panda round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -172,7 +172,7 @@ test("tailwind -> panda -> tailwind: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		// yumcss:migrate-skip (route: panda -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		export const App = () => <div className={css({ color: "rebeccapurple", md: { display: "flex" } })}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -189,7 +189,7 @@ test("tailwind -> panda -> tailwind: retains the documented secondary API withou
 		        "representation": "custom-property",
 		        "residuals": [
 		          {
-		            "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target tailwind",
+		            "hint": "bind --yumcss-dynamic-1wkt4rw at runtime for target tailwind",
 		            "kind": "dynamic-custom-property",
 		          },
 		        ],
@@ -203,7 +203,7 @@ test("tailwind -> panda -> tailwind: retains the documented secondary API withou
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "bind --pandwind-dynamic-1wkt4rw at runtime for target tailwind",
+		        "hint": "bind --yumcss-dynamic-1wkt4rw at runtime for target tailwind",
 		        "kind": "dynamic-custom-property",
 		        "preserved": undefined,
 		      },

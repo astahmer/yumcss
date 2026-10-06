@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { JsxStyleHost } from "../src/swap/jsx-style-host.ts";
 
 describe("JsxStyleHost", () => {
-	it("passes an existing class through Pandwind props", () => {
+	it("passes an existing class through YumCSS props", () => {
 		const result = JsxStyleHost.render(
 			'<div className="existing" data-kind="card" />',
 			[],
@@ -16,7 +16,7 @@ describe("JsxStyleHost", () => {
 		expect(result.needsCx).toBe(false);
 	});
 
-	it("spreads one Pandwind props carrier when the host has no class or style", () => {
+	it("spreads one YumCSS props carrier when the host has no class or style", () => {
 		const result = JsxStyleHost.render(
 			'<div data-kind="card" />',
 			[],
@@ -58,7 +58,7 @@ describe("JsxStyleHost", () => {
 		);
 
 		expect(result.text).toContain(
-			"{...(() => { const __pandwindVars = css.vars({ color: tone }); return { ...css.props(__pandwindVars, existingClass), style: { ...(existingStyle ?? {}), ...__pandwindVars.style } }; })()}",
+			"{...(() => { const __yumcssVars = css.vars({ color: tone }); return { ...css.props(__yumcssVars, existingClass), style: { ...(existingStyle ?? {}), ...__yumcssVars.style } }; })()}",
 		);
 		expect(result.text).not.toContain("css.vars({ color: tone }).class");
 		expect(result.text).not.toContain("css.vars({ color: tone }).style");
@@ -76,14 +76,14 @@ describe("JsxStyleHost", () => {
 		);
 
 		expect(result.text).toContain(
-			'class: [__pandwindVars.class, existingClass, props?.class].filter(Boolean).join(" ")',
+			'class: [__yumcssVars.class, existingClass, props?.class].filter(Boolean).join(" ")',
 		);
-		expect(result.text).toContain("style: { ...(props?.style ?? {}), ...__pandwindVars.style }");
+		expect(result.text).toContain("style: { ...(props?.style ?? {}), ...__yumcssVars.style }");
 		expect(result.text).not.toContain("css.vars({ color: tone }).class");
 		expect(result.text).not.toContain("css.vars({ color: tone }).style");
 	});
 
-	it("keeps cx for non-Pandwind class expressions", () => {
+	it("keeps cx for non-YumCSS class expressions", () => {
 		const result = JsxStyleHost.render(
 			"<div className={className} {...props} />",
 			[],

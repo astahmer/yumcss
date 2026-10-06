@@ -12,12 +12,12 @@
  * boundary and must never run third-party code.
  */
 import { parseSync } from "oxc-parser";
-import type { ClassNameStrategy } from "pandwind/css";
-import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemod/swap/semantic-ir";
-import { flattenStyle } from "pandwind/lib/utils";
-import { collectModuleConstants } from "pandwind/vite/cx-inline";
-import type { ConstantScope } from "pandwind/vite/cx-inline";
-import { ImportKindTag, NodeKind } from "pandwind/tw/literal";
+import type { ClassNameStrategy } from "yumcss/css";
+import { styleProgramFromSourceObject, type StyleProgram } from "@yumcss/codemod/swap/semantic-ir";
+import { flattenStyle } from "yumcss/lib/utils";
+import { collectModuleConstants } from "yumcss/vite/cx-inline";
+import type { ConstantScope } from "yumcss/vite/cx-inline";
+import { ImportKindTag, NodeKind } from "yumcss/tw/literal";
 
 export interface PlaygroundHostNode {
 	readonly type: string;
@@ -409,7 +409,7 @@ interface PlaygroundSuccess {
 	foldNote: string;
 	/** Resolved declarations per css() literal call (class -> declarations). */
 	atomDeclarations: Array<{ cls: string; decls: Record<string, string> }>;
-	/** CSS produced by Pandwind-owned runtime sheets used by the example. */
+	/** CSS produced by YumCSS-owned runtime sheets used by the example. */
 	sheets: PlaygroundSheetResult[];
 	/** Source declarations paired with the class emitted for each declaration. */
 	styleMappings: PlaygroundStyleMapping[];
@@ -862,7 +862,7 @@ function styleProgramsFromExpression(exprText: string): StyleProgram[] {
 							styleProgramFromSourceObject(body, {
 								source: {
 									file: "playground.tsx",
-									adapter: "pandwind-playground",
+									adapter: "yumcss-playground",
 									pattern: name,
 								},
 							}),
@@ -889,14 +889,14 @@ export interface EvalInput {
 	tw: PlaygroundCallable;
 	css: PlaygroundCallable;
 	cx: (...inputs: Array<never>) => string;
-	/** Safe preset-bound factory used when resolving `pandwind/css` imports. */
+	/** Safe preset-bound factory used when resolving `yumcss/css` imports. */
 	createCss?: PlaygroundCallable;
-	/** Explicit unsafe engine used when resolving `pandwind/unsafe/css` imports. */
+	/** Explicit unsafe engine used when resolving `yumcss/unsafe/css` imports. */
 	createUnsafeCss?: PlaygroundCallable;
-	/** Explicit playground adapter; null selects Pandwind's default atomic output. */
+	/** Explicit playground adapter; null selects YumCSS's default atomic output. */
 	classNameStrategy?: ClassNameStrategy | null;
 	/**
-	 * Extra module bindings: sandbox import rewrites (pandwind/preset ->
+	 * Extra module bindings: sandbox import rewrites (yumcss/preset ->
 	 * presetApi, ./brand.ts -> evaluated sibling tab) land here by specifier.
 	 */
 	moduleBindings?: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
@@ -1110,11 +1110,11 @@ function evalGuarded(input: EvalInput, mode: EvalMode): PlaygroundResult {
 }
 
 /**
- * The pandwind public API surface the sandbox can resolve imports against.
+ * The yumcss public API surface the sandbox can resolve imports against.
  * Kept as a function so the record reflects the exact bindings this input
  * carries the safe and unsafe CSS factories when available.
  */
-function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
+function yumcssBuiltins(input: EvalInput): Record<string, unknown> {
 	return {
 		tw: input.tw,
 		css: input.css,
@@ -1168,17 +1168,17 @@ function buildSandbox(
 			const imported = imp.imported === undefined ? undefined : bindings[imp.imported];
 			const resolvedImport =
 				imported ??
-				(imp.imported !== undefined && imp.source.startsWith("pandwind/")
-					? pandwindBuiltins(input)[imp.imported]
+				(imp.imported !== undefined && imp.source.startsWith("yumcss/")
+					? yumcssBuiltins(input)[imp.imported]
 					: undefined);
-			const isCssFactory = imp.source === "pandwind/css" && imp.imported === "createCss";
+			const isCssFactory = imp.source === "yumcss/css" && imp.imported === "createCss";
 			const isUnsafeCssFactory =
-				imp.source === "pandwind/unsafe/css" && imp.imported === "createUnsafeCss";
+				imp.source === "yumcss/unsafe/css" && imp.imported === "createUnsafeCss";
 			const isDesignFactory =
-				imp.source === "pandwind/design" && imp.imported === "createDesignCss";
+				imp.source === "yumcss/design" && imp.imported === "createDesignCss";
 			const isRuntimeFactory =
 				typeof resolvedImport === "function" &&
-				((imp.source === "pandwind/css/runtime" &&
+				((imp.source === "yumcss/css/runtime" &&
 					(imp.imported === "createRuntimeCss" || imp.imported === "createRuntimeDesignCss")) ||
 					isCssFactory ||
 					isUnsafeCssFactory ||
@@ -1271,15 +1271,15 @@ function buildSandbox(
 			}
 			continue;
 		}
-		// pandwind's own public API resolves against the sandbox builtins:
-		// `import { tw } from "pandwind"` is the same tw the file already has.
-		if (imp.source === "pandwind" || imp.source.startsWith("pandwind/")) {
+		// yumcss's own public API resolves against the sandbox builtins:
+		// `import { tw } from "yumcss"` is the same tw the file already has.
+		if (imp.source === "yumcss" || imp.source.startsWith("yumcss/")) {
 			if (imp.imported !== undefined) {
 				sandbox[imp.local] = instrumentedBuiltins[imp.imported];
 			} else {
-				// Default imports are not part of the supported Pandwind entrypoints.
+				// Default imports are not part of the supported YumCSS entrypoints.
 				sandbox[imp.local] =
-					imp.source === "pandwind" ? instrumentedBuiltins : input.createUnsafeCss;
+					imp.source === "yumcss" ? instrumentedBuiltins : input.createUnsafeCss;
 			}
 			continue;
 		}

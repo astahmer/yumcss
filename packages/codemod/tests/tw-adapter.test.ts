@@ -14,16 +14,16 @@
  * still real Tailwind CSS.
  */
 import { describe, expect, test } from "vitest";
-import { createCx } from "pandwind/cx";
-import { createCss } from "pandwind/css";
-import { createUnsafeCss } from "pandwind/unsafe/css";
-import { createDesignCss } from "pandwind/design";
-import { examplePreset } from "@pandwind/example-preset";
-import { createTwAdapter } from "pandwind/tw";
+import { createCx } from "yumcss/cx";
+import { createCss } from "yumcss/css";
+import { createUnsafeCss } from "yumcss/unsafe/css";
+import { createDesignCss } from "yumcss/design";
+import { examplePreset } from "@yumcss/example-preset";
+import { createTwAdapter } from "yumcss/tw";
 import { generateUtilityBridge } from "../src/tw/bridge.ts";
-import { compileStyles } from "pandwind/tw/compile";
+import { compileStyles } from "yumcss/tw/compile";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
-import { extractTwConfigFromSources } from "pandwind/vite/inline";
+import { extractTwConfigFromSources } from "yumcss/vite/inline";
 import { compileClasses, rulesForClass } from "./helpers/tailwind-proof.ts";
 
 const BASE = import.meta.dirname;

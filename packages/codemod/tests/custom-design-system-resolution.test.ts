@@ -4,7 +4,7 @@ import {
 	createBuiltinCodemodCatalog,
 	createChakraAdapter,
 	createPandaAdapter,
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	createTokenamiAdapter,
@@ -19,7 +19,7 @@ const file = "src/Card.tsx";
 type CustomTarget =
 	| ReturnType<typeof createChakraAdapter>
 	| ReturnType<typeof createPandaAdapter>
-	| ReturnType<typeof createPandwindAdapter>
+	| ReturnType<typeof createYumCSSAdapter>
 	| ReturnType<typeof createTailwindAdapter>
 	| ReturnType<typeof createTokenamiAdapter>
 	| ReturnType<typeof createUnoCssAdapter>;
@@ -366,14 +366,14 @@ describe("custom design-system context resolution", () => {
 			'export const App = () => <div className="btn-brand text-brand" />;',
 			{
 				from: CodemodAdapterId.Tailwind,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file,
 				root,
 				readFile: projectFiles({ [`${root}/tailwind.css`]: '@import "tailwindcss";' }),
 				listFiles: () => [`${root}/tailwind.css`],
 				adapterRegistry: createStyleAdapterRegistry([
 					target,
-					createPandwindAdapter({ moduleLoader: null }),
+					createYumCSSAdapter({ moduleLoader: null }),
 				]),
 			},
 		);
@@ -383,7 +383,7 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toContain('backgroundColor: "#123456"');
 		expect(source.code).toContain('color: "#123456"');
 		expect(source.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);
@@ -440,14 +440,14 @@ describe("custom design-system context resolution", () => {
 			'export const App = () => <div class="btn-brand text-brand" />;',
 			{
 				from: CodemodAdapterId.UnoCSS,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file,
 				root,
 				readFile: projectFiles({}),
 				listFiles: () => [`${root}/uno.config.ts`],
 				adapterRegistry: createStyleAdapterRegistry([
 					target,
-					createPandwindAdapter({ moduleLoader: null }),
+					createYumCSSAdapter({ moduleLoader: null }),
 				]),
 			},
 		);
@@ -457,7 +457,7 @@ describe("custom design-system context resolution", () => {
 		expect(source.code).toContain('backgroundColor: "#123456"');
 		expect(source.code).toContain('color: "#123456"');
 		expect(source.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ backgroundColor: "#123456", color: "#123456" })}/>;"
 		`);

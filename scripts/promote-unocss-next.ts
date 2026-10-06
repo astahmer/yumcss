@@ -1,4 +1,5 @@
-import { execFileSync } from "node:child_process";
+import {
+	normalizeInstalledTargetPackage, execFileSync } from "node:child_process";
 import {
 	cpSync,
 	existsSync,
@@ -11,7 +12,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { join, resolve, sep } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import { packageInstalled, run, runCaptured, writeJson } from "./installed-proof.ts";
 import { proveNextInstallation, type NextInstalledProof } from "./next-proof.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
@@ -22,8 +23,8 @@ const referenceWorkspace = createReferenceWorkspace();
 const referenceRoot = referenceWorkspace.path("unocss");
 const nextExampleRoot = join(referenceRoot, "examples/next");
 const unocssCommit = "75103d5e12ec9876069daf6b97a7db1d73428829";
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.unocss-next-installed-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.unocss-next-installed-proof/1" as const;
 
 const versions = {
 	"@types/node": "26.4.1",
@@ -32,7 +33,7 @@ const versions = {
 	"@unocss/postcss": "66.10.0",
 	next: "16.1.2",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "6.0.3",
@@ -69,7 +70,7 @@ interface UnoCssNextProof {
 	};
 	readonly route: {
 		readonly from: CodemodAdapterId.UnoCSS;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: { readonly isolated: true; readonly routeCount: number };
 	readonly dependencies: {
@@ -86,7 +87,7 @@ interface UnoCssNextProof {
 			readonly equal: boolean;
 			readonly differences: readonly string[];
 		};
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceUnoIntegrationRemoved: boolean;
 		readonly nextWebpackIntegrationPresent: boolean;
 	};
@@ -104,7 +105,7 @@ interface UnoCssNextProof {
 	};
 }
 
-const packageJson = (includePandwind: boolean): Record<string, unknown> => ({
+const packageJson = (includeYumCSS: boolean): Record<string, unknown> => ({
 	private: true,
 	type: "module",
 	scripts: {
@@ -116,8 +117,8 @@ const packageJson = (includePandwind: boolean): Record<string, unknown> => ({
 		next: versions.next,
 		react: versions.react,
 		"react-dom": versions["react-dom"],
-		...(includePandwind
-			? { pandwind: versions.pandwind, unplugin: versions.unplugin }
+		...(includeYumCSS
+			? { yumcss: versions.yumcss, unplugin: versions.unplugin }
 			: { "@unocss/postcss": versions["@unocss/postcss"], unocss: versions.unocss }),
 	},
 	devDependencies: {
@@ -190,12 +191,12 @@ function writeReferenceFile(path: string, content: string): void {
 	writeFileSync(path, content);
 }
 
-function createProject(root: string, includePandwind: boolean): void {
+function createProject(root: string, includeYumCSS: boolean): void {
 	const appRoot = join(root, "app");
 	mkdirSync(appRoot, { recursive: true });
 	const favicon = join(nextExampleRoot, "app", "favicon.ico");
 	if (existsSync(favicon)) cpSync(favicon, join(appRoot, "favicon.ico"));
-	writeJson(join(root, "package.json"), packageJson(includePandwind));
+	writeJson(join(root, "package.json"), packageJson(includeYumCSS));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
 	writeReferenceFile(
 		join(root, "next-env.d.ts"),
@@ -262,8 +263,8 @@ async function main(): Promise<void> {
 		);
 	if (!existsSync(nextExampleRoot))
 		throw new Error(`missing UnoCSS Next example: ${nextExampleRoot}`);
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
-	const root = mkdtempSync(join("/tmp", "pandwind-unocss-next-"));
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
+	const root = mkdtempSync(join("/tmp", "yumcss-unocss-next-"));
 	const sourceRoot = join(root, "source");
 	const targetRoot = join(root, "target");
 	const keep = process.argv.includes("--keep");
@@ -278,13 +279,13 @@ async function main(): Promise<void> {
 			"nub",
 			[
 				"--conditions",
-				"pandwind",
+				"yumcss",
 				join(repositoryRoot, "packages/codemod/src/cli.ts"),
 				"migrate",
 				"--from",
 				CodemodAdapterId.UnoCSS,
 				"--to",
-				CodemodAdapterId.Pandwind,
+				CodemodAdapterId.YumCSS,
 				"--root",
 				targetRoot,
 				"--no-install",
@@ -330,12 +331,12 @@ async function main(): Promise<void> {
 				commit: unocssCommit,
 				sourceEntry: "examples/next/app/page.tsx",
 			},
-			route: { from: CodemodAdapterId.UnoCSS, to: CodemodAdapterId.Pandwind },
+			route: { from: CodemodAdapterId.UnoCSS, to: CodemodAdapterId.YumCSS },
 			fixture: { isolated: true, routeCount: next.http.routeCount },
 			dependencies: {
 				sourceInstalled: packageInstalled(sourceRoot, "unocss"),
-				targetNodeModule: packageInstalled(targetRoot, "pandwind"),
-				targetPackage: versions.pandwind,
+				targetNodeModule: packageInstalled(targetRoot, "yumcss"),
+				targetPackage: normalizeInstalledTargetPackage(versions.yumcss, repositoryRoot),
 			},
 			migration: {
 				converted: files.reduce((total, file) => total + (file.converted ?? 0), 0),
@@ -346,14 +347,14 @@ async function main(): Promise<void> {
 					equal: canonical.length > 0 && canonical.every((value) => value.equal),
 					differences: canonical.flatMap((value) => value.differences),
 				},
-				targetUsesPandwind: targetNextConfig.includes("pandwind"),
+				targetUsesYumCSS: targetNextConfig.includes("yumcss"),
 				sourceUnoIntegrationRemoved:
 					!existsSync(join(targetRoot, "postcss.config.mjs")) &&
 					!existsSync(join(targetRoot, "unocss-postcss.cjs")) &&
 					!existsSync(join(targetRoot, "uno.config.ts")) &&
 					!packageInstalled(targetRoot, "unocss") &&
 					!packageInstalled(targetRoot, "@unocss/postcss"),
-				nextWebpackIntegrationPresent: targetNextConfig.includes("pandwindWebpackCss"),
+				nextWebpackIntegrationPresent: targetNextConfig.includes("yumcssWebpackCss"),
 			},
 			checks: {
 				sourceTypecheck: true,

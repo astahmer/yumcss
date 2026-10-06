@@ -38,10 +38,10 @@ test("vanilla-extract -> tamagui: migrates concrete vanilla-extract syntax to ta
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> tamagui happy");
 	expectExplicitResidualEvidence(result);
@@ -91,7 +91,7 @@ test("vanilla-extract -> tamagui: carries a documented secondary vanilla-extract
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],

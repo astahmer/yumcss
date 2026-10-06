@@ -42,7 +42,7 @@ test("react-strict-dom -> stitches -> react-strict-dom: preserves an actionable 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -181,7 +181,7 @@ test("react-strict-dom -> stitches -> react-strict-dom: retains the documented s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { keyframes } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: stitches -> react-strict-dom | lowering-residual: validation)
 		export const pulse = keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -42,7 +42,7 @@ test("next-yak -> css-modules -> next-yak: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "next-yak -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("next-yak -> css-modules -> next-yak: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("next-yak -> css-modules -> next-yak: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("next-yak -> css-modules -> next-yak: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("next-yak -> css-modules -> next-yak: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("next-yak -> css-modules -> next-yak: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("next-yak -> css-modules -> next-yak: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("next-yak -> css-modules -> next-yak: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("next-yak -> css-modules -> next-yak: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("next-yak -> css-modules -> next-yak: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("next-yak -> css-modules -> next-yak: resolves token values across both con
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		// pandwind:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: next-yak -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

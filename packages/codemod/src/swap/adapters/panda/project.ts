@@ -14,7 +14,7 @@
  */
 import { join } from "node:path";
 import { CodemodAdapterId } from "../../identifiers.ts";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 
 const enum PandaFactoryComponentKindTag {
 	Style = "style",

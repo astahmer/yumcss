@@ -86,7 +86,7 @@ function projectStaticSubjectToClass(
 					imports: [
 						...(rewritten.imports ?? []),
 						...(rewritten.needsCx
-							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+							? ['import { createCx } from "yumcss/cx";', "const cx = createCx();"]
 							: []),
 					],
 					residuals: rewritten.residuals,
@@ -120,7 +120,7 @@ function projectStaticSubjectToClass(
 					imports: [
 						...(declaration.imports ?? []),
 						...(declaration.needsCx
-							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+							? ['import { createCx } from "yumcss/cx";', "const cx = createCx();"]
 							: []),
 					],
 					residuals: declaration.residuals,
@@ -158,7 +158,7 @@ function projectStaticSubjectToClass(
 				imports: [
 					...(declaration.imports ?? []),
 					...(declaration.needsCx
-						? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+						? ['import { createCx } from "yumcss/cx";', "const cx = createCx();"]
 						: []),
 				],
 				residuals: declaration.residuals,
@@ -306,7 +306,7 @@ function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgra
 					({ value }) =>
 						value.kind === StyleValueKindTag.Literal &&
 						typeof value.value === "string" &&
-						value.value.startsWith("var(--pandwind-dynamic-"),
+						value.value.startsWith("var(--yumcss-dynamic-"),
 				) || rule.children.some(containsCarrier)
 			);
 		})
@@ -332,7 +332,7 @@ function hasStaticOnlyDynamicValue(program: import("./semantic-ir.ts").StyleProg
 /**
  * Give every target a last-resort carrier for hostless dynamic values. Native
  * and target-runtime representations are selected first; this only preserves
- * the authored expression in Pandwind's portable class runtime when the
+ * the authored expression in YumCSS's portable class runtime when the
  * target has no equivalent carrier and no host rewrite is required.
  */
 export function projectPortableDynamicMigration(

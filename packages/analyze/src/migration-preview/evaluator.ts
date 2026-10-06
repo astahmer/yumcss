@@ -6,9 +6,9 @@ import {
 	runAdapterMigrationAsync,
 	SwapSourceId,
 	type StyleAdapter,
-} from "pandwind-codemod/swap";
-import { PANDWIND_API_DIALECTS } from "pandwind-codemod/swap/browser";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+} from "@yumcss/codemod/swap";
+import { YUMCSS_API_DIALECTS } from "@yumcss/codemod/swap/browser";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import { parseThemeScopes, parseThemeVars } from "../collect/parsers.ts";
 import { crawlCssImports } from "../collect/theme-crawl.ts";
 import { MIGRATION_PREVIEW_EVIDENCE_CHECK, MIGRATION_PREVIEW_EXECUTION_LANE } from "./contracts.ts";
@@ -25,13 +25,13 @@ import type {
 } from "./contracts.ts";
 
 const targetAddress = (id: string): string => {
-	const dialect = PANDWIND_API_DIALECTS.find(
+	const dialect = YUMCSS_API_DIALECTS.find(
 		(candidate) => candidate.dialect === id || candidate.label === id,
 	);
 	if (dialect === undefined) return id;
 	return dialect.dialect === SwapSourceId.Css
-		? CodemodAdapterId.Pandwind
-		: `${CodemodAdapterId.Pandwind}:${dialect.dialect}`;
+		? CodemodAdapterId.YumCSS
+		: `${CodemodAdapterId.YumCSS}:${dialect.dialect}`;
 };
 
 const readPackageJson = (root: string): Readonly<Record<string, unknown>> | undefined => {
@@ -138,7 +138,7 @@ export const createMigrationPreviewCodemodEvaluator = (): MigrationPreviewEvalua
 	const options = (): MigrationPreviewAdapterCatalogSnapshot => {
 		const adapters = catalog.adapters.map(adapterOption);
 		const targets = [
-			...PANDWIND_API_DIALECTS.map(({ label }) => ({
+			...YUMCSS_API_DIALECTS.map(({ label }) => ({
 				id: label,
 				label,
 				role: "target" as const,

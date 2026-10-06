@@ -42,7 +42,7 @@ test("aphrodite -> tailwind -> aphrodite: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> tailwind round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -140,7 +140,7 @@ test("aphrodite -> tailwind -> aphrodite: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("aphrodite -> tailwind -> aphrodite: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> tailwind | capability-blocked: rule-level: 2 semantic rules; ordering: ordered semantic rules | available: static, named-map, residual)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],

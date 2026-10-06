@@ -42,7 +42,7 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> react-native round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -90,7 +90,7 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <View   style={StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -141,7 +141,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -179,7 +179,7 @@ test("mui -> react-native -> mui: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -260,7 +260,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("mui -> react-native -> mui: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -425,7 +425,7 @@ test("mui -> react-native -> mui: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		// pandwind:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-native -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <View   style={StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

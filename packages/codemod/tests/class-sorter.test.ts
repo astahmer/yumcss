@@ -1,12 +1,12 @@
 import { describe, expect, test } from "vitest";
-import { createEmptyPandwindMeta } from "../src/meta.ts";
+import { createEmptyYumCSSMeta } from "../src/meta.ts";
 import {
 	sortClassList,
 	sortClassListDetailed,
 	sortStaticClassSource,
 } from "../src/class-sorter.ts";
 
-const meta = createEmptyPandwindMeta();
+const meta = createEmptyYumCSSMeta();
 meta.keys = [
 	{ key: "padding", base: "p", valueType: "Spacing" },
 	{ key: "paddingInline", base: "px", valueType: "Spacing" },

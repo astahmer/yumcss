@@ -44,7 +44,7 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> chakra-ui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -189,7 +189,7 @@ test("aphrodite -> chakra-ui -> aphrodite: retains the documented secondary API 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: aphrodite -> chakra-ui | lowering-residual: rule-level, validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],

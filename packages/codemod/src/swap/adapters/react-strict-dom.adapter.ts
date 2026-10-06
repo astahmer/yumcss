@@ -153,7 +153,7 @@ function rewriteRsdSourceHosts(
 		.replace(/<\/html\.([a-z][\w.-]*)>/gu, "</$1>");
 	return {
 		code: rewritten,
-		imports: needsCx ? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"] : [],
+		imports: needsCx ? ['import { createCx } from "yumcss/cx";', "const cx = createCx();"] : [],
 	};
 }
 
@@ -270,7 +270,7 @@ const reactStrictDom = defineCodemodAdapter({
 			},
 		},
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
-			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.YumCSS || !complete) return { code, residuals: [] };
 			const rewritten = rewriteRsdSourceHosts(code, convertedBindings);
 			return { code: rewritten.code, imports: rewritten.imports, residuals: [] };
 		},

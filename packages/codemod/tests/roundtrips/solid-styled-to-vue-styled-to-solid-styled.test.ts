@@ -42,7 +42,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "solid-styled -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -94,7 +94,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -190,7 +190,7 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -302,7 +302,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -385,7 +385,7 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -483,7 +483,7 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
 
-		// pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",

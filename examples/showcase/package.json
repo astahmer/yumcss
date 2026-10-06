@@ -13,8 +13,8 @@
 	"dependencies": {
 		"@opentui/core": "0.5.10",
 		"@opentui/react": "0.5.10",
-		"@pandwind/example-preset": "workspace:*",
-		"pandwind": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
+		"yumcss": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
 		"react-native": "npm:react-native-web@0.21.2",

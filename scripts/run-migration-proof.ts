@@ -14,7 +14,7 @@ import {
 import { createReferenceWorkspace, type ReferenceWorkspace } from "./reference-workspace.ts";
 import { ensureReferenceWorkspace } from "./ensure-reference-workspace.ts";
 
-const MIGRATION_PROOF_SCHEMA = "pandwind.migration-proof/1" as const;
+const MIGRATION_PROOF_SCHEMA = "yumcss.migration-proof/1" as const;
 const MIGRATION_PROOF_COMMAND = {
 	List: "list",
 	Prepare: "prepare",
@@ -261,7 +261,7 @@ function validateCommand(command: Command): void {
 }
 
 function createCli() {
-	const cli = cac("pandwind migration-proof");
+	const cli = cac("yumcss migration-proof");
 	cli.help();
 	cli.command("list", "List registered migration proof scenarios and lanes");
 	const prepare = cli.command("prepare [scenario]", "Prepare pinned reference workspaces");
@@ -275,7 +275,7 @@ function createCli() {
 
 export async function runMigrationProofCli(argv = process.argv.slice(2)): Promise<void> {
 	const cli = createCli();
-	cli.parse(["node", "pandwind migration-proof", ...argv], { run: false });
+	cli.parse(["node", "yumcss migration-proof", ...argv], { run: false });
 	const command = cli.matchedCommand;
 	if (command === undefined) {
 		if (argv.includes("-h") || argv.includes("--help")) return;

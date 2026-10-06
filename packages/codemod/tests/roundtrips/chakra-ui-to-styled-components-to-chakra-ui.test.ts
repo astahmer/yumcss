@@ -44,7 +44,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "chakra-ui -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ background: "#fecaca", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,7 +140,7 @@ test("chakra-ui -> styled-components -> chakra-ui: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -175,7 +175,7 @@ test("chakra-ui -> styled-components -> chakra-ui: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> styled-components | parse-residual: composition | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -254,7 +254,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ background: "#f97316", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -326,7 +326,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ background: "#2a57c8", padding: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -413,7 +413,7 @@ test("chakra-ui -> styled-components -> chakra-ui: resolves token values across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const App = () => styled.div({ background: "#2a57c8", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -10,7 +10,7 @@ const program = styleProgramFromRules([
 			{
 				conditions: [],
 				property: "color",
-				value: { kind: "literal", value: "var(--pandwind-dynamic-5qa8dh)" },
+				value: { kind: "literal", value: "var(--yumcss-dynamic-5qa8dh)" },
 			},
 		],
 		children: [
@@ -34,7 +34,7 @@ const program = styleProgramFromRules([
 ]);
 
 describe("PortableStyleArtifact", () => {
-	test("restores only Pandwind-owned dynamic placeholders, including nested rules", () => {
+	test("restores only YumCSS-owned dynamic placeholders, including nested rules", () => {
 		const restored = PortableStyleArtifact.restoreDynamicValues(program, [
 			{ kind: "dynamic-custom-property", text: "theme.foreground" },
 		]);
@@ -82,7 +82,7 @@ describe("PortableStyleArtifact", () => {
 		expect(staticEmission).toEqual({
 			text: 'css.class({ "color": "red" })',
 			imports: [
-				'import { createUnsafeCss } from "pandwind/unsafe/css";',
+				'import { createUnsafeCss } from "yumcss/unsafe/css";',
 				"const css = createUnsafeCss();",
 			],
 		});
@@ -94,10 +94,10 @@ describe("PortableStyleArtifact", () => {
 		);
 		expect(dynamicEmission.text).toContain("css.vars");
 		expect(dynamicEmission.imports).toContain(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";',
+			'import { createUnsafeCss } from "yumcss/unsafe/css";',
 		);
 		expect(dynamicEmission.imports).not.toContain(
-			'import { createRuntimeCss } from "pandwind/css/runtime";',
+			'import { createRuntimeCss } from "yumcss/css/runtime";',
 		);
 	});
 

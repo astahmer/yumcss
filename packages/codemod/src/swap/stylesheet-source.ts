@@ -35,7 +35,7 @@ import {
 	joinDocumentPath,
 	relativeDocumentPath,
 } from "../path-utils.ts";
-import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "yumcss/source";
 
 const enum StylesheetSourceNodeKindTag {
 	Rule = "rule",
@@ -182,7 +182,7 @@ function preserveUnsupportedStylesheetMigration(
 	}));
 	const code =
 		stylesheetSkipMarker({
-			marker: "pandwind:migrate-skip",
+			marker: "yumcss:migrate-skip",
 			loweringResiduals: [residual],
 		}) +
 		"\n" +
@@ -915,7 +915,7 @@ export function parseStylesheetPrograms(
 	return { matches, residuals };
 }
 
-/** Convert a complete stylesheet into a generated Pandwind module atomically. */
+/** Convert a complete stylesheet into a generated YumCSS module atomically. */
 export function createStylesheetFileMigration(
 	port: StylesheetSourcePort = new PlainStylesheetSource(),
 ): AdapterFileMigration {
@@ -976,7 +976,7 @@ export function createStylesheetFileMigration(
 					capabilityResiduals.length === 0
 						? context.source
 						: stylesheetSkipMarker({
-								marker: "pandwind:migrate-skip",
+								marker: "yumcss:migrate-skip",
 								loweringResiduals: capabilityResiduals,
 							}) +
 							"\n" +
@@ -1204,7 +1204,7 @@ export function createStylesheetFileMigration(
 				}));
 				const code =
 					stylesheetSkipMarker({
-						marker: "pandwind:migrate-skip",
+						marker: "yumcss:migrate-skip",
 						loweringResiduals: skipResiduals,
 					}) +
 					"\n" +
@@ -1330,7 +1330,7 @@ export function createStylesheetFileMigration(
 				);
 				const code =
 					stylesheetSkipMarker({
-						marker: "pandwind:migrate-skip",
+						marker: "yumcss:migrate-skip",
 						loweringResiduals: validationResiduals,
 					}) +
 					"\n" +
@@ -1471,7 +1471,7 @@ export function createPreprocessorFileMigration(
 			if (compiler === undefined) {
 				const code =
 					stylesheetSkipMarker({
-						marker: "pandwind:migrate-skip",
+						marker: "yumcss:migrate-skip",
 						configurationResiduals: [
 							{
 								kind: StyleProgramResidualKindTag.Configuration,
@@ -1509,7 +1509,7 @@ export function createPreprocessorFileMigration(
 			} catch (error) {
 				const code =
 					stylesheetSkipMarker({
-						marker: "pandwind:migrate-skip",
+						marker: "yumcss:migrate-skip",
 						configurationResiduals: [
 							{
 								kind: StyleProgramResidualKindTag.Configuration,
@@ -1584,7 +1584,7 @@ export function createPreprocessorFileMigration(
 					residuals.length === 0
 						? compiled.css
 						: stylesheetSkipMarker({
-								marker: "pandwind:migrate-skip",
+								marker: "yumcss:migrate-skip",
 								loweringResiduals: residuals,
 							}) +
 							"\n" +

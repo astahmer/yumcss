@@ -1,13 +1,13 @@
 import tailwindcss from "@tailwindcss/vite";
 import { DevTools } from "@vitejs/devtools";
 import react from "@vitejs/plugin-react-swc";
-import { pandwindDevtools } from "pandwind-devtools";
-import { createPandwindEngineContext, pandwindCssVite, stackFoldVite } from "pandwind/vite";
+import { yumcssDevtools } from "@yumcss/devtools";
+import { createYumCSSEngineContext, yumcssExtractVite, stackFoldVite } from "yumcss/vite";
 import { defineConfig } from "vite";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { css } from "./src/css.ts";
 
-const engine = createPandwindEngineContext({ preset: examplePreset });
+const engine = createYumCSSEngineContext({ preset: examplePreset });
 
 export default defineConfig({
 	plugins: [
@@ -15,10 +15,10 @@ export default defineConfig({
 		// plugin, so the example proves responsive folding and generated rules.
 		stackFoldVite({ engine }),
 		// The dynamic-app example demonstrates both compiler carrier rewrites.
-		pandwindCssVite(css, { engine, transformDynamicClassName: true }),
+		yumcssExtractVite(css, { engine, transformDynamicClassName: true }),
 		tailwindcss(),
 		react(),
 		DevTools(),
-		pandwindDevtools(),
+		yumcssDevtools(),
 	],
 });

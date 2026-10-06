@@ -3,11 +3,11 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { execFileSync, spawn } from "node:child_process";
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
-import { createRealRepositoryCorpus, runAdapterMigrationAsync } from "pandwind-codemod/swap";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createRealRepositoryCorpus, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 
-const REFERENCE_MIGRATION_SCHEMA = "pandwind.reference-migration/1" as const;
+const REFERENCE_MIGRATION_SCHEMA = "yumcss.reference-migration/1" as const;
 
 export interface ReferenceRepositoryMigrationReport {
 	readonly schema: typeof REFERENCE_MIGRATION_SCHEMA;
@@ -134,7 +134,7 @@ export async function runReferenceRepositoryMigration(
 
 	const workingCopy = options.outputRoot
 		? resolve(options.outputRoot)
-		: mkdtempSync(join(tmpdir(), `pandwind-${reference.id}-`));
+		: mkdtempSync(join(tmpdir(), `yumcss-${reference.id}-`));
 	mkdirSync(workingCopy, { recursive: true });
 	await materializePinnedTree(checkout, reference.commit, workingCopy);
 	const projectRoot = projectRootFor(workingCopy, reference.path);
@@ -213,7 +213,7 @@ export async function runReferenceRepositoryMigration(
 			"css-size",
 		],
 	};
-	const output = options.reportPath ?? join(workingCopy, "pandwind-migration-report.json");
+	const output = options.reportPath ?? join(workingCopy, "yumcss-migration-report.json");
 	mkdirSync(dirname(resolve(output)), { recursive: true });
 	writeFileSync(resolve(output), `${JSON.stringify(report, null, 2)}\n`);
 	return report;

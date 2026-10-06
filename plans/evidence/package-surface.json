@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.package-surface/1",
+	"schema": "yumcss.package-surface/1",
 	"records": [
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				".",
 				"./css",
@@ -21,131 +21,131 @@
 			"dependencies": ["csstype"],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/package-exports.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/package-exports.test.ts",
 				"docs/src/content/docs/api/css.md",
 				"docs/src/content/docs/getting-started.md"
 			],
 			"note": "The frozen authoring and host contracts."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./preset/tailwindcss"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/preset-tailwindcss.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/preset-tailwindcss.test.ts",
 				"docs/src/content/docs/api/presets.md"
 			],
 			"note": "Ecosystem starter preset: Tailwind v4's theme namespaces and breakpoints as authored data, generated from the pinned tailwindcss package."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./preset/chakra"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/preset-chakra.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/preset-chakra.test.ts",
 				"docs/src/content/docs/api/presets.md"
 			],
 			"note": "Ecosystem starter preset: Chakra UI v3's token scales, color-mode semantic tokens, and conditions as authored data, generated from the pinned @chakra-ui/react package."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./preset/shadcn"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/preset-shadcn.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/preset-shadcn.test.ts",
 				"docs/src/content/docs/api/presets.md"
 			],
 			"note": "Ecosystem starter preset: shadcn/ui's registry color roles, radius and font variables, and create-page selections as authored data, generated from the pinned shadcn/ui checkout."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./preset/panda"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/preset-panda.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/preset-panda.test.ts",
 				"docs/src/content/docs/api/presets.md"
 			],
 			"note": "Ecosystem starter preset: Panda CSS's token scales, conditions, and breakpoints as authored data, generated from the pinned @pandacss/config resolver."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./reset/tailwindcss"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/reset/tailwindcss.css",
-				"packages/pandwind/tests/packed-consumer.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/reset/tailwindcss.css",
+				"packages/yumcss/tests/packed-consumer.test.ts",
 				"docs/src/content/docs/api/resets.md"
 			],
 			"note": "Reset stylesheet: Tailwind v4's preflight ported with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./reset/panda"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/reset/panda.css",
-				"packages/pandwind/tests/packed-consumer.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/reset/panda.css",
+				"packages/yumcss/tests/packed-consumer.test.ts",
 				"docs/src/content/docs/api/resets.md"
 			],
 			"note": "Reset stylesheet: Panda CSS's preflight ported from @pandacss/generator with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
 		},
 		{
-			"packageName": "pandwind",
-			"exportPaths": ["./reset/pandwind"],
+			"packageName": "yumcss",
+			"exportPaths": ["./reset/yumcss"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/reset/pandwind.css",
-				"packages/pandwind/tests/packed-consumer.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/reset/yumcss.css",
+				"packages/yumcss/tests/packed-consumer.test.ts",
 				"docs/src/content/docs/api/resets.md"
 			],
-			"note": "Reset stylesheet: Pandwind's own authored baseline (no upstream port) for engines that ship no reset, shipped as a plain CSS asset in the @layer reset layer."
+			"note": "Reset stylesheet: YumCSS's own authored baseline (no upstream port) for engines that ship no reset, shipped as a plain CSS asset in the @layer reset layer."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./prose/tailwindcss"],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/prose/tailwindcss.css",
-				"packages/pandwind/tests/packed-consumer.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/prose/tailwindcss.css",
+				"packages/yumcss/tests/packed-consumer.test.ts",
 				"docs/src/content/docs/api/prose.md"
 			],
 			"note": "Prose stylesheet: the Tailwind Typography scale (core, four size modifiers, invert, and 22 color themes) compiled from @tailwindcss/typography through the pinned tailwindcss compiler, shipped as a plain CSS asset in the @layer prose layer."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				"./css/named",
 				"./css/stylex",
@@ -157,28 +157,28 @@
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
+				"packages/yumcss/package.json",
 				"docs/src/content/docs/interop/css-in-js-adapters.md"
 			],
 			"note": "Concrete ClassNameStrategy integrations remain opt-in and adapter-owned."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./css/generated"],
 			"owner": "tooling",
 			"maturity": "experimental",
 			"dependencies": ["csstype"],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/package-exports.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/package-exports.test.ts",
 				"docs/src/content/docs/tooling/codegen.md",
 				"docs/src/content/docs/api/css.md"
 			],
 			"note": "Opt-in generated CSS facade for large presets; codegen owns the emitted concrete types."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				"./stack",
 				"./stack/react",
@@ -195,14 +195,14 @@
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
+				"packages/yumcss/package.json",
 				"docs/src/content/docs/reference/backends.md",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
 			"note": "Non-default targets are retained, but they are not equivalent to the web lane."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				"./tw/collect",
 				"./css/selector-scan",
@@ -214,58 +214,58 @@
 			"dependencies": ["oxc-parser", "postcss"],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
+				"packages/yumcss/package.json",
 				"README.md",
 				"docs/src/content/docs/tooling/codegen.md"
 			],
-			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in pandwind-codemod."
+			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in yumcss-codemod."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./vite", "./vite/preset-context", "./unplugin"],
 			"owner": "integration",
 			"maturity": "stable",
 			"dependencies": ["unplugin"],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/vite/preset-context.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/vite/preset-context.ts",
 				"docs/src/content/docs/tooling/vite-plugins.md",
 				"docs/src/content/docs/tooling/multi-bundler.md"
 			],
 			"note": "Bundler integration is explicit; the preset-context export exposes resolved property-aware token vocabulary to build tooling."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./vite/lib-artifact"],
 			"owner": "build",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/tests/lib-artifact.test.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/tests/lib-artifact.test.ts",
 				"docs/src/content/docs/guides/component-library.md"
 			],
 			"note": "Versioned publishable CSS-rule artifact contract consumed by the Vite integration."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./vite/runtime-pruner"],
 			"owner": "tooling",
 			"maturity": "stable",
 			"dependencies": ["oxc-parser"],
 			"externalContract": false,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/vite/runtime-pruner.ts",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/vite/runtime-pruner.ts",
 				"packages/codemod/src/runtime/cli.ts",
 				"docs/src/content/docs/tooling/codegen.md"
 			],
 			"note": "Tooling-only runtime-pruning explanation; it is not part of the browser runtime contract."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				"./vite/css-extract",
 				"./vite/css-inline-analysis",
@@ -285,13 +285,13 @@
 			"dependencies": ["oxc-parser", "postcss"],
 			"externalContract": false,
 			"evidence": [
-				"packages/pandwind/package.json",
+				"packages/yumcss/package.json",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
 			"note": "Workspace compatibility paths. New consumers should use an owning package entry."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": [
 				"./_runtime/css-base",
 				"./_runtime/css-codegen",
@@ -310,26 +310,26 @@
 			"dependencies": [],
 			"externalContract": false,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/vite/runtime-pruner.ts",
-				"packages/pandwind/src/css/runtime-codegen.ts",
-				"packages/pandwind/tests/runtime-pruner.test.ts",
-				"packages/pandwind/tests/runtime-codegen.test.ts"
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/vite/runtime-pruner.ts",
+				"packages/yumcss/src/css/runtime-codegen.ts",
+				"packages/yumcss/tests/runtime-pruner.test.ts",
+				"packages/yumcss/tests/runtime-codegen.test.ts"
 			],
 			"note": "Private generated imports emitted by runtime pruning; removing them would break the generated artifact contract."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./package.json"],
 			"owner": "runtime",
 			"maturity": "stable",
 			"dependencies": [],
 			"externalContract": true,
-			"evidence": ["packages/pandwind/package.json"],
+			"evidence": ["packages/yumcss/package.json"],
 			"note": "Standard package metadata entry."
 		},
 		{
-			"packageName": "pandwind-codemod",
+			"packageName": "yumcss-codemod",
 			"exportPaths": [
 				".",
 				"./tw",
@@ -369,21 +369,21 @@
 			"note": "The supported migration and virtual-bundler tooling contract."
 		},
 		{
-			"packageName": "pandwind-codemod",
+			"packageName": "yumcss-codemod",
 			"exportPaths": ["./lib"],
 			"owner": "tooling",
 			"maturity": "experimental",
-			"dependencies": ["cac", "pandwind"],
+			"dependencies": ["cac", "yumcss"],
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",
 				"packages/codemod/tests/lib-cli.test.ts",
 				"docs/src/content/docs/tooling/codegen.md"
 			],
-			"note": "Publishable Pandwind design-system artifact builder and CLI boundary."
+			"note": "Publishable YumCSS design-system artifact builder and CLI boundary."
 		},
 		{
-			"packageName": "pandwind-codemod",
+			"packageName": "yumcss-codemod",
 			"exportPaths": [
 				"./swap/official-api-cases",
 				"./swap/identifiers",
@@ -401,7 +401,7 @@
 			"note": "Catalog and proof data used by the migration lab and verification tooling."
 		},
 		{
-			"packageName": "pandwind-codemod",
+			"packageName": "yumcss-codemod",
 			"exportPaths": [
 				"./migration/class-sorter",
 				"./migration/arbitrary-values",
@@ -423,22 +423,22 @@
 			"note": "Narrow published migration helpers plus the versioned, loss-aware token document codec and serializer."
 		},
 		{
-			"packageName": "pandwind",
+			"packageName": "yumcss",
 			"exportPaths": ["./stack/svelte", "./stack/astro"],
 			"owner": "integration",
 			"maturity": "experimental",
 			"dependencies": [],
 			"externalContract": true,
 			"evidence": [
-				"packages/pandwind/package.json",
-				"packages/pandwind/src/stack/Stack.svelte",
-				"packages/pandwind/src/stack/Stack.astro",
+				"packages/yumcss/package.json",
+				"packages/yumcss/src/stack/Stack.svelte",
+				"packages/yumcss/src/stack/Stack.astro",
 				"docs/src/content/docs/tooling/vite-plugins.md"
 			],
-			"note": "Renderer-specific Stack host projections; the shared style mapping remains owned by the Pandwind stack contract."
+			"note": "Renderer-specific Stack host projections; the shared style mapping remains owned by the YumCSS stack contract."
 		},
 		{
-			"packageName": "pandwind-analyze",
+			"packageName": "yumcss-analyze",
 			"exportPaths": [
 				".",
 				"./collect",
@@ -461,7 +461,7 @@
 			"note": "Analyzer, Migration Preview, and MCP are host tooling rather than runtime authoring APIs."
 		},
 		{
-			"packageName": "pandwind-devtools",
+			"packageName": "yumcss-devtools",
 			"exportPaths": [".", "./inspect-action", "./evidence", "./package.json"],
 			"owner": "tooling",
 			"maturity": "experimental",
@@ -473,7 +473,7 @@
 			"note": "Optional Vite inspection tooling."
 		},
 		{
-			"packageName": "@pandwind/lint-plugin",
+			"packageName": "@yumcss/lint-plugin",
 			"exportPaths": ["."],
 			"owner": "tooling",
 			"maturity": "experimental",

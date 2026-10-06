@@ -7,8 +7,8 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeEach, describe, expect, test } from "vitest";
-import { buildPandwindInteropArtifact } from "pandwind-codemod/tw";
-import { parseDtcgTokenDocument } from "pandwind-codemod/swap/token-document";
+import { buildYumCSSInteropArtifact } from "@yumcss/codemod/tw";
+import { parseDtcgTokenDocument } from "@yumcss/codemod/swap/token-document";
 import { DEFAULT_GOVERNANCE_PRESET, GOVERNANCE_JSON_SCHEMA, runCli } from "../src/cli.ts";
 
 const root = resolve(import.meta.dirname, "tmp-governance");
@@ -57,7 +57,7 @@ describe("runCli --governance", () => {
 			changeset: { count: number; content: string | null };
 		};
 		expect(doc.schema).toBe(GOVERNANCE_JSON_SCHEMA);
-		expect(doc.schema).toBe("pandwind.analyze.governance/1");
+		expect(doc.schema).toBe("yumcss.analyze.governance/1");
 		expect(doc.governance.version).toBe(1);
 		expect(doc.governance.policy?.resolved).toBe(true);
 		// color/padding carry token vocabulary; a vocabulary literal is a
@@ -109,7 +109,7 @@ describe("runCli --governance", () => {
 			"--root",
 			root,
 		]);
-		expect(human).toContain("pandwind analyze — token governance");
+		expect(human).toContain("yumcss analyze — token governance");
 		expect(human).not.toContain('"schema"');
 		expect(human).toContain("policy:");
 	});
@@ -122,7 +122,7 @@ describe("runCli --governance", () => {
 				},
 			}),
 		);
-		const artifact = buildPandwindInteropArtifact({
+		const artifact = buildYumCSSInteropArtifact({
 			typesDts: [
 				'type Brand = "primary";',
 				"interface WindUtilities {",
@@ -130,13 +130,13 @@ describe("runCli --governance", () => {
 				"}",
 			].join("\n"),
 			twTs: `
-				import { createTw } from "pandwind/tw";
-				const __pandwindConfig = {
+				import { createTw } from "yumcss/tw";
+				const __yumcssConfig = {
 					variants: { hover: { join: ":" } },
 					conflicts: {},
 					compose: [],
 				};
-				export const tw = createTw(__pandwindConfig);
+				export const tw = createTw(__yumcssConfig);
 			`,
 			tokenDocument: current,
 			tokenSource: "./tokens.ts",
@@ -158,9 +158,9 @@ describe("runCli --governance", () => {
 		writeFileSync(currentPath, JSON.stringify(artifact));
 		for (const consumerRoot of [firstRoot, secondRoot, thirdRoot]) {
 			mkdirSync(resolve(consumerRoot, "src"), { recursive: true });
-			writeFileSync(resolve(consumerRoot, "src/pandwind.interop.json"), JSON.stringify(artifact));
+			writeFileSync(resolve(consumerRoot, "src/yumcss.interop.json"), JSON.stringify(artifact));
 			writeFileSync(
-				resolve(consumerRoot, "src/pandwind-theme.css"),
+				resolve(consumerRoot, "src/yumcss-theme.css"),
 				`:root { --color-${consumerRoot.split("/").at(-1)}: #123456; }`,
 			);
 		}

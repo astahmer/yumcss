@@ -1,5 +1,5 @@
 import type { AdapterParseContext, StyleAdapter } from "./adapter-contract.ts";
-import { SourceBindings } from "pandwind/source";
+import { SourceBindings } from "yumcss/source";
 import {
 	createBidirectionalAdapterMatrix,
 	type AdapterMatrixFixture,
@@ -10,7 +10,7 @@ import { inspectAdapterCapabilities } from "./capabilities.ts";
 import { AdapterConformanceContext } from "./adapter-conformance-context.ts";
 
 /** Versioned contract for direct adapter and ordered-route evidence. */
-export const ADAPTER_CONFORMANCE_SCHEMA = "pandwind.adapter-conformance/1" as const;
+export const ADAPTER_CONFORMANCE_SCHEMA = "yumcss.adapter-conformance/1" as const;
 
 export type AdapterConformancePhase =
 	| "detection"

@@ -1,10 +1,10 @@
 import { __unstable__loadDesignSystem } from "tailwindcss";
-import defaultTailwindCss from "virtual:pandwind-tailwind-default-css";
+import defaultTailwindCss from "virtual:yumcss-tailwind-default-css";
 import {
 	parseTailwindCandidateCss,
 	type StyleDeclaration,
 	type TailwindUtilityResolver,
-} from "pandwind-codemod/swap/browser";
+} from "@yumcss/codemod/swap/browser";
 
 export interface PlaygroundTailwindResolver extends TailwindUtilityResolver {
 	readonly ready: Promise<void>;

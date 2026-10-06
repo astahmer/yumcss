@@ -8,8 +8,8 @@ import {
 } from "./route-spec-support.ts";
 
 const source = 'import { css } from "@emotion/css";\nexport const card = css({ color: "red" });';
-const forwardRoute = createAdapterRouteSpec(CodemodAdapterId.Emotion, CodemodAdapterId.Pandwind);
-const reverseRoute = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Emotion);
+const forwardRoute = createAdapterRouteSpec(CodemodAdapterId.Emotion, CodemodAdapterId.YumCSS);
+const reverseRoute = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.Emotion);
 
 describe("route proof contract", () => {
 	test("rejects a reverse parser that drops a declaration or named rule", () => {
@@ -23,9 +23,9 @@ describe("route proof contract", () => {
 			file: "styles.ts",
 		});
 		expect(() => expectReverseSemanticContinuity(forward, missingDeclaration)).toThrow();
-		const group = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Emotion).run({
+		const group = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.Emotion).run({
 			source:
-				'import { css } from "pandwind/css"; export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
+				'import { css } from "yumcss/css"; export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
 			file: "styles.ts",
 		});
 		const lostRule = forwardRoute.run({
@@ -78,7 +78,7 @@ describe("route proof contract", () => {
 		expect(result.generatedFiles[0]?.content).toContain('selectors: { "&:hover":');
 		expect(result.generatedFiles[0]?.content).toMatchInlineSnapshot(`
 			"import { style } from "@vanilla-extract/css";
-			export const __pandwindCardStyles = style({ color: "red", selectors: { "&:hover": { color: "blue" } } });
+			export const __yumcssCardStyles = style({ color: "red", selectors: { "&:hover": { color: "blue" } } });
 			"
 		`);
 	});
@@ -125,9 +125,9 @@ describe("route proof contract", () => {
 			}),
 		).toThrow();
 	});
-	test("keeps a Pandwind class binding used by a JSX host when emitting Emotion", () => {
+	test("keeps a YumCSS class binding used by a JSX host when emitting Emotion", () => {
 		const input =
-			'import { createUnsafeCss } from "pandwind/unsafe/css"; const css = createUnsafeCss(); const card = css.class({ color: "red", padding: "16px" }); export const App = () => <button className={card}>Proof</button>;';
+			'import { createUnsafeCss } from "yumcss/unsafe/css"; const css = createUnsafeCss(); const card = css.class({ color: "red", padding: "16px" }); export const App = () => <button className={card}>Proof</button>;';
 		const result = reverseRoute.run({ source: input, file: "src/App.tsx" });
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
@@ -196,10 +196,10 @@ describe("route proof contract", () => {
 	});
 
 	test("includes generated stylesheet files in the reverse project", () => {
-		const route = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.AuthoredCss);
+		const route = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.AuthoredCss);
 		const input = {
 			source:
-				'import { css } from "pandwind/css";\nexport const card = css.class({ color: "red" });',
+				'import { css } from "yumcss/css";\nexport const card = css.class({ color: "red" });',
 			file: "src/card.ts",
 		};
 		const forward = route.run(input);

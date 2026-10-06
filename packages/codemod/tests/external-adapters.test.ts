@@ -25,12 +25,12 @@ import {
 import { intrinsicTagForSubject } from "../src/swap/host-component-rewriter.ts";
 
 const migrateConfiguredChakra = (source: string, file: string) =>
-	createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.Pandwind).runAsync({
+	createAdapterRouteSpec(CodemodAdapterId.ChakraUi, CodemodAdapterId.YumCSS).runAsync({
 		source,
 		file,
 		project: createAdapterRouteProject(
 			CodemodAdapterId.ChakraUi,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"#2a57c8",
 		),
 		semantic: { source: { framework: BuiltinHostFramework.React } },
@@ -39,7 +39,7 @@ const migrateConfiguredChakra = (source: string, file: string) =>
 describe("CSS-in-JS adapter contract v2", () => {
 	test("registers detection, config, parse, emit, dependencies, and validation for every adapter", () => {
 		const samples: Record<string, string> = {
-			pandwind: "css.class({ color: 'red' })",
+			yumcss: "css.class({ color: 'red' })",
 			emotion: "import '@emotion/css'; css({ color: 'red' })",
 			"styled-components": "import styled from 'styled-components'; styled.div({ color: 'red' })",
 			"vanilla-extract": "import { style } from '@vanilla-extract/css'; style({ color: 'red' })",
@@ -114,7 +114,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red" }), {});',
 			{
 				from: CodemodAdapterId.Fela,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: "styles.ts",
 			},
 		);
@@ -182,22 +182,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const source =
 			'import { css } from "styled-system/css";\n' +
 			'const card = css({ color: "red", _hover: { color: "blue" } });';
-		const toPandwind = runAdapterMigration(source, {
+		const toYumCSS = runAdapterMigration(source, {
 			from: "panda",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.tsx",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});
-		expect(toPandwind.converted).toBe(1);
-		expect(toPandwind.skipped).toBe(0);
-		expect(toPandwind.residuals).toEqual([]);
-		expect(toPandwind.code).toContain("css.class");
-		expect(toPandwind.code).toContain("_hover");
-		expect(toPandwind.code).not.toContain("&:hover");
+		expect(toYumCSS.converted).toBe(1);
+		expect(toYumCSS.skipped).toBe(0);
+		expect(toYumCSS.residuals).toEqual([]);
+		expect(toYumCSS.code).toContain("css.class");
+		expect(toYumCSS.code).toContain("_hover");
+		expect(toYumCSS.code).not.toContain("&:hover");
 
-		const toPanda = runAdapterMigration(toPandwind.code, {
-			from: "pandwind",
+		const toPanda = runAdapterMigration(toYumCSS.code, {
+			from: "yumcss",
 			to: "panda",
 			file: "Card.tsx",
 			mode: "safe",
@@ -213,7 +213,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { css } from "styled-system/css";\nconst card = css({ colorPalette: palette });',
 			{
 				from: "panda",
-				to: "pandwind",
+				to: "yumcss",
 				file: "Palette.tsx",
 				mode: "safe",
 				adapterRegistry: catalog.registry,
@@ -236,7 +236,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'const card = css({ colorPalette: enabled ? "blue" : "red" });',
 			{
 				from: "panda",
-				to: "pandwind",
+				to: "yumcss",
 				file: "ConditionalPalette.tsx",
 				mode: "safe",
 				adapterRegistry: catalog.registry,
@@ -277,28 +277,28 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test("projects Tailwind classes through the semantic boundary in both directions", () => {
 		const catalog = createBuiltinCodemodCatalog();
-		const toPandwind = runAdapterMigration(
+		const toYumCSS = runAdapterMigration(
 			'export const Card = () => <div className="[display:flex] [padding:1rem]" />;',
 			{
 				from: "tailwind",
-				to: "pandwind",
+				to: "yumcss",
 				file: "Card.tsx",
 				mode: "safe",
 				adapterRegistry: catalog.registry,
 			},
 		);
-		expect(toPandwind.converted).toBe(1);
-		expect(toPandwind.skipped).toBe(0);
-		expect(toPandwind.residuals).toEqual([]);
-		expect(toPandwind.code).toContain("css.class");
-		expect(toPandwind.code).toContain("className={");
+		expect(toYumCSS.converted).toBe(1);
+		expect(toYumCSS.skipped).toBe(0);
+		expect(toYumCSS.residuals).toEqual([]);
+		expect(toYumCSS.code).toContain("css.class");
+		expect(toYumCSS.code).toContain("className={");
 
 		const toTailwind = runAdapterMigration(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
 				'export const card = css.class({ display: "flex", padding: "1rem" });',
 			{
-				from: "pandwind",
+				from: "yumcss",
 				to: "tailwind",
 				file: "Card.tsx",
 				mode: "safe",
@@ -356,7 +356,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		const migration = runAdapterMigration(source, {
 			from: CodemodAdapterId.Emotion,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Card.tsx",
 			mode: "safe",
 		});
@@ -602,7 +602,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const catalog = createBuiltinCodemodCatalog();
 		const result = runAdapterMigration('<div className="project-only-utility" />', {
 			from: "tailwind",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.tsx",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -619,7 +619,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const catalog = createBuiltinCodemodCatalog();
 		const result = runAdapterMigration('<div className="project-only-utility" />', {
 			from: "tailwind",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.tsx",
 			mode: "partial",
 			adapterRegistry: catalog.registry,
@@ -654,7 +654,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'export const Container = () => <div css={{ margin: "0 auto", [mediaQueries.mdUp]: { maxWidth: 1132 } }} />;',
 			{
 				from: "emotion",
-				to: "pandwind",
+				to: "yumcss",
 				file: "components/Container.tsx",
 				root: "/project/site",
 				mode: "safe",
@@ -678,7 +678,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				"export const Card = () => <div css={{ color: colors.pink, border: `1px solid ${colors.grayBorder}` }} />;",
 			{
 				from: "emotion",
-				to: "pandwind",
+				to: "yumcss",
 				file: "components/Card.tsx",
 				root: "/project/site",
 				mode: "safe",
@@ -703,7 +703,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { Global, css } from "@emotion/react";\n' +
 				'const globalCss = css({ a: { color: "red" } });\n' +
 				"export const GlobalStyles = () => <Global styles={globalCss} />;",
-			{ from: "emotion", to: "pandwind", file: "GlobalStyles.tsx", mode: "safe" },
+			{ from: "emotion", to: "yumcss", file: "GlobalStyles.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -782,7 +782,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'const App = () => <button css={css`color: red; ${desktop} { font-size: 14px; } ${() => variant === "primary" && css`color: blue;`}`}/>;',
 			{
 				from: "next-yak",
-				to: "pandwind",
+				to: "yumcss",
 				file: "App.tsx",
 				mode: "safe",
 				semantic: { source: { file: "App.tsx", framework: "react" } },
@@ -791,7 +791,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
+		expect(result.code).toContain('import { createRuntimeCss } from "yumcss/css/runtime";');
 		expect(result.code).toContain("runtimeCss.sheet.register");
 		expect(result.code).toContain("className=");
 		expect(result.code).not.toContain('from "next-yak"');
@@ -818,7 +818,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const result = runAdapterMigration(
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ code: { paddingBlock: { default: 3, [stylex.when.ancestor(':where(pre)')]: 8 } } });",
-			{ from: "stylex", to: "pandwind", file: "mdx.tsx", mode: "safe" },
+			{ from: "stylex", to: "yumcss", file: "mdx.tsx", mode: "safe" },
 		);
 
 		expect(result.converted).toBe(1);
@@ -895,7 +895,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import styled from "styled-components";\nexport default styled.div({ color: "red" });',
 			{
 				from: "styled-components",
-				to: "pandwind",
+				to: "yumcss",
 				file: "View.tsx",
 				mode: "safe",
 				semantic: { source: { file: "View.js", framework: "react" } },
@@ -904,20 +904,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('__pandwindForwardRef<React.ComponentRef<"div">');
+		expect(result.code).toContain('__yumcssForwardRef<React.ComponentRef<"div">');
 		expect(result.code).toContain("ref={ref}");
 		expect(result.code).toContain(
 			"runtimeCss.props(style, attrs.className, props.className).className",
 		);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { forwardRef as __pandwindForwardRef } from "react";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			"import { forwardRef as __yumcssForwardRef } from "react";
+			import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			import type * as React from "react";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			export default __pandwindForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
+			export default __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
 		`);
-		expect(result.code).not.toContain('from "pandwind/cx"');
+		expect(result.code).not.toContain('from "yumcss/cx"');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
@@ -943,7 +943,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		const result = runAdapterMigration(
 			'import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ button: { color: "red" } });',
-			{ from: "jss", to: "pandwind", file: "styles.ts", mode: "safe" },
+			{ from: "jss", to: "yumcss", file: "styles.ts", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -951,12 +951,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('const useStyles = { "button": css.class({ color: "red" }) };');
 	});
 
-	test("projects JSS attached sheet class maps into direct Pandwind classes", () => {
+	test("projects JSS attached sheet class maps into direct YumCSS classes", () => {
 		const result = runAdapterMigration(
 			'import jss from "jss";\n' +
 				'const sheet = jss.createStyleSheet({ button: { color: "red" } }).attach();\n' +
 				"export const view = <button className={sheet.classes.button} />;",
-			{ from: "jss", to: "pandwind", file: "styles.tsx", mode: "safe" },
+			{ from: "jss", to: "yumcss", file: "styles.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -971,7 +971,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const result = runAdapterMigration(
 			'import { StyleSheet } from "aphrodite";\n' +
 				"const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: 'Inter', src: 'url(inter.woff2)' }] } });",
-			{ from: "aphrodite", to: "pandwind", file: "fonts.js", mode: "safe" },
+			{ from: "aphrodite", to: "yumcss", file: "fonts.js", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -986,7 +986,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { StyleSheet, css } from "aphrodite";\n' +
 				'const styles = StyleSheet.create({ button: { color: "red" } });\n' +
 				"export const view = <button className={css(styles.button)} />;",
-			{ from: "aphrodite", to: "pandwind", file: "styles.tsx", mode: "safe" },
+			{ from: "aphrodite", to: "yumcss", file: "styles.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1061,7 +1061,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'export const App = () => <Div bold={true} border={1} color="whitesmoke" />;';
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.SolidStyled,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "Div.tsx",
 			mode: "safe",
 		});
@@ -1072,8 +1072,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('import { Dynamic } from "solid-js/web";');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { Dynamic } from "solid-js/web";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			import type { JSX } from "solid-js";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			const Div = (props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: "steelblue", border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Dynamic component={ResolvedComponent} {...forwarded} class={runtimeCss.props(style, attrs.class, props.class).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; };
@@ -1124,13 +1124,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(dyn?.text).toBe("${({ theme }): string => theme.fg}");
 	});
 
-	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
+	test("emits a self-contained yumcss runtime binding and consolidates imports", () => {
 		const result = runAdapterMigration(
 			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
-			{ from: "emotion", to: "pandwind", file: "styles.ts", mode: "safe" },
+			{ from: "emotion", to: "yumcss", file: "styles.ts", mode: "safe" },
 		);
 		expect(result.code).not.toContain("@emotion/css");
-		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
+		expect(result.code).toContain('import { createRuntimeCss } from "yumcss/css/runtime";');
 		expect(result.code).toContain("const runtimeCss = createRuntimeCss(defaultPreset);");
 		expect(result.code).toContain('runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes"');
 		expect(result.code).toContain('{ kind: "style", selector: "from"');
@@ -1140,7 +1140,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const result = runAdapterMigration(
 			'import { globalCss } from "@stitches/react";\n' +
 				"const reset = globalCss({ body: { margin: 0 } });",
-			{ from: "stitches", to: "pandwind", file: "globals.ts", mode: "safe" },
+			{ from: "stitches", to: "yumcss", file: "globals.ts", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1224,7 +1224,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).toContain('from "styled-components"');
 		expect(result.code).toContain("styled.div({ color: theme.foreground })");
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	});
 
 	test("projects a static React styled subject to Vue's styled component host", () => {
@@ -1264,7 +1264,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).toContain('from "styled-components"');
 		expect(result.code).toContain("styled.div({ color: theme.foreground })");
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	});
 
 	test.each([
@@ -1310,14 +1310,14 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'classAttribute: "class", filteredPropPrefixes: [], attrs: {}, joinClass: cx',
 		],
 	] as const)(
-		"statically extracts standalone %s subjects for Pandwind",
+		"statically extracts standalone %s subjects for YumCSS",
 		(_id, file, source, marker) => {
-			const result = runAdapterMigration(source, { from: _id, to: "pandwind", file, mode: "safe" });
+			const result = runAdapterMigration(source, { from: _id, to: "yumcss", file, mode: "safe" });
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain("css.class");
-			expect(result.code).toContain("const __pandwindSlot =");
+			expect(result.code).toContain("const __yumcssSlot =");
 			expect(result.code).toContain(marker);
 			expect(result.code).not.toContain("styled-components");
 			expect(result.code).not.toContain("createRuntimeCss");
@@ -1330,13 +1330,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'import styled from "vue-styled-components";\n' +
 				"const Card = styled.div`color: red; padding: 1rem;`;\n" +
 				"</script>",
-			{ from: "vue-styled", to: "pandwind", file: "Card.vue", mode: "safe" },
+			{ from: "vue-styled", to: "yumcss", file: "Card.vue", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("defineComponent");
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code.indexOf("<script setup>")).toBeLessThan(
 			result.code.indexOf('import { defineComponent, h } from "vue";'),
 		);
@@ -1361,10 +1361,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("vue-styled-components");
 	});
 
-	test("preserves a bare Pandwind binding when MUI has no sx host", () => {
+	test("preserves a bare YumCSS binding when MUI has no sx host", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
-			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
+			'import { css } from "yumcss/css";\nconst card = css.class({ color: "red" });',
+			{ from: "yumcss", to: "mui", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
@@ -1376,17 +1376,17 @@ describe("CSS-in-JS adapter contract v2", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('css.class({ color: "red" })');
 	});
 
-	test("projects a Pandwind class binding onto MUI's sx host prop", () => {
+	test("projects a YumCSS class binding onto MUI's sx host prop", () => {
 		const result = runAdapterMigration(
 			'import { Box } from "@mui/material";\n' +
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "mui", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1394,16 +1394,16 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('const card = { color: "red" }');
 		expect(result.code).toContain("<Box sx={card} />");
 		expect(result.code).not.toContain("className={card}");
-		expect(result.code).not.toContain('from "pandwind/css"');
+		expect(result.code).not.toContain('from "yumcss/css"');
 	});
 
 	test("does not project a Solid host onto MUI's React-only sx contract", () => {
 		const result = runAdapterMigration(
 			'import { createSignal } from "solid-js";\n' +
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box class={card} />;",
-			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "mui", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
@@ -1415,8 +1415,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain("yumcss:migrate-skip");
+		expect(result.code).toContain('from "yumcss/css"');
 	});
 
 	test.each(["stitches"] as const)(
@@ -1472,22 +1472,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
 			expect(result.residuals).toEqual([]);
-			expect(result.code).not.toContain("pandwind:migrate-skip");
+			expect(result.code).not.toContain("yumcss:migrate-skip");
 			expect(result.code).not.toContain('from "styled-components"');
 		},
 	);
 
 	test("uses the shared static custom-property carrier for Bamboo theme values", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "bamboo", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "bamboo", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("var(--pandwind-dynamic-");
+		expect(result.code).toContain("var(--yumcss-dynamic-");
 		expect(result.code).toContain("String(theme.foreground)");
 	});
 
@@ -1507,7 +1507,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.generatedFiles).toEqual([
 			expect.objectContaining({
 				path: "Card.styles.css.ts",
-				content: expect.stringContaining("var(--pandwind-dynamic-"),
+				content: expect.stringContaining("var(--yumcss-dynamic-"),
 			}),
 		]);
 		expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
@@ -1515,7 +1515,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				[
 				  {
 				    "content": "import { style } from "@vanilla-extract/css";
-				export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-hiipfm)" });
+				export const __yumcssCardStyles = style({ color: "var(--yumcss-dynamic-hiipfm)" });
 				",
 				    "path": "Card.styles.css.ts",
 				  },
@@ -1553,12 +1553,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("styled.div");
 	});
 
-	test("emits a JSS class carrier for a static Pandwind React host", () => {
+	test("emits a JSS class carrier for a static YumCSS React host", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "jss", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "jss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1581,7 +1581,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("jss.createStyleSheet");
-		expect(result.code).toContain("__pandwindCardForwardRef");
+		expect(result.code).toContain("__yumcssCardForwardRef");
 		expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
 		expect(result.code).toContain("ref={ref}");
 		expect(result.code).toContain("export const App = () => <Card />;");
@@ -1589,12 +1589,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
-	test("emits Aphrodite's class carrier for a static Pandwind React host", () => {
+	test("emits Aphrodite's class carrier for a static YumCSS React host", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "aphrodite", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "aphrodite", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1615,7 +1615,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("StyleSheet.create");
-		expect(result.code).toContain("__pandwindCardForwardRef");
+		expect(result.code).toContain("__yumcssCardForwardRef");
 		expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
 		expect(result.code).toContain("ref={ref}");
 		expect(result.code).toContain("export const App = () => <Card />;");
@@ -1679,7 +1679,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "@vanilla-extract/css"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import styled from "styled-components";
-			// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
+			// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 			const Card = styled.div({ color: "red" });"
 		`);
 	});
@@ -1701,12 +1701,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("style({");
 	});
 
-	test("emits Style9's class carrier for a static Pandwind React host", () => {
+	test("emits Style9's class carrier for a static YumCSS React host", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "style9", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "style9", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1716,13 +1716,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("<Box className={card} />");
 	});
 
-	test("projects a static Pandwind class binding onto a React Native style prop", () => {
+	test("projects a static YumCSS class binding onto a React Native style prop", () => {
 		const result = runAdapterMigration(
 			'import { View } from "react-native";\n' +
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red", padding: 2 });\n' +
 				"export const App = () => <View className={card} />;",
-			{ from: "pandwind", to: "react-native", file: "App.tsx", mode: "safe" },
+			{ from: "yumcss", to: "react-native", file: "App.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1730,7 +1730,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('import { StyleSheet } from "react-native";');
 		expect(result.code).toContain("StyleSheet.create");
 		expect(result.code).toContain("<View style={card} />");
-		expect(result.code).not.toContain('from "pandwind/css"');
+		expect(result.code).not.toContain('from "yumcss/css"');
 	});
 
 	test.each([
@@ -1770,26 +1770,26 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test("keeps unsupported React host shapes source-preserving for React Native", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <button className={card} />;",
-			{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.ReactNative, file: "App.tsx" },
+			{ from: CodemodAdapterId.YumCSS, to: CodemodAdapterId.ReactNative, file: "App.tsx" },
 		);
 		expect(result.skipped).toBeGreaterThan(0);
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
 		);
 		expect(result.code).toContain("className={card}");
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain('from "yumcss/css"');
 	});
 
 	test("does not overwrite an existing React style prop during React Native conversion", () => {
 		const source =
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 			'const card = css.class({ color: "red" });\n' +
 			"export const App = () => <div className={card} style={{ opacity: 1 }} />;";
 		const result = runAdapterMigration(source, {
-			from: CodemodAdapterId.Pandwind,
+			from: CodemodAdapterId.YumCSS,
 			to: CodemodAdapterId.ReactNative,
 			file: "App.tsx",
 		});
@@ -1802,17 +1802,17 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("StyleSheet.create");
 	});
 
-	test("imports a React Native style map into Pandwind without losing the style lookup", () => {
+	test("imports a React Native style map into YumCSS without losing the style lookup", () => {
 		const result = runAdapterMigration(
 			'import { StyleSheet } from "react-native";\n' +
 				'const styles = StyleSheet.create({ card: { backgroundColor: "red", padding: 2 } });\n' +
 				"export const App = () => <View style={styles.card} />;",
-			{ from: "react-native", to: "pandwind", file: "App.tsx", mode: "safe" },
+			{ from: "react-native", to: "yumcss", file: "App.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toContain(
 			'const styles = { "card": css.class({ backgroundColor: "red", padding: "2px" }) };',
 		);
@@ -1823,10 +1823,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("does not apply a React Native style-prop rewrite to ordinary React JSX", () => {
 		const result = runAdapterMigration(
 			'import React from "react";\n' +
-				'import { css } from "pandwind/css";\n' +
+				'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <View className={card} />;",
-			{ from: "pandwind", to: "react-native", file: "App.tsx", mode: "safe" },
+			{ from: "yumcss", to: "react-native", file: "App.tsx", mode: "safe" },
 		);
 		expect(
 			result.residuals.some(
@@ -1835,7 +1835,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			),
 		).toBe(true);
 		expect(result.code).toContain("className={card}");
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain('from "yumcss/css"');
 	});
 
 	test("projects a static styled intrinsic into a React Native style carrier", () => {
@@ -1855,9 +1855,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			/\)\(StyleSheet\.create\(\{ style: \{ "backgroundColor": "red" \} \}\)\.style\)/u,
 		);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { forwardRef as __pandwindForwardRef, type ComponentRef } from "react";
+			"import { forwardRef as __yumcssForwardRef, type ComponentRef } from "react";
 			import { StyleSheet, View, type ViewProps } from "react-native";
-			const Card = ((style: NonNullable<ViewProps["style"]>) => __pandwindForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(StyleSheet.create({ style: { "backgroundColor": "red" } }).style);
+			const Card = ((style: NonNullable<ViewProps["style"]>) => __yumcssForwardRef<ComponentRef<typeof View>, ViewProps>((props, ref) => <View {...props} ref={ref} style={[style, props.style]} />))(StyleSheet.create({ style: { "backgroundColor": "red" } }).style);
 			export const App = () => <Card />;"
 		`);
 		expect(result.code).not.toContain('from "styled-components"');
@@ -1875,7 +1875,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("style9.create");
-		expect(result.code).toContain("__pandwindCardForwardRef");
+		expect(result.code).toContain("__yumcssCardForwardRef");
 		expect(result.code).toContain('props.as ?? props.forwardedAs ?? "div"');
 		expect(result.code).toContain("ref={ref}");
 		expect(result.code).toContain("export const App = () => <Card />;");
@@ -1914,7 +1914,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				expect(result.residuals).toEqual(
 					expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
 				);
-				expect(result.code.replace(/^\/\/ pandwind:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
+				expect(result.code.replace(/^\/\/ yumcss:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
 				return;
 			}
 			expect(result.converted).toBe(1);
@@ -1925,12 +1925,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		},
 	);
 
-	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
+	test("rewrites intrinsic styled component JSX uses when lowering to YumCSS", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
 				'const Card = styled.div({ color: "red" });\n' +
 				'export const App = () => <Card data-testid="card" />;',
-			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "styled-components", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -1945,7 +1945,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import styled from "styled-components";\n' +
 				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
 				"export const App = () => <Card />;",
-			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "styled-components", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 
 		expect(result.converted).toBe(1);
@@ -1961,7 +1961,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import styled from "styled-components";\n' +
 				"const Card = styled.div({ color: (props) => props.color });\n" +
 				'export const App = () => <Card color="red" />;',
-			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "styled-components", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 
 		expect(result.converted).toBe(1);
@@ -1972,7 +1972,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(
 			result.dependencies.some((dependency) =>
 				dependency.packages.some(
-					(item) => item.name === "pandwind" && item.kind === AdapterDependencyKindTag.Runtime,
+					(item) => item.name === "yumcss" && item.kind === AdapterDependencyKindTag.Runtime,
 				),
 			),
 		).toBe(true);
@@ -1980,19 +1980,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test("keeps configured static and runtime CSS bindings distinct", () => {
 		const result = runAdapterMigration(
-			'import { css as appCss } from "./pandwind/css";\n' +
+			'import { css as appCss } from "./yumcss/css";\n' +
 				'import { css } from "next-yak";\n' +
 				'const desktop = "@media (min-width: 992px)";\n' +
 				'const staticClass = appCss.class({ color: "red" });\n' +
 				"export const App = () => <button className={staticClass} css={css`color: red; ${desktop} { color: blue; }`} />;",
 			{
 				from: "next-yak",
-				to: "pandwind",
+				to: "yumcss",
 				file: "src/App.tsx",
 				mode: "safe",
 				project: {
-					cssModule: "src/pandwind/css.ts",
-					runtimeCssModule: "src/pandwind/runtime.ts",
+					cssModule: "src/yumcss/css.ts",
+					runtimeCssModule: "src/yumcss/runtime.ts",
 					runtimeCssBinding: "runtimeCss",
 				},
 				semantic: { source: { file: "src/App.tsx", framework: "react" } },
@@ -2001,9 +2001,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { css as appCss } from "./pandwind/css";');
-		expect(result.code).toContain('import { runtimeCss } from "./pandwind/runtime";');
-		expect(result.code).not.toContain('import { css } from "./pandwind/runtime";');
+		expect(result.code).toContain('import { css as appCss } from "./yumcss/css";');
+		expect(result.code).toContain('import { runtimeCss } from "./yumcss/runtime";');
+		expect(result.code).not.toContain('import { css } from "./yumcss/runtime";');
 		expect(result.code).not.toContain("const css = createRuntimeCss");
 	});
 
@@ -2023,7 +2023,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		const result = runAdapterMigration(
 			'import { css } from "@emotion/css";\nconst card = css`color: red; background-color: blue;`;',
-			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "emotion", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
@@ -2050,7 +2050,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("keeps component interpolations as explicit host residuals in safe mode", () => {
 		const result = runAdapterMigration("const Card = styled.div`color: ${theme.foreground};`;", {
 			from: "styled-components",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.tsx",
 			mode: "safe",
 		});
@@ -2065,7 +2065,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import styled from "styled-components";\n' +
 				"const Card = styled.div({ color: theme.foreground });\n" +
 				'export const App = () => <Card data-testid="card" />;',
-			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "styled-components", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2080,7 +2080,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import styled from "styled-components";\n' +
 				"const Card = styled.div`color: ${theme.foreground};`;\n" +
 				"export const App = () => <Card />;",
-			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "styled-components", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2094,7 +2094,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ card: { color: colors.foreground } });\n" +
 				"export const App = () => <div {...stylex.props(styles.card)} />;",
-			{ from: "stylex", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "stylex", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2102,7 +2102,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("css.vars({ color: colors.foreground })");
 		expect(result.code).toContain("css.props(styles.card)");
 		expect(result.code).not.toContain("createRuntimeCss");
-		expect(result.code).toContain('from "pandwind/unsafe/css"');
+		expect(result.code).toContain('from "yumcss/unsafe/css"');
 	});
 
 	test("passes an existing host class through the static props host", () => {
@@ -2110,7 +2110,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ card: { color: colors.foreground } });\n" +
 				'export const App = () => <div {...stylex.props(styles.card)} className="custom-card" />;',
-			{ from: "stylex", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "stylex", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2119,12 +2119,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("[css.props(styles.card).className");
 	});
 
-	test("projects a Pandwind class binding through StyleX props on a React host", () => {
+	test("projects a YumCSS class binding through StyleX props on a React host", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box className={card} />;",
-			{ from: "pandwind", to: "stylex", file: "Card.tsx", mode: "safe" },
+			{ from: "yumcss", to: "stylex", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2132,16 +2132,16 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('stylex.create({ style: { color: "red" } }).style');
 		expect(result.code).toContain("<Box {...stylex.props(card)} />");
 		expect(result.code).not.toContain("className={card}");
-		expect(result.code).not.toContain('from "pandwind/css"');
+		expect(result.code).not.toContain('from "yumcss/css"');
 	});
 
 	test("reports StyleX host projection when a non-React framework is explicit", () => {
 		const result = runAdapterMigration(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <Box class={card} />;",
 			{
-				from: "pandwind",
+				from: "yumcss",
 				to: "stylex",
 				file: "Card.tsx",
 				mode: "safe",
@@ -2158,15 +2158,15 @@ describe("CSS-in-JS adapter contract v2", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain('from "pandwind/css"');
+		expect(result.code).toContain("yumcss:migrate-skip");
+		expect(result.code).toContain('from "yumcss/css"');
 	});
 
 	test("lowers inline dynamic tagged templates through the host carrier", () => {
 		const result = runAdapterMigration(
 			'import { css } from "@linaria/core";\n' +
 				"export const App = () => <strong className={css`color: ${theme.foreground};`} />;",
-			{ from: "linaria", to: "pandwind", file: "App.tsx", mode: "safe" },
+			{ from: "linaria", to: "yumcss", file: "App.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2174,13 +2174,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("className={css.vars({ color: theme.foreground }).class}");
 	});
 
-	test("lowers Stitches variants into the existing Pandwind recipe contract", () => {
+	test("lowers Stitches variants into the existing YumCSS recipe contract", () => {
 		const result = runAdapterMigration(
 			'import { createStitches } from "@stitches/react";\n' +
 				"const { css } = createStitches();\n" +
 				'const Button = css({ fontSize: "100%", variants: { shade: { red: { color: "Crimson" } } } });\n' +
 				'const value = Button({ shade: "red" });',
-			{ from: "stitches", to: "pandwind", file: "button.tsx", mode: "safe" },
+			{ from: "stitches", to: "yumcss", file: "button.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2195,7 +2195,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { createStitches } from "@stitches/react";\n' +
 				'export const { css, getCssText } = createStitches({ theme: { colors: { blue: "blue" } } });\n' +
 				'export const card = css({ color: "$colors$blue" });\n',
-			{ from: "stitches", to: "pandwind", file: "styles.ts", mode: "safe" },
+			{ from: "stitches", to: "yumcss", file: "styles.ts", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2210,23 +2210,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { style, createVar, fallbackVar } from "@vanilla-extract/css";\n' +
 				"const color = createVar();\n" +
 				'export const card = style({ color, vars: { [color]: fallbackVar(color, "red") } });',
-			{ from: "vanilla-extract", to: "pandwind", file: "card.css.ts", mode: "safe" },
+			{ from: "vanilla-extract", to: "yumcss", file: "card.css.ts", mode: "safe" },
 		);
 		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).not.toContain('from "@vanilla-extract/css"');
 		expect(result.code).toContain('const color = "--pw-color";');
-		expect(result.code).toContain('__pandwindFallbackVar(color, "red")');
+		expect(result.code).toContain('__yumcssFallbackVar(color, "red")');
 	});
 
-	test("lowers dynamic values into Pandwind vars and rewrites the host carrier", () => {
+	test("lowers dynamic values into YumCSS vars and rewrites the host carrier", () => {
 		const result = runAdapterMigration(
 			'import { css } from "@emotion/css";\n' +
 				"const card = css({ color: theme.foreground });\n" +
 				"export const App = () => <div className={card} />;",
-			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
+			{ from: "emotion", to: "yumcss", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
@@ -2266,7 +2266,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 	});
 
-	test("lowers JSS named rules and imperative application into Pandwind classes", () => {
+	test("lowers JSS named rules and imperative application into YumCSS classes", () => {
 		const source = [
 			'import jss from "jss";',
 			"const styles = { button: { color: 'red' } };",
@@ -2275,7 +2275,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: "jss",
-			to: "pandwind",
+			to: "yumcss",
 			file: "styles.js",
 			mode: "safe",
 		});
@@ -2511,7 +2511,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		const solid = runAdapterMigration(solidSource, {
 			from: "solid-styled",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.tsx",
 			mode: "safe",
 			semantic: { source: { file: "Card.tsx", framework: "solid" } },
@@ -2521,12 +2521,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.code).toContain("css.vars({ color: ((props) => props.color)(props) })");
 		expect(solid.code).toContain("css.props(staticClass, dynamic,");
 		expect(solid.code).toContain("props.class).className");
-		expect(solid.code).not.toContain('from "pandwind/cx"');
+		expect(solid.code).not.toContain('from "yumcss/cx"');
 		expect(solid.code).toContain("props.class");
 		expect(solid.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} class={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.class, props.class).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} class={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.class, props.class).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();"
 		`);
 
 		const vueSource =
@@ -2555,7 +2555,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		const vue = runAdapterMigration(vueSource, {
 			from: "vue-styled",
-			to: "pandwind",
+			to: "yumcss",
 			file: "Card.vue",
 			mode: "safe",
 			semantic: { source: { file: "Card.vue", framework: "vue" } },
@@ -2573,8 +2573,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.code).toMatchInlineSnapshot(`
 			"<script setup>
 			import { computed, defineComponent, h } from "vue";
-			import { createRuntimeCss } from "pandwind/css/runtime";
-			import { defaultPreset } from "pandwind/preset/default";
+			import { createRuntimeCss } from "yumcss/css/runtime";
+			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 
 			const Card = defineComponent({ props: { color: String }, inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const props = computed(() => ({ ..._props, ...rawAttrs })); const style = computed(() => runtimeCss.vars({ color: ((props) => props.color)(props.value) })); return () => h("div", { ...rawAttrs, ...{}, class: [style.value.class, props.value.class], style: [style.value.style, props.value.style] }, slots.default?.()); } });
@@ -2582,13 +2582,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		`);
 	});
 
-	test("uses Pandwind's native function carrier for static StyleX groups", () => {
+	test("uses YumCSS's native function carrier for static StyleX groups", () => {
 		const result = runAdapterMigration(
 			'import stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ offset: (value) => ({ paddingLeft: value }) });",
 			{
 				from: "stylex",
-				to: "pandwind",
+				to: "yumcss",
 				file: "styles.ts",
 				mode: "safe",
 			},
@@ -2608,7 +2608,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 				'export const App = () => <Card color="blue" />;',
 			{
 				from: "solid-styled",
-				to: "pandwind",
+				to: "yumcss",
 				file: "Card.tsx",
 				mode: "safe",
 				semantic: { source: { file: "Card.tsx", framework: "solid" } },
@@ -2706,7 +2706,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{
 			  "changed": true,
 			  "code": "import { HStack, StackSeparator } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | parse-residual: component | available: named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | parse-residual: component | available: named-map, residual)
 			export const App = () => <HStack gap={12} separator={<StackSeparator />} />;",
 			  "converted": 0,
 			  "generatedFiles": [],
@@ -2743,7 +2743,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { Box } from "@chakra-ui/react";\n' +
 				'import Image from "next/image";\n' +
 				'export const App = () => <Box><Image fill src="/hero.png" alt="Hero" objectFit="cover" /></Box>;',
-			{ from: "chakra-ui", to: "pandwind", file: "Image.tsx", mode: "safe" },
+			{ from: "chakra-ui", to: "yumcss", file: "Image.tsx", mode: "safe" },
 		);
 		expect(nextImage.residuals).toEqual([]);
 		expect(nextImage.code).toContain("fill");
@@ -2774,8 +2774,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{
 			  "changed": true,
 			  "code": "import { VStack, Text } from "@chakra-ui/react";
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | lowering-residual: dynamic | available: named-map, target-native, residual)
-			// pandwind:migrate-skip (route: chakra-ui -> pandwind | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | lowering-residual: dynamic | available: named-map, target-native, residual)
+			// yumcss:migrate-skip (route: chakra-ui -> yumcss | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
 			export const App = ({ color }) => <VStack colorPalette={color}><Text color="colorPalette.fg">Label</Text></VStack>;",
 			  "converted": 0,
 			  "generatedFiles": [],
@@ -2858,7 +2858,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',
-			{ from: "mui", to: "pandwind", file: "App.tsx", mode: "safe" },
+			{ from: "mui", to: "yumcss", file: "App.tsx", mode: "safe" },
 		);
 		expect(mui.converted).toBe(1);
 		expect(mui.skipped).toBe(0);
@@ -2870,7 +2870,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		const mantine = runAdapterMigration(
 			'import { Box } from "@mantine/core";\nexport const App = () => <Box c="red" bg="#fff" mx="16px" />;',
-			{ from: "mantine", to: "pandwind", file: "App.tsx", mode: "safe" },
+			{ from: "mantine", to: "yumcss", file: "App.tsx", mode: "safe" },
 		);
 		expect(mantine.converted).toBe(1);
 		expect(mantine.skipped).toBe(0);
@@ -2884,7 +2884,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("keeps callback-valued host styles as explicit residuals", () => {
 		const result = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = ({ theme }) => <Box sx={(theme) => ({ color: theme.palette.primary.main })} />;',
-			{ from: "mui", to: "pandwind", file: "App.tsx", mode: "safe" },
+			{ from: "mui", to: "yumcss", file: "App.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
@@ -2895,6 +2895,6 @@ describe("CSS-in-JS adapter contract v2", () => {
 					residual.hint?.includes("MUI sx callbacks require effective theme evaluation") === true,
 			),
 		).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	});
 });

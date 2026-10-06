@@ -3,7 +3,7 @@ import { analyzeTokenGovernance } from "./service.ts";
 import type { TokenPolicySnapshot } from "./contracts.ts";
 
 const policy: TokenPolicySnapshot = {
-	owner: "pandwind",
+	owner: "yumcss",
 	resolved: true,
 	strictProperties: ["color"],
 	origin: "preset:strict",
@@ -13,7 +13,7 @@ const FILES = [
 	{
 		file: "src/app.tsx",
 		content: [
-			'import { tw } from "pandwind";',
+			'import { tw } from "yumcss";',
 			'const a = tw({ bgColor: "$colors.brand" });',
 			'const b = tw({ color: "#e11d48" });          // strict violation + suggestion',
 			"const c = tw({ padding: size });               // dynamic",
@@ -44,7 +44,7 @@ describe("analyzeTokenGovernance", () => {
 			      "provenance": [
 			        {
 			          "detail": "colors.brand",
-			          "origin": "pandwind",
+			          "origin": "yumcss",
 			          "source": "official-config",
 			        },
 			      ],
@@ -58,7 +58,7 @@ describe("analyzeTokenGovernance", () => {
 			      "provenance": [
 			        {
 			          "detail": "colors.legacy",
-			          "origin": "pandwind",
+			          "origin": "yumcss",
 			          "source": "official-config",
 			        },
 			      ],
@@ -69,7 +69,7 @@ describe("analyzeTokenGovernance", () => {
 			  "generatedAt": "2026-01-01T00:00:00.000Z",
 			  "policy": {
 			    "origin": "preset:strict",
-			    "owner": "pandwind",
+			    "owner": "yumcss",
 			    "resolved": true,
 			    "strictProperties": [
 			      "color",

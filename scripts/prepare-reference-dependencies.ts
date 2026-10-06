@@ -36,7 +36,7 @@ export interface PrepareReferenceDependenciesOptions {
 
 /**
  * Dependencies needed by reference proofs are installed into disposable
- * checkouts, never into the Pandwind tree and never committed with the source.
+ * checkouts, never into the YumCSS tree and never committed with the source.
  * Keep versions explicit even when an upstream example declares `latest` so
  * the official-config proof remains reproducible.
  */

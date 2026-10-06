@@ -15,7 +15,7 @@ export default defineConfig({
 	],
 	deps: {
 		neverBundle: true,
-		alwaysBundle: ["@pandwind/example-preset"],
+		alwaysBundle: ["@yumcss/example-preset"],
 		dts: { neverBundle: true },
 	},
 	dts: true,

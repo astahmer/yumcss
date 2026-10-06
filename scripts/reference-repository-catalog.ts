@@ -1,4 +1,4 @@
-import { createRealRepositoryCorpus } from "pandwind-codemod/swap/corpus";
+import { createRealRepositoryCorpus } from "@yumcss/codemod/swap/corpus";
 
 export interface PinnedReferenceRepository {
 	readonly id: string;

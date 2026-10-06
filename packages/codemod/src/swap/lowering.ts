@@ -23,8 +23,8 @@ import {
 } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
-export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
-export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
+export const STYLE_LOWERING_SCHEMA = "yumcss.style-lowering/1" as const;
+export const STYLE_LOWERING_PLUGIN_SCHEMA = "yumcss.style-lowering-plugin/1" as const;
 
 export interface StyleLoweringContext {
 	readonly program: StyleProgram;
@@ -157,7 +157,7 @@ export const dynamicVariableName = (expression: string): string => {
 		hash ^= character.charCodeAt(0);
 		hash = Math.imul(hash, 16777619);
 	}
-	return `--pandwind-dynamic-${(hash >>> 0).toString(36)}`;
+	return `--yumcss-dynamic-${(hash >>> 0).toString(36)}`;
 };
 
 const dynamicAndThemes: StyleLowering = {
@@ -544,7 +544,7 @@ function representationFor(
 				(declaration) =>
 					declaration.value.kind === StyleValueKindTag.Literal &&
 					typeof declaration.value.value === "string" &&
-					declaration.value.value.startsWith("var(--pandwind-dynamic-"),
+					declaration.value.value.startsWith("var(--yumcss-dynamic-"),
 			)
 		)
 			return StyleRepresentationKind.CustomProperty;
@@ -586,7 +586,7 @@ function availableRepresentationsFor(
 		(declaration) =>
 			declaration.value.kind === StyleValueKindTag.Literal &&
 			typeof declaration.value.value === "string" &&
-			declaration.value.value.startsWith("var(--pandwind-dynamic-"),
+			declaration.value.value.startsWith("var(--yumcss-dynamic-"),
 	);
 	const hasResidual = result.program.residuals.length > 0 || result.residuals.length > 0;
 	const representations: StyleRepresentationKind[] = [];

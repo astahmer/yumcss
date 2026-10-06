@@ -1,7 +1,7 @@
 {
-	"$description": "Pinned Pandwind conformance fixture derived from DTCG Format Module 2025.10 examples.",
+	"$description": "Pinned YumCSS conformance fixture derived from DTCG Format Module 2025.10 examples.",
 	"$extensions": {
-		"com.pandwind.fixture": {
+		"com.yumcss.fixture": {
 			"suite": "dtcg-2025-10"
 		}
 	},

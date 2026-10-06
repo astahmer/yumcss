@@ -7,7 +7,7 @@ import { CARD_BASE, CARD_SURFACE, MUTED_TEXT } from "./styles/constants";
  * Dogfood surface for the full compiler pipeline:
  *
  * - design tokens and modules remain explicit in source;
- * - imported design atoms compose through the same Pandwind registry;
+ * - imported design atoms compose through the same YumCSS registry;
  * - conditional styling remains a normal class composition decision.
  */
 export function DogfoodApp() {
@@ -32,7 +32,7 @@ export function DogfoodApp() {
 			>
 				<h1 className={dss.class({ $text: { size: "2xl", color: "$gray-900" } })}>dogfooding</h1>
 				<p className={MUTED_TEXT}>
-					This card is authored entirely through Pandwind design atoms, token references, and a
+					This card is authored entirely through YumCSS design atoms, token references, and a
 					single mixed <code>cx()</code> call.
 				</p>
 			</div>

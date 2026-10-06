@@ -38,10 +38,10 @@ test("stitches -> mui: migrates concrete stitches syntax to mui", () => {
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "stitches -> mui happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("stitches -> mui: migrates concrete stitches syntax to mui", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -93,7 +93,7 @@ test("stitches -> mui: carries a documented secondary stitches API explicitly", 
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -146,7 +146,7 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -181,7 +181,7 @@ test("stitches -> mui: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -228,7 +228,7 @@ test("stitches -> mui: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -272,7 +272,7 @@ test("stitches -> mui: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 0,

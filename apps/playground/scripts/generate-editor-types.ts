@@ -15,13 +15,13 @@ import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const playgroundRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = resolve(playgroundRoot, "../..");
-const packageJsonPath = require.resolve("pandwind/package.json", { paths: [playgroundRoot] });
+const packageJsonPath = require.resolve("yumcss/package.json", { paths: [playgroundRoot] });
 const packageRoot = dirname(packageJsonPath);
 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as {
 	name: string;
 	exports?: Record<string, ExportTarget>;
 };
-const outputRoot = resolve(playgroundRoot, "src/generated/pandwind");
+const outputRoot = resolve(playgroundRoot, "src/generated/yumcss");
 const dependencyOutputRoot = resolve(playgroundRoot, "src/generated/dependencies");
 const sourceDeclarationFiles = ["types/selectors.d.ts"] as const;
 const editorPackageSpecifiers = [
@@ -89,7 +89,7 @@ const findExportPath = (target: ExportTarget | undefined): string | undefined =>
 		}
 		return undefined;
 	}
-	for (const condition of ["pandwind", "types", "import", "require", "default"]) {
+	for (const condition of ["yumcss", "types", "import", "require", "default"]) {
 		const path = findExportPath(target[condition]);
 		if (path !== undefined) return path;
 	}
@@ -99,7 +99,7 @@ const findExportPath = (target: ExportTarget | undefined): string | undefined =>
 const resolveExport = (key: (typeof entryExportKeys)[number]): string => {
 	const path = findExportPath(packageJson.exports?.[key]);
 	if (path === undefined) {
-		throw new Error(`pandwind does not expose a usable type entry for ${key}`);
+		throw new Error(`yumcss does not expose a usable type entry for ${key}`);
 	}
 	return resolve(packageRoot, path);
 };
@@ -118,7 +118,7 @@ const normalizeDeclarationImports = (content: string): string =>
 		return `${quote}${normalizedPath}${quote}`;
 	});
 
-const generatedHeader = "// Generated from the workspace-linked pandwind package. Do not edit.\n";
+const generatedHeader = "// Generated from the workspace-linked yumcss package. Do not edit.\n";
 let activeDependencyOutputRoot = dependencyOutputRoot;
 let activeDependencyModuleEntries = new Map<string, string>();
 
@@ -386,10 +386,10 @@ const main = (): void => {
 		return;
 	}
 
-	const temporaryRoot = resolve("/tmp", `pandwind-playground-types-${process.pid}`);
+	const temporaryRoot = resolve("/tmp", `yumcss-playground-types-${process.pid}`);
 	const temporaryDependenciesRoot = resolve(
 		"/tmp",
-		`pandwind-playground-dependencies-${process.pid}`,
+		`yumcss-playground-dependencies-${process.pid}`,
 	);
 	generate(temporaryRoot, temporaryDependenciesRoot);
 	const expected = readdirSync(temporaryRoot, { recursive: true, encoding: "utf8" })

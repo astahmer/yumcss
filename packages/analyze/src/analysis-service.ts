@@ -7,8 +7,8 @@ import {
 	type FileFoldStats,
 	type FoldSummary,
 } from "./analyze.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace, type SourceWorkspaceFile } from "pandwind/source/workspace";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { createSourceWorkspace, type SourceWorkspaceFile } from "yumcss/source/workspace";
 import type { CssResidualCollector } from "./css-residual-collector.ts";
 import { CssBudgetEvaluator } from "./css-budget-evaluator.ts";
 import type { CssBudget } from "./css-budget-contracts.ts";

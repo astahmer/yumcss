@@ -18,7 +18,7 @@ describe("pinned real repository corpus", () => {
 				"utf8",
 			),
 		) as { schema: string; reports: Array<{ id: string; commit: string; path: string }> };
-		expect(report.schema).toBe("pandwind.real-repository-report/1");
+		expect(report.schema).toBe("yumcss.real-repository-report/1");
 		expect(report.reports).toHaveLength(3);
 		for (const fixture of corpus.inline) {
 			expect(report.reports).toContainEqual(
@@ -39,7 +39,7 @@ describe("pinned real repository corpus", () => {
 			sourceFiles: number;
 			reports: Array<{ id: string; commit: string; path: string }>;
 		};
-		expect(report.schema).toBe("pandwind.real-repository-report/1");
+		expect(report.schema).toBe("yumcss.real-repository-report/1");
 		expect(report.sourceFiles).toBe(corpus.references.length);
 		expect(
 			new Set(corpus.references.map((reference) => reference.from)).size,
@@ -56,7 +56,7 @@ describe("pinned real repository corpus", () => {
 		}
 		const registeredSources = new Set(corpus.references.map((reference) => reference.from));
 		for (const adapter of createBuiltinCodemodCatalog().adapters) {
-			if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative)
+			if (adapter.id === CodemodAdapterId.YumCSS || adapter.id === CodemodAdapterId.ReactNative)
 				continue;
 			expect(registeredSources.has(adapter.id)).toBe(true);
 		}

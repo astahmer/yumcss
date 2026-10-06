@@ -1,12 +1,12 @@
 {
-	"schema": "pandwind.codemod-installed-targets/1",
+	"schema": "yumcss.codemod-installed-targets/1",
 	"sourceFingerprint": "800ff359e94c7be4b02db253f0ab83b11a0aa9dfa0d0a9d6495037860e1ce8a3",
 	"proofImplementationHash": "0c975e9549507db64f6b07647d2caac403570a8edda58e8bc554bab2f9c378ce",
 	"scope": "Nine exact static React route scenarios; no route maturity promotion or universal framework claim.",
 	"reports": [
 		{
 			"route": {
-				"from": "pandwind",
+				"from": "yumcss",
 				"to": "mui"
 			},
 			"versions": {
@@ -29,7 +29,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -110,7 +110,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "3e59a1ecc273ead357ac07150db8ef4f9a8c2054c3ee4a66e871af10038ebc2d",
@@ -168,7 +168,7 @@
 		},
 		{
 			"route": {
-				"from": "pandwind",
+				"from": "yumcss",
 				"to": "emotion"
 			},
 			"versions": {
@@ -191,7 +191,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -249,7 +249,7 @@
 		},
 		{
 			"route": {
-				"from": "pandwind",
+				"from": "yumcss",
 				"to": "css-modules"
 			},
 			"versions": {
@@ -272,14 +272,14 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
 				"outputHash": "0079866822e8e001154957d82b9be386fa2021d06c99c7a53c34c152069e6eab",
 				"artifacts": [
 					{
-						"path": "src/App.pandwind-pw-card-enwoda.module.css",
+						"path": "src/App.yumcss-pw-card-enwoda.module.css",
 						"hash": "7816044bc2246637324ee990db308c992def27ddc961da23aae9a232cfa86e5c"
 					}
 				]
@@ -335,7 +335,7 @@
 		},
 		{
 			"route": {
-				"from": "pandwind",
+				"from": "yumcss",
 				"to": "unocss"
 			},
 			"versions": {
@@ -358,7 +358,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -439,7 +439,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -520,7 +520,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -610,7 +610,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -696,7 +696,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"pandwind": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",

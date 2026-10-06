@@ -42,7 +42,7 @@ test("vue-styled -> unocss -> vue-styled: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> unocss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("vue-styled -> unocss -> vue-styled: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("vue-styled -> unocss -> vue-styled: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (configuration-residual: configuration)
+		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,

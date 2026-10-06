@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"route": {
 		"from": "mui",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"referenceCommit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
 	"referencePath": "docs/data/material/components/box/BoxSx.tsx",
@@ -15,7 +15,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -29,9 +29,9 @@
 			"targetBytes": 115,
 			"differences": []
 		},
-		"targetUsesPandwind": true,
+		"targetUsesYumCSS": true,
 		"sourceImportRemoved": true,
-		"pandwindClassCarrier": true
+		"yumcssClassCarrier": true
 	},
 	"checks": {
 		"sourceTypecheck": true,
@@ -68,6 +68,6 @@
 	"css": {
 		"sourceBytes": 131,
 		"targetBytes": 174,
-		"note": "MUI source bytes are Emotion SSR stylesheet bytes while the static Pandwind projection uses Pandwind's generated atomic stylesheet. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
+		"note": "MUI source bytes are Emotion SSR stylesheet bytes while the static YumCSS projection uses YumCSS's generated atomic stylesheet. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
 	}
 }

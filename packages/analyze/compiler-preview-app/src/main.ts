@@ -13,7 +13,7 @@ const runtimeInfoSchema = z.object({
 	root: z.string(),
 	viteVersion: z.string(),
 	plugins: z.array(z.string()),
-	pandwindPlugins: z.array(z.string()),
+	yumcssPlugins: z.array(z.string()),
 });
 
 const fileSchema = z.object({ path: z.string(), bytes: z.number() });
@@ -93,7 +93,7 @@ const request = async <Schema extends z.ZodType>(
 	schema: Schema,
 ): Promise<z.infer<Schema>> => {
 	const response = await fetch(path, {
-		headers: { "x-pandwind-compiler-preview-token": token },
+		headers: { "x-yumcss-compiler-preview-token": token },
 	});
 	const value: unknown = await response.json();
 	if (!response.ok) {
@@ -118,8 +118,8 @@ const setCompilerStatus = (message: string, state: "active" | "warning" | "error
 
 const setReadyStatus = (): void => {
 	setCompilerStatus(
-		pandwindPluginActive ? "Pandwind active" : "Vite ready · no Pandwind plugin",
-		pandwindPluginActive ? "active" : "warning",
+		yumcssPluginActive ? "YumCSS active" : "Vite ready · no YumCSS plugin",
+		yumcssPluginActive ? "active" : "warning",
 	);
 };
 
@@ -175,7 +175,7 @@ let previewFiles: readonly PreviewFile[] = [];
 let selectedFile = "";
 let workspaceRoot = "";
 let activeCompile = 0;
-let pandwindPluginActive = false;
+let yumcssPluginActive = false;
 let previewMode: PreviewMode = "diff";
 let diffLayout: DiffLayout = "split";
 let activeRenderer: ActiveRenderer = null;
@@ -418,14 +418,14 @@ const compileFile = async (file: string): Promise<void> => {
 const start = async (): Promise<void> => {
 	if (token === "") {
 		setCompilerStatus("Missing access token", "error");
-		setError("Open this page from the URL printed by pandwind-compiler-preview.");
+		setError("Open this page from the URL printed by yumcss-compiler-preview.");
 		return;
 	}
 	try {
 		const info = await request("/api/compiler-preview/info", runtimeInfoSchema);
 		workspaceRoot = info.root;
 		ui.projectRoot.textContent = info.root;
-		pandwindPluginActive = info.pandwindPlugins.length > 0;
+		yumcssPluginActive = info.yumcssPlugins.length > 0;
 		setReadyStatus();
 		ui.pluginSummary.textContent =
 			info.plugins.length === 0

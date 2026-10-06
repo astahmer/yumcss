@@ -4,10 +4,10 @@
 		"repository": "jantimon/css-in-js-bench",
 		"url": "https://github.com/jantimon/css-in-js-bench",
 		"cssInJsBenchRevision": "3f8df1511738",
-		"pandwindRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
-		"pandwindMainLane": "pandwind-css",
-		"pandwindTwBonusLane": "pandwind-buildtime",
-		"pandwindNamedStrategyDiagnostic": "pandwind-css-named",
+		"yumcssRevision": "9a9f9c499e7f43f8b05811634613a2d2419fe156",
+		"yumcssMainLane": "yumcss-css",
+		"yumcssTwBonusLane": "yumcss-buildtime",
+		"yumcssNamedStrategyDiagnostic": "yumcss-css-named",
 		"wpdCompletedAt": "2026-09-26T08:49:49.145Z",
 		"host": "Apple M4 (arm64)",
 		"node": "v24.20.0",
@@ -119,24 +119,24 @@
 					"spread": 0.14184707304370042
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 107687,
 					"spread": 0.33738055661314736
 				}
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 77350,
 					"spread": 0.18206851971557855
 				}
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 69290,
 					"spread": 0.14742387068841104
 				}
@@ -300,8 +300,8 @@
 					}
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 10539,
 					"payload": {
 						"js": 0,
@@ -312,8 +312,8 @@
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 43346,
 					"payload": {
 						"js": 21233,
@@ -324,8 +324,8 @@
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 18352,
 					"payload": {
 						"js": 0,
@@ -418,22 +418,22 @@
 					"value": 36
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 39.2
 				}
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 23.6
 				}
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 38.6
 				}
 			]
@@ -521,22 +521,22 @@
 					"value": 31.9
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 29.9
 				}
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 31.4
 				}
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 20.3
 				}
 			]
@@ -639,24 +639,24 @@
 					"p95Ms": 33.5
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 33.3,
 					"p95Ms": 34.8
 				}
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 33.2,
 					"p95Ms": 33.6
 				}
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 33.3,
 					"p95Ms": 33.3
 				}
@@ -750,22 +750,22 @@
 					"value": 244
 				},
 				{
-					"tech": "pandwind-css",
-					"label": "pandwind — createCss styles compiled by pandwindCssVite",
+					"tech": "yumcss-css",
+					"label": "yumcss — createCss styles compiled by yumcssExtractVite",
 					"value": 375
 				}
 			],
 			"bonusResults": [
 				{
-					"tech": "pandwind-buildtime",
-					"label": "pandwind — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
+					"tech": "yumcss-buildtime",
+					"label": "yumcss — build-time folding: literal tw() calls inlined by the vite plugin, zero styling runtime shipped",
 					"value": 507
 				}
 			],
 			"strategyResults": [
 				{
-					"tech": "pandwind-css-named",
-					"label": "pandwind — createCss with named atoms for a 400-tile transfer diagnostic",
+					"tech": "yumcss-css-named",
+					"label": "yumcss — createCss with named atoms for a 400-tile transfer diagnostic",
 					"value": 516
 				}
 			]

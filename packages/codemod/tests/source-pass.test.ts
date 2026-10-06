@@ -56,9 +56,9 @@ describe("SourcePass", () => {
 				"  css({ color: value });",
 				10,
 				"dynamic",
-				"pandwind:migrate-skip",
+				"yumcss:migrate-skip",
 			),
-		).toBe("  // pandwind:migrate-skip (dynamic)\n  css({ color: value });");
+		).toBe("  // yumcss:migrate-skip (dynamic)\n  css({ color: value });");
 	});
 
 	test("uses a JSX comment when a residual marks a JSX child", () => {
@@ -69,12 +69,12 @@ describe("SourcePass", () => {
 			source,
 			source.indexOf("<Badge"),
 			"dynamic",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
-		expect(migrated).not.toContain("    // pandwind:migrate-skip");
+		expect(migrated).toContain("    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge />");
+		expect(migrated).not.toContain("    // yumcss:migrate-skip");
 	});
 
 	test("recognizes a JSX child when insertion starts at its indentation", () => {
@@ -86,11 +86,11 @@ describe("SourcePass", () => {
 			source,
 			index,
 			"dynamic",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
+		expect(migrated).toContain("    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge />");
 	});
 
 	test("uses a JSX comment when the residual starts inside a child opening tag", () => {
@@ -105,14 +105,14 @@ describe("SourcePass", () => {
 			source,
 			source.indexOf("gap"),
 			"dynamic",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
 		expect(migrated).toContain(
-			'    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge gap="2" />',
+			'    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge gap="2" />',
 		);
-		expect(migrated).not.toContain("    // pandwind:migrate-skip");
+		expect(migrated).not.toContain("    // yumcss:migrate-skip");
 	});
 
 	test("recognizes children of JSX member elements", () => {
@@ -128,11 +128,11 @@ describe("SourcePass", () => {
 			source,
 			index,
 			"dynamic",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("    {/* pandwind:migrate-skip (dynamic) */}\n    <Badge />");
+		expect(migrated).toContain("    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge />");
 	});
 
 	test("keeps markers before a root JSX element as JavaScript comments", () => {
@@ -141,12 +141,12 @@ describe("SourcePass", () => {
 			source,
 			source.indexOf("<Widget"),
 			"residual",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("  // pandwind:migrate-skip (residual)\n  <Widget />");
-		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+		expect(migrated).toContain("  // yumcss:migrate-skip (residual)\n  <Widget />");
+		expect(migrated).not.toContain("{/* yumcss:migrate-skip");
 	});
 
 	test("keeps markers inside JSX expression containers as JavaScript comments", () => {
@@ -163,12 +163,12 @@ describe("SourcePass", () => {
 			source,
 			source.indexOf("<Widget"),
 			"residual",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("      // pandwind:migrate-skip (residual)\n      <Widget />");
-		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+		expect(migrated).toContain("      // yumcss:migrate-skip (residual)\n      <Widget />");
+		expect(migrated).not.toContain("{/* yumcss:migrate-skip");
 	});
 
 	test("keeps nested JSX comments valid across an outer expression container", () => {
@@ -188,12 +188,12 @@ describe("SourcePass", () => {
 			source,
 			index,
 			"residual",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
 		expect(migrated).toContain(
-			"        {/* pandwind:migrate-skip (residual) */}\n        <Badge />",
+			"        {/* yumcss:migrate-skip (residual) */}\n        <Badge />",
 		);
 	});
 
@@ -214,12 +214,12 @@ describe("SourcePass", () => {
 			source,
 			index,
 			"residual",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
 		expect(migrated).toContain(
-			"        {/* pandwind:migrate-skip (residual) */}\n        <Badge />",
+			"        {/* yumcss:migrate-skip (residual) */}\n        <Badge />",
 		);
 	});
 
@@ -237,11 +237,11 @@ describe("SourcePass", () => {
 			source,
 			index,
 			"dynamic",
-			"pandwind:migrate-skip",
+			"yumcss:migrate-skip",
 			"App.tsx",
 		);
 
-		expect(migrated).toContain("    // pandwind:migrate-skip (dynamic)\n    sourceCss");
-		expect(migrated).not.toContain("{/* pandwind:migrate-skip");
+		expect(migrated).toContain("    // yumcss:migrate-skip (dynamic)\n    sourceCss");
+		expect(migrated).not.toContain("{/* yumcss:migrate-skip");
 	});
 });

@@ -38,10 +38,10 @@ test("react-strict-dom -> vanilla-extract: migrates concrete react-strict-dom sy
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "react-strict-dom -> vanilla-extract happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("react-strict-dom -> vanilla-extract: migrates concrete react-strict-dom sy
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -150,7 +150,7 @@ test("react-strict-dom -> vanilla-extract: loads concrete theme and project cont
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -188,7 +188,7 @@ test("react-strict-dom -> vanilla-extract: loads concrete theme and project cont
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -238,7 +238,7 @@ test("react-strict-dom -> vanilla-extract: resolves concrete token values with p
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		  "converted": 0,
@@ -285,7 +285,7 @@ test("react-strict-dom -> vanilla-extract: preserves malformed concrete react-st
 		{
 		  "changed": true,
 		  "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",

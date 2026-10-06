@@ -22,8 +22,8 @@ const exampleRoot = resolve(import.meta.dirname, "../../../examples/example");
 const exampleSourceDir = resolve(import.meta.dirname, "../../../examples/example/src");
 const exampleFiles = [
 	resolve(exampleSourceDir, "tailwind.css"),
-	resolve(exampleSourceDir, "pandwind-theme.css"),
-	resolve(exampleSourceDir, "pandwind.safelist.css"),
+	resolve(exampleSourceDir, "yumcss-theme.css"),
+	resolve(exampleSourceDir, "yumcss.safelist.css"),
 ];
 const exampleMeta = loadMetaFromSources({
 	typesDtsPath: resolve(exampleSourceDir, "types.d.ts"),
@@ -59,10 +59,10 @@ const migrateWithUnoTargetConfig = (source: string, from: CodemodAdapterId, file
 	});
 
 describe("target adapter emission contract", () => {
-	test("preserves the JSX host when targeting Pandwind's tw dialect", async () => {
+	test("preserves the JSX host when targeting YumCSS's tw dialect", async () => {
 		const result = await runAdapterMigrationAsync('<div className="bg-black" />', {
 			from: CodemodAdapterId.Tailwind,
-			to: `${CodemodAdapterId.Pandwind}:${SwapSourceId.Tw}`,
+			to: `${CodemodAdapterId.YumCSS}:${SwapSourceId.Tw}`,
 			file: resolve(exampleRoot, "Card.tsx"),
 			root: exampleRoot,
 			mode: "safe",
@@ -82,7 +82,7 @@ describe("target adapter emission contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("<div className={tw(");
-		expect(result.code).toContain('import { tw } from "pandwind";');
+		expect(result.code).toContain('import { tw } from "yumcss";');
 		expect(result.code).not.toMatch(/^\s*tw\(\{/u);
 		expect(result.validations).toMatchObject([{ valid: true }]);
 	});
@@ -113,7 +113,7 @@ describe("target adapter emission contract", () => {
 			'import { Box } from "@chakra-ui/react";\n' +
 				"export const App = ({ noHistoricalData }: { noHistoricalData: boolean }) => " +
 				'<Box color={noHistoricalData ? "fg.muted" : "red"} fontSize="xs" />;',
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"SyncCell.tsx",
 		);
 
@@ -129,7 +129,7 @@ describe("target adapter emission contract", () => {
 		const result = await migrateChakra(
 			'import { Box } from "@chakra-ui/react";\n' +
 				'export const App = () => <Box data-label="Action" flex="1" minW={{ base: "full", md: "260px" }} />;',
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"Filters.tsx",
 		);
 
@@ -142,7 +142,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("css.props");
 		expect(result.code).not.toContain("css.vars");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div data-label="Action" className={css.class({ flex: "1", minWidth: "100%", "@media (min-width: 768px)": { minWidth: "260px" } })} />;"
 		`);
@@ -154,13 +154,13 @@ describe("target adapter emission contract", () => {
 				"const Link = (props: { href: string }) => <a {...props} />;\n" +
 				'export const Card = styled(Link)({ color: "red" });',
 			CodemodAdapterId.StyledComponents,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const __pandwindSlot =");
-		expect(result.code).toContain("export const Card = __pandwindSlot(");
+		expect(result.code).toContain("const __yumcssSlot =");
+		expect(result.code).toContain("export const Card = __yumcssSlot(");
 		expect(result.code).toContain("(Link)");
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
@@ -171,7 +171,7 @@ describe("target adapter emission contract", () => {
 				"export const pulse = keyframes`from { opacity: 0; } to { opacity: 1; }`;\n" +
 				"export const animationName = pulse;",
 			CodemodAdapterId.StyledComponents,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			"animation.ts",
 		);
 
@@ -199,12 +199,12 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
-	test("projects Pandwind class bindings through StyleX's React props contract", () => {
+	test("projects YumCSS class bindings through StyleX's React props contract", () => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red", padding: "1rem" });\n' +
 				"export const App = () => <div className={card} />;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.StyleX,
 		);
 
@@ -224,11 +224,11 @@ describe("target adapter emission contract", () => {
 
 	test("projects an intrinsic React host through MUI Box instead of a DOM sx prop", () => {
 		const result = migrate(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
 				'const card = css.class({ color: "red" });\n' +
 				"export const App = () => <div className={card}>content</div>;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Mui,
 		);
 
@@ -299,7 +299,7 @@ describe("target adapter emission contract", () => {
 		if (target === CodemodAdapterId.UnoCSS)
 			expect(result.code).toMatchInlineSnapshot(`
 			"import { Box } from "@chakra-ui/react";
-			export const App = () => <Box className={"[background:var(--pandwind-dynamic-5qa8dh)]"} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;"
+			export const App = () => <Box className={"[background:var(--yumcss-dynamic-5qa8dh)]"} style={{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }}/>;"
 		`);
 	});
 
@@ -313,7 +313,7 @@ describe("target adapter emission contract", () => {
 				"const card = css`color: computeColor(accent);`;",
 			{
 				from: CodemodAdapterId.Linaria,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				file: "Card.tsx",
 				mode: "safe",
 				readFile: () => undefined,
@@ -345,7 +345,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("css.vars({");
 		expect(result.outcomes).toMatchObject([
@@ -372,7 +372,7 @@ describe("target adapter emission contract", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("const css = createUnsafeCss();");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.vars({ "color": theme.foreground, "padding": "0.5em 1em" });"
 		`);
@@ -412,14 +412,14 @@ describe("target adapter emission contract", () => {
 				expect(result.generatedFiles).toHaveLength(1);
 				expect(result.generatedFiles[0]).toMatchObject({
 					path: "App.styles.css.ts",
-					content: expect.stringContaining("var(--pandwind-dynamic-"),
+					content: expect.stringContaining("var(--yumcss-dynamic-"),
 				});
 				expect(result.generatedFiles.map(({ path, content }) => ({ path, content })))
 					.toMatchInlineSnapshot(`
 					[
 					  {
 					    "content": "import { style } from "@vanilla-extract/css";
-					export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-5qa8dh)" });
+					export const __yumcssCardStyles = style({ color: "var(--yumcss-dynamic-5qa8dh)" });
 					",
 					    "path": "App.styles.css.ts",
 					  },
@@ -433,16 +433,16 @@ describe("target adapter emission contract", () => {
 				`${CodemodAdapterId.StyledComponents} -> ${target}: ${JSON.stringify(result.residuals)}\n${result.code}`,
 			).toBe(0);
 			expect(result.residuals).toEqual([]);
-			expect(result.code).toContain("__pandwindCardForwardRef");
+			expect(result.code).toContain("__yumcssCardForwardRef");
 			expect(result.code).toContain("theme.foreground");
 			expect(result.code).toContain("<Card />");
 			expect(result.code).toContain("ref={ref}");
 			expect(result.code).not.toContain("styled-components");
 			if (target === CodemodAdapterId.UnoCSS)
 				expect(result.code).toMatchInlineSnapshot(`
-			"import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--pandwind-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __pandwindCardComponent; })();
+			"import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--yumcss-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __yumcssCardComponent; })();
 			export const App = () => <Card />;"
 		`);
 		},
@@ -470,7 +470,7 @@ describe("target adapter emission contract", () => {
 				(residual) => residual.kind === StyleProgramResidualKindTag.DynamicCustomProperty,
 			),
 		).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<div className={Card} />");
 	});
@@ -516,12 +516,12 @@ describe("target adapter emission contract", () => {
 		`);
 	});
 
-	test("lowers a Pandwind class bound to a React host into Mantine's style prop", () => {
+	test("lowers a YumCSS class bound to a React host into Mantine's style prop", () => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				'const card = css.class({ color: "red", padding: "1rem" });\n' +
 				"export const App = () => <div className={card} />;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Mantine,
 		);
 
@@ -552,7 +552,7 @@ describe("target adapter emission contract", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { css } from "next-yak";');
 		expect(result.code).toContain("${theme.foreground}");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	});
 
 	test.each(
@@ -582,7 +582,7 @@ describe("target adapter emission contract", () => {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain("String(theme.foreground)");
 			expect(result.generatedFiles).toHaveLength(1);
-			expect(result.generatedFiles[0]?.content).toContain("var(--pandwind-dynamic-");
+			expect(result.generatedFiles[0]?.content).toContain("var(--yumcss-dynamic-");
 			expect(result.generatedFiles[0]?.path).toBe(
 				target === CodemodAdapterId.VanillaExtract ? "App.styles.css.ts" : "App.styles.treat.ts",
 			);
@@ -590,15 +590,15 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("__pandwindCardForwardRef");
+		expect(result.code).toContain("__yumcssCardForwardRef");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).toContain("ref={ref}");
 		if (target === CodemodAdapterId.UnoCSS)
 			expect(result.code).toMatchInlineSnapshot(`
-			"import { forwardRef as __pandwindCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-			const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--pandwind-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __pandwindCardComponent; })();
+			"import { forwardRef as __yumcssCardForwardRef } from "react";
+			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--yumcss-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __yumcssCardComponent; })();
 			export const App = () => <Card />;"
 		`);
 	});
@@ -624,7 +624,7 @@ describe("target adapter emission contract", () => {
 			expect(result.code).toContain("String(theme.foreground)");
 			return {
 				target,
-				import: result.code.split("\n").find((line) => line.includes("__pandwindCardStyles")),
+				import: result.code.split("\n").find((line) => line.includes("__yumcssCardStyles")),
 				files: result.generatedFiles.map(({ path, content }) => ({ path, content })),
 			};
 		});
@@ -635,24 +635,24 @@ describe("target adapter emission contract", () => {
 			    "files": [
 			      {
 			        "content": "import { style } from "treat";
-			export const __pandwindCardStyles = style({ "color": "var(--pandwind-dynamic-5qa8dh)" });
+			export const __yumcssCardStyles = style({ "color": "var(--yumcss-dynamic-5qa8dh)" });
 			",
 			        "path": "src/Card.styles.treat.ts",
 			      },
 			    ],
-			    "import": "import { __pandwindCardStyles } from "./Card.styles.treat";",
+			    "import": "import { __yumcssCardStyles } from "./Card.styles.treat";",
 			    "target": "treat",
 			  },
 			  {
 			    "files": [
 			      {
 			        "content": "import { style } from "@vanilla-extract/css";
-			export const __pandwindCardStyles = style({ color: "var(--pandwind-dynamic-5qa8dh)" });
+			export const __yumcssCardStyles = style({ color: "var(--yumcss-dynamic-5qa8dh)" });
 			",
 			        "path": "src/Card.styles.css.ts",
 			      },
 			    ],
-			    "import": "import { __pandwindCardStyles } from "./Card.styles.css.ts";",
+			    "import": "import { __yumcssCardStyles } from "./Card.styles.css.ts";",
 			    "target": "vanilla-extract",
 			  },
 			]
@@ -709,7 +709,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
+		expect(result.code).toContain("__yumcssForwardRef<ComponentRef<typeof View>, ViewProps>");
 		expect(result.code).toContain('<Card data-testid="card" />');
 		expect(result.code).toContain("StyleSheet.create");
 		expect(result.code).toContain("View");
@@ -746,7 +746,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain('from "react-native"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import styled from "styled-components";
-			// pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 			export const Card = styled.div({ color: "red", padding: "1rem" });"
 		`);
 	});
@@ -775,7 +775,7 @@ describe("target adapter emission contract", () => {
 				`${sourceAdapter} -> ${CodemodAdapterId.ReactNative}: ${JSON.stringify({ residuals: result.residuals, outcomes: result.outcomes, code: result.code })}`,
 			).toBe(0);
 			expect(result.residuals).toEqual([]);
-			expect(result.code).toContain("__pandwindForwardRef<ComponentRef<typeof View>, ViewProps>");
+			expect(result.code).toContain("__yumcssForwardRef<ComponentRef<typeof View>, ViewProps>");
 			expect(result.code).toContain("<View {...props} ref={ref}");
 			expect(result.code).toContain("StyleSheet.create");
 			expect(result.code).not.toContain(sourceAdapter);
@@ -826,7 +826,7 @@ describe("target adapter emission contract", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "function-dynamic" })]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("styled.div");
 	});
 
@@ -927,13 +927,13 @@ describe("target adapter emission contract", () => {
 				expect.objectContaining({ kind: expect.stringMatching(/capability|host-framework/) }),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"<script setup>
 			import { ref } from "vue";
 			import styled from "vue-styled-components";
 			const active = ref(true);
-			// pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 			const Card = styled.div({ color: "red" });
 			</script>
 			<template><Card v-if="active" /></template>"
@@ -963,38 +963,38 @@ describe("target adapter emission contract", () => {
 
 			expect(result.skipped, `${CodemodAdapterId.SolidStyled} -> ${target}`).toBeGreaterThan(0);
 			expect(result.residuals.length).toBeGreaterThan(0);
-			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("yumcss:migrate-skip");
 			expect(result.code).toContain("solid-styled-components");
 		},
 	);
 
-	test("preserves a Pandwind class binding for an unknown custom component", () => {
+	test("preserves a YumCSS class binding for an unknown custom component", () => {
 		const source =
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 			"const css = createUnsafeCss();\n" +
 			'const card = css.class({ color: "red" });\n' +
 			"export const App = () => <CustomCard className={card} />;";
-		const result = migrate(source, CodemodAdapterId.Pandwind, CodemodAdapterId.Mui);
+		const result = migrate(source, CodemodAdapterId.YumCSS, CodemodAdapterId.Mui);
 
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
 		);
-		expect(result.code.replace(/^\/\/ pandwind:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
+		expect(result.code.replace(/^\/\/ yumcss:migrate-skip[^\r\n]*\r?\n/gmu, "")).toBe(source);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).not.toContain("sx={card}");
-		expect(result.code).toContain('import { createUnsafeCss } from "pandwind/unsafe/css";');
+		expect(result.code).toContain('import { createUnsafeCss } from "yumcss/unsafe/css";');
 		expect(result.code).toContain("css.class");
 		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
 
 	test("preserves a standalone class value when MUI has no host for sx", () => {
 		const result = migrate(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
 				'const card = css.class({ color: "red" });',
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Mui,
 		);
 
@@ -1008,7 +1008,7 @@ describe("target adapter emission contract", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('css.class({ color: "red" })');
 		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
@@ -1081,10 +1081,10 @@ describe("target adapter emission contract", () => {
 
 	test("preserves a hostless dynamic MUI value with a typed host residual", () => {
 		const result = migrate(
-			'import { createUnsafeCss } from "pandwind/unsafe/css";\n' +
+			'import { createUnsafeCss } from "yumcss/unsafe/css";\n' +
 				"const css = createUnsafeCss();\n" +
 				"const card = css.class({ color: theme.foreground });",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Mui,
 		);
 
@@ -1098,7 +1098,7 @@ describe("target adapter emission contract", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain("css.class({ color: theme.foreground })");
 		expect(result.code).not.toContain("css.vars({");
 	});
@@ -1113,8 +1113,8 @@ describe("target adapter emission contract", () => {
 		[CodemodAdapterId.Fela, "theme.foreground"],
 	] as const)("preserves a hostless dynamic carrier for %s", (target, expression) => {
 		const result = migrate(
-			`import { css } from "pandwind/css";\nconst card = css.class({ color: ${expression} });`,
-			CodemodAdapterId.Pandwind,
+			`import { css } from "yumcss/css";\nconst card = css.class({ color: ${expression} });`,
+			CodemodAdapterId.YumCSS,
 			target,
 		);
 
@@ -1126,38 +1126,38 @@ describe("target adapter emission contract", () => {
 
 	test("lowers a host-bound dynamic value to a Tailwind custom-property carrier", () => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				"export const App = () => <div className={card} />;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Tailwind,
 		);
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("[color:var(--pandwind-dynamic-");
-		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("[color:var(--yumcss-dynamic-");
+		expect(result.code).toContain('style={{ "--yumcss-dynamic-');
 		expect(result.code).toContain("theme.foreground");
 	});
 
 	test("lowers a host-bound dynamic value through UnoCSS's configured generator", async () => {
 		const result = await migrateWithUnoTargetConfig(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				"export const App = () => <div className={card} />;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 		);
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("[color:var(--pandwind-dynamic-");
-		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("[color:var(--yumcss-dynamic-");
+		expect(result.code).toContain('style={{ "--yumcss-dynamic-');
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toMatchInlineSnapshot(`
-			"const card = "[color:var(--pandwind-dynamic-5qa8dh)]";
-			export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;"
+			"const card = "[color:var(--yumcss-dynamic-5qa8dh)]";
+			export const App = () => <div className={card} style={{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }} />;"
 		`);
 	});
 
@@ -1172,10 +1172,10 @@ describe("target adapter emission contract", () => {
 		CodemodAdapterId.Linaria,
 	] as const)("uses the shared dynamic class carrier for %s", (target) => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				"export const App = () => <Box className={card} />;",
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			target,
 		);
 		if (target === CodemodAdapterId.VanillaExtract || target === CodemodAdapterId.Treat) {
@@ -1189,20 +1189,20 @@ describe("target adapter emission contract", () => {
 			return;
 		}
 
-		expect(result.converted, `${CodemodAdapterId.Pandwind} -> ${target}`).toBe(1);
+		expect(result.converted, `${CodemodAdapterId.YumCSS} -> ${target}`).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("var(--pandwind-dynamic-");
-		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("var(--yumcss-dynamic-");
+		expect(result.code).toContain('style={{ "--yumcss-dynamic-');
 		expect(result.code).toContain("String(theme.foreground)");
 	});
 
 	test("does not overwrite an existing host style while lowering a dynamic class", () => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
+			'import { css } from "yumcss/css";\n' +
 				"const card = css.class({ color: theme.foreground });\n" +
 				'export const App = () => <div className={card} style={{ color: "blue" }} />;',
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			CodemodAdapterId.Tailwind,
 		);
 
@@ -1232,7 +1232,7 @@ describe("target adapter emission contract", () => {
 				}),
 			]),
 		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('StyleSheet.create({ button: { color: "red" } })');
 	});
 

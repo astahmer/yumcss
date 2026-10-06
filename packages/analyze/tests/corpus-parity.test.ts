@@ -1,10 +1,10 @@
 /**
- * Corpus parity — running `pandwind analyze` over the fold-coverage corpus
+ * Corpus parity — running `yumcss analyze` over the fold-coverage corpus
  * reproduces the exact elimination numbers the vite-cx-coverage harness
  * reports, via ONE command.
  *
  * The fixtures under tests/fixtures/coverage-corpus/ mirror the corpus in
- * packages/pandwind/tests/vite-cx-coverage.test.ts entry-for-entry (same
+ * packages/yumcss/tests/vite-cx-coverage.test.ts entry-for-entry (same
  * sources, same expectations; the expected kind is encoded in the filename
  * prefix). If a pattern there changes, update the mirror here and both
  * suites keep reporting identical percentages.
@@ -17,8 +17,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
-import { createPandwindEngineContext } from "pandwind/vite";
+import { examplePreset } from "@yumcss/example-preset";
+import { createYumCSSEngineContext } from "yumcss/vite";
 import { analyzeSource } from "../src/analyze.ts";
 
 const _app = resolve(import.meta.dirname, "../../../examples/example");
@@ -53,7 +53,7 @@ const entries: Array<Entry> = readdirSync(corpusDir)
 				? {
 						cxFold: {
 							cssNames: new Set(["css"]),
-							engine: createPandwindEngineContext({ preset: examplePreset }),
+							engine: createYumCSSEngineContext({ preset: examplePreset }),
 						},
 					}
 				: {}),

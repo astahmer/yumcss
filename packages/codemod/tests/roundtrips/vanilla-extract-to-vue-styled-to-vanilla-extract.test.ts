@@ -42,7 +42,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -141,7 +141,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: retains the documented s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -177,7 +177,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: retains the documented s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
+		// yumcss:migrate-skip (route: vanilla-extract -> vue-styled | capability-blocked: rule-level: 1 semantic rules; global-rules: global rule; selectors: selector: body | available: static, residual)
 		globalStyle("body", { margin: 0 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -257,7 +257,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -332,7 +332,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -422,7 +422,7 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

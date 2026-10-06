@@ -42,7 +42,7 @@ test("mui -> style9 -> mui: preserves an actionable concrete round trip", async 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> style9 round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("mui -> style9 -> mui: preserves an actionable concrete round trip", async 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={style9(style9.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -142,7 +142,7 @@ test("mui -> style9 -> mui: retains the documented secondary API without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> style9 | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> style9 | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("mui -> style9 -> mui: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> style9 | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> style9 | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -269,7 +269,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={style9(style9.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -345,7 +345,7 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -436,7 +436,7 @@ test("mui -> style9 -> mui: resolves token values across both concrete legs", as
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: style9 -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={style9(style9.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

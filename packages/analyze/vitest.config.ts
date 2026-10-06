@@ -5,12 +5,12 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
-				find: "pandwind/source/workspace",
-				replacement: fileURLToPath(new URL("../pandwind/src/source-workspace.ts", import.meta.url)),
+				find: "yumcss/source/workspace",
+				replacement: fileURLToPath(new URL("../yumcss/src/source-workspace.ts", import.meta.url)),
 			},
 			{
-				find: "pandwind/source",
-				replacement: fileURLToPath(new URL("../pandwind/src/source-scanner.ts", import.meta.url)),
+				find: "yumcss/source",
+				replacement: fileURLToPath(new URL("../yumcss/src/source-scanner.ts", import.meta.url)),
 			},
 		],
 	},

@@ -2,7 +2,7 @@ import type { RealRepositoryReference } from "./real-repository-corpus.ts";
 import { RealRepositoryProofDimension } from "./identifiers.ts";
 
 /** Versioned orchestration result for installed real-repository promotion. */
-export const REAL_REPOSITORY_PROMOTION_SCHEMA = "pandwind.real-repository-promotion/1" as const;
+export const REAL_REPOSITORY_PROMOTION_SCHEMA = "yumcss.real-repository-promotion/1" as const;
 
 export const enum RealRepositoryPromotionStageTag {
 	Materialize = "materialize",

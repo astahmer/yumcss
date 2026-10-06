@@ -1,6 +1,6 @@
-# Reusable PR-comment workflow for the pandwind analyze CLI (plans/023 #5).
+# Reusable PR-comment workflow for the yumcss analyze CLI (plans/023 #5).
 #
-# Consumes `pandwind analyze --json` from HEAD and the base ref, diffs CSS
+# Consumes `yumcss analyze --json` from HEAD and the base ref, diffs CSS
 # size, and posts/updates ONE sticky PR comment (marker-keyed so re-runs edit
 # in place). Purely informational: reporting failures never turn the run red.
 #
@@ -8,7 +8,7 @@
 #
 #   jobs:
 #     analyze:
-#       uses: pandwind/.github/.github/workflows/analyze-comment.yml@main
+#       uses: yumcss/.github/.github/workflows/analyze-comment.yml@main
 #       with:
 #         base-ref: main
 #         working-directory: .
@@ -44,8 +44,8 @@ on:
         description: PR number for dispatch runs (auto-detected on pull_request)
         type: string
         default: ""
-      pandwind-version:
-        description: Published pandwind-analyze version to execute
+      yumcss-version:
+        description: Published @yumcss/analyze version to execute
         type: string
         default: latest
     secrets:
@@ -73,8 +73,8 @@ on:
         description: PR number to comment on (empty = report only, no comment)
         type: string
         default: ""
-      pandwind-version:
-        description: Published pandwind-analyze version to execute
+      yumcss-version:
+        description: Published @yumcss/analyze version to execute
         type: string
         default: latest
 
@@ -108,7 +108,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           # This workflow is reusable from repositories that do not contain
-          # Pandwind's root package.json, so keep an explicit external pin.
+          # YumCSS's root package.json, so keep an explicit external pin.
           version: 12.3.4
 
       - name: Measure HEAD and base
@@ -116,7 +116,7 @@ jobs:
           APP_DIR: ${{ inputs.app-dir }}
           PATTERNS: ${{ inputs.patterns }}
           WORK_DIR: ${{ inputs.working-directory }}
-          PANDWIND_VERSION: ${{ inputs.pandwind-version }}
+          YUMCSS_VERSION: ${{ inputs.yumcss-version }}
         run: |
           set -e
           WORK_DIR="${WORK_DIR#./}"
@@ -126,20 +126,20 @@ jobs:
           HEAD_APP_ROOT="$WORK_ROOT/$APP_DIR"
           BASE_APP_ROOT="$BASE_ROOT/$APP_DIR"
           cd "$WORK_ROOT"
-          pnpm dlx --package "pandwind-analyze@$PANDWIND_VERSION" pandwind-analyze \
+          pnpm dlx --package "@yumcss/analyze@$YUMCSS_VERSION" yumcss-analyze \
             "$PATTERNS" --tw "$HEAD_APP_ROOT/src/tw.ts" --root "$HEAD_APP_ROOT" \
             --json --css > /tmp/analyze-head.json
-          pnpm dlx --package "pandwind-analyze@$PANDWIND_VERSION" pandwind-analyze \
+          pnpm dlx --package "@yumcss/analyze@$YUMCSS_VERSION" yumcss-analyze \
             "$PATTERNS" --tw "$BASE_APP_ROOT/src/tw.ts" --root "$BASE_APP_ROOT" \
             --json --css > /tmp/analyze-base.json || \
-            echo '{"schema":"pandwind.analyze/1"}' > /tmp/analyze-base.json
+            echo '{"schema":"yumcss.analyze/1"}' > /tmp/analyze-base.json
 
-      - name: Check out Pandwind comment renderer
+      - name: Check out YumCSS comment renderer
         uses: actions/checkout@v4
         with:
-          repository: astahmer/pandwind
+          repository: astahmer/yumcss
           ref: main
-          path: .pandwind-workflow
+          path: .yumcss-workflow
           sparse-checkout: .github/scripts/analyze-comment.mjs
           sparse-checkout-cone-mode: false
 
@@ -150,6 +150,6 @@ jobs:
           REPO: ${{ github.repository }}
           BASE_REF_NAME: ${{ inputs.base-ref }}
         run: |
-          node .pandwind-workflow/.github/scripts/analyze-comment.mjs \
+          node .yumcss-workflow/.github/scripts/analyze-comment.mjs \
             /tmp/analyze-head.json /tmp/analyze-base.json
         continue-on-error: true

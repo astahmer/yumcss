@@ -86,7 +86,7 @@ async function inspect(
 		for (const match of html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)) {
 			const bytes = Buffer.byteLength(match[1]!);
 			inlineStyleBytes += bytes;
-			if (match[0]!.includes("data-pandwind-runtime")) runtimeStyleBytes += bytes;
+			if (match[0]!.includes("data-yumcss-runtime")) runtimeStyleBytes += bytes;
 		}
 	}
 	return {

@@ -42,7 +42,7 @@ test("fela -> mantine -> fela: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> mantine round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -54,7 +54,7 @@ test("fela -> mantine -> fela: preserves an actionable concrete round trip", asy
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -78,7 +78,7 @@ test("fela -> mantine -> fela: preserves an actionable concrete round trip", asy
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -103,7 +103,7 @@ test("fela -> mantine -> fela: preserves an actionable concrete round trip", asy
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "red" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -132,7 +132,7 @@ test("fela -> mantine -> fela: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -167,7 +167,7 @@ test("fela -> mantine -> fela: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> mantine | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -213,7 +213,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -237,7 +237,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -262,7 +262,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -279,7 +279,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -303,7 +303,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -328,7 +328,7 @@ test("fela -> mantine -> fela: preserves concrete theme and project context vari
 		      "changed": false,
 		      "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -360,7 +360,7 @@ test("fela -> mantine -> fela: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -384,7 +384,7 @@ test("fela -> mantine -> fela: resolves token values across both concrete legs",
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -409,7 +409,7 @@ test("fela -> mantine -> fela: resolves token values across both concrete legs",
 		    "changed": false,
 		    "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		// pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
 		export const card = renderer.renderRule(() => ({ color: "#2563eb" }));",
 		    "converted": 0,
 		    "generatedFiles": [],

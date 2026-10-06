@@ -1,7 +1,7 @@
-import type { PandwindMeta } from "./meta.ts";
+import type { YumCSSMeta } from "./meta.ts";
 import { SourcePass, type SourceEdit } from "./source-pass-utils.ts";
-import { NodeKind, type OxcNode, walkWithParent } from "pandwind/tw/literal";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { NodeKind, type OxcNode, walkWithParent } from "yumcss/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { parseToken, tokenizeClassList } from "./tokens.ts";
 
 export interface ClassSortResult {
@@ -59,7 +59,7 @@ const renderLiteral = (value: string, quote: string): string => {
 	return JSON.stringify(value);
 };
 
-const propertiesFor = (meta: PandwindMeta, prefix: string, value: string): readonly string[] =>
+const propertiesFor = (meta: YumCSSMeta, prefix: string, value: string): readonly string[] =>
 	meta.conflicts.get(prefix)?.[value] ?? meta.conflicts.get(prefix)?.["*"] ?? [];
 
 const compareNumbers = (left: number, right: number): number => left - right;
@@ -146,7 +146,7 @@ const sortKnownSegment = (tokens: readonly SortableToken[]): readonly SortableTo
 const sortableToken = (
 	raw: string,
 	index: number,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	keyRanks: ReadonlyMap<string, number>,
 	variantRanks: ReadonlyMap<string, number>,
 ): SortableToken | undefined => {
@@ -173,7 +173,7 @@ const sortableToken = (
 	};
 };
 
-export const sortClassListDetailed = (classString: string, meta: PandwindMeta): ClassSortResult => {
+export const sortClassListDetailed = (classString: string, meta: YumCSSMeta): ClassSortResult => {
 	const rawTokens = tokenizeClassList(classString);
 	if (rawTokens.length < 2) return { value: classString.trim(), changed: false, opaqueTokens: [] };
 	const keyRanks = new Map(meta.keys.map((key, index) => [key.key, index] as const));
@@ -217,7 +217,7 @@ export const sortClassListDetailed = (classString: string, meta: PandwindMeta): 
 	return { value, changed: value !== classString.trim(), opaqueTokens };
 };
 
-export const sortClassList = (classString: string, meta: PandwindMeta): string =>
+export const sortClassList = (classString: string, meta: YumCSSMeta): string =>
 	sortClassListDetailed(classString, meta).value;
 
 const callName = (callee: unknown): string | undefined => {
@@ -330,7 +330,7 @@ export const collectStaticClassLiterals = (
 
 export const sortStaticClassSource = (
 	source: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	file = "source.tsx",
 ): ClassSourceSortResult => {
 	const literals = collectStaticClassLiterals(source, file);

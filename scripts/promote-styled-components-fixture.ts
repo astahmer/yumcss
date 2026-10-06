@@ -1,12 +1,13 @@
 /**
- * Prove a bounded styled-components -> Pandwind project migration with the
+ * Prove a bounded styled-components -> YumCSS project migration with the
  * real CLI and installed project dependencies. The fixture covers a styled
- * object, a pseudo-condition, the generated Pandwind Vite integration, SSR,
+ * object, a pseudo-condition, the generated YumCSS Vite integration, SSR,
  * hydration, and browser base/hover behavior.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	allFiles,
 	browserProof,
@@ -23,15 +24,15 @@ import {
 } from "./installed-proof.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@types/node": "26.4.1",
 	"@types/react": "19.2.18",
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	"styled-components": "6.1.19",
@@ -76,7 +77,7 @@ interface StyledComponentsInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.StyledComponents;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly fixture: { readonly files: readonly string[]; readonly isolated: true };
 	readonly dependencies: {
@@ -90,7 +91,7 @@ interface StyledComponentsInstalledProof {
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
 		readonly generatedSupportFiles: number;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
 		readonly generatedVitePresetImportIsExplicit: boolean;
 		readonly generatedVitePluginPresent: boolean;
@@ -124,7 +125,7 @@ function proofIsComplete(report: StyledComponentsInstalledProof): boolean {
 		report.migration.residuals === 0 &&
 		report.migration.canonical.checked &&
 		report.migration.canonical.equal &&
-		report.migration.targetUsesPandwind &&
+		report.migration.targetUsesYumCSS &&
 		report.migration.sourceImportRemoved &&
 		report.migration.generatedVitePresetImportIsExplicit &&
 		report.migration.generatedVitePluginPresent &&
@@ -136,7 +137,7 @@ function proofIsComplete(report: StyledComponentsInstalledProof): boolean {
 	);
 }
 
-function packageJson(includePandwind: boolean): Record<string, unknown> {
+function packageJson(includeYumCSS: boolean): Record<string, unknown> {
 	return {
 		private: true,
 		type: "module",
@@ -146,26 +147,26 @@ function packageJson(includePandwind: boolean): Record<string, unknown> {
 			typecheck: "tsc --noEmit",
 		},
 		dependencies: {
-			...(includePandwind ? { pandwind: versions.pandwind } : {}),
+			...(includeYumCSS ? { yumcss: versions.yumcss } : {}),
 			react: versions.react,
 			"react-dom": versions["react-dom"],
-			...(includePandwind ? {} : { "styled-components": versions["styled-components"] }),
+			...(includeYumCSS ? {} : { "styled-components": versions["styled-components"] }),
 		},
 		devDependencies: {
 			"@types/node": versions["@types/node"],
 			"@types/react": versions["@types/react"],
 			"@types/react-dom": versions["@types/react-dom"],
 			"@vitejs/plugin-react-swc": versions["@vitejs/plugin-react-swc"],
-			...(includePandwind ? { "oxc-parser": versions["oxc-parser"] } : {}),
+			...(includeYumCSS ? { "oxc-parser": versions["oxc-parser"] } : {}),
 			typescript: versions.typescript,
 			vite: versions.vite,
 		},
 	};
 }
 
-function createFixture(root: string, includePandwind: boolean): void {
+function createFixture(root: string, includeYumCSS: boolean): void {
 	mkdirSync(join(root, "src"), { recursive: true });
-	writeJson(join(root, "package.json"), packageJson(includePandwind));
+	writeJson(join(root, "package.json"), packageJson(includeYumCSS));
 	writeJson(join(root, "tsconfig.json"), tsConfig);
 	writeFileSync(join(root, "vite.config.ts"), sourceViteConfig);
 	writeFileSync(join(root, "src/App.tsx"), sourceApp);
@@ -186,9 +187,9 @@ function createFixture(root: string, includePandwind: boolean): void {
 }
 
 export async function runStyledComponentsInstalledProof(): Promise<StyledComponentsInstalledProof> {
-	run("pnpm", ["--filter", "pandwind", "run", "build"], repositoryRoot);
+	run("pnpm", ["--filter", "yumcss", "run", "build"], repositoryRoot);
 	return withInstalledProofProject(
-		"pandwind-styled-components-installed-proof-",
+		"yumcss-styled-components-installed-proof-",
 		async ({ sourceRoot, targetRoot }) => {
 			createFixture(sourceRoot, false);
 			createFixture(targetRoot, true);
@@ -200,13 +201,13 @@ export async function runStyledComponentsInstalledProof(): Promise<StyledCompone
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						"styled-components",
 						"--to",
-						"pandwind",
+						"yumcss",
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -219,7 +220,7 @@ export async function runStyledComponentsInstalledProof(): Promise<StyledCompone
 				"styled-components",
 			);
 			const migratedApp = readFileSync(join(targetRoot, "src/App.tsx"), "utf8");
-			const generatedSupportFiles = allFiles(join(targetRoot, "pandwind")).map((file) =>
+			const generatedSupportFiles = allFiles(join(targetRoot, "yumcss")).map((file) =>
 				relative(targetRoot, file).replaceAll("\\", "/"),
 			);
 			const installedTargetPackage = JSON.parse(
@@ -248,23 +249,23 @@ export async function runStyledComponentsInstalledProof(): Promise<StyledCompone
 				markup.replace(/class="[^"]*"/u, 'class="CLASS"');
 			const result: StyledComponentsInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.StyledComponents, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.StyledComponents, to: CodemodAdapterId.YumCSS },
 				fixture: { files: ["src/App.tsx", "vite.config.ts"], isolated: true },
 				dependencies: {
 					installed: true,
-					targetPackage: installedTargetPackage.dependencies?.pandwind ?? "",
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(installedTargetPackage.dependencies?.yumcss ?? "", repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					...migration,
 					generatedSupportFiles: generatedSupportFiles.length,
-					targetUsesPandwind: migratedApp.includes("pandwind"),
+					targetUsesYumCSS: migratedApp.includes("yumcss"),
 					sourceImportRemoved: !migratedApp.includes("styled-components"),
 					generatedVitePresetImportIsExplicit: targetViteConfig.includes(
-						'import { preset } from "./pandwind/preset.ts";',
+						'import { preset } from "./yumcss/preset.ts";',
 					),
 					generatedVitePluginPresent: targetViteConfig.includes(
-						'pandwindCssVite(preset, { root: "." })',
+						'yumcssExtractVite(preset, { root: "." })',
 					),
 				},
 				checks: {

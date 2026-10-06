@@ -42,7 +42,7 @@ test("tamagui -> style9 -> tamagui: preserves an actionable concrete round trip"
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> style9 round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -92,7 +92,7 @@ test("tamagui -> style9 -> tamagui: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = style9(style9.create({ style: { "color": "red", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
@@ -143,7 +143,7 @@ test("tamagui -> style9 -> tamagui: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -184,7 +184,7 @@ test("tamagui -> style9 -> tamagui: retains the documented secondary API without
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> style9 | parse-residual: function-dynamic | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -268,7 +268,7 @@ test("tamagui -> style9 -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
@@ -345,7 +345,7 @@ test("tamagui -> style9 -> tamagui: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		      "converted": 0,
@@ -437,7 +437,7 @@ test("tamagui -> style9 -> tamagui: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import style9 from "style9";
-		// pandwind:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
+		// yumcss:migrate-skip (route: style9 -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = style9(style9.create({ style: { "color": "#2563eb", "padding": "$4" } }).style);
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,

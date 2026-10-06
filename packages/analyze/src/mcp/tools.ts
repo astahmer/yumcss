@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { extname, isAbsolute, relative, resolve, sep } from "node:path";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace } from "yumcss/source/workspace";
 import {
 	createBuiltinCodemodCatalog,
 	findMigrationRouteProof,
@@ -10,9 +10,9 @@ import {
 	type AdapterMigrationResult,
 	type CodemodAdapterCatalog,
 	type StyleMigrationUseCase,
-} from "pandwind-codemod/swap";
-import { STYLE_MIGRATION_USE_CASE } from "pandwind-codemod/swap";
-import { unifiedDiff } from "pandwind-codemod/diff";
+} from "@yumcss/codemod/swap";
+import { STYLE_MIGRATION_USE_CASE } from "@yumcss/codemod/swap";
+import { unifiedDiff } from "@yumcss/codemod/diff";
 import { runCli } from "../cli.ts";
 import { DEFAULT_GOVERNANCE_PRESET } from "../governance/project-context.ts";
 import { McpToolError, textToolResult } from "./tool-contract.ts";
@@ -38,7 +38,7 @@ import {
 } from "./contract.ts";
 import type { McpToolDefinition, McpToolResult } from "./contract.ts";
 
-const MCP_PROJECT_SCHEMA = "pandwind.mcp.project/1" as const;
+const MCP_PROJECT_SCHEMA = "yumcss.mcp.project/1" as const;
 const MCP_FILE_LIST_LIMIT = 500;
 
 export interface McpProjectContext {
@@ -381,7 +381,7 @@ const MCP_TOOLS: readonly McpToolDefinition[] = [
 	{
 		name: MCP_TOOL.AnalyzeProject,
 		description:
-			"Run Pandwind's existing fold and CSS analysis over project-relative source files and return its versioned JSON report.",
+			"Run YumCSS's existing fold and CSS analysis over project-relative source files and return its versioned JSON report.",
 		inputSchema: inputSchema({
 			patterns: {
 				type: "array",
@@ -426,7 +426,7 @@ const MCP_TOOLS: readonly McpToolDefinition[] = [
 const MCP_RESOURCES: readonly McpResourceDefinition[] = [
 	{
 		uri: MCP_RESOURCE.AdapterCatalog,
-		name: "Pandwind adapter catalog",
+		name: "YumCSS adapter catalog",
 		description: "Registered source and target adapters, capabilities, and official APIs.",
 		mimeType: "application/json",
 	},
@@ -469,8 +469,8 @@ const MCP_RESOURCES: readonly McpResourceDefinition[] = [
 	},
 	{
 		uri: MCP_RESOURCE.InteropArtifact,
-		name: "Pandwind interop artifact",
-		description: "The project-generated pandwind.interop.json artifact when present.",
+		name: "YumCSS interop artifact",
+		description: "The project-generated yumcss.interop.json artifact when present.",
 		mimeType: "application/json",
 	},
 	{
@@ -667,7 +667,7 @@ async function inspectProject(
 	const generatedArtifacts = files
 		.map((file) => relativeProjectPath(context.root, file))
 		.filter((file) =>
-			/(?:pandwind\.interop\.json|generated|styled-system|\.next\/static|dist\/|build\/)/iu.test(
+			/(?:yumcss\.interop\.json|generated|styled-system|\.next\/static|dist\/|build\/)/iu.test(
 				file,
 			),
 		)
@@ -842,7 +842,7 @@ async function previewMigration(
 	ports: McpToolPorts,
 ): Promise<McpToolResult> {
 	const preview = await migrationPreview(context, arguments_, ports);
-	return textToolResult({ schema: "pandwind.mcp.preview-migration/1", ...preview });
+	return textToolResult({ schema: "yumcss.mcp.preview-migration/1", ...preview });
 }
 
 interface PlannedMigrationWrite {
@@ -936,7 +936,7 @@ async function applyMigration(
 		if (existsSync(absolutePath)) unlinkSync(absolutePath);
 	}
 	return textToolResult({
-		schema: "pandwind.mcp.apply-migration/1",
+		schema: "yumcss.mcp.apply-migration/1",
 		...preview,
 		executionEvidence: [
 			...preview.executionEvidence,
@@ -995,7 +995,7 @@ async function compareMigrations(
 		});
 	}
 	return textToolResult({
-		schema: "pandwind.mcp.compare-migrations/1",
+		schema: "yumcss.mcp.compare-migrations/1",
 		root: context.root,
 		executionEvidence: [
 			inProcessEvidence(
@@ -1015,7 +1015,7 @@ async function inspectStyleProgram(
 	const input = asRecord(arguments_, MCP_TOOL.InspectStyleProgram);
 	const preview = await migrationPreview(context, input, ports);
 	return textToolResult({
-		schema: "pandwind.mcp.style-program/1",
+		schema: "yumcss.mcp.style-program/1",
 		root: preview.root,
 		from: preview.from,
 		to: preview.to,
@@ -1101,7 +1101,7 @@ async function benchmarkProject(
 			measurementMode,
 		);
 		return textToolResult({
-			schema: "pandwind.mcp.benchmark/1",
+			schema: "yumcss.mcp.benchmark/1",
 			root: context.root,
 			from,
 			to,
@@ -1149,7 +1149,7 @@ async function benchmarkProject(
 	const filesPerSecond =
 		(expanded.size * iterations * 1000) / Math.max(migrationMilliseconds, 0.001);
 	return textToolResult({
-		schema: "pandwind.mcp.benchmark/1",
+		schema: "yumcss.mcp.benchmark/1",
 		root: context.root,
 		from,
 		to,
@@ -1315,7 +1315,7 @@ async function validateMigration(
 	}
 	const checks = [...staticChecks, ...projectChecks];
 	return textToolResult({
-		schema: "pandwind.mcp.validate-migration/1",
+		schema: "yumcss.mcp.validate-migration/1",
 		...preview,
 		valid:
 			files.every((file) => file.valid) &&
@@ -1371,7 +1371,7 @@ async function analyzeProject(
 	) as Record<string, unknown>;
 	const evidence = structuredContent(await inspectProject(context, { includeFiles: false }, ports));
 	return textToolResult({
-		schema: "pandwind.mcp.analyze-project/1",
+		schema: "yumcss.mcp.analyze-project/1",
 		root: context.root,
 		executionEvidence: [
 			inProcessEvidence(
@@ -1453,8 +1453,8 @@ export function createMcpToolService(
 				return resourceJson({
 					schema:
 						uri === MCP_RESOURCE.AdapterCatalog
-							? "pandwind.mcp.catalog/1"
-							: "pandwind.mcp.api-matrix/1",
+							? "yumcss.mcp.catalog/1"
+							: "yumcss.mcp.api-matrix/1",
 					adapters,
 				});
 			}
@@ -1469,7 +1469,7 @@ export function createMcpToolService(
 			case MCP_RESOURCE.ProjectConfiguration: {
 				const files = projectFiles(context);
 				return resourceJson({
-					schema: "pandwind.mcp.project-configuration/1",
+					schema: "yumcss.mcp.project-configuration/1",
 					root: context.root,
 					packageJson: readPackageJson(context.root),
 					files: files
@@ -1482,12 +1482,12 @@ export function createMcpToolService(
 			}
 			case MCP_RESOURCE.LatestMigration:
 				return resourceJson(
-					latest.migration ?? { schema: "pandwind.mcp.migration/1", status: "no migration run" },
+					latest.migration ?? { schema: "yumcss.mcp.migration/1", status: "no migration run" },
 				);
 			case MCP_RESOURCE.LatestComparison:
 				return resourceJson(
 					latest.comparison ?? {
-						schema: "pandwind.mcp.compare-migrations/1",
+						schema: "yumcss.mcp.compare-migrations/1",
 						status: "no migration comparison run",
 					},
 				);
@@ -1496,7 +1496,7 @@ export function createMcpToolService(
 					| { files?: readonly { file: string; residuals: readonly unknown[] }[] }
 					| undefined;
 				return resourceJson({
-					schema: "pandwind.mcp.residuals/1",
+					schema: "yumcss.mcp.residuals/1",
 					files:
 						migration?.files?.map((file) => ({ file: file.file, residuals: file.residuals })) ?? [],
 				});
@@ -1506,19 +1506,19 @@ export function createMcpToolService(
 					.filter((file) => {
 						const relativePath = relativeProjectPath(context.root, file);
 						return (
-							relativePath === "pandwind.interop.json" ||
-							relativePath.endsWith("/pandwind.interop.json")
+							relativePath === "yumcss.interop.json" ||
+							relativePath.endsWith("/yumcss.interop.json")
 						);
 					})
 					.toSorted();
 				if (artifacts.length === 1)
 					return resourceJson({
-						schema: "pandwind.mcp.interop/1",
+						schema: "yumcss.mcp.interop/1",
 						path: relativeProjectPath(context.root, artifacts[0]!),
 						content: readFileSync(artifacts[0]!, "utf8"),
 					});
 				return resourceJson({
-					schema: "pandwind.mcp.interop/1",
+					schema: "yumcss.mcp.interop/1",
 					status: artifacts.length === 0 ? "missing" : "multiple",
 					files: artifacts.map((file) => ({
 						path: relativeProjectPath(context.root, file),
@@ -1529,7 +1529,7 @@ export function createMcpToolService(
 			case MCP_RESOURCE.LatestStylePrograms:
 				return resourceJson(
 					latest.stylePrograms ?? {
-						schema: "pandwind.mcp.style-program/1",
+						schema: "yumcss.mcp.style-program/1",
 						status: "no style program inspection run",
 					},
 				);

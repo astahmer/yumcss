@@ -2,15 +2,15 @@ import { readFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
-	createPandwindAdapter,
+	createYumCSSAdapter,
 	createStyleAdapterRegistry,
 	createTailwindAdapter,
 	runAdapterMigrationAsync,
 	NODE_PROJECT_MODULE_LOADER,
 	type AdapterMigrationResult,
 	type AdapterProjectBindings,
-} from "pandwind-codemod/swap";
-import type { PandwindMeta } from "pandwind-codemod/migration/meta";
+} from "@yumcss/codemod/swap";
+import type { YumCSSMeta } from "@yumcss/codemod/migration/meta";
 
 export interface CorpusTransformResult {
 	readonly code: string;
@@ -26,7 +26,7 @@ export interface RegisteredMigrationOptions {
 	readonly file: string;
 	readonly root: string;
 	readonly files: readonly string[];
-	readonly meta: PandwindMeta;
+	readonly meta: YumCSSMeta;
 	readonly from: string;
 	readonly to: string;
 	readonly project?: AdapterProjectBindings;
@@ -34,7 +34,7 @@ export interface RegisteredMigrationOptions {
 
 const adapterRegistry = createStyleAdapterRegistry([
 	createTailwindAdapter({ moduleLoader: NODE_PROJECT_MODULE_LOADER }),
-	createPandwindAdapter({ moduleLoader: null }),
+	createYumCSSAdapter({ moduleLoader: null }),
 ]);
 
 function readProjectFile(root: string, file: string): string | undefined {

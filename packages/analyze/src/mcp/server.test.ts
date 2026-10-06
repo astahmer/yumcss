@@ -44,14 +44,14 @@ describe("official MCP transport", () => {
 				params: {
 					protocolVersion: "2025-11-25",
 					capabilities: {},
-					clientInfo: { name: "pandwind-test", version: "1.0.0" },
+					clientInfo: { name: "yumcss-test", version: "1.0.0" },
 				},
 			})}\n`,
 		);
 		expect(await initialized).toMatchObject({
 			id: 1,
 			result: {
-				serverInfo: { name: "pandwind-analyze" },
+				serverInfo: { name: "yumcss-analyze" },
 				capabilities: { tools: {}, resources: {} },
 			},
 		});
@@ -74,8 +74,8 @@ describe("official MCP transport", () => {
 			id: 3,
 			result: {
 				resources: expect.arrayContaining([
-					expect.objectContaining({ uri: "pandwind://catalog" }),
-					expect.objectContaining({ uri: "pandwind://project/evidence" }),
+					expect.objectContaining({ uri: "yumcss://catalog" }),
+					expect.objectContaining({ uri: "yumcss://project/evidence" }),
 				]),
 			},
 		});
@@ -86,14 +86,14 @@ describe("official MCP transport", () => {
 				jsonrpc: "2.0",
 				id: 4,
 				method: "resources/read",
-				params: { uri: "pandwind://catalog" },
+				params: { uri: "yumcss://catalog" },
 			})}\n`,
 		);
 		expect(await resource).toMatchObject({
 			id: 4,
 			result: {
 				contents: [
-					{ uri: "pandwind://catalog", text: expect.stringContaining("pandwind.mcp.catalog/1") },
+					{ uri: "yumcss://catalog", text: expect.stringContaining("yumcss.mcp.catalog/1") },
 				],
 			},
 		});

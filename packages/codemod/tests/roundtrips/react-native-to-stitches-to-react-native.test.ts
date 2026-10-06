@@ -42,7 +42,7 @@ test("react-native -> stitches -> react-native: preserves an actionable concrete
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-native -> stitches round-trip happy forward");
 	expectExplicitResidualEvidence(first);

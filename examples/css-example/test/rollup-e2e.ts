@@ -5,8 +5,8 @@ import { transformSync } from "esbuild";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { rollup, type OutputChunk, type Plugin } from "rollup";
 import { chromium } from "playwright-core";
-import { examplePreset } from "@pandwind/example-preset";
-import { pandwindRollupCss } from "pandwind/unplugin";
+import { examplePreset } from "@yumcss/example-preset";
+import { yumcssRollupCss } from "yumcss/unplugin";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
 
@@ -46,7 +46,7 @@ const authoredCssPlugin: Plugin = {
 	},
 };
 
-/** Rollup needs a host CSS plugin to consume Pandwind's virtual stylesheet. */
+/** Rollup needs a host CSS plugin to consume YumCSS's virtual stylesheet. */
 const virtualCssHostPlugin = (virtualId: string): Plugin => ({
 	name: "rollup-e2e-virtual-css-host",
 	resolveId(source) {
@@ -90,8 +90,8 @@ mkdirSync(source, { recursive: true });
 writeFileSync(
 	join(source, "design.ts"),
 	[
-		'import { createDesignCss } from "pandwind/design";',
-		'import { examplePreset } from "@pandwind/example-preset";',
+		'import { createDesignCss } from "yumcss/design";',
+		'import { examplePreset } from "@yumcss/example-preset";',
 		"export const dss = createDesignCss(examplePreset);",
 	].join("\n"),
 );
@@ -124,15 +124,15 @@ let server: Server | undefined;
 let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 let serverUrl = "";
 try {
-	const cssPlugin = pandwindRollupCss({ preset: examplePreset, root: project });
+	const cssPlugin = yumcssRollupCss({ preset: examplePreset, root: project });
 	const virtualId = parseRequiredString(
-		cssPlugin.resolveId("pandwind:css"),
+		cssPlugin.resolveId("yumcss:css"),
 		"Rollup CSS virtual module did not resolve",
 	);
 	const bundle = await rollup({
 		input: join(source, "entry.ts"),
 		plugins: [
-			virtualCssHostPlugin("pandwind:css"),
+			virtualCssHostPlugin("yumcss:css"),
 			cssPlugin,
 			authoredCssPlugin,
 			nodeResolve({ extensions: [".js", ".ts"] }),

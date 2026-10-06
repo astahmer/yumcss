@@ -1,5 +1,5 @@
 import { html } from "react-strict-dom";
-import { createCss } from "pandwind/react-strict-dom";
+import { createCss } from "yumcss/react-strict-dom";
 
 const css = createCss();
 const styles = css.create({
@@ -14,7 +14,7 @@ const styles = css.create({
 export function App({ selected = false }) {
 	return (
 		<html.div style={[styles.card, selected && styles.selected]}>
-			<html.span>React Strict DOM + Pandwind</html.span>
+			<html.span>React Strict DOM + YumCSS</html.span>
 		</html.div>
 	);
 }

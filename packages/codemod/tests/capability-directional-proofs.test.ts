@@ -6,7 +6,7 @@ import {
 	StyleProgramResidualKindTag,
 } from "../src/swap/index.ts";
 
-const pandwind = CodemodAdapterId.Pandwind;
+const yumcss = CodemodAdapterId.YumCSS;
 
 function migrate(
 	source: string,
@@ -27,7 +27,7 @@ function migrate(
 }
 
 describe("concrete adapter capability proofs", () => {
-	test("lowers documented static APIs to Pandwind with exact evidence", () => {
+	test("lowers documented static APIs to YumCSS with exact evidence", () => {
 		const cases = [
 			{
 				id: "emotion-object-css",
@@ -89,7 +89,7 @@ describe("concrete adapter capability proofs", () => {
 			const result = migrate(
 				fixture.source,
 				fixture.from,
-				pandwind,
+				yumcss,
 				fixture.file,
 				"semantic" in fixture ? fixture.semantic : undefined,
 			);
@@ -111,7 +111,7 @@ describe("concrete adapter capability proofs", () => {
 		expect(outputs).toMatchInlineSnapshot(`
 			[
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -119,7 +119,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const Card = css.class({ color: "red", padding: "1rem" });
 			export const App = () => <div className={Card} />;",
@@ -128,7 +128,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -136,7 +136,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red", padding: "2px" }) };",
 			    "converted": 1,
@@ -144,7 +144,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const useStyles = { "card": css.class({ color: "red", padding: 2 }) };",
 			    "converted": 1,
@@ -152,7 +152,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			<div className={css.class({ color: "red", padding: "1rem" })}/>",
 			    "converted": 1,
@@ -160,7 +160,7 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			<div className={css.class({ color: "red", padding: "1rem" })}/>",
 			    "converted": 1,
@@ -175,7 +175,7 @@ describe("concrete adapter capability proofs", () => {
 		const source =
 			'import styled from "styled-components";\n' +
 			"const Card = styled.div({ color: props => props.color });";
-		const result = migrate(source, CodemodAdapterId.StyledComponents, pandwind, "Card.tsx", {
+		const result = migrate(source, CodemodAdapterId.StyledComponents, yumcss, "Card.tsx", {
 			source: { framework: "react" },
 		});
 
@@ -185,9 +185,9 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.code).toContain("css.vars");
 		expect(result.code).toContain("props => props.color");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
-			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
 
@@ -206,7 +206,7 @@ describe("concrete adapter capability proofs", () => {
 		},
 	] as const)("keeps $id dynamic class bindings visible", ({ from, attribute, hint }) => {
 		const source = "<div " + attribute + '={["color:red", runtimeClass].join(" ")} />';
-		const result = migrate(source, from, pandwind, "Card.tsx");
+		const result = migrate(source, from, yumcss, "Card.tsx");
 		const dynamicResidual = result.residuals.find(
 			(residual) => residual.kind === StyleProgramResidualKindTag.Dynamic,
 		);
@@ -214,7 +214,7 @@ describe("concrete adapter capability proofs", () => {
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
 		expect(dynamicResidual?.hint).toBe(hint);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		const output = {
 			code: result.code
 				.replaceAll(attribute, "className")
@@ -227,7 +227,7 @@ describe("concrete adapter capability proofs", () => {
 		};
 		expect(output).toMatchInlineSnapshot(`
 			{
-			  "code": "// pandwind:migrate-skip (route: class-adapter -> pandwind | parse-residual: dynamic)
+			  "code": "// yumcss:migrate-skip (route: class-adapter -> yumcss | parse-residual: dynamic)
 			<div className={["color:red", runtimeClass].join(" ")} />",
 			  "residuals": [
 			    {
@@ -242,12 +242,12 @@ describe("concrete adapter capability proofs", () => {
 });
 
 describe("explicit adapter round trips", () => {
-	test("Emotion -> Pandwind -> Emotion keeps the documented object API", () => {
+	test("Emotion -> YumCSS -> Emotion keeps the documented object API", () => {
 		const source =
 			'import { css } from "@emotion/css";\n' +
 			'const card = css({ color: "red", padding: "1rem" });';
-		const forward = migrate(source, CodemodAdapterId.Emotion, pandwind, "Card.tsx");
-		const reverse = migrate(forward.code, pandwind, CodemodAdapterId.Emotion, "Card.tsx");
+		const forward = migrate(source, CodemodAdapterId.Emotion, yumcss, "Card.tsx");
+		const reverse = migrate(forward.code, yumcss, CodemodAdapterId.Emotion, "Card.tsx");
 
 		expect(forward.converted).toBe(1);
 		expect(forward.residuals).toEqual([]);
@@ -256,7 +256,7 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.residuals).toEqual([]);
 		expect({ forward: forward.code, reverse: reverse.code }).toMatchInlineSnapshot(`
 			{
-			  "forward": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "forward": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			  "reverse": "import { css } from "@emotion/css";
@@ -266,12 +266,12 @@ describe("explicit adapter round trips", () => {
 		`);
 	});
 
-	test("Panda generated aliases -> Pandwind -> Panda do not retain shadowing imports", () => {
+	test("Panda generated aliases -> YumCSS -> Panda do not retain shadowing imports", () => {
 		const source =
 			'import { css } from "@/styled-system/css";\n' +
 			'const card = css({ color: "red", padding: "1rem" });';
-		const forward = migrate(source, CodemodAdapterId.Panda, pandwind, "Card.tsx");
-		const reverse = migrate(forward.code, pandwind, CodemodAdapterId.Panda, "Card.tsx");
+		const forward = migrate(source, CodemodAdapterId.Panda, yumcss, "Card.tsx");
+		const reverse = migrate(forward.code, yumcss, CodemodAdapterId.Panda, "Card.tsx");
 
 		expect(forward.converted).toBe(1);
 		expect(forward.residuals).toEqual([]);
@@ -279,7 +279,7 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.converted).toBe(1);
 		expect(reverse.skipped).toBe(0);
 		expect(reverse.residuals).toEqual([]);
-		expect(reverse.code).not.toContain("pandwind/css");
+		expect(reverse.code).not.toContain("yumcss/css");
 		expect(reverse.code).toMatchInlineSnapshot(`
 			"import { css } from "styled-system/css";
 
@@ -287,10 +287,10 @@ describe("explicit adapter round trips", () => {
 		`);
 	});
 
-	test("Tailwind arbitrary properties -> Pandwind -> Tailwind removes unused runtime helpers", () => {
+	test("Tailwind arbitrary properties -> YumCSS -> Tailwind removes unused runtime helpers", () => {
 		const source = '<div className="[color:red] [padding:1rem]" />';
-		const forward = migrate(source, CodemodAdapterId.Tailwind, pandwind, "Card.tsx");
-		const reverse = migrate(forward.code, pandwind, CodemodAdapterId.Tailwind, "Card.tsx");
+		const forward = migrate(source, CodemodAdapterId.Tailwind, yumcss, "Card.tsx");
+		const reverse = migrate(forward.code, yumcss, CodemodAdapterId.Tailwind, "Card.tsx");
 
 		expect(forward.converted).toBe(1);
 		expect(forward.residuals).toEqual([]);

@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
 	browserProof,
 	packageInstalled,
@@ -20,8 +21,8 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const stitchesReferenceRoot = createReferenceWorkspace().path("stitches");
 const referenceCommit = "50fd8a1adc6360340fe348a8b3ebc8b06d38e230";
 const referencePath = "packages/react/tests/basic.js";
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const proofSchema = "pandwind.installed-project-proof/1" as const;
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const proofSchema = "yumcss.installed-project-proof/1" as const;
 const versions = {
 	"@stitches/react": "1.3.1-1",
 	"@types/node": "26.4.1",
@@ -29,7 +30,7 @@ const versions = {
 	"@types/react-dom": "19.2.7",
 	"@vitejs/plugin-react-swc": "4.3.3",
 	"oxc-parser": "0.148.0",
-	pandwind: `file:${pandwindPackageRoot}`,
+	yumcss: `file:${yumcssPackageRoot}`,
 	react: "19.2.8",
 	"react-dom": "19.2.8",
 	typescript: "7.0.2",
@@ -55,7 +56,7 @@ interface StitchesInstalledProof {
 	readonly schema: typeof proofSchema;
 	readonly route: {
 		readonly from: CodemodAdapterId.Stitches;
-		readonly to: CodemodAdapterId.Pandwind;
+		readonly to: CodemodAdapterId.YumCSS;
 	};
 	readonly referenceCommit: string;
 	readonly referencePath: string;
@@ -70,7 +71,7 @@ interface StitchesInstalledProof {
 		readonly skipped: number;
 		readonly residuals: number;
 		readonly canonical: InstalledProofCanonicalEvidence;
-		readonly targetUsesPandwind: boolean;
+		readonly targetUsesYumCSS: boolean;
 		readonly sourceImportRemoved: boolean;
 		readonly variantLowered: boolean;
 		readonly recipeRuntimeGenerated: boolean;
@@ -154,7 +155,7 @@ export default defineConfig({ plugins: [react()] });
 `;
 
 const packageJson = (target: boolean): Record<string, unknown> => ({
-	name: target ? "pandwind-stitches-target" : "stitches-installed-source",
+	name: target ? "yumcss-stitches-target" : "stitches-installed-source",
 	private: true,
 	type: "module",
 	scripts: {
@@ -164,7 +165,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 	},
 	dependencies: {
 		...(target
-			? { pandwind: versions.pandwind }
+			? { yumcss: versions.yumcss }
 			: { "@stitches/react": versions["@stitches/react"] }),
 		react: versions.react,
 		"react-dom": versions["react-dom"],
@@ -190,13 +191,13 @@ const writeFixture = (root: string, target: boolean): void => {
 	writeFileSync(
 		join(root, "src/entry-server.tsx"),
 		target
-			? 'import { runtimeCss } from "../pandwind/runtime";\nexport { App } from "./App";\nexport const pandwindCss = () => runtimeCss.sheet.css();\n'
+			? 'import { runtimeCss } from "../yumcss/runtime";\nexport { App } from "./App";\nexport const yumcssCss = () => runtimeCss.sheet.css();\n'
 			: 'import { getCssText } from "./styles";\nexport { App } from "./App";\nexport const stitchesCss = () => getCssText();\n',
 	);
 	writeFileSync(
 		join(root, "src/main.tsx"),
 		[
-			...(target ? ['import "pandwind:css";'] : []),
+			...(target ? ['import "yumcss:css";'] : []),
 			'import { hydrateRoot } from "react-dom/client";',
 			'import { App } from "./App";',
 			"",
@@ -205,7 +206,7 @@ const writeFixture = (root: string, target: boolean): void => {
 	);
 	writeFileSync(
 		join(root, "src/vite-env.d.ts"),
-		'/// <reference types="vite/client" />\ndeclare module "pandwind:css";\n',
+		'/// <reference types="vite/client" />\ndeclare module "yumcss:css";\n',
 	);
 	writeFileSync(
 		join(root, "index.html"),
@@ -219,7 +220,7 @@ const proofIsComplete = (report: StitchesInstalledProof): boolean =>
 	report.migration.residuals === 0 &&
 	report.migration.canonical.checked &&
 	report.migration.canonical.equal &&
-	report.migration.targetUsesPandwind &&
+	report.migration.targetUsesYumCSS &&
 	report.migration.sourceImportRemoved &&
 	report.migration.variantLowered &&
 	report.migration.recipeRuntimeGenerated &&
@@ -243,7 +244,7 @@ const proofIsComplete = (report: StitchesInstalledProof): boolean =>
 export async function runStitchesInstalledProof(): Promise<StitchesInstalledProof> {
 	const pinnedSource = referenceSource();
 	return withInstalledProofProject(
-		"pandwind-stitches-installed-",
+		"yumcss-stitches-installed-",
 		async ({ sourceRoot, targetRoot }) => {
 			writeFixture(sourceRoot, false);
 			run("pnpm", ["install", "--ignore-scripts"], sourceRoot);
@@ -260,13 +261,13 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 					"nub",
 					[
 						"--conditions",
-						"pandwind",
+						"yumcss",
 						join(repositoryRoot, "packages/codemod/src/cli.ts"),
 						"migrate",
 						"--from",
 						CodemodAdapterId.Stitches,
 						"--to",
-						CodemodAdapterId.Pandwind,
+						CodemodAdapterId.YumCSS,
 						"--root",
 						targetRoot,
 						"--no-install",
@@ -285,7 +286,7 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 			};
 			writeFileSync(
 				join(targetRoot, "src/entry-server.tsx"),
-				'import { runtimeCss } from "../pandwind/runtime";\nexport { App } from "./App";\nexport const pandwindCss = () => runtimeCss.sheet.css();\n',
+				'import { runtimeCss } from "../yumcss/runtime";\nexport { App } from "./App";\nexport const yumcssCss = () => runtimeCss.sheet.css();\n',
 			);
 			run("pnpm", ["run", "typecheck"], targetRoot);
 			run("pnpm", ["run", "build"], targetRoot);
@@ -302,7 +303,7 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 			});
 			const report: StitchesInstalledProof = {
 				schema: proofSchema,
-				route: { from: CodemodAdapterId.Stitches, to: CodemodAdapterId.Pandwind },
+				route: { from: CodemodAdapterId.Stitches, to: CodemodAdapterId.YumCSS },
 				referenceCommit,
 				referencePath,
 				fixture: {
@@ -311,18 +312,18 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@stitches/react"),
-					targetPackage: targetPackage.dependencies?.pandwind ?? "",
-					targetNodeModule: existsSync(join(targetRoot, "node_modules/pandwind/package.json")),
+					targetPackage: normalizeInstalledTargetPackage(targetPackage.dependencies?.yumcss ?? "", repositoryRoot),
+					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {
 					...migration,
-					targetUsesPandwind: migratedStyles.includes("pandwind"),
+					targetUsesYumCSS: migratedStyles.includes("yumcss"),
 					sourceImportRemoved: !migratedStyles.includes("@stitches/react"),
 					variantLowered:
 						migratedStyles.includes("createRecipe") && migratedStyles.includes('"tone"'),
-					recipeRuntimeGenerated: existsSync(join(targetRoot, "__pandwind/recipe.ts")),
-					generatedVitePresetImportIsExplicit: targetViteConfig.includes("pandwind/preset"),
-					generatedVitePluginPresent: targetViteConfig.includes("pandwindCssVite"),
+					recipeRuntimeGenerated: existsSync(join(targetRoot, "__yumcss/recipe.ts")),
+					generatedVitePresetImportIsExplicit: targetViteConfig.includes("yumcss/preset"),
+					generatedVitePluginPresent: targetViteConfig.includes("yumcssExtractVite"),
 				},
 				checks: {
 					sourceTypecheck: true,
@@ -342,7 +343,7 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 				css: {
 					sourceBytes: Buffer.byteLength(sourceSsr.css),
 					targetBytes: Buffer.byteLength(targetSsr.css),
-					note: "The tiny fixture compares Stitches' fused SSR sheet with Pandwind's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget.",
+					note: "The tiny fixture compares Stitches' fused SSR sheet with YumCSS's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget.",
 				},
 			};
 			if (!proofIsComplete(report))

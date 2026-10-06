@@ -2,7 +2,7 @@ import { css } from "./css.ts";
 
 /**
  * Composed raw-engine call site. The import binding is named `css` and comes
- * from a `css`-basenamed source, so pandwindCssVite extracts both literal
+ * from a `css`-basenamed source, so yumcssExtractVite extracts both literal
  * objects into the generated stylesheet (runtime hashes match by
  * construction).
  */

@@ -21,7 +21,7 @@ import type { StyleRepresentationKind } from "./identifiers.ts";
 import { AdapterLossinessTag } from "./adapter-contract.ts";
 
 /** Versioned contract for semantic-program capability coverage. */
-export const SEMANTIC_CONTRACT_SUITE_SCHEMA = "pandwind.semantic-contract-suite/1" as const;
+export const SEMANTIC_CONTRACT_SUITE_SCHEMA = "yumcss.semantic-contract-suite/1" as const;
 
 export interface SemanticContractFixture {
 	readonly name: string;

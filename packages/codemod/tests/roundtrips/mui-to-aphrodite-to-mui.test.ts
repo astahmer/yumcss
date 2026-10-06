@@ -42,7 +42,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", asy
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("mui -> aphrodite -> mui: preserves an actionable concrete round trip", asy
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "red", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -142,7 +142,7 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> aphrodite | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> aphrodite | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("mui -> aphrodite -> mui: retains the documented secondary API without sile
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> aphrodite | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> aphrodite | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -269,7 +269,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#f97316", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -345,7 +345,7 @@ test("mui -> aphrodite -> mui: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -436,7 +436,7 @@ test("mui -> aphrodite -> mui: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { StyleSheet, css } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "16px" } }).style)}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

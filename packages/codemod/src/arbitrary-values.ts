@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "./meta.ts";
+import type { YumCSSMeta } from "./meta.ts";
 import { collectStaticClassLiterals, type StaticClassLiteral } from "./class-sorter.ts";
 import {
 	TokenCatalog,
@@ -55,7 +55,7 @@ const propertyName = (value: string): string =>
 		.replace(/^-+/u, "")
 		.replace(/-([a-z])/gu, (_, character: string) => character.toUpperCase());
 
-const propertiesForPrefix = (meta: PandwindMeta, prefix: string): readonly string[] => {
+const propertiesForPrefix = (meta: YumCSSMeta, prefix: string): readonly string[] => {
 	const conflicts = meta.conflicts.get(prefix);
 	if (conflicts === undefined) return [];
 	const values = conflicts["*"] ?? Object.values(conflicts).flat();
@@ -63,7 +63,7 @@ const propertiesForPrefix = (meta: PandwindMeta, prefix: string): readonly strin
 };
 
 const propertiesForArbitrary = (
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	parsed: ReturnType<typeof parseArbitraryToken>,
 ): readonly string[] => {
 	if (parsed === null) return [];
@@ -104,7 +104,7 @@ const occurrenceFromToken = (
 	file: string,
 	literal: StaticClassLiteral,
 	token: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 ): ArbitraryValueOccurrence | undefined => {
 	const parsed = parseArbitraryToken(token, meta);
 	if (parsed === null) return undefined;
@@ -129,7 +129,7 @@ const occurrenceFromToken = (
 
 const occurrencesForSource = (
 	source: ArbitraryValueSource,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 ): readonly ArbitraryValueOccurrence[] => {
 	const occurrences: ArbitraryValueOccurrence[] = [];
 	for (const literal of collectStaticClassLiterals(source.source, source.file)) {
@@ -146,7 +146,7 @@ const proposalKey = (occurrence: ArbitraryValueOccurrence): string =>
 
 export const extractArbitraryValueProposals = (
 	sources: readonly ArbitraryValueSource[],
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	options: ArbitraryValueProposalOptions = {},
 ): ArbitraryValueProposalReport => {
 	const occurrences = sources.flatMap((source) => occurrencesForSource(source, meta));

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "yumcss/source";
 import { getCodemodAdapter } from "../src/swap/index.ts";
 import { CodemodAdapterId } from "../src/swap/identifiers.ts";
 

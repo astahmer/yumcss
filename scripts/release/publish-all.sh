@@ -2,7 +2,7 @@
 # Release publish — run by CI on v* tags (or manually with a clean env).
 # Requires: NPM_TOKEN in env (or already-authenticated npm), clean tree.
 #
-# Publish order matters: pandwind first (workspace dep of the others),
+# Publish order matters: yumcss first (workspace dep of the others),
 # then the tools. Changesets has already rewritten workspace:* ranges to
 # real versions at `changeset version` time.
 set -euo pipefail
@@ -10,7 +10,7 @@ cd "$(dirname "$0")/../.."
 
 node scripts/release/check-publish-ready.mjs
 
-ORDER=(pandwind lint-plugin codemod analyze devtools)
+ORDER=(yumcss lint-plugin codemod analyze devtools)
 
 echo "== verifying packs before publish =="
 for pkg in "${ORDER[@]}"; do

@@ -42,7 +42,7 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> panda round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -86,7 +86,7 @@ test("css-modules -> panda -> css-modules: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -114,7 +114,7 @@ test("css-modules -> panda -> css-modules: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -163,7 +163,7 @@ test("css-modules -> panda -> css-modules: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -244,7 +244,7 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css({ color: "#2563eb", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -320,7 +320,7 @@ test("css-modules -> panda -> css-modules: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -411,7 +411,7 @@ test("css-modules -> panda -> css-modules: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-		// pandwind:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: panda -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": css({ color: "brand.500", padding: "1rem" }) };
 		export default styles;",
 		    "converted": 0,

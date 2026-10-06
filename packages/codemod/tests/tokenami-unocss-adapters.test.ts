@@ -62,7 +62,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 					},
 				},
 			},
-			targetId: CodemodAdapterId.Pandwind,
+			targetId: CodemodAdapterId.YumCSS,
 		});
 		const declarations = parsed.matches[0]?.program.declarations ?? [];
 		expect(declarations).toEqual(
@@ -238,7 +238,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		const parsed = adapter.parse(source, {
 			file: "card.tsx",
 			source,
-			targetId: CodemodAdapterId.Pandwind,
+			targetId: CodemodAdapterId.YumCSS,
 			config: {
 				...config,
 				tokenCatalog: TokenCatalog.fromNested({ color: { brand: "#123456" } })?.contract,
@@ -268,12 +268,12 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		`);
 	});
 
-	test("rewrites Tokenami static styles through the Pandwind target", () => {
+	test("rewrites Tokenami static styles through the YumCSS target", () => {
 		const source =
 			"import { css } from '@tokenami/css'; const button = css({ '--hover_color': 'red' });";
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.Tokenami,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "button.tsx",
 		});
 		expect(result.skipped).toBe(0);
@@ -320,7 +320,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.residuals.filter(({ kind }) => kind === "configuration")).toHaveLength(1);
 		expect(result.code).toContain('variants: { size: { small: { "--padding": 2 } } }');
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: tokenami -> emotion | parse-residual: configuration, composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+			"// yumcss:migrate-skip (route: tokenami -> emotion | parse-residual: configuration, composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 			import { css } from "@tokenami/css"; const button = css.compose({ "--color": "red", variants: { size: { small: { "--padding": 2 } } } });"
 		`);
 	});
@@ -414,7 +414,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			    "skipped": 0,
 			  },
 			  "unresolved": {
-			    "code": "// pandwind:migrate-skip (route: tokenami -> emotion | parse-residual: configuration | available: named-map, target-native, runtime-carrier, residual)
+			    "code": "// yumcss:migrate-skip (route: tokenami -> emotion | parse-residual: configuration | available: named-map, target-native, runtime-carrier, residual)
 			import { css } from "@tokenami/css"; const amount = getPadding(); export const card = css({ "--padding": amount });",
 			    "residuals": [
 			      {
@@ -426,7 +426,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			    "skipped": 1,
 			  },
 			  "verified": {
-			    "code": "// pandwind:migrate-skip (route: tokenami -> emotion | parse-residual: capability | available: named-map, target-native, runtime-carrier, residual)
+			    "code": "// yumcss:migrate-skip (route: tokenami -> emotion | parse-residual: capability | available: named-map, target-native, runtime-carrier, residual)
 			import { css } from "@tokenami/css"; const amount = getPadding(); export const card = css({ "--padding": amount });",
 			    "residuals": [
 			      {
@@ -659,7 +659,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"--parent-hover_color": "blue"');
 		expect(result.code).toContain("<div style={card} />");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
 			 const card = css({ "--parent-hover_color": "blue" }); export const App = () => <div style={card} />;"
@@ -691,14 +691,14 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"--hover_color": "blue"');
 		expect(result.code).toContain("<div style={card} />");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
 			 const card = css({ "--hover_color": "blue" }); export const App = () => <div style={card} />;"
 		`);
 	});
 
-	test("lowers a used static Tokenami compose helper to a Pandwind class", async () => {
+	test("lowers a used static Tokenami compose helper to a YumCSS class", async () => {
 		const tokenami = createTokenamiAdapter({
 			moduleLoader: {
 				async importPackage(packageName) {
@@ -721,7 +721,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 				},
 			},
 		});
-		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const yumcss = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!;
 		const source = `import { css } from "@tokenami/css";
 const button = css.compose({ "--color": "red", "--hover_color": "blue" });
 export const App = () => {
@@ -730,11 +730,11 @@ export const App = () => {
 };`;
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tokenami,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/App.tsx",
 			root: "/project",
 			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
-			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([tokenami, yumcss]),
 		});
 
 		expect(result.converted).toBe(1);
@@ -746,13 +746,13 @@ export const App = () => {
 		expect(result.code).toContain("className={className()}");
 		expect(result.code).toContain("style={style()}");
 		expect(result.code).not.toContain("@tokenami/css");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
-			const pandwindCx = createCx();
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
+			const yumcssCx = createCx();
 			const css = createUnsafeCss();
-			const button = () => { const className = css.class({ color: "red", "@media (hover: hover) and (pointer: fine)": { "&:not(:disabled):hover": { color: "blue" } } }); return [(value?: string) => pandwindCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; };
+			const button = () => { const className = css.class({ color: "red", "@media (hover: hover) and (pointer: fine)": { "&:not(:disabled):hover": { color: "blue" } } }); return [(value?: string) => yumcssCx(className, value), (style?: Record<string, unknown>) => style ?? {}] as const; };
 			export const App = () => {
 				const [className, style] = button();
 				return <button data-proof type="button" className={className()} style={style()} />;
@@ -785,16 +785,16 @@ export const App = () => {
 				},
 			},
 		});
-		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const yumcss = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!;
 		const source =
 			'import { css } from "@tokenami/css";\nexport const card = css({ "--color": "var(--color_gray5)" });';
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tokenami,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/card.ts",
 			root: "/project",
 			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
-			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([tokenami, yumcss]),
 		});
 
 		expect(result.converted).toBe(0);
@@ -808,15 +808,15 @@ export const App = () => {
 			]),
 		);
 		expect(result.code).toContain("var(--color_gray5)");
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			// pandwind:migrate-skip (route: tokenami -> pandwind | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: tokenami -> yumcss | lowering-residual: emission-empty, token-values | available: static, named-map, residual)
 			export const card = css({ "--color": "var(--color_gray5)" });"
 		`);
 	});
 
-	test("preserves Tokenami compose variants for Pandwind", async () => {
+	test("preserves Tokenami compose variants for YumCSS", async () => {
 		const tokenami = createTokenamiAdapter({
 			moduleLoader: {
 				async importPackage(packageName) {
@@ -831,7 +831,7 @@ export const App = () => {
 				},
 			},
 		});
-		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const yumcss = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!;
 		const source = `import { css } from "@tokenami/css";
 const button = css.compose({ "--color": "red", variants: { size: { small: { "--color": "blue" } } } });
 export const App = () => {
@@ -840,16 +840,16 @@ export const App = () => {
 };`;
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tokenami,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/App.tsx",
 			root: "/project",
 			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
-			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([tokenami, yumcss]),
 		});
 
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('button({ size: "small" })');
 		expect(result.code).toContain('variants: { size: { small: { "--color": "blue" } } }');
 		expect(result.residuals).toEqual(
@@ -859,7 +859,7 @@ export const App = () => {
 		);
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			// pandwind:migrate-skip (route: tokenami -> pandwind | parse-residual: composition | available: named-map, residual)
+			// yumcss:migrate-skip (route: tokenami -> yumcss | parse-residual: composition | available: named-map, residual)
 			const button = css.compose({ "--color": "red", variants: { size: { small: { "--color": "blue" } } } });
 			export const App = () => {
 				const [className, style] = button({ size: "small" });
@@ -953,7 +953,7 @@ export const App = () => {
 		);
 		expect(result.code).toContain(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (route: tokenami -> unocss | lowering-residual: configuration, validation)
+			"// yumcss:migrate-skip (route: tokenami -> unocss | lowering-residual: configuration, validation)
 			import { css } from '@tokenami/css'; const button = css({ '--hover_color': 'red' });"
 		`);
 	});
@@ -983,7 +983,7 @@ export const App = () => {
 		const source = '<div className="brand" />';
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "App.tsx",
 			adapterRegistry: registry,
 		});
@@ -1011,12 +1011,12 @@ export const App = () => {
 		});
 		const catalog = createBuiltinCodemodCatalog();
 		const registry = createStyleAdapterRegistry([
-			catalog.registry.get(CodemodAdapterId.Pandwind)!,
+			catalog.registry.get(CodemodAdapterId.YumCSS)!,
 			uno,
 		]);
 		const result = runAdapterMigration('export const card = "text-brand";', {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "styles.ts",
 			adapterRegistry: registry,
 		});
@@ -1053,11 +1053,11 @@ export const App = () => {
 		});
 		const registry = createStyleAdapterRegistry([
 			uno,
-			catalog.registry.get(CodemodAdapterId.Pandwind)!,
+			catalog.registry.get(CodemodAdapterId.YumCSS)!,
 		]);
 		const result = await runAdapterMigrationAsync('<div className="brand" />', {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "App.tsx",
 			root: "/project",
 			listFiles: () => ["/project/uno.config.ts"],
@@ -1389,20 +1389,20 @@ export const App = () => {
 				},
 			},
 		});
-		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const yumcss = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!;
 		const source =
 			'import { css } from "@tokenami/css"; export const card = css({ "--color": "red" });';
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Tokenami,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "src/card.ts",
 			root: "/project",
 			listFiles: () => ["/project/.tokenami/tokenami.config.ts"],
-			adapterRegistry: createStyleAdapterRegistry([tokenami, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([tokenami, yumcss]),
 		});
 
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain(source);
 		expect(result.skipped).toBe(1);
 		expect(result.residuals).toEqual(
@@ -1414,7 +1414,7 @@ export const App = () => {
 			]),
 		);
 		expect(result.code).toMatchInlineSnapshot(`
-			"// pandwind:migrate-skip (configuration-residual: configuration)
+			"// yumcss:migrate-skip (configuration-residual: configuration)
 			import { css } from "@tokenami/css"; export const card = css({ "--color": "red" });"
 		`);
 	});
@@ -1440,17 +1440,17 @@ export const App = () => {
 				},
 			},
 		});
-		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const yumcss = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.YumCSS)!;
 		const result = await runAdapterMigrationAsync('<div className="brand" />', {
 			from: CodemodAdapterId.UnoCSS,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "App.tsx",
 			root: "/project",
 			listFiles: () => ["/project/uno.config.ts"],
-			adapterRegistry: createStyleAdapterRegistry([adapter, pandwind]),
+			adapterRegistry: createStyleAdapterRegistry([adapter, yumcss]),
 		});
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain('<div className="brand" />');
 		expect(result.skipped).toBe(1);
 		expect(result.residuals).toEqual(

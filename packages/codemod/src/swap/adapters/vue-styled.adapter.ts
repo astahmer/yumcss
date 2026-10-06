@@ -63,7 +63,7 @@ function templateCss(
 	const dynamicValues: Array<{ marker: string; expression: string }> = [];
 	const mapDeclaration = (declaration: StyleProgram["declarations"][number]) => {
 		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return declaration;
-		const marker = `__pandwind_dynamic_value_${dynamicValues.length}__`;
+		const marker = `__yumcss_dynamic_value_${dynamicValues.length}__`;
 		dynamicValues.push({ marker, expression: declaration.value.expression });
 		return {
 			...declaration,

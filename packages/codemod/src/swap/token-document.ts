@@ -10,8 +10,8 @@ import {
 	serializeTokenResolverDocument as serializeValidatedTokenResolverDocument,
 } from "./token-document-serializer.ts";
 
-export const TOKEN_DOCUMENT_SCHEMA = "pandwind.token-document/1" as const;
-export const TOKEN_RESOLVER_SCHEMA = "pandwind.token-resolver/1" as const;
+export const TOKEN_DOCUMENT_SCHEMA = "yumcss.token-document/1" as const;
+export const TOKEN_RESOLVER_SCHEMA = "yumcss.token-resolver/1" as const;
 
 export type TokenJsonValue =
 	| string
@@ -1594,7 +1594,7 @@ const parseResolverModel = (value: unknown): TokenResolverDocument => {
 			{
 				code: "invalid-resolver-model",
 				path: "/resolver",
-				message: "resolver must use pandwind.token-resolver/1",
+				message: "resolver must use yumcss.token-resolver/1",
 			},
 		]);
 	const sets: Record<string, TokenResolverSet> = {};

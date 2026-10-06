@@ -35,7 +35,7 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 
 /** Human-readable report renderer, independent from analysis execution. */
 export function formatReport(summary: FoldSummary): string {
-	const lines: Array<string> = ["pandwind analyze — fold coverage", ""];
+	const lines: Array<string> = ["yumcss analyze — fold coverage", ""];
 	lines.push(
 		`${"file".padEnd(40)} ${"cx full/part/runtime".padStart(20)} ${"tw folded".padStart(12)}`,
 	);

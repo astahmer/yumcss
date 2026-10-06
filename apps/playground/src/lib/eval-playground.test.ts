@@ -5,12 +5,12 @@
 import { describe, expect, test } from "vitest";
 import { cx } from "../cx.ts";
 import { dss } from "../css.ts";
-import { resolveDesignStyle } from "pandwind/design/resolve";
-import { examplePreset } from "@pandwind/example-preset";
-import { createNamedAtomsStrategy } from "pandwind/css/named";
-import { createUnoCssAdapter } from "pandwind/css/unocss";
-import { createRuntimeCss } from "pandwind/css/runtime";
-import { StyleValueKindTag } from "pandwind-codemod/swap/semantic-ir";
+import { resolveDesignStyle } from "yumcss/design/resolve";
+import { examplePreset } from "@yumcss/example-preset";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+import { createUnoCssAdapter } from "yumcss/css/unocss";
+import { createRuntimeCss } from "yumcss/css/runtime";
+import { StyleValueKindTag } from "@yumcss/codemod/swap/semantic-ir";
 import { tw } from "../tw.ts";
 import {
 	PLAYGROUND_EXECUTION_LANE,
@@ -209,8 +209,8 @@ describe("evalPlayground", () => {
 	test("a real file with imports and exports evaluates after module syntax is stripped", () => {
 		const result = run(
 			[
-				'import { tw } from "pandwind";',
-				'import type { Tw } from "pandwind/tw";',
+				'import { tw } from "yumcss";',
+				'import type { Tw } from "yumcss/tw";',
 				"",
 				'export const tone = "red-500" as const;',
 				"",
@@ -231,14 +231,14 @@ describe("evalPlayground", () => {
 
 	test("a multi-line named import is stripped whole", () => {
 		const result = run(
-			["import {", "  tw,", '} from "pandwind";', "", 'tw({ display: "flex" });'].join("\n"),
+			["import {", "  tw,", '} from "yumcss";', "", 'tw({ display: "flex" });'].join("\n"),
 		);
 		expect(result.ok).toBe(true);
 		if (result.ok) expect(result.output).toContain("flex");
 	});
 
 	test("a file with imports but no expression reports the friendly error", () => {
-		const result = run('import { tw } from "pandwind";\n\nconst tone = "red-500";');
+		const result = run('import { tw } from "yumcss";\n\nconst tone = "red-500";');
 		expect(result.ok).toBe(false);
 		if (!result.ok) expect(result.error).toContain("final expression");
 	});
@@ -315,21 +315,21 @@ describe("evalPlayground", () => {
 		}
 	});
 
-	test("exposes CSS from a Pandwind-owned sheet-backed adapter", () => {
+	test("exposes CSS from a YumCSS-owned sheet-backed adapter", () => {
 		const result = run(
 			[
-				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { createNamedAtomsStrategy } from "pandwind/css/named";',
-				'import { examplePreset } from "@pandwind/example-preset";',
+				'import { createRuntimeCss } from "yumcss/css/runtime";',
+				'import { createNamedAtomsStrategy } from "yumcss/css/named";',
+				'import { examplePreset } from "@yumcss/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
 				'css.class({ color: "red-500" });',
 			].join("\n"),
 			undefined,
 			{
-				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/css/named": { createNamedAtomsStrategy },
-				"@pandwind/example-preset": { examplePreset },
+				"yumcss/css/runtime": { createRuntimeCss },
+				"yumcss/css/named": { createNamedAtomsStrategy },
+				"@yumcss/example-preset": { examplePreset },
 			},
 		);
 		expect(result.ok).toBe(true);
@@ -343,16 +343,16 @@ describe("evalPlayground", () => {
 	test("selected playground adapter overrides an authored runtime strategy", () => {
 		const result = run(
 			[
-				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { examplePreset } from "@pandwind/example-preset";',
+				'import { createRuntimeCss } from "yumcss/css/runtime";',
+				'import { examplePreset } from "@yumcss/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: "ignored-by-playground" });',
 				'css.class({ color: "red-500" });',
 			].join("\n"),
 			undefined,
 			{
-				"pandwind/css/runtime": { createRuntimeCss },
-				"@pandwind/example-preset": { examplePreset },
+				"yumcss/css/runtime": { createRuntimeCss },
+				"@yumcss/example-preset": { examplePreset },
 			},
 			createNamedAtomsStrategy("selected"),
 		);
@@ -363,19 +363,19 @@ describe("evalPlayground", () => {
 		}
 	});
 
-	test("selected external adapters do not claim a Pandwind-owned sheet", () => {
+	test("selected external adapters do not claim a YumCSS-owned sheet", () => {
 		const result = run(
 			[
-				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { examplePreset } from "@pandwind/example-preset";',
+				'import { createRuntimeCss } from "yumcss/css/runtime";',
+				'import { examplePreset } from "@yumcss/example-preset";',
 				"",
 				"const css = createRuntimeCss(examplePreset);",
 				'css.class({ color: "red" });',
 			].join("\n"),
 			undefined,
 			{
-				"pandwind/css/runtime": { createRuntimeCss },
-				"@pandwind/example-preset": { examplePreset },
+				"yumcss/css/runtime": { createRuntimeCss },
+				"@yumcss/example-preset": { examplePreset },
 			},
 			createUnoCssAdapter({ preset: examplePreset }),
 		);
@@ -386,18 +386,18 @@ describe("evalPlayground", () => {
 	test("maps runtime declarations to their emitted classes", () => {
 		const result = run(
 			[
-				'import { createRuntimeCss } from "pandwind/css/runtime";',
-				'import { createNamedAtomsStrategy } from "pandwind/css/named";',
-				'import { examplePreset } from "@pandwind/example-preset";',
+				'import { createRuntimeCss } from "yumcss/css/runtime";',
+				'import { createNamedAtomsStrategy } from "yumcss/css/named";',
+				'import { examplePreset } from "@yumcss/example-preset";',
 				"",
 				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
 				'css.class({ color: "red-500", _hover: { color: "blue-500" } });',
 			].join("\n"),
 			undefined,
 			{
-				"pandwind/css/runtime": { createRuntimeCss },
-				"pandwind/css/named": { createNamedAtomsStrategy },
-				"@pandwind/example-preset": { examplePreset },
+				"yumcss/css/runtime": { createRuntimeCss },
+				"yumcss/css/named": { createNamedAtomsStrategy },
+				"@yumcss/example-preset": { examplePreset },
 			},
 		);
 		expect(result.ok).toBe(true);

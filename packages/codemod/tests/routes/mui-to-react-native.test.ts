@@ -38,10 +38,10 @@ test("mui -> react-native: migrates concrete mui syntax to react-native", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mui -> react-native happy");
 	expectExplicitResidualEvidence(result);
@@ -95,7 +95,7 @@ test("mui -> react-native: carries a documented secondary mui API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mui -> react-native | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		  "converted": 0,
 		  "generatedFiles": [],

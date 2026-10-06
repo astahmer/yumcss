@@ -42,7 +42,7 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", a
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> linaria round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -89,7 +89,7 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,7 +140,7 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -187,7 +187,7 @@ test("panda -> linaria -> panda: retains the documented secondary API without si
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> linaria | lowering-residual: composition | capability-blocked: named-conditions: named: size | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -267,7 +267,7 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -341,7 +341,7 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -430,7 +430,7 @@ test("panda -> linaria -> panda: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { extractArbitraryValueProposals } from "../src/arbitrary-values.ts";
-import { createEmptyPandwindMeta } from "../src/meta.ts";
+import { createEmptyYumCSSMeta } from "../src/meta.ts";
 
-const meta = createEmptyPandwindMeta();
+const meta = createEmptyYumCSSMeta();
 meta.variants = new Map([["hover", { join: ":" }]]);
 meta.conflicts = new Map([
 	["p", { "*": ["padding"] }],

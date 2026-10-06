@@ -9,7 +9,7 @@ const pixelmatch = pixelmatchModule.default ?? pixelmatchModule;
 
 const baselineUrl = process.argv[2] ?? "http://127.0.0.1:4321";
 const migratedUrl = process.argv[3] ?? "http://127.0.0.1:4322";
-const reportPath = process.argv[4] ?? "/tmp/pandwind-astryx-proof/browser-parity.json";
+const reportPath = process.argv[4] ?? "/tmp/yumcss-astryx-proof/browser-parity.json";
 const artifactRoot = reportPath.endsWith(".json")
 	? reportPath.slice(0, -5)
 	: `${reportPath}-artifacts`;
@@ -220,7 +220,7 @@ const comparisons = baseline.map((reference, index) => {
 	};
 });
 const report = {
-	schema: "pandwind.astryx-docs-browser-report/1",
+	schema: "yumcss.astryx-docs-browser-report/1",
 	baselineUrl,
 	migratedUrl,
 	routes,

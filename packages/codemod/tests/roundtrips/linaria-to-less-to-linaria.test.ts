@@ -42,7 +42,7 @@ test("linaria -> less -> linaria: preserves an actionable concrete round trip", 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "linaria -> less round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("linaria -> less -> linaria: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("linaria -> less -> linaria: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("linaria -> less -> linaria: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +161,7 @@ test("linaria -> less -> linaria: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: component | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -206,7 +206,7 @@ test("linaria -> less -> linaria: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -243,7 +243,7 @@ test("linaria -> less -> linaria: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -259,7 +259,7 @@ test("linaria -> less -> linaria: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -296,7 +296,7 @@ test("linaria -> less -> linaria: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -327,7 +327,7 @@ test("linaria -> less -> linaria: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -364,7 +364,7 @@ test("linaria -> less -> linaria: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@linaria/core";
-		// pandwind:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> less | lowering-residual: capability | available: static, named-map, residual)
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

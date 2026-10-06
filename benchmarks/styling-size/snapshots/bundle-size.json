@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.styling-size/1",
+  "schema": "yumcss.styling-size/1",
   "source": "runner/benchmark.mts",
   "updatedAt": "2026-09-23",
   "samples": 1,
@@ -26,7 +26,7 @@
     "@wyw-in-js/vite": "2.5.1",
     "esbuild": "0.28.2",
     "goober": "2.1.19",
-    "pandwind": "workspace:*",
+    "yumcss": "workspace:*",
     "styled-components": "6.5.3",
     "tailwindcss": "4.3.3",
     "unocss": "66.10.0",
@@ -134,9 +134,9 @@
       }
     },
     {
-      "library": "pandwind-css",
+      "library": "yumcss-css",
       "category": "runtime",
-      "buildMode": "Vite + pandwind/css",
+      "buildMode": "Vite + yumcss/css",
       "cssDelivery": "none",
       "arbitraryRuntimeValues": true,
       "samples": 1,
@@ -184,9 +184,9 @@
       }
     },
     {
-      "library": "pandwind-runtime",
+      "library": "yumcss-runtime",
       "category": "runtime",
-      "buildMode": "Vite + pandwind/css/runtime",
+      "buildMode": "Vite + yumcss/css/runtime",
       "cssDelivery": "injected",
       "arbitraryRuntimeValues": true,
       "samples": 1,
@@ -234,9 +234,9 @@
       }
     },
     {
-      "library": "pandwind-unsafe",
+      "library": "yumcss-unsafe",
       "category": "runtime",
-      "buildMode": "Vite + pandwind/unsafe/css",
+      "buildMode": "Vite + yumcss/unsafe/css",
       "cssDelivery": "none",
       "arbitraryRuntimeValues": true,
       "samples": 1,
@@ -434,9 +434,9 @@
       }
     },
     {
-      "library": "pandwind",
+      "library": "yumcss",
       "category": "static",
-      "buildMode": "Vite + pandwindCssVite",
+      "buildMode": "Vite + yumcssExtractVite",
       "cssDelivery": "extracted",
       "arbitraryRuntimeValues": false,
       "samples": 1,
@@ -735,7 +735,7 @@
     }
   ],
   "tolerances": {
-    "pandwind": {
+    "yumcss": {
       "relative": 0.1,
       "absoluteBytes": 128
     }

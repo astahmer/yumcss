@@ -1,6 +1,6 @@
 import { realpathSync, readFileSync, statSync } from "node:fs";
 import { isAbsolute, relative, resolve, sep } from "node:path";
-import { createSourceWorkspace, type SourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace, type SourceWorkspace } from "yumcss/source/workspace";
 
 const DEFAULT_PATTERNS = ["**/*"] as const;
 

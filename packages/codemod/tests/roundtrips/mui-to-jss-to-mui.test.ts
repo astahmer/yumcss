@@ -42,7 +42,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", async () 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> jss round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -91,7 +91,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", async () 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "red", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -142,9 +142,9 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		import { forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: 8 } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		import { forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: 8 } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,10 +180,10 @@ test("mui -> jss -> mui: retains the documented secondary API without silent los
 		  "reverse": {
 		    "changed": true,
 		    "code": "import jss from "jss";
-		import { forwardRef as __pandwindCardForwardRef } from "react";
-		import type { ComponentPropsWithoutRef as __pandwindCardPropsWithoutRef, ComponentRef as __pandwindCardRef, ElementType as __pandwindCardElementType, ReactElement as __pandwindCardReactElement, Ref as __pandwindCardRefProp } from "react";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		export const Card = (() => { type __pandwindCardProps<C extends __pandwindCardElementType> = Omit<__pandwindCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __pandwindCardComponent = <C extends __pandwindCardElementType = "div">(props: __pandwindCardProps<C> & { ref?: __pandwindCardRefProp<__pandwindCardRef<C>> }) => __pandwindCardReactElement | null; type __pandwindCardRuntimeProps = Record<string, any>; return __pandwindCardForwardRef<__pandwindCardRef<"div">, __pandwindCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: 8 } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __pandwindCardComponent; })();",
+		import { forwardRef as __yumcssCardForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[jss.createStyleSheet({ style: { color: "red", padding: 8 } }).attach().classes.style, props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -286,7 +286,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#f97316", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -362,7 +362,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -453,7 +453,7 @@ test("mui -> jss -> mui: resolves token values across both concrete legs", async
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <Box className={jss.createStyleSheet({ style: { color: "#2563eb", padding: "16px" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -38,10 +38,10 @@ test("vanilla-extract -> compiled: migrates concrete vanilla-extract syntax to c
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "vanilla-extract -> compiled happy");
 	expectExplicitResidualEvidence(result);
@@ -94,7 +94,7 @@ test("vanilla-extract -> compiled: carries a documented secondary vanilla-extrac
 		{
 		  "changed": true,
 		  "code": "import { globalStyle } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> compiled | lowering-residual: validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> compiled | lowering-residual: validation)
 		globalStyle("body", { margin: 0 });",
 		  "converted": 0,
 		  "generatedFiles": [],

@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.posthog-com-migration-summary/1",
+	"schema": "yumcss.posthog-com-migration-summary/1",
 	"referenceCommit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
 	"routes": 2929,
 	"visualRoutes": ["/", "/docs/", "/blog/", "/pricing/"],

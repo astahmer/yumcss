@@ -42,7 +42,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vanilla-extract -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "red", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -276,7 +276,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -350,7 +350,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -439,7 +439,7 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

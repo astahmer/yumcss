@@ -42,7 +42,7 @@ test("fela -> vanilla-extract -> fela: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "fela -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -144,7 +144,7 @@ test("fela -> vanilla-extract -> fela: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -186,7 +186,7 @@ test("fela -> vanilla-extract -> fela: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createComponent } from "react-fela";
-		// pandwind:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: fela -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = createComponent(() => ({ color: "red" }), "button");",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"route": {
 		"from": "vanilla-extract",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"referenceCommit": "881c256a867f55386f96a7fe95068300bac720e6",
 	"fixture": {
@@ -15,7 +15,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "pandwind",
+		"targetPackage": "yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -29,7 +29,7 @@
 			"targetBytes": 420,
 			"differences": []
 		},
-		"targetUsesPandwind": true,
+		"targetUsesYumCSS": true,
 		"sourceImportRemoved": true,
 		"typedVariableLowered": true,
 		"propertyRegistrationPreserved": true,
@@ -72,6 +72,6 @@
 	"css": {
 		"sourceBytes": 414,
 		"targetBytes": 635,
-		"note": "The tiny fixture compares fused Vanilla Extract CSS with Pandwind's atomic runtime CSS. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
+		"note": "The tiny fixture compares fused Vanilla Extract CSS with YumCSS's atomic runtime CSS. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
 	}
 }

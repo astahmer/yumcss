@@ -1,10 +1,10 @@
 /**
- * PostHog.com -> Pandwind migration corpus.
+ * PostHog.com -> YumCSS migration corpus.
  *
  * The PostHog checkout is a read-only Git reference. This runner materializes
  * disposable Gatsby applications from the pinned checkout and applies one
- * static-first Pandwind lane at a time. Tokens that cannot be proven against
- * the generated Pandwind bridge remain in the original class list and become
+ * static-first YumCSS lane at a time. Tokens that cannot be proven against
+ * the generated YumCSS bridge remain in the original class list and become
  * explicit residuals; the runner never silently drops a Tailwind utility.
  */
 import { execFile } from "node:child_process";
@@ -12,10 +12,10 @@ import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
-import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
-import { mapClassList } from "pandwind-codemod/migration/map";
-import { CodemodAdapterId, SwapSourceId } from "pandwind-codemod/swap";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { loadMetaFromSources, type YumCSSMeta } from "@yumcss/codemod/migration/meta";
+import { mapClassList } from "@yumcss/codemod/migration/map";
+import { CodemodAdapterId, SwapSourceId } from "@yumcss/codemod/swap";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { createReferenceWorkspace } from "../reference-workspace.ts";
 import {
 	discoverProjectFiles,
@@ -67,12 +67,12 @@ async function sourceFiles(root: string): Promise<string[]> {
 	return files.toSorted();
 }
 
-function metadata(): PandwindMeta {
+function metadata(): YumCSSMeta {
 	return loadMetaFromSources({
 		typesDtsPath: join(metadataRoot, "types.d.ts"),
 		twTsPath: join(metadataRoot, "tw.ts"),
 		bridgePath: join(metadataRoot, "bridge.ts"),
-		interopPath: join(metadataRoot, "pandwind.interop.json"),
+		interopPath: join(metadataRoot, "yumcss.interop.json"),
 	});
 }
 
@@ -80,7 +80,7 @@ async function transformLane(
 	lane: PostHogDocsLane,
 	source: string,
 	file: string,
-	meta: PandwindMeta,
+	meta: YumCSSMeta,
 	root: string,
 	files: readonly string[],
 ): Promise<CorpusTransformResult> {
@@ -97,13 +97,13 @@ async function transformLane(
 		files,
 		meta,
 		from: CodemodAdapterId.Tailwind,
-		to: `${CodemodAdapterId.Pandwind}:${dialect}`,
+		to: `${CodemodAdapterId.YumCSS}:${dialect}`,
 		project:
 			lane === PostHogDocsLane.Tw
-				? { twModule: "proof/pandwind/tw", cxModule: "proof/pandwind/cx" }
+				? { twModule: "proof/yumcss/tw", cxModule: "proof/yumcss/cx" }
 				: lane === PostHogDocsLane.CssClass
-					? { cssModule: "proof/pandwind/css" }
-					: { dssModule: "proof/pandwind/dss" },
+					? { cssModule: "proof/yumcss/css" }
+					: { dssModule: "proof/yumcss/dss" },
 	});
 }
 
@@ -112,38 +112,38 @@ function supportFiles(lane: PostHogDocsLane): Record<string, string> {
 	const typesSource = readFileSyncSafe(join(metadataRoot, "types.d.ts"));
 	const bridgeSource = readFileSyncSafe(join(metadataRoot, "bridge.ts"));
 	const twWrapper = [
-		'import { createTw, type TwOptions } from "pandwind/tw";',
+		'import { createTw, type TwOptions } from "yumcss/tw";',
 		'import type { WindVariants } from "./types";',
-		'import { __pandwindConfig as generatedConfig } from "./tw.generated";',
+		'import { __yumcssConfig as generatedConfig } from "./tw.generated";',
 		"",
 		"// Preserve authored utility order during source migration; the source",
 		"// class list, rather than a merge policy, owns cascade semantics.",
-		"export const __pandwindConfig: TwOptions = { variants: generatedConfig.variants };",
-		"export const tw = createTw<WindVariants>(__pandwindConfig);",
+		"export const __yumcssConfig: TwOptions = { variants: generatedConfig.variants };",
+		"export const tw = createTw<WindVariants>(__yumcssConfig);",
 		"",
 	].join("\n");
 	const cxSource =
-		'import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n';
+		'import { createCx } from "yumcss/cx";\nimport { __yumcssConfig } from "./tw";\n\nexport const cx = createCx(__yumcssConfig);\n';
 	const base: Record<string, string> = {
-		"proof/pandwind/tw.generated.ts": twSource,
-		"proof/pandwind/tw.ts": twWrapper,
-		"proof/pandwind/types.d.ts": typesSource,
-		"proof/pandwind/bridge.ts": bridgeSource,
+		"proof/yumcss/tw.generated.ts": twSource,
+		"proof/yumcss/tw.ts": twWrapper,
+		"proof/yumcss/types.d.ts": typesSource,
+		"proof/yumcss/bridge.ts": bridgeSource,
 	};
-	base["proof/pandwind/cx.ts"] = cxSource;
+	base["proof/yumcss/cx.ts"] = cxSource;
 	if (lane === PostHogDocsLane.CssClass) {
-		base["proof/pandwind/css.ts"] =
-			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
+		base["proof/yumcss/css.ts"] =
+			'import { createCss } from "yumcss/css";\nimport { examplePreset } from "@yumcss/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
 	}
 	if (lane === PostHogDocsLane.DesignCss) {
-		base["proof/pandwind/dss.ts"] =
-			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "@pandwind/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
+		base["proof/yumcss/dss.ts"] =
+			'import { createDesignCss } from "yumcss/design";\nimport type { CssFn } from "yumcss/css";\nimport { examplePreset } from "@yumcss/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
 	}
 	return base;
 }
 
 function readFileSyncSafe(path: string): string {
-	// This runner only reads checked-in generated artifacts from the Pandwind
+	// This runner only reads checked-in generated artifacts from the YumCSS
 	// repository; keeping the helper local avoids exposing a second file API.
 	return readFileSync(path, "utf8");
 }
@@ -177,7 +177,7 @@ async function materialize(
 	};
 	packageJson.dependencies = {
 		...packageJson.dependencies,
-		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
+		yumcss: `file:${join(repositoryRoot, "packages/yumcss")}`,
 	};
 	await writeFile(packageFile, `${JSON.stringify(packageJson, null, 4)}\n`);
 
@@ -185,9 +185,9 @@ async function materialize(
 	// className literals have been replaced by runtime API calls. A generated
 	// source module preserves the compiler's normal content ordering and avoids
 	// the larger, less faithful CSS produced by appending a broad safelist.
-	await mkdir(join(outputRoot, "src/pandwind"), { recursive: true });
+	await mkdir(join(outputRoot, "src/yumcss"), { recursive: true });
 	await writeFile(
-		join(outputRoot, "src/pandwind/source-tokens.ts"),
+		join(outputRoot, "src/yumcss/source-tokens.ts"),
 		`export const posthogSourceTokens = ${JSON.stringify([...mappedTokens].toSorted().join(" "))};\n`,
 	);
 }
@@ -539,7 +539,7 @@ export class PostHogDocsMigration {
 		const root = join(referenceRoot, "src");
 		const files = await sourceFiles(root);
 		const projectFiles = await discoverProjectFiles(referenceRoot);
-		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".pandwind-output"));
+		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".yumcss-output"));
 		const changed = new Map<string, string>();
 		const residuals: Array<PostHogDocsMigrationReport["residuals"][number]> = [];
 		const mappedTokens = new Set<string>();
@@ -599,7 +599,7 @@ export class PostHogDocsMigration {
 		options: Pick<PostHogDocsMigrationOptions, "referenceRoot" | "outputRoot"> = {},
 	): Promise<{ referenceCommit: string; outputRoot: string }> {
 		const referenceRoot = resolve(options.referenceRoot ?? defaultReferenceRoot);
-		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".pandwind-baseline"));
+		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".yumcss-baseline"));
 		const referenceCommit = (
 			await execFileAsync("git", ["-C", referenceRoot, "rev-parse", "HEAD"], { encoding: "utf8" })
 		).stdout.trim();

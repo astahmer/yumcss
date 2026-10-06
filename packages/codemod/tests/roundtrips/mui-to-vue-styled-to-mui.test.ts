@@ -42,7 +42,7 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", as
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -288,7 +288,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -361,7 +361,7 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -449,7 +449,7 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

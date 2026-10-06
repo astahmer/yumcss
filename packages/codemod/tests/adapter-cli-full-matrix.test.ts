@@ -95,13 +95,13 @@ describe("in-memory ordered adapter matrix", () => {
 							expect(
 								result.source,
 								`${result.file} residuals=${JSON.stringify(result.residualDetails)}`,
-							).toContain("pandwind:migrate-skip");
+							).toContain("yumcss:migrate-skip");
 						}
 						if (result.residuals > 0)
 							expect(
 								result.source,
 								`${result.file} residuals=${JSON.stringify(result.residualDetails)}`,
-							).toContain("pandwind:migrate-skip");
+							).toContain("yumcss:migrate-skip");
 						if (
 							result.file.startsWith(`${CodemodAdapterId.StyledComponents}-`) &&
 							result.file.includes("-edge-")

@@ -1,18 +1,18 @@
 import react from "@vitejs/plugin-react-swc";
-import { examplePreset } from "@pandwind/example-preset";
-import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
+import { examplePreset } from "@yumcss/example-preset";
+import { createYumCSSEngineContext, yumcssExtractVite, yumcssVite } from "yumcss/vite";
 import { defineConfig } from "vite";
 
-const engine = createPandwindEngineContext({ preset: examplePreset });
+const engine = createYumCSSEngineContext({ preset: examplePreset });
 
-// Pure CSS-backend consumer: pandwindCssVite scans literal css()/design-css()
+// Pure CSS-backend consumer: yumcssExtractVite scans literal css()/design-css()
 // calls and serves the deduped atomic stylesheet from the virtual
-// `pandwind:css` module (imported in main.tsx). No Tailwind, no tw adapter —
+// `yumcss:css` module (imported in main.tsx). No Tailwind, no tw adapter —
 // this app proves the atomic-hashed-class path end to end.
 export default defineConfig({
 	plugins: [
-		pandwindVite({ css: { preset: examplePreset, engine } }),
-		pandwindCssVite(examplePreset, { engine }),
+		yumcssVite({ css: { preset: examplePreset, engine } }),
+		yumcssExtractVite(examplePreset, { engine }),
 		react(),
 	],
 });

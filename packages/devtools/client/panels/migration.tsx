@@ -50,7 +50,7 @@ export function MigrationPanel({
 				</label>
 				<label>
 					To
-					<select name="to" defaultValue="pandwind">
+					<select name="to" defaultValue="yumcss">
 						{catalog.length > 0 ? (
 							catalog.map((entry) => (
 								<option value={entry.id} key={entry.id}>
@@ -58,7 +58,7 @@ export function MigrationPanel({
 								</option>
 							))
 						) : (
-							<option value="pandwind">pandwind</option>
+							<option value="yumcss">yumcss</option>
 						)}
 					</select>
 				</label>

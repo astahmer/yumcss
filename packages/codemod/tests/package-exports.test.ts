@@ -1,19 +1,19 @@
 import { describe, expect, test } from "vitest";
 
 const entries = [
-	"pandwind-codemod/tw",
-	"pandwind-codemod/runtime",
-	"pandwind-codemod/swap",
-	"pandwind-codemod/css",
-	"pandwind-codemod/swap/identifiers",
-	"pandwind-codemod/swap/corpus",
-	"pandwind-codemod/migration/meta",
-	"pandwind-codemod/migration/map",
-	"pandwind-codemod/migration/shared",
-	"pandwind-codemod/migration/tokens",
+	"@yumcss/codemod/tw",
+	"@yumcss/codemod/runtime",
+	"@yumcss/codemod/swap",
+	"@yumcss/codemod/css",
+	"@yumcss/codemod/swap/identifiers",
+	"@yumcss/codemod/swap/corpus",
+	"@yumcss/codemod/migration/meta",
+	"@yumcss/codemod/migration/map",
+	"@yumcss/codemod/migration/shared",
+	"@yumcss/codemod/migration/tokens",
 ] as const;
 
-describe("pandwind-codemod package boundary", () => {
+describe("yumcss-codemod package boundary", () => {
 	test.each(entries)("resolves %s through exports", async (specifier) => {
 		const resolved = await import.meta.resolve(specifier);
 		expect(resolved).toContain("packages/codemod/src/");

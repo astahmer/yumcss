@@ -12,12 +12,12 @@ import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const pandwindPackageRoot = join(repositoryRoot, "packages/pandwind");
-const requireFromPandwind = createRequire(join(pandwindPackageRoot, "package.json"));
+const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
+const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in data module this generator owns. */
 export const tailwindPresetModulePath = join(
-	pandwindPackageRoot,
+	yumcssPackageRoot,
 	"src/preset/generated/tailwindcss-theme.ts",
 );
 
@@ -37,12 +37,12 @@ export const renderTailwindPresetModule = async (): Promise<{
 	version: string;
 }> => {
 	const tailwindVersion = (
-		JSON.parse(readFileSync(requireFromPandwind.resolve("tailwindcss/package.json"), "utf8")) as {
+		JSON.parse(readFileSync(requireFromYumCSS.resolve("tailwindcss/package.json"), "utf8")) as {
 			version: string;
 		}
 	).version;
 
-	const tailwindNode = (await import(requireFromPandwind.resolve("@tailwindcss/node"))) as {
+	const tailwindNode = (await import(requireFromYumCSS.resolve("@tailwindcss/node"))) as {
 		__unstable__loadDesignSystem: (
 			css: string,
 			options: { base: string },
@@ -51,7 +51,7 @@ export const renderTailwindPresetModule = async (): Promise<{
 
 	const designSystem = await tailwindNode.__unstable__loadDesignSystem(
 		'@import "tailwindcss/theme.css";',
-		{ base: requireFromPandwind.resolve("tailwindcss/theme.css") },
+		{ base: requireFromYumCSS.resolve("tailwindcss/theme.css") },
 	);
 
 	const collapsed = (value: string): string => value.replaceAll(/\s+/gu, " ").trim();

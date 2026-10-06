@@ -11,7 +11,7 @@ import {
 } from "./semantic-ir.ts";
 
 /** Versioned envelope for programs exchanged between compiler/tooling stages. */
-export const STYLE_PROGRAM_ARTIFACT_SCHEMA = "pandwind.style-program-artifact/1" as const;
+export const STYLE_PROGRAM_ARTIFACT_SCHEMA = "yumcss.style-program-artifact/1" as const;
 export const STYLE_PROGRAM_CORE_VERSION = "1" as const;
 
 export interface StyleProgramArtifact {

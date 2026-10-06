@@ -25,7 +25,7 @@ export const createCompilerPreviewApp = (
 		const url = new URL(context.req.url);
 		const assetToken = url.pathname.startsWith("/_ui/") ? url.pathname.split("/")[2] : null;
 		const provided =
-			context.req.header("x-pandwind-compiler-preview-token") ??
+			context.req.header("x-yumcss-compiler-preview-token") ??
 			(context.req.path === "/" ? url.searchParams.get("token") : null) ??
 			(assetToken === uiAssetToken ? options.token : null);
 		if (provided !== options.token)

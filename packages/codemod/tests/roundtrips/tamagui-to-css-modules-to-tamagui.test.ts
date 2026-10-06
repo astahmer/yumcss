@@ -42,7 +42,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tamagui -> css-modules round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -91,7 +91,7 @@ test("tamagui -> css-modules -> tamagui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "red", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -121,7 +121,7 @@ test("tamagui -> css-modules -> tamagui: retains the documented secondary API wi
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -167,7 +167,7 @@ test("tamagui -> css-modules -> tamagui: retains the documented secondary API wi
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | parse-residual: function-dynamic | lowering-residual: capability | capability-blocked: components: component subject: View | available: named-map, residual)
 		export const Card = styled(View, ({ theme }) => ({ color: theme.color }));",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -212,7 +212,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -250,7 +250,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -267,7 +267,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -305,7 +305,7 @@ test("tamagui -> css-modules -> tamagui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -337,7 +337,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -375,7 +375,7 @@ test("tamagui -> css-modules -> tamagui: resolves token values across both concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled, View } from "tamagui";
-		// pandwind:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
+		// yumcss:migrate-skip (route: tamagui -> css-modules | lowering-residual: capability)
 		export const Card = styled(View, { color: "#2563eb", padding: "$4" });
 		export const App = () => <Card />;",
 		    "converted": 0,

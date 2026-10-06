@@ -38,10 +38,10 @@ test("mantine -> styled-components: migrates concrete mantine syntax to styled-c
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "mantine -> styled-components happy");
 	expectExplicitResidualEvidence(result);
@@ -93,7 +93,7 @@ test("mantine -> styled-components: carries a documented secondary mantine API e
 		{
 		  "changed": true,
 		  "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> styled-components | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		  "converted": 0,
 		  "generatedFiles": [],

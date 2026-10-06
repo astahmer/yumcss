@@ -3,7 +3,7 @@
  *
  * BEFORE: every string-literal token from the original sources, compiled
  * through real Tailwind with kumo's own theme.
- * AFTER: tw({...}) calls re-evaluated through the real pandwind runtime
+ * AFTER: tw({...}) calls re-evaluated through the real yumcss runtime
  * (createTw with the kumo-generated config) + remaining verbatim literals,
  * compiled the same way.
  *
@@ -16,11 +16,11 @@ import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
 import { parseSync } from "oxc-parser";
-import { evalLiteral } from "pandwind/tw/literal";
-import { createTw } from "pandwind/tw";
-import { extractTwConfigFromSources } from "pandwind/vite/inline";
+import { evalLiteral } from "yumcss/tw/literal";
+import { createTw } from "yumcss/tw";
+import { extractTwConfigFromSources } from "yumcss/vite/inline";
 
-const KUMO = "/tmp/pandwind-kumo-dogfood/packages/kumo/src";
+const KUMO = "/tmp/yumcss-kumo-dogfood/packages/kumo/src";
 const BEFORE = "/tmp/kumo-src-before";
 const META = "/tmp/kumo-meta";
 
@@ -112,7 +112,7 @@ const collect = (): { before: Set<string>; after: Set<string> } => {
 async function compileSheet(classes: Array<string>): Promise<{ set: Set<string>; built: string }> {
 	const sheet = `@import "tailwindcss";\n${readFileSync("/tmp/kumo-meta/theme.css", "utf8")}\n`;
 	const compiled = await compile(sheet, {
-		base: "/Users/astahmer/dev/pandwind/examples/example", // resolves the tailwindcss import
+		base: resolve(import.meta.dirname, "../../examples/example"), // resolves the tailwindcss import
 		onDependency: () => {},
 	});
 	const built = compiled.build(classes);

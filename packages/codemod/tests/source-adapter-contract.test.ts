@@ -54,7 +54,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		const source = ":global(.reset) { margin: 0; } .card { color: red; }";
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.CssModules,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "styles.module.css",
 			root: "/project",
 			readFile: () => undefined,
@@ -68,7 +68,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		// Global-selector rules fail closed, so the whole file is skipped:
 		// preserved source under the visible marker plus the capability
 		// residual naming the offending selector.
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.code).toContain(":global(.reset) { margin: 0; } .card { color: red; }");
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
@@ -76,7 +76,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			  "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			:global(.reset) { margin: 0; } .card { color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
@@ -124,7 +124,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 30,
@@ -185,7 +185,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 52,
@@ -240,7 +240,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		const source = ".card { color: red; }";
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.CssModules,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "styles.module.css",
 			root: "/project",
 			readFile: () => undefined,
@@ -255,7 +255,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red" }) };
 			export default styles;",
@@ -265,7 +265,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -314,7 +314,7 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "css-modules",
 			          "end": 21,

@@ -96,7 +96,7 @@ describe("codemod output file boundaries", () => {
 	});
 
 	test("renames indexed style modules and rewrites consumers for Treat and Vanilla Extract", () => {
-		const root = "/virtual/pandwind-module-rename";
+		const root = "/virtual/yumcss-module-rename";
 		const sourceFile = "src/styles.ts";
 		const barrelFile = "src/index.ts";
 		const consumerFile = "src/ui/App.tsx";
@@ -201,7 +201,7 @@ describe("codemod output file boundaries", () => {
 			from: CodemodAdapterId.Emotion,
 			to: CodemodAdapterId.Treat,
 			file: sourceFile,
-			root: "/virtual/pandwind-module-rename",
+			root: "/virtual/yumcss-module-rename",
 			listFiles: () => [...projectFiles.keys()],
 			readFile: (file) => projectFiles.get(file),
 			mode: "safe",
@@ -224,7 +224,7 @@ describe("codemod output file boundaries", () => {
 		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
 			{
 			  "code": "import { css } from "@emotion/css";
-			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
 			export const card = css({ color: "red", padding: "1rem" });",
 			  "residuals": [
 			    {
@@ -249,7 +249,7 @@ describe("codemod output file boundaries", () => {
 			from: CodemodAdapterId.Emotion,
 			to: CodemodAdapterId.Treat,
 			file: sourceFile,
-			root: "/virtual/pandwind-module-rename",
+			root: "/virtual/yumcss-module-rename",
 			listFiles: () => [...projectFiles.keys()],
 			readFile: (file) => projectFiles.get(file),
 			mode: "safe",
@@ -272,7 +272,7 @@ describe("codemod output file boundaries", () => {
 		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
 			{
 			  "code": "import { css } from "@emotion/css";
-			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
 			export const card = css({ color: "red", padding: "1rem" });",
 			  "residuals": [
 			    {
@@ -304,7 +304,7 @@ describe("codemod output file boundaries", () => {
 		expect({ code: result.code, residuals: result.residuals }).toMatchInlineSnapshot(`
 			{
 			  "code": "import { css } from "@emotion/css";
-			// pandwind:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: emotion -> treat | lowering-residual: capability | available: static, named-map, residual)
 			export const App = () => <div className={css({ color: "red" })} />;",
 			  "residuals": [
 			    {
@@ -326,12 +326,12 @@ describe("codemod output file boundaries", () => {
 			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 		);
 		expect(result.code).toContain('css({ color: "red", padding: "1rem" });');
-		expect(result.code).not.toContain("pandwind/unsafe/css");
+		expect(result.code).not.toContain("yumcss/unsafe/css");
 		expect(outputEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
 			  "code": "import { css } from "@emotion/css";
-			// pandwind:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+			// yumcss:migrate-skip (route: emotion -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 			export const card = css({ color: "red", padding: "1rem" });",
 			  "converted": 0,
 			  "fileChanges": [],
@@ -367,7 +367,7 @@ describe("codemod output file boundaries", () => {
 				expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 			);
 			expect(result.code).toContain(cssSource);
-			expect(result.code).toMatch(/^\/\* pandwind:migrate-skip /u);
+			expect(result.code).toMatch(/^\/\* yumcss:migrate-skip /u);
 			expect(result.outputExtension).toBeUndefined();
 			expect(result.fileChanges).toEqual([]);
 		}
@@ -383,7 +383,7 @@ describe("codemod output file boundaries", () => {
 		).toMatchInlineSnapshot(`
 			[
 			  {
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "outputExtension": undefined,
@@ -397,7 +397,7 @@ describe("codemod output file boundaries", () => {
 			    "target": "Treat",
 			  },
 			  {
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "outputExtension": undefined,
@@ -411,7 +411,7 @@ describe("codemod output file boundaries", () => {
 			    "target": "Vanilla Extract",
 			  },
 			  {
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "outputExtension": undefined,
@@ -429,7 +429,7 @@ describe("codemod output file boundaries", () => {
 	});
 
 	test("uses the target module filename and import path for CSS Module file migrations", () => {
-		const root = "/virtual/pandwind-route-project";
+		const root = "/virtual/yumcss-route-project";
 		const sourceFile = `${root}/src/Card.module.css`;
 		const consumerFile = `${root}/src/ui/App.tsx`;
 		const consumer =

@@ -160,7 +160,7 @@ type CssInJsBenchSnapshot = {
 	readonly parityVerification?: {
 		readonly measuredAt: string;
 		readonly benchmarkRevision: string;
-		readonly pandwindArtifactRevision: string;
+		readonly yumcssArtifactRevision: string;
 		readonly reportPath: string;
 		readonly hydration: "passed" | "skipped" | "failed";
 		readonly hydrationNote?: string;
@@ -169,10 +169,10 @@ type CssInJsBenchSnapshot = {
 		readonly repository: string;
 		readonly url: string;
 		readonly cssInJsBenchRevision: string;
-		readonly pandwindRevision: string;
-		readonly pandwindMainLane: string;
-		readonly pandwindTwBonusLane: string;
-		readonly pandwindNamedStrategyDiagnostic: string;
+		readonly yumcssRevision: string;
+		readonly yumcssMainLane: string;
+		readonly yumcssTwBonusLane: string;
+		readonly yumcssNamedStrategyDiagnostic: string;
 		readonly wpdCompletedAt: string;
 		readonly host: string;
 		readonly node: string;
@@ -181,12 +181,12 @@ type CssInJsBenchSnapshot = {
 		readonly browsers: { readonly chrome?: string; readonly firefox?: string };
 		readonly laneCount: number;
 		readonly caseCount: number;
-		readonly pandwindBuildtimeSamples?: {
+		readonly yumcssBuildtimeSamples?: {
 			readonly coldMs: readonly number[];
 			readonly warmMs: readonly number[];
 		};
-		readonly pandwindBuildtimeProfile?: {
-			readonly pandwindRevision: string;
+		readonly yumcssBuildtimeProfile?: {
+			readonly yumcssRevision: string;
 			readonly measuredAt: string;
 			readonly harness: string;
 			readonly samples: number;
@@ -213,7 +213,7 @@ type CssInJsBenchParityReport = {
 	}[];
 };
 
-type ArenaLibrary = "bamboo" | "stylex" | "panda" | "pandwind";
+type ArenaLibrary = "bamboo" | "stylex" | "panda" | "yumcss";
 
 type ArenaMetric = {
 	readonly category: string;
@@ -229,12 +229,12 @@ type ArenaParity = {
 	readonly screenshotsPassed: number;
 	readonly screenshotsTotal: number;
 	readonly screenshotThresholdPercent: number;
-	readonly pandwindMaxImageDifferencePercent: number;
+	readonly yumcssMaxImageDifferencePercent: number;
 	readonly maxImageDifferencePercent: number;
 };
 
 type ArenaOutputVerification = {
-	readonly pandwindRevision: string;
+	readonly yumcssRevision: string;
 	readonly measuredAt: string;
 	readonly environment: string;
 	readonly parity: Pick<
@@ -264,7 +264,7 @@ type ArenaScaleMeasurement = {
 type ArenaScaleSweep = {
 	readonly measuredAt: string;
 	readonly arenaRevision: string;
-	readonly pandwindRevision: string;
+	readonly yumcssRevision: string;
 	readonly stylesPerRun: readonly number[];
 	readonly declarationsPerStyle: number;
 	readonly allDeclarationValuesUnique: boolean;
@@ -273,10 +273,10 @@ type ArenaScaleSweep = {
 		readonly bamboo: readonly ArenaScaleMeasurement[];
 		readonly stylex: readonly ArenaScaleMeasurement[];
 		readonly panda: readonly ArenaScaleMeasurement[];
-		readonly pandwindHash: readonly ArenaScaleMeasurement[];
-		readonly pandwindNamedAtoms: readonly ArenaScaleMeasurement[];
+		readonly yumcssHash: readonly ArenaScaleMeasurement[];
+		readonly yumcssNamedAtoms: readonly ArenaScaleMeasurement[];
 	};
-	readonly pandwindHashGrowthBreakdown: {
+	readonly yumcssHashGrowthBreakdown: {
 		readonly base: Omit<ArenaScaleMeasurement, "styles" | "blocks">;
 		readonly at800: Omit<ArenaScaleMeasurement, "styles" | "blocks">;
 		readonly declarationInputs: number;
@@ -312,7 +312,7 @@ type ArenaSnapshot = {
 	readonly source: {
 		readonly url: string;
 		readonly arenaRevision: string;
-		readonly pandwindRevision: string;
+		readonly yumcssRevision: string;
 		readonly measuredAt: string;
 		readonly environment: string;
 		readonly parity: ArenaParity;
@@ -346,8 +346,8 @@ type TwCodegenSnapshot = {
 		readonly vite: string;
 	};
 	readonly source: {
-		readonly beforePandwindRevision: string;
-		readonly afterPandwindChange: string;
+		readonly beforeYumCSSRevision: string;
+		readonly afterYumCSSChange: string;
 	};
 	readonly defaultCatalogGate: {
 		readonly utilities: number;
@@ -355,7 +355,7 @@ type TwCodegenSnapshot = {
 		readonly typesDtsRawBytes: number;
 		readonly interopRawBytes: number;
 		readonly interopGzipBytes: number;
-		readonly pandwindPackageTarballBytes: number;
+		readonly yumcssPackageTarballBytes: number;
 	};
 	readonly playground: {
 		readonly generatedArtifacts: {
@@ -408,14 +408,14 @@ type RealWorldCssExtractionSnapshot = {
 	};
 	readonly source: {
 		readonly emisoupRevision: string;
-		readonly pandwindBeforeRevision: string;
-		readonly pandwindAfterRevision: string;
+		readonly yumcssBeforeRevision: string;
+		readonly yumcssAfterRevision: string;
 	};
 	readonly currentBuildRecheck?: {
 		readonly measuredAt: string;
 		readonly source: {
 			readonly emisoupRevision: string;
-			readonly pandwindRevision: string;
+			readonly yumcssRevision: string;
 		};
 		readonly environment: {
 			readonly machine: string;
@@ -439,8 +439,8 @@ type RealWorldCssExtractionSnapshot = {
 		readonly measuredAt: string;
 		readonly source: {
 			readonly emisoupRevision: string;
-			readonly baselinePandwindRevision: string;
-			readonly filteredPandwindRevision: string;
+			readonly baselineYumCSSRevision: string;
+			readonly filteredYumCSSRevision: string;
 		};
 		readonly environment: {
 			readonly machine: string;
@@ -508,7 +508,7 @@ type RealWorldCssExtractionSnapshot = {
 		readonly javascript: RealWorldAssetSizes;
 		readonly css: RealWorldAssetSizes;
 		readonly total: RealWorldAssetSizes;
-		readonly mainPandwindStylesheet: {
+		readonly mainYumCSSStylesheet: {
 			readonly rawBytes: number;
 			readonly gzip9Bytes: number;
 			readonly brotli11Bytes: number;
@@ -538,21 +538,21 @@ const generatedSnapshotPath = resolve(
 	ROOT,
 	"benchmarks/styling-tsc/snapshots/generated-types-poc.json",
 );
-const packageSnapshotPath = resolve(ROOT, "plans/evidence/pandwind-tsc.json");
-const exampleSnapshotPath = resolve(ROOT, "plans/evidence/pandwind-example-tsc.json");
-const apiSnapshotPath = resolve(ROOT, "packages/pandwind/tests/snapshots/tsc.json.snap");
+const packageSnapshotPath = resolve(ROOT, "plans/evidence/yumcss-tsc.json");
+const exampleSnapshotPath = resolve(ROOT, "plans/evidence/yumcss-example-tsc.json");
+const apiSnapshotPath = resolve(ROOT, "packages/yumcss/tests/snapshots/tsc.json.snap");
 const runtimeApiSnapshotPath = resolve(
 	ROOT,
-	"packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap",
+	"packages/yumcss/tests/snapshots/runtime-api-benchmark.json.snap",
 );
 const runtimeApiFollowupsSnapshotPath = resolve(ROOT, "benchmarks/runtime-api-followups.json");
 const runtimeSizeSnapshotPath = resolve(
 	ROOT,
-	"packages/pandwind/tests/snapshots/runtime-size.json.snap",
+	"packages/yumcss/tests/snapshots/runtime-size.json.snap",
 );
 const generatedRuntimeSizeSnapshotPath = resolve(
 	ROOT,
-	"packages/pandwind/tests/snapshots/generated-runtime-size.json.snap",
+	"packages/yumcss/tests/snapshots/generated-runtime-size.json.snap",
 );
 const ecosystemBundleSizeSnapshotPath = resolve(
 	ROOT,
@@ -617,7 +617,7 @@ const arenaLibraries: readonly { readonly id: ArenaLibrary; readonly label: stri
 	{ id: "bamboo", label: "Bamboo" },
 	{ id: "stylex", label: "StyleX" },
 	{ id: "panda", label: "Panda" },
-	{ id: "pandwind", label: "Pandwind" },
+	{ id: "yumcss", label: "YumCSS" },
 ];
 
 const formatArenaValue = (value: number, unit: ArenaMetric["unit"]): string =>
@@ -639,23 +639,23 @@ const renderArenaComparison = (snapshot: ArenaSnapshot | undefined): string[] =>
 					`${index + 1}. ${entry.label} (${formatArenaValue(entry.value, metric.unit)})`,
 			)
 			.join("<br>");
-		const pandwindIndex = ranked.findIndex((entry) => entry.id === "pandwind");
-		const pandwind = ranked[pandwindIndex]!;
+		const yumcssIndex = ranked.findIndex((entry) => entry.id === "yumcss");
+		const yumcss = ranked[yumcssIndex]!;
 		return [
 			metric.category,
 			metric.label,
 			topThree,
-			`#${pandwindIndex + 1}/4 — ${formatArenaValue(pandwind.value, metric.unit)}`,
+			`#${yumcssIndex + 1}/4 — ${formatArenaValue(yumcss.value, metric.unit)}`,
 		];
 	});
 	return [
 		"## [CSS-in-JS Arena](https://github.com/gajus/css-in-js-arena) six-page comparison",
 		"",
-		`Pandwind's six-page lane passed parity: ${parity.geometryPassed}/${parity.geometryTotal} route geometry checks stayed within ${parity.geometryThresholdPx} px; ${parity.screenshotsPassed}/${parity.screenshotsTotal} screenshots stayed below ${parity.screenshotThresholdPercent}%. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Lower is better; each row ranks the four engines independently, with no combined score.`,
+		`YumCSS's six-page lane passed parity: ${parity.geometryPassed}/${parity.geometryTotal} route geometry checks stayed within ${parity.geometryThresholdPx} px; ${parity.screenshotsPassed}/${parity.screenshotsTotal} screenshots stayed below ${parity.screenshotThresholdPercent}%. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Lower is better; each row ranks the four engines independently, with no combined score.`,
 		"",
-		markdownTable(["Category", "Measure", "Top three", "Pandwind"], rows, new Set()),
+		markdownTable(["Category", "Measure", "Top three", "YumCSS"], rows, new Set()),
 		"",
-		`Pandwind's maximum screenshot difference was ${parity.pandwindMaxImageDifferencePercent}%; maximum across all lanes was ${parity.maxImageDifferencePercent}%. The Arena worktree records full methods and stress results in revision ${snapshot.source.arenaRevision}; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). Pandwind source revision ${snapshot.source.pandwindRevision}.`,
+		`YumCSS's maximum screenshot difference was ${parity.yumcssMaxImageDifferencePercent}%; maximum across all lanes was ${parity.maxImageDifferencePercent}%. The Arena worktree records full methods and stress results in revision ${snapshot.source.arenaRevision}; normalized inputs are in the [local comparison snapshot](benchmarks/css-in-js-arena/snapshot.json). YumCSS source revision ${snapshot.source.yumcssRevision}.`,
 		"",
 		...renderArenaOutputVerificationOverview(snapshot),
 		...renderArenaScaleSweepOverview(snapshot.scaleSweep),
@@ -675,7 +675,7 @@ const renderArenaScaleSweepOverview = (sweep: ArenaScaleSweep | undefined): stri
 	};
 	const tradeoffs = sweep.namedAtomTradeoffs;
 	return [
-		`The corrected all-distinct 800-style sweep measured ${tradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} Brotli B/declaration for Pandwind hash classes, compared with ${slope(sweep.measurements.bamboo)} for Bamboo and ${slope(sweep.measurements.panda)} for Panda. Named atoms reached ${tradeoffs.namedAtomBrotliSlopePerDeclaration.toFixed(2)} B/declaration, but raised the Bench page from ${integer(tradeoffs.benchPageHashGzipBytes)} B to ${integer(tradeoffs.benchPageNamedAtomsGzipBytes)} B gzip and added ${integer(tradeoffs.arenaClassAttributeRawBytesAdded)} raw class-attribute bytes. Keep hash classes as the default; see the full CSS byte breakdown in [PERF.md](PERF.md#css-in-js-arena-detailed-results).`,
+		`The corrected all-distinct 800-style sweep measured ${tradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} Brotli B/declaration for YumCSS hash classes, compared with ${slope(sweep.measurements.bamboo)} for Bamboo and ${slope(sweep.measurements.panda)} for Panda. Named atoms reached ${tradeoffs.namedAtomBrotliSlopePerDeclaration.toFixed(2)} B/declaration, but raised the Bench page from ${integer(tradeoffs.benchPageHashGzipBytes)} B to ${integer(tradeoffs.benchPageNamedAtomsGzipBytes)} B gzip and added ${integer(tradeoffs.arenaClassAttributeRawBytesAdded)} raw class-attribute bytes. Keep hash classes as the default; see the full CSS byte breakdown in [PERF.md](PERF.md#css-in-js-arena-detailed-results).`,
 		"",
 	];
 };
@@ -699,12 +699,12 @@ const renderArenaOutputVerificationOverview = (snapshot: ArenaSnapshot): string[
 	) {
 		throw new Error("Arena output verification is missing required transfer metrics");
 	}
-	const javascriptDelta = javascript.value - pinnedJavascript.values.pandwind;
-	const fullFirstLoadDelta = fullFirstLoad.value - pinnedFullFirstLoad.values.pandwind;
+	const javascriptDelta = javascript.value - pinnedJavascript.values.yumcss;
+	const fullFirstLoadDelta = fullFirstLoad.value - pinnedFullFirstLoad.values.yumcss;
 	const parity = verification.parity;
 	return [
-		"Current-source output recheck: Pandwind revision " +
-			verification.pandwindRevision +
+		"Current-source output recheck: YumCSS revision " +
+			verification.yumcssRevision +
 			" measured " +
 			verification.measuredAt +
 			" on " +
@@ -741,14 +741,14 @@ const renderArenaOutputVerificationDetails = (snapshot: ArenaSnapshot): string[]
 		const ranked = arenaLibraries
 			.map((library) => ({
 				...library,
-				value: library.id === "pandwind" ? metric.value : pinnedMetric.values[library.id],
+				value: library.id === "yumcss" ? metric.value : pinnedMetric.values[library.id],
 			}))
 			.toSorted((left, right) => left.value - right.value || left.label.localeCompare(right.label));
-		const rank = ranked.findIndex(({ id }) => id === "pandwind") + 1;
-		const delta = metric.value - pinnedMetric.values.pandwind;
+		const rank = ranked.findIndex(({ id }) => id === "yumcss") + 1;
+		const delta = metric.value - pinnedMetric.values.yumcss;
 		return [
 			metric.label,
-			formatArenaValue(pinnedMetric.values.pandwind, metric.unit),
+			formatArenaValue(pinnedMetric.values.yumcss, metric.unit),
 			formatArenaValue(metric.value, metric.unit),
 			(delta > 0 ? "+" : "") + delta + " B",
 			"#" + rank + "/4",
@@ -758,8 +758,8 @@ const renderArenaOutputVerificationDetails = (snapshot: ArenaSnapshot): string[]
 	return [
 		"### Current-source output recheck",
 		"",
-		"Pandwind revision " +
-			verification.pandwindRevision +
+		"YumCSS revision " +
+			verification.yumcssRevision +
 			" measured " +
 			verification.measuredAt +
 			" on " +
@@ -776,10 +776,10 @@ const renderArenaOutputVerificationDetails = (snapshot: ArenaSnapshot): string[]
 			parity.screenshotsTotal +
 			" checks under " +
 			parity.screenshotThresholdPercent +
-			"%. Rankings use the pinned peer values, with the current Pandwind output substituted.",
+			"%. Rankings use the pinned peer values, with the current YumCSS output substituted.",
 		"",
 		markdownTable(
-			["Output measure", "Pinned Pandwind", "Current Pandwind", "Delta", "Rank"],
+			["Output measure", "Pinned YumCSS", "Current YumCSS", "Delta", "Rank"],
 			rows,
 			new Set([1, 2, 3, 4]),
 		),
@@ -806,7 +806,7 @@ const renderArenaDetails = (snapshot: ArenaSnapshot | undefined): string[] => {
 	return [
 		"## CSS-in-JS Arena detailed results",
 		"",
-		`Source revisions: Arena ${snapshot.source.arenaRevision}, Pandwind ${snapshot.source.pandwindRevision}. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Geometry passed ${parity.geometryPassed}/${parity.geometryTotal} route checks within ${parity.geometryThresholdPx} px; screenshots passed ${parity.screenshotsPassed}/${parity.screenshotsTotal} within ${parity.screenshotThresholdPercent}%. Maximum screenshot difference: Pandwind ${parity.pandwindMaxImageDifferencePercent}%, all lanes ${parity.maxImageDifferencePercent}%. Each metric is ranked independently, lower is better, and there is no composite score.`,
+		`Source revisions: Arena ${snapshot.source.arenaRevision}, YumCSS ${snapshot.source.yumcssRevision}. Measured ${snapshot.source.measuredAt} on ${snapshot.source.environment}. Geometry passed ${parity.geometryPassed}/${parity.geometryTotal} route checks within ${parity.geometryThresholdPx} px; screenshots passed ${parity.screenshotsPassed}/${parity.screenshotsTotal} within ${parity.screenshotThresholdPercent}%. Maximum screenshot difference: YumCSS ${parity.yumcssMaxImageDifferencePercent}%, all lanes ${parity.maxImageDifferencePercent}%. Each metric is ranked independently, lower is better, and there is no composite score.`,
 		"",
 		markdownTable(["Category", "Measure", "Rank 1", "Rank 2", "Rank 3", "Rank 4"], rows, new Set()),
 		"",
@@ -823,8 +823,8 @@ const renderArenaScaleSweepDetails = (sweep: ArenaScaleSweep | undefined): strin
 		{ label: "Bamboo", rows: sweep.measurements.bamboo },
 		{ label: "StyleX", rows: sweep.measurements.stylex },
 		{ label: "Panda", rows: sweep.measurements.panda },
-		{ label: "Pandwind hash", rows: sweep.measurements.pandwindHash },
-		{ label: "Pandwind named atoms", rows: sweep.measurements.pandwindNamedAtoms },
+		{ label: "YumCSS hash", rows: sweep.measurements.yumcssHash },
+		{ label: "YumCSS named atoms", rows: sweep.measurements.yumcssNamedAtoms },
 	];
 	const measurementRows = measurementGroups.flatMap(({ label, rows }) =>
 		rows.map((measurement) => [
@@ -845,7 +845,7 @@ const renderArenaScaleSweepDetails = (sweep: ArenaScaleSweep | undefined): strin
 				: `${((at800.brotli11Bytes - base.brotli11Bytes) / (800 * sweep.declarationsPerStyle)).toFixed(2)} B / declaration`;
 		return [label, slope];
 	});
-	const { growth } = sweep.pandwindHashGrowthBreakdown;
+	const { growth } = sweep.yumcssHashGrowthBreakdown;
 	const growthRows = [
 		["Class-name characters", integer(growth.classNameRawBytes)],
 		["Other selector syntax", integer(growth.selectorSyntaxRawBytes)],
@@ -857,7 +857,7 @@ const renderArenaScaleSweepDetails = (sweep: ArenaScaleSweep | undefined): strin
 	return [
 		"### Large-style CSS volume sweep",
 		"",
-		`Measured ${sweep.measuredAt} with Arena ${sweep.arenaRevision} and Pandwind ${sweep.pandwindRevision}. Each run links ${integer(sweep.stylesPerRun.at(-1) ?? 0)} style definitions, each containing ${integer(sweep.declarationsPerStyle)} CSS properties, into the same four applications. The corrected harness gives each property unique values across the 800-style run; the repeatable patch is [unique-scale-fixture.patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch). Each engine is measured from its own zero-style baseline because framework overhead differs.`,
+		`Measured ${sweep.measuredAt} with Arena ${sweep.arenaRevision} and YumCSS ${sweep.yumcssRevision}. Each run links ${integer(sweep.stylesPerRun.at(-1) ?? 0)} style definitions, each containing ${integer(sweep.declarationsPerStyle)} CSS properties, into the same four applications. The corrected harness gives each property unique values across the 800-style run; the repeatable patch is [unique-scale-fixture.patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch). Each engine is measured from its own zero-style baseline because framework overhead differs.`,
 		"",
 		markdownTable(
 			["Engine / strategy", "Styles", "Raw CSS", "gzip-9", "Brotli-11", "CSS blocks"],
@@ -869,7 +869,7 @@ const renderArenaScaleSweepDetails = (sweep: ArenaScaleSweep | undefined): strin
 		"",
 		markdownTable(["Engine / strategy", "Brotli growth per declaration"], slopeRows, new Set()),
 		"",
-		`The default hash lane adds ${integer(sweep.pandwindHashGrowthBreakdown.growth.brotli11Bytes)} Brotli bytes across ${integer(sweep.pandwindHashGrowthBreakdown.declarationInputs)} unique declarations (${sweep.namedAtomTradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} B per declaration). Its raw increase is accounted for exactly by class names, selector syntax, declaration text, rule syntax, and line separation below. These raw categories are additive; Brotli and gzip are not, so their growth is measured on complete emitted assets.`,
+		`The default hash lane adds ${integer(sweep.yumcssHashGrowthBreakdown.growth.brotli11Bytes)} Brotli bytes across ${integer(sweep.yumcssHashGrowthBreakdown.declarationInputs)} unique declarations (${sweep.namedAtomTradeoffs.hashBrotliSlopePerDeclaration.toFixed(2)} B per declaration). Its raw increase is accounted for exactly by class names, selector syntax, declaration text, rule syntax, and line separation below. These raw categories are additive; Brotli and gzip are not, so their growth is measured on complete emitted assets.`,
 		"",
 		markdownTable(["Raw CSS component", "Bytes"], growthRows, new Set([1])),
 		"",
@@ -942,7 +942,7 @@ const renderRealWorldCssExtractionDetails = (
 			integer(snapshot.clientAssets.total.brotli11Bytes),
 		],
 	];
-	const css = snapshot.clientAssets.mainPandwindStylesheet;
+	const css = snapshot.clientAssets.mainYumCSSStylesheet;
 	const memoryValues = snapshot.emisoup.afterMaxResidentBytes.map((value) =>
 		(value / 1_000_000_000).toFixed(2),
 	);
@@ -958,8 +958,8 @@ const renderRealWorldCssExtractionDetails = (
 						recheck.measuredAt +
 						" with Emisoup source " +
 						recheck.source.emisoupRevision +
-						", Pandwind source " +
-						recheck.source.pandwindRevision +
+						", YumCSS source " +
+						recheck.source.yumcssRevision +
 						", and Node " +
 						recheck.environment.node +
 						". Vite versions: Emisoup " +
@@ -1009,10 +1009,10 @@ const renderRealWorldCssExtractionDetails = (
 			snapshot.environment.vite +
 			". Emisoup source " +
 			snapshot.source.emisoupRevision +
-			"; Pandwind before scan gate " +
-			snapshot.source.pandwindBeforeRevision +
+			"; YumCSS before scan gate " +
+			snapshot.source.yumcssBeforeRevision +
 			"; after " +
-			snapshot.source.pandwindAfterRevision +
+			snapshot.source.yumcssAfterRevision +
 			".",
 		"",
 		markdownTable(
@@ -1095,7 +1095,7 @@ const renderRealWorldCssExtractionDetails = (
 			new Set([1, 2, 3, 4]),
 		),
 		"",
-		"The main Pandwind stylesheet is " +
+		"The main YumCSS stylesheet is " +
 			integer(css.rawBytes) +
 			" raw bytes, " +
 			integer(css.gzip9Bytes) +
@@ -1127,7 +1127,7 @@ const renderRealWorldCssExtractionDetails = (
 			integer(css.adjacentMergeBrotli11BytesSaved) +
 			" Brotli bytes. No CSS interning change was adopted; combining non-adjacent rules could cross cascade entries.",
 		"",
-		"Arena's shared JavaScript remains attributed to Pandwind runtime, preset, cx, and app modules; the measured fold changed none of the six route modules. No JavaScript was removed. Route splitting remains opt-in without first-paint and client-navigation evidence; hashed class names remain the default.",
+		"Arena's shared JavaScript remains attributed to YumCSS runtime, preset, cx, and app modules; the measured fold changed none of the six route modules. No JavaScript was removed. Route splitting remains opt-in without first-paint and client-navigation evidence; hashed class names remain the default.",
 		"",
 	];
 };
@@ -1147,7 +1147,7 @@ const renderSourceFilterComparisonDetails = (comparison: SourceFilterComparison)
 		"",
 		"A production-bundle regression reproduced: an excluded bundled module contributed CSS because its ID reached CSS collection without the same include/exclude gate used during source transforms. The fix exposes `CssSourceWorkspace.isScanned(file)` as the shared eligibility check and applies it before main, split, and critical CSS collection.",
 		"",
-		`Measured ${comparison.measuredAt} on ${comparison.environment.machine}, Node ${comparison.environment.node}, with Emisoup Vite ${comparison.environment.emisoupVite} and Playground Vite ${comparison.environment.playgroundVite}. Emisoup source ${comparison.source.emisoupRevision}; baseline Pandwind ${comparison.source.baselinePandwindRevision}; filtered Pandwind ${comparison.source.filteredPandwindRevision}.`,
+		`Measured ${comparison.measuredAt} on ${comparison.environment.machine}, Node ${comparison.environment.node}, with Emisoup Vite ${comparison.environment.emisoupVite} and Playground Vite ${comparison.environment.playgroundVite}. Emisoup source ${comparison.source.emisoupRevision}; baseline YumCSS ${comparison.source.baselineYumCSSRevision}; filtered YumCSS ${comparison.source.filteredYumCSSRevision}.`,
 		"",
 		markdownTable(
 			[
@@ -1219,7 +1219,7 @@ const renderRealWorldCssExtractionOverview = (
 	const playgroundAfterMedian = median(snapshot.playground.afterBuildSeconds);
 	const scanBeforeMedian = median(snapshot.sourceScan.parseAndWalkSamplesMs);
 	const scanAfterMedian = median(snapshot.sourceScan.guardedScanSamplesMs);
-	const css = snapshot.clientAssets.mainPandwindStylesheet;
+	const css = snapshot.clientAssets.mainYumCSSStylesheet;
 	return [
 		"## Real-world CSS compiler: Emisoup",
 		"",
@@ -1259,7 +1259,7 @@ const renderRealWorldCssExtractionOverview = (
 			integer(snapshot.clientAssets.total.gzip9Bytes) +
 			" gzip-9, and " +
 			integer(snapshot.clientAssets.total.brotli11Bytes) +
-			" Brotli-11 bytes with each file compressed separately. The main Pandwind CSS asset is " +
+			" Brotli-11 bytes with each file compressed separately. The main YumCSS CSS asset is " +
 			integer(css.rawBytes) +
 			" raw, " +
 			integer(css.gzip9Bytes) +
@@ -1283,8 +1283,8 @@ const renderCurrentBuildRecheckOverview = (
 			recheck.environment.node +
 			", with Emisoup source " +
 			recheck.source.emisoupRevision +
-			" and Pandwind source " +
-			recheck.source.pandwindRevision +
+			" and YumCSS source " +
+			recheck.source.yumcssRevision +
 			". Five full build commands had medians of " +
 			median(recheck.emisoup.buildWallSeconds).toFixed(2) +
 			" s for Emisoup (" +
@@ -1326,8 +1326,8 @@ const renderSourceFilterComparisonOverview = (
 };
 
 const displayLibrary = (library: string): string => {
-	if (library === "pandwind") return "pandwind (inferred)";
-	if (library === "pandwind-generated") return "pandwind (generated)";
+	if (library === "yumcss") return "yumcss (inferred)";
+	if (library === "yumcss-generated") return "yumcss (generated)";
 	return library;
 };
 
@@ -1371,7 +1371,7 @@ const renderRanking = (
 			);
 };
 
-const renderPandwindBaselines = (
+const renderYumCSSBaselines = (
 	packageSnapshot: TscSnapshot | undefined,
 	exampleSnapshot: TscSnapshot | undefined,
 	apiSnapshot: ApiTscSnapshot | undefined,
@@ -1412,7 +1412,7 @@ const renderPandwindBaselines = (
 	}
 	if (rows.length === 0) return [];
 	return [
-		"## Pandwind typecheck baselines",
+		"## YumCSS typecheck baselines",
 		"",
 		"These are the repo-owned package, example-app, and public-API records.",
 		"",
@@ -1425,7 +1425,7 @@ const renderPandwindBaselines = (
 	];
 };
 
-const renderPandwindApiRanking = (snapshot: ApiTscSnapshot | undefined): string[] => {
+const renderYumCSSApiRanking = (snapshot: ApiTscSnapshot | undefined): string[] => {
 	if (snapshot === undefined || snapshot.scenarios.length === 0) return [];
 	const table = (metric: "checkTimeSeconds" | "instantiations"): string => {
 		const scenarios = snapshot.scenarios.toSorted(
@@ -1466,7 +1466,7 @@ const renderPandwindApiRanking = (snapshot: ApiTscSnapshot | undefined): string[
 				);
 	};
 	return [
-		"## Pandwind API typecheck ranking",
+		"## YumCSS API typecheck ranking",
 		"",
 		"Every first-class API lane has its own fresh-process row; lower is better. The package and app baselines above are kept separate because they include repository context beyond one API fixture.",
 		"",
@@ -1631,10 +1631,10 @@ const renderTwCodegenDetails = (snapshot: TwCodegenSnapshot): string[] => {
 			snapshot.environment.typescript +
 			", and Vite " +
 			snapshot.environment.vite +
-			". Before Pandwind revision " +
-			snapshot.source.beforePandwindRevision +
+			". Before YumCSS revision " +
+			snapshot.source.beforeYumCSSRevision +
 			"; after change " +
-			snapshot.source.afterPandwindChange +
+			snapshot.source.afterYumCSSChange +
 			".",
 		"",
 		"The official default-only codegen produced " +
@@ -1647,8 +1647,8 @@ const renderTwCodegenDetails = (snapshot: TwCodegenSnapshot): string[] => {
 			integer(snapshot.defaultCatalogGate.interopRawBytes) +
 			" raw / " +
 			integer(snapshot.defaultCatalogGate.interopGzipBytes) +
-			" gzip bytes. The measured Pandwind package tarball was " +
-			integer(snapshot.defaultCatalogGate.pandwindPackageTarballBytes) +
+			" gzip bytes. The measured YumCSS package tarball was " +
+			integer(snapshot.defaultCatalogGate.yumcssPackageTarballBytes) +
 			" bytes.",
 		"",
 		"The shared default-catalog design remains a no-go: measurements do not show a lower combined package, generated-project, and TypeScript cost, and no shared type export was added. The compiler continues to load the effective project catalog through the official Tailwind loader.",
@@ -1710,7 +1710,7 @@ const renderTwCodegenDetails = (snapshot: TwCodegenSnapshot): string[] => {
 			artifacts.interopBefore.schema +
 			" to " +
 			artifacts.interopAfter.schema +
-			" before publication. The prototype stored each generated value union once by type alias and kept utility rows as references. The current pre-launch artifact is flattened to the single pandwind.interop/1 schema, with no token sub-schema or compatibility reader. " +
+			" before publication. The prototype stored each generated value union once by type alias and kept utility rows as references. The current pre-launch artifact is flattened to the single yumcss.interop/1 schema, with no token sub-schema or compatibility reader. " +
 			artifacts.gzipMethod +
 			". The then-after bundle was verified to contain the measured prototype schema and generated utility values (" +
 			(migrationRoute.containsInteropV2 && migrationRoute.containsGeneratedUtilityValues
@@ -1763,7 +1763,7 @@ const renderTwCodegenOverview = (snapshot: TwCodegenSnapshot): string[] => {
 
 const ecosystemLibrary = (library: string): string =>
 	({
-		pandwind: "Pandwind css() (static)",
+		yumcss: "YumCSS css() (static)",
 		tailwind: "Tailwind CSS",
 		panda: "Panda CSS",
 		stylex: "StyleX",
@@ -1771,9 +1771,9 @@ const ecosystemLibrary = (library: string): string =>
 		sprinkles: "Sprinkles",
 		unocss: "UnoCSS",
 		linaria: "Linaria",
-		"pandwind-css": "Pandwind css() (dynamic)",
-		"pandwind-runtime": "Pandwind createRuntimeCss()",
-		"pandwind-unsafe": "Pandwind createUnsafeCss()",
+		"yumcss-css": "YumCSS css() (dynamic)",
+		"yumcss-runtime": "YumCSS createRuntimeCss()",
+		"yumcss-unsafe": "YumCSS createUnsafeCss()",
 		emotion: "Emotion",
 		"styled-components": "styled-components",
 		goober: "Goober",
@@ -1824,7 +1824,7 @@ const renderEcosystemBundleComparison = (
 		"",
 		`Measured on ${snapshot.environment.platform}/${snapshot.environment.arch} with Node ${snapshot.environment.node}, Vite ${snapshot.environment.vite}, and esbuild ${snapshot.environment.esbuild}; snapshot updated ${snapshot.updatedAt}. Each value is the styled app minus its unstyled app baseline, in decimal KB.`,
 		"",
-		"Static production output ships extracted CSS. Runtime/dynamic output keeps style creation in browser JavaScript; the CSS delivery column distinguishes injected rules from Pandwind fallback lanes that require a host stylesheet.",
+		"Static production output ships extracted CSS. Runtime/dynamic output keeps style creation in browser JavaScript; the CSS delivery column distinguishes injected rules from YumCSS fallback lanes that require a host stylesheet.",
 		"",
 		"### Static production output",
 		"",
@@ -1930,7 +1930,7 @@ const renderRuntimeApiRanking = (
 			integer(scenario.p90),
 		]);
 	return [
-		"## Pandwind runtime API throughput ranking",
+		"## YumCSS runtime API throughput ranking",
 		"",
 		`Measured on ${snapshot.environment.platform}/${snapshot.environment.arch} with Node ${snapshot.environment.node}; snapshot updated ${snapshot.updatedAt}. Higher is better, but rows are different operations and are not a single composite score. Build-category rows measure supporting tooling and are not browser runtime costs.`,
 		"",
@@ -1940,7 +1940,7 @@ const renderRuntimeApiRanking = (
 			new Set([0, 3, 4, 5]),
 		),
 		"",
-		"The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.",
+		"The dedicated runtime snapshot is [runtime-api-benchmark.json.snap](packages/yumcss/tests/snapshots/runtime-api-benchmark.json.snap); the older hot-path regression snapshot remains separate because its repeated micro-inputs and tolerance are intentionally different.",
 		"",
 		...renderRuntimeApiFollowups(followups),
 	];
@@ -2005,36 +2005,36 @@ const renderRankedExternalWorkload = (
 const renderCssInJsBenchScopeNote = (snapshot: CssInJsBenchSnapshot): string => {
 	const ssrSpread = snapshot.workloads
 		.find(({ id }) => id === "ssr-throughput")
-		?.results.find(({ tech }) => tech === snapshot.source.pandwindMainLane)?.spread;
+		?.results.find(({ tech }) => tech === snapshot.source.yumcssMainLane)?.spread;
 	const spreadNote =
 		ssrSpread === undefined
 			? ""
-			: ` The current Pandwind SSR median reports a ${(ssrSpread * 100).toFixed(1)}% spread.`;
+			: ` The current YumCSS SSR median reports a ${(ssrSpread * 100).toFixed(1)}% spread.`;
 	return `The CSS-in-JS Bench page does not call \`cx()\`, so it does not exercise the class-map compiler optimization.${spreadNote} Its rank measures this fixture; it is not evidence for or against the \`cx()\` change.`;
 };
 
 const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined): string[] => {
 	if (snapshot === undefined) return [];
 	const rows = snapshot.workloads.flatMap((workload) =>
-		renderRankedExternalWorkload(workload, snapshot.source.pandwindMainLane),
+		renderRankedExternalWorkload(workload, snapshot.source.yumcssMainLane),
 	);
 	if (rows.length === 0) return [];
 	const twBonusRows = snapshot.workloads.flatMap((workload) => {
 		const peerResults = workload.results.filter(
-			({ tech }) => tech !== snapshot.source.pandwindMainLane,
+			({ tech }) => tech !== snapshot.source.yumcssMainLane,
 		);
 		if (workload.bonusResults.length === 0) return [];
 		return renderRankedExternalWorkload(
 			{ ...workload, results: [...peerResults, ...workload.bonusResults] },
-			snapshot.source.pandwindTwBonusLane,
+			snapshot.source.yumcssTwBonusLane,
 		);
 	});
 	const payload = snapshot.workloads.find(({ id }) => id === "payload");
 	const primaryPayload = payload?.results.find(
-		({ tech }) => tech === snapshot.source.pandwindMainLane,
+		({ tech }) => tech === snapshot.source.yumcssMainLane,
 	);
 	const namedPayload = payload?.strategyResults.find(
-		({ tech }) => tech === snapshot.source.pandwindNamedStrategyDiagnostic,
+		({ tech }) => tech === snapshot.source.yumcssNamedStrategyDiagnostic,
 	);
 	const namedStrategyRows =
 		primaryPayload?.payload === undefined || namedPayload?.payload === undefined
@@ -2058,11 +2058,11 @@ const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined
 	return [
 		"## [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench): primary `createCss` lane",
 		"",
-		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} harness lanes and ${snapshot.source.caseCount} workloads. Pandwind source: ${snapshot.source.pandwindRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. The primary score uses ${snapshot.source.pandwindMainLane} and non-Pandwind peers; utility and strategy diagnostics do not change that denominator. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput.`,
+		`A 400-tile shop page; WPD finished ${snapshot.source.wpdCompletedAt} on ${snapshot.source.host} with Node ${snapshot.source.node}, WPD ${snapshot.source.wpdVersion}, Chrome ${snapshot.source.browsers.chrome ?? "unknown"}, and Firefox ${snapshot.source.browsers.firefox ?? "unknown"}. The snapshot covers ${snapshot.source.laneCount} harness lanes and ${snapshot.source.caseCount} workloads. YumCSS source: ${snapshot.source.yumcssRevision}; CSS-in-JS Bench source: ${snapshot.source.cssInJsBenchRevision}. The primary score uses ${snapshot.source.yumcssMainLane} and non-YumCSS peers; utility and strategy diagnostics do not change that denominator. Payload is gzipped JS + CSS + HTML; browser figures are Chrome medians. Lower is better except SSR throughput.`,
 		"",
-		markdownTable(["Measure", "Workload", "Top five", "Pandwind `css()`"], rows, new Set()),
+		markdownTable(["Measure", "Workload", "Top five", "YumCSS `css()`"], rows, new Set()),
 		"",
-		"The primary lane uses `createCss(preset)` with `css.class(...)` for class-string hosts and a static multi-map `css(...)` + `css.props(...)` tile host, compiled by the shipped `pandwindCssVite(css)` plugin. The only runtime style value is the rating percentage custom property. Values are per-metric rankings; there is no cross-category score.",
+		"The primary lane uses `createCss(preset)` with `css.class(...)` for class-string hosts and a static multi-map `css(...)` + `css.props(...)` tile host, compiled by the shipped `yumcssExtractVite(css)` plugin. The only runtime style value is the rating percentage custom property. Values are per-metric rankings; there is no cross-category score.",
 		"",
 		renderCssInJsBenchScopeNote(snapshot),
 		"",
@@ -2071,7 +2071,7 @@ const renderCssInJsBenchComparison = (snapshot: CssInJsBenchSnapshot | undefined
 		"This uses the same peer set with the primary `css()` row swapped for the literal `tw()` lane. It is shown separately and never changes the primary rank.",
 		"",
 		markdownTable(
-			["Measure", "Workload", "Top five", "Pandwind `tw()` bonus"],
+			["Measure", "Workload", "Top five", "YumCSS `tw()` bonus"],
 			twBonusRows,
 			new Set(),
 		),
@@ -2158,8 +2158,8 @@ const renderCssInJsBenchParityVerification = (
 			metadata.measuredAt +
 			" against benchmark revision " +
 			metadata.benchmarkRevision +
-			" and Pandwind artifact " +
-			metadata.pandwindArtifactRevision +
+			" and YumCSS artifact " +
+			metadata.yumcssArtifactRevision +
 			". It passed " +
 			domCases +
 			"/" +
@@ -2189,8 +2189,8 @@ const renderDetailedCssInJsBenchComparison = (
 ): string[] => {
 	if (snapshot === undefined) return [];
 	const { source } = snapshot;
-	const mainLane = source.pandwindMainLane;
-	const twBonusLane = source.pandwindTwBonusLane;
+	const mainLane = source.yumcssMainLane;
+	const twBonusLane = source.yumcssTwBonusLane;
 	const primaryWorkloads = snapshot.workloads.flatMap((workload) =>
 		workload.results.length === 0
 			? []
@@ -2210,15 +2210,15 @@ const renderDetailedCssInJsBenchComparison = (
 			result.payload === undefined ? "—" : `${integer(result.payload.css)} B`,
 			result.payload === undefined ? "—" : `${integer(result.payload.html)} B`,
 		]) ?? [];
-	const buildtimeSamples = source.pandwindBuildtimeSamples;
-	const buildtimeProfile = source.pandwindBuildtimeProfile;
+	const buildtimeSamples = source.yumcssBuildtimeSamples;
+	const buildtimeProfile = source.yumcssBuildtimeProfile;
 	const buildtimeContext = [
 		...(buildtimeSamples === undefined
 			? []
 			: [
 					"### Cold-build method and samples",
 					"",
-					"Pandwind cold runs were " +
+					"YumCSS cold runs were " +
 						buildtimeSamples.coldMs.join(", ") +
 						" ms (median " +
 						median(buildtimeSamples.coldMs) +
@@ -2234,18 +2234,18 @@ const renderDetailedCssInJsBenchComparison = (
 			: [
 					"### One-off instrumented phase profile",
 					"",
-					`One instrumented ${buildtimeProfile.harness} sample on ${buildtimeProfile.measuredAt}, using Pandwind artifact ${buildtimeProfile.pandwindRevision}, took ${buildtimeProfile.totalBuildMs.toFixed(2)} ms total. Hook timings were load ${buildtimeProfile.phasesMs.load.toFixed(2)} ms, resolve ${buildtimeProfile.phasesMs.resolve.toFixed(2)} ms, buildStart ${buildtimeProfile.phasesMs.buildStart.toFixed(2)} ms, cumulative inclusive CSS transform ${buildtimeProfile.phasesMs.cssTransformInclusive.toFixed(2)} ms, and CSS generateBundle ${buildtimeProfile.phasesMs.cssGenerateBundle.toFixed(2)} ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.`,
+					`One instrumented ${buildtimeProfile.harness} sample on ${buildtimeProfile.measuredAt}, using YumCSS artifact ${buildtimeProfile.yumcssRevision}, took ${buildtimeProfile.totalBuildMs.toFixed(2)} ms total. Hook timings were load ${buildtimeProfile.phasesMs.load.toFixed(2)} ms, resolve ${buildtimeProfile.phasesMs.resolve.toFixed(2)} ms, buildStart ${buildtimeProfile.phasesMs.buildStart.toFixed(2)} ms, cumulative inclusive CSS transform ${buildtimeProfile.phasesMs.cssTransformInclusive.toFixed(2)} ms, and CSS generateBundle ${buildtimeProfile.phasesMs.cssGenerateBundle.toFixed(2)} ms. This predates the source-filter fix; it is a single instrumented diagnostic, not a repeated phase breakdown or a rank measurement.`,
 					"",
 				]),
 	];
 	return [
 		"## CSS-in-JS Bench detailed results",
 		"",
-		`WPD ${source.wpdVersion} completed ${source.wpdCompletedAt} on ${source.host} with Node ${source.node}, Chrome ${source.browsers.chrome ?? "unknown"}, and Firefox ${source.browsers.firefox ?? "unknown"}. CSS-in-JS Bench revision ${source.cssInJsBenchRevision}; Pandwind artifact revision ${source.pandwindRevision}; ${source.laneCount} lanes and ${source.caseCount} workload definitions. The CSS lane is the 400-tile product-grid case. Rankings compare ${mainLane} with non-Pandwind peer lanes; per-call JS, CSS, and SSR HTML payload components are gzip bytes. Browser measurements are Chrome medians.`,
+		`WPD ${source.wpdVersion} completed ${source.wpdCompletedAt} on ${source.host} with Node ${source.node}, Chrome ${source.browsers.chrome ?? "unknown"}, and Firefox ${source.browsers.firefox ?? "unknown"}. CSS-in-JS Bench revision ${source.cssInJsBenchRevision}; YumCSS artifact revision ${source.yumcssRevision}; ${source.laneCount} lanes and ${source.caseCount} workload definitions. The CSS lane is the 400-tile product-grid case. Rankings compare ${mainLane} with non-YumCSS peer lanes; per-call JS, CSS, and SSR HTML payload components are gzip bytes. Browser measurements are Chrome medians.`,
 		"",
 		"### Primary `createCss` lane",
 		"",
-		"The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a multi-map `css(...)` plus `css.props(...)` host boundary through the shipped `pandwindCssVite(css)` plugin. Only the rating percentage remains a runtime style value.",
+		"The lane uses `createCss(preset)`, static `css.class(...)` declarations, and a multi-map `css(...)` plus `css.props(...)` host boundary through the shipped `yumcssExtractVite(css)` plugin. Only the rating percentage remains a runtime style value.",
 		renderCssInJsBenchScopeNote(snapshot),
 		"",
 		...primaryWorkloads,
@@ -2292,19 +2292,19 @@ const renderNaturalTypecheckRanking = (snapshot: StylingSnapshot | undefined): s
 				`${index + 1}. ${displayLibrary(workload.library)} (${integer(workload.metrics.instantiations)} inst.; ${seconds(workload.metrics.checkTimeSeconds)} s)`,
 		)
 		.join("<br>");
-	const pandwindIndex = ranked.findIndex((workload) => workload.library === "pandwind");
-	const pandwind =
-		pandwindIndex < 0
+	const yumcssIndex = ranked.findIndex((workload) => workload.library === "yumcss");
+	const yumcss =
+		yumcssIndex < 0
 			? "not measured"
-			: `#${pandwindIndex + 1}/${ranked.length} — ${integer(ranked[pandwindIndex]!.metrics.instantiations)} inst.; ${seconds(ranked[pandwindIndex]!.metrics.checkTimeSeconds)} s`;
+			: `#${yumcssIndex + 1}/${ranked.length} — ${integer(ranked[yumcssIndex]!.metrics.instantiations)} inst.; ${seconds(ranked[yumcssIndex]!.metrics.checkTimeSeconds)} s`;
 	return [
 		"## Consumer typecheck: natural CSS usage",
 		"",
 		`TypeScript ${snapshot.environment.typescript}, snapshot updated ${snapshot.updatedAt}; this is the natural-use fixture, not the synthetic stress case. Ranked by instantiations because the short check times are close to process overhead; check time remains visible for context.`,
 		"",
 		markdownTable(
-			["Measure", "Top five", "Pandwind (inferred)"],
-			[["TypeScript instantiations (check time)", topFive, pandwind]],
+			["Measure", "Top five", "YumCSS (inferred)"],
+			[["TypeScript instantiations (check time)", topFive, yumcss]],
 			new Set(),
 		),
 		"",
@@ -2327,19 +2327,19 @@ const renderStaticBundleRanking = (snapshot: EcosystemBundleSnapshot | undefined
 				`${index + 1}. ${ecosystemLibrary(workload.library)} (${signedKilobytes(workload.delta.total.gz)})`,
 		)
 		.join("<br>");
-	const pandwindIndex = ranked.findIndex((workload) => workload.library === "pandwind");
-	const pandwind =
-		pandwindIndex < 0
+	const yumcssIndex = ranked.findIndex((workload) => workload.library === "yumcss");
+	const yumcss =
+		yumcssIndex < 0
 			? "not measured"
-			: `#${pandwindIndex + 1}/${ranked.length} — ${signedKilobytes(ranked[pandwindIndex]!.delta.total.gz)}`;
+			: `#${yumcssIndex + 1}/${ranked.length} — ${signedKilobytes(ranked[yumcssIndex]!.delta.total.gz)}`;
 	return [
 		"## Static production output size",
 		"",
 		`Styled app minus unstyled app baseline, gzip total, snapshot updated ${snapshot.updatedAt}. Lower is smaller.`,
 		"",
 		markdownTable(
-			["Measure", "Top five", "Pandwind"],
-			[["Static output delta", topFive, pandwind]],
+			["Measure", "Top five", "YumCSS"],
+			[["Static output delta", topFive, yumcss]],
 			new Set(),
 		),
 		"",
@@ -2367,7 +2367,7 @@ export const renderPerformanceOverview = (): string => {
 	return [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
 		"",
-		"# Pandwind performance overview",
+		"# YumCSS performance overview",
 		"",
 		"Quick view of the main API and real-world workload comparisons. For complete measurements, synthetic stress cases, snapshots, and methodology, see [PERF.md](PERF.md). Rankings are per metric; there is no single score across unlike workloads.",
 		"",
@@ -2385,8 +2385,8 @@ export const renderPerformanceOverview = (): string => {
 		"",
 		"1. Run the local commands listed at the end of [PERF.md](PERF.md).",
 		"2. In a separate CSS-in-JS Bench checkout, run `pnpm gen:samples --measure=microbench,payload,buildtime`, then `pnpm gen:wpd`, `pnpm verify`, and `pnpm report`.",
-		"3. In CSS-in-JS Arena, refresh the pinned Pandwind tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, four-sweep HMR, and scale measurements. Apply [the unique-scale fixture patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch) before `tools/scale.mjs`; keep parity and source revisions with the results.",
-		"4. Import `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`, update `benchmarks/css-in-js-arena/snapshot.json`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
+		"3. In CSS-in-JS Arena, refresh the pinned YumCSS tarball, pass the six-route geometry and screenshot gates, then run the byte, build, dev-start, four-sweep HMR, and scale measurements. Apply [the unique-scale fixture patch](benchmarks/css-in-js-arena/unique-scale-fixture.patch) before `tools/scale.mjs`; keep parity and source revisions with the results.",
+		"4. Import `BENCHMARK.json` with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <yumcss-commit>`, update `benchmarks/css-in-js-arena/snapshot.json`, then run `pnpm run bench:summary` and `pnpm run bench:summary:check`.",
 		"",
 	].join("\n");
 };
@@ -2425,14 +2425,14 @@ export const renderPerformanceSummary = (): string => {
 	const lines = [
 		"<!-- Generated by scripts/render-performance-summary.mts; do not edit. -->",
 		"",
-		"# Pandwind performance details",
+		"# YumCSS performance details",
 		"",
 		"For the concise real-world comparison, see [PERF-SUMMARY.md](PERF-SUMMARY.md). This detailed report includes committed typecheck, runtime-throughput, bundle-size, generated Tailwind metadata, CSS-in-JS Bench, and Arena snapshots. Lower is better for typecheck/size; higher is better for throughput. Rankings are per workload and metric, not a universal library score.",
 		"",
 		"TypeScript measurements use fresh processes and the pinned TypeScript version in each benchmark. Runtime-throughput measurements are local in-process calls. Runtime-size measurements are minified browser bundles with gzip level 6.",
 		"",
-		...renderPandwindBaselines(packageSnapshot, exampleSnapshot, apiSnapshot),
-		...renderPandwindApiRanking(apiSnapshot),
+		...renderYumCSSBaselines(packageSnapshot, exampleSnapshot, apiSnapshot),
+		...renderYumCSSApiRanking(apiSnapshot),
 	];
 	if (styling !== undefined) {
 		lines.push(
@@ -2462,7 +2462,7 @@ export const renderPerformanceSummary = (): string => {
 	lines.push(
 		"## External benchmark refresh",
 		"",
-		"After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>`. Update the [CSS-in-JS Arena snapshot](benchmarks/css-in-js-arena/snapshot.json) only after its Pandwind lane passes the six-page parity gates; that snapshot drives the Arena rankings in PERF-SUMMARY.md.",
+		"After refreshing CSS-in-JS Bench in a separate checkout, import its generated report with `node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <yumcss-commit>`. Update the [CSS-in-JS Arena snapshot](benchmarks/css-in-js-arena/snapshot.json) only after its YumCSS lane passes the six-page parity gates; that snapshot drives the Arena rankings in PERF-SUMMARY.md.",
 		"",
 	);
 	lines.push(
@@ -2472,9 +2472,9 @@ export const renderPerformanceSummary = (): string => {
 		"- Typecheck ecosystem: `pnpm run bench:tsc:styling -- --update`",
 		"- Generated facade comparison: `pnpm run bench:tsc:generated -- --update`",
 		"- Package/example typecheck: `pnpm run bench:tsc -- --update` and `pnpm run bench:tsc:example -- --update`",
-		"- Public API typecheck: `pnpm --filter pandwind run test:tsc -- -u`",
-		"- Runtime size: `pnpm --filter pandwind exec vitest run runtime-size -u`",
-		"- Runtime API throughput: `pnpm --filter pandwind run test:benchmarks -- -u`",
+		"- Public API typecheck: `pnpm --filter yumcss run test:tsc -- -u`",
+		"- Runtime size: `pnpm --filter yumcss exec vitest run runtime-size -u`",
+		"- Runtime API throughput: `pnpm --filter yumcss run test:benchmarks -- -u`",
 		"- Ecosystem bundle-size comparison: `pnpm run bench:size:ecosystem -- --update`",
 		"- Real-world CSS extraction evidence: `benchmarks/real-world-css-extraction/snapshot.json`",
 		"- Summary freshness: `pnpm run bench:summary:check`",

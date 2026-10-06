@@ -15,7 +15,7 @@ import {
 	requiredAdapterCapabilities,
 	type AdapterCoverageEvidence,
 	type AdapterContractFixture,
-} from "pandwind-codemod/swap";
+} from "@yumcss/codemod/swap";
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 import { completeAdapterMatrixFixtures } from "../packages/codemod/proof/adapter-matrix-fixtures.ts";
 import {
@@ -76,7 +76,7 @@ function parseFixtureEvidence(
 
 function readCheckedInProofMatrix(): ProofMatrix {
 	const matrix = JSON.parse(readFileSync(proofMatrixPath, "utf8")) as ProofMatrix;
-	if (matrix.schema !== "pandwind.real-browser-ssr-proof-matrix/1")
+	if (matrix.schema !== "yumcss.real-browser-ssr-proof-matrix/1")
 		throw new Error(`unsupported proof matrix schema: ${matrix.schema}`);
 	for (const claim of matrix.claims) {
 		const report = resolve(root, claim.report);
@@ -165,7 +165,7 @@ function runOfflineGate(): void {
 			throw new Error(`${claim.id} is both promoted and marked fixture-only`);
 	}
 	for (const adapter of catalog.adapters) {
-		if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative)
+		if (adapter.id === CodemodAdapterId.YumCSS || adapter.id === CodemodAdapterId.ReactNative)
 			continue;
 		if (!referencedAdapters.has(adapter.id))
 			throw new Error(`adapter ${adapter.id} has no pinned real-repository corpus entry`);
@@ -195,7 +195,7 @@ function runOfflineGate(): void {
 		minimumRealRepositoryFixturesPerAdapter: 1,
 		requiredCapabilitiesPerAdapter: ["declarations"],
 		requiredProofDimensionsByAdapter: promotedProofDimensions,
-		excludedAdapters: [CodemodAdapterId.Pandwind, CodemodAdapterId.ReactNative],
+		excludedAdapters: [CodemodAdapterId.YumCSS, CodemodAdapterId.ReactNative],
 		requiredCapabilities: ["declarations"],
 	});
 	if (!coverage.passed)
@@ -203,7 +203,7 @@ function runOfflineGate(): void {
 	console.log(
 		JSON.stringify(
 			{
-				schema: "pandwind.pivot-proof/1",
+				schema: "yumcss.pivot-proof/1",
 				mode: "offline",
 				adapters: catalog.adapters.length,
 				contractFixtures: adapterContractFixtures.length,
@@ -238,9 +238,9 @@ function runOfflineGate(): void {
 
 function runReferenceProof(): void {
 	const output =
-		process.env.PANDWIND_PROOF_OUTPUT ??
-		join(tmpdir(), "pandwind-pivot-proof", "real-repository-migrations-v2.json");
-	const env = { ...process.env, PANDWIND_PROOF_OUTPUT: output };
+		process.env.YUMCSS_PROOF_OUTPUT ??
+		join(tmpdir(), "yumcss-pivot-proof", "real-repository-migrations-v2.json");
+	const env = { ...process.env, YUMCSS_PROOF_OUTPUT: output };
 	execFileSync("pnpm", ["run", "references:prepare"], { cwd: root, stdio: "inherit" });
 	execFileSync("nub", ["scripts/audit-real-repository-pins.ts"], {
 		cwd: root,

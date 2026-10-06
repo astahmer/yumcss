@@ -11,11 +11,11 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { gzipSync } from "node:zlib";
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { writePerformanceSummary } from "../../../scripts/render-performance-summary.mts";
 
 const libraries = [
-	"pandwind",
+	"yumcss",
 	"tailwind",
 	"panda",
 	"stylex",
@@ -23,9 +23,9 @@ const libraries = [
 	"sprinkles",
 	"unocss",
 	"linaria",
-	"pandwind-css",
-	"pandwind-runtime",
-	"pandwind-unsafe",
+	"yumcss-css",
+	"yumcss-runtime",
+	"yumcss-unsafe",
 	"emotion",
 	"styled-components",
 	"goober",
@@ -36,7 +36,7 @@ type Category = "static" | "runtime";
 type Variant = "baseline" | "styled";
 
 const staticLibraries = new Set<Library>([
-	"pandwind",
+	"yumcss",
 	"tailwind",
 	"panda",
 	"stylex",
@@ -64,7 +64,7 @@ type WorkloadResult = {
 	readonly delta: BuildMetrics;
 };
 type Snapshot = {
-	readonly schema: "pandwind.styling-size/1";
+	readonly schema: "yumcss.styling-size/1";
 	readonly source: "runner/benchmark.mts";
 	readonly updatedAt: string;
 	readonly samples: number;
@@ -78,7 +78,7 @@ type Snapshot = {
 	readonly packages: Readonly<Record<string, string>>;
 	readonly workloads: readonly WorkloadResult[];
 	readonly tolerances: {
-		readonly pandwind: { readonly relative: number; readonly absoluteBytes: number };
+		readonly yumcss: { readonly relative: number; readonly absoluteBytes: number };
 	};
 };
 type Options = {
@@ -108,7 +108,7 @@ const benchmarkRoot = resolve(root, "benchmarks/styling-size");
 const generatedRoot = resolve(benchmarkRoot, ".generated");
 const snapshotPath = resolve(benchmarkRoot, "snapshots/bundle-size.json");
 const reportPath = resolve(benchmarkRoot, "snapshots/bundle-size.md");
-const benchmarkPackageName = "pandwind-styling-size-benchmark";
+const benchmarkPackageName = "yumcss-styling-size-benchmark";
 const stylesCount = 12;
 
 const quote = (value: string): string => JSON.stringify(value);
@@ -145,7 +145,7 @@ const intents: readonly StyleIntent[] = Array.from({ length: stylesCount }, (_, 
 const tokenEntries = (entries: readonly (readonly [string, string])[]): string =>
 	entries.map(([key, value]) => `\t\t${quote(key)}: ${quote(value)},`).join("\n");
 
-const pandwindPresetSource = (): string => {
+const yumcssPresetSource = (): string => {
 	const colors: readonly (readonly [string, string])[] = [
 		["$blue-500", "#2563eb"],
 		["$blue-600", "#1d4ed8"],
@@ -169,7 +169,7 @@ const pandwindPresetSource = (): string => {
 			(_, index) => [`catalog-${String(index).padStart(3, "0")}`, `${index + 1}px`] as const,
 		),
 	];
-	return `import { define } from "pandwind/preset";
+	return `import { define } from "yumcss/preset";
 
 const conditions = define.conditions({
 \tbase: "",
@@ -210,7 +210,7 @@ export const preset = define.preset(theme, {
 `;
 };
 
-const pandwindStyleObject = (intent: StyleIntent): Record<string, unknown> => ({
+const yumcssStyleObject = (intent: StyleIntent): Record<string, unknown> => ({
 	display: intent.display,
 	color: `$${intent.colorName}`,
 	backgroundColor: `$${intent.backgroundName}`,
@@ -300,8 +300,8 @@ ${Array.from({ length: stylesCount }, () => '\t"",').join("\n")}
 const staticMain = (library: Library, variant: Variant): string => {
 	if (variant === "baseline") {
 		const imports =
-			library === "pandwind"
-				? 'import "pandwind:css";\n'
+			library === "yumcss"
+				? 'import "yumcss:css";\n'
 				: library === "tailwind"
 					? 'import "./styles.css";\n'
 					: library === "panda"
@@ -312,12 +312,12 @@ const staticMain = (library: Library, variant: Variant): string => {
 		return `${imports}${baselineStyles()}${commonMount("")}`;
 	}
 
-	if (library === "pandwind") {
+	if (library === "yumcss") {
 		return `import { css } from "./css.ts";
-import "pandwind:css";
+import "yumcss:css";
 
 const componentStyles = [
-${intents.map((intent) => `\tcss.class(${JSON.stringify(pandwindStyleObject(intent))}),`).join("\n")}
+${intents.map((intent) => `\tcss.class(${JSON.stringify(yumcssStyleObject(intent))}),`).join("\n")}
 ];
 ${commonMount("")}`;
 	}
@@ -422,8 +422,8 @@ mount(componentStyles);
 const runtimeMain = (library: Library, variant: Variant): string => {
 	if (variant === "baseline") return `${baselineStyles()}${runtimeMount()}`;
 	const declarations = intents.map((intent) => `\tcss.class(${runtimeStyle(intent)}),`).join("\n");
-	if (library === "pandwind-css") {
-		return `import { createCss } from "pandwind/css";
+	if (library === "yumcss-css") {
+		return `import { createCss } from "yumcss/css";
 import { preset } from "./preset.ts";
 
 const css = createCss(preset);
@@ -434,8 +434,8 @@ ${declarations}
 ];
 ${runtimeMount()}`;
 	}
-	if (library === "pandwind-runtime") {
-		return `import { createRuntimeCss } from "pandwind/css/runtime";
+	if (library === "yumcss-runtime") {
+		return `import { createRuntimeCss } from "yumcss/css/runtime";
 import { preset } from "./preset.ts";
 
 const css = createRuntimeCss(preset);
@@ -446,8 +446,8 @@ ${declarations}
 ];
 ${runtimeMount()}`;
 	}
-	if (library === "pandwind-unsafe") {
-		return `import { createUnsafeCss } from "pandwind/unsafe/css";
+	if (library === "yumcss-unsafe") {
+		return `import { createUnsafeCss } from "yumcss/unsafe/css";
 
 const css = createUnsafeCss();
 const runtimeColor = document.documentElement.dataset.color ?? "#2563eb";
@@ -600,15 +600,15 @@ const writeProject = (library: Library, variant: Variant): string => {
 			staticLibraries.has(library) ? staticMain(library, variant) : runtimeMain(library, variant),
 		],
 	]);
-	if (staticLibraries.has(library) && library === "pandwind") {
-		files.set("src/preset.ts", pandwindPresetSource());
+	if (staticLibraries.has(library) && library === "yumcss") {
+		files.set("src/preset.ts", yumcssPresetSource());
 		files.set(
 			"src/css.ts",
-			'import { createCss } from "pandwind/css";\nimport { preset } from "./preset.ts";\n\nexport const css = /* @__PURE__ */ createCss(preset);\n',
+			'import { createCss } from "yumcss/css";\nimport { preset } from "./preset.ts";\n\nexport const css = /* @__PURE__ */ createCss(preset);\n',
 		);
 	}
-	if (library === "pandwind-css" || library === "pandwind-runtime") {
-		files.set("src/preset.ts", pandwindPresetSource());
+	if (library === "yumcss-css" || library === "yumcss-runtime") {
+		files.set("src/preset.ts", yumcssPresetSource());
 	}
 	if (library === "tailwind") files.set("src/styles.css", sharedStylesheetSource());
 	if (library === "panda") files.set("panda.config.ts", pandaConfigSource());
@@ -677,7 +677,7 @@ const preparePanda = (projectRoot: string): void => {
 const stylexPlugin = (): PluginOption => {
 	const rules: Parameters<typeof stylexBabelPlugin.processStylexRules>[0] = [];
 	return {
-		name: "pandwind-benchmark-stylex",
+		name: "yumcss-benchmark-stylex",
 		enforce: "pre",
 		transform(code, id) {
 			if (!id.endsWith("/src/main.js")) return null;
@@ -696,9 +696,9 @@ const stylexPlugin = (): PluginOption => {
 	};
 };
 
-const loadPandwindPreset = async (
+const loadYumCSSPreset = async (
 	projectRoot: string,
-): Promise<Parameters<typeof pandwindCssVite>[0]> => {
+): Promise<Parameters<typeof yumcssExtractVite>[0]> => {
 	const url = pathToFileURL(resolve(projectRoot, "src/preset.ts"));
 	url.search = projectRoot;
 	const module = await import(url.href);
@@ -706,9 +706,9 @@ const loadPandwindPreset = async (
 };
 
 const createPlugins = async (library: Library, projectRoot: string): Promise<PluginOption[]> => {
-	if (library === "pandwind") {
+	if (library === "yumcss") {
 		return [
-			pandwindCssVite(await loadPandwindPreset(projectRoot), {
+			yumcssExtractVite(await loadYumCSSPreset(projectRoot), {
 				root: projectRoot,
 			}),
 		];
@@ -797,8 +797,8 @@ const laneInfo = (
 ): Omit<WorkloadResult, "samples" | "baseline" | "styled" | "delta"> => {
 	if (staticLibraries.has(library)) {
 		const buildMode =
-			library === "pandwind"
-				? "Vite + pandwindCssVite"
+			library === "yumcss"
+				? "Vite + yumcssExtractVite"
 				: library === "panda"
 					? "Panda codegen/cssgen + Vite"
 					: library === "stylex"
@@ -819,12 +819,12 @@ const laneInfo = (
 		};
 	}
 	const buildMode =
-		library === "pandwind-css"
-			? "Vite + pandwind/css"
-			: library === "pandwind-runtime"
-				? "Vite + pandwind/css/runtime"
-				: library === "pandwind-unsafe"
-					? "Vite + pandwind/unsafe/css"
+		library === "yumcss-css"
+			? "Vite + yumcss/css"
+			: library === "yumcss-runtime"
+				? "Vite + yumcss/css/runtime"
+				: library === "yumcss-unsafe"
+					? "Vite + yumcss/unsafe/css"
 					: library === "styled-components"
 						? "Vite + styled.div"
 						: `Vite + ${library}`;
@@ -832,7 +832,7 @@ const laneInfo = (
 		library,
 		category: "runtime",
 		buildMode,
-		cssDelivery: library === "pandwind-css" || library === "pandwind-unsafe" ? "none" : "injected",
+		cssDelivery: library === "yumcss-css" || library === "yumcss-unsafe" ? "none" : "injected",
 		arbitraryRuntimeValues: true,
 	};
 };
@@ -951,7 +951,7 @@ const packageVersions = (): Readonly<Record<string, string>> => {
 		"@wyw-in-js/vite",
 		"esbuild",
 		"goober",
-		"pandwind",
+		"yumcss",
 		"styled-components",
 		"tailwindcss",
 		"unocss",
@@ -973,7 +973,7 @@ const buildSnapshot = (
 	const keys = new Set(workloads.map((workload) => workload.library));
 	const preserved = previous?.workloads.filter((workload) => !keys.has(workload.library)) ?? [];
 	return {
-		schema: "pandwind.styling-size/1",
+		schema: "yumcss.styling-size/1",
 		source: "runner/benchmark.mts",
 		updatedAt: new Date().toISOString().slice(0, 10),
 		samples: runs,
@@ -989,7 +989,7 @@ const buildSnapshot = (
 			(left, right) =>
 				left.category.localeCompare(right.category) || left.library.localeCompare(right.library),
 		),
-		tolerances: { pandwind: { relative: 0.1, absoluteBytes: 128 } },
+		tolerances: { yumcss: { relative: 0.1, absoluteBytes: 128 } },
 	};
 };
 
@@ -999,7 +999,7 @@ const assertNoRegression = (measured: readonly WorkloadResult[], previous: Snaps
 	);
 	const failures: string[] = [];
 	for (const workload of measured) {
-		if (!workload.library.startsWith("pandwind")) continue;
+		if (!workload.library.startsWith("yumcss")) continue;
 		const baseline = previousByLibrary.get(workload.library);
 		if (baseline === undefined)
 			throw new Error(`Missing ${workload.library} baseline; run with --update first`);
@@ -1018,7 +1018,7 @@ const assertNoRegression = (measured: readonly WorkloadResult[], previous: Snaps
 		}
 	}
 	if (failures.length > 0)
-		throw new Error("Pandwind ecosystem bundle-size regression:\n- " + failures.join("\n- "));
+		throw new Error("YumCSS ecosystem bundle-size regression:\n- " + failures.join("\n- "));
 };
 
 const formatSize = (value: number): string => {
@@ -1051,7 +1051,7 @@ const markdownTable = (
 
 const displayLibrary = (library: Library): string =>
 	({
-		pandwind: "Pandwind css() (static)",
+		yumcss: "YumCSS css() (static)",
 		tailwind: "Tailwind CSS",
 		panda: "Panda CSS",
 		stylex: "StyleX",
@@ -1059,9 +1059,9 @@ const displayLibrary = (library: Library): string =>
 		sprinkles: "Sprinkles",
 		unocss: "UnoCSS",
 		linaria: "Linaria",
-		"pandwind-css": "Pandwind css() (dynamic)",
-		"pandwind-runtime": "Pandwind createRuntimeCss()",
-		"pandwind-unsafe": "Pandwind createUnsafeCss()",
+		"yumcss-css": "YumCSS css() (dynamic)",
+		"yumcss-runtime": "YumCSS createRuntimeCss()",
+		"yumcss-unsafe": "YumCSS createUnsafeCss()",
 		emotion: "Emotion",
 		"styled-components": "styled-components",
 		goober: "Goober",
@@ -1114,11 +1114,11 @@ const renderReport = (snapshot: Snapshot): string => {
 		"",
 		renderRows(staticWorkloads),
 		"",
-		"Runtime lanes create styles from a dynamic value. CSS asset deltas do not include browser-created rules; the CSS delivery column distinguishes libraries that inject them from Pandwind fallback lanes that only return carriers and require a host stylesheet:",
+		"Runtime lanes create styles from a dynamic value. CSS asset deltas do not include browser-created rules; the CSS delivery column distinguishes libraries that inject them from YumCSS fallback lanes that only return carriers and require a host stylesheet:",
 		"",
 		renderRows(runtimeWorkloads),
 		"",
-		"The application intent is a repeated button/card workload with colors, spacing, radii, hover, and responsive styles. Competitor rows are descriptive; Pandwind rows are regression-gated.",
+		"The application intent is a repeated button/card workload with colors, spacing, radii, hover, and responsive styles. Competitor rows are descriptive; YumCSS rows are regression-gated.",
 		"",
 		"## Package versions",
 		"",

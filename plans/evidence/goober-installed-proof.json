@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.installed-adapter-proof/1",
+  "schema": "yumcss.installed-adapter-proof/1",
   "adapter": "goober",
   "referenceCommit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
   "sourcePath": "src/__tests__/css.test.js",
@@ -15,7 +15,7 @@
     "sourceFixtureContainsStyleCall": true,
     "sourceImportReboundToInstalledPackage": true,
     "sourceImportRemovedFromTarget": true,
-    "targetCodeContainsPandwind": true
+    "targetCodeContainsYumCSS": true
   },
   "ssr": {
     "checked": true,

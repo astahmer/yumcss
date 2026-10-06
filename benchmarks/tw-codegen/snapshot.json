@@ -9,8 +9,8 @@
 		"vite": "8.2.2"
 	},
 	"source": {
-		"beforePandwindRevision": "5a4797777994da5ba93f5b9ffeacc1059c6b64a9",
-		"afterPandwindChange": "xlqxnyqlywumvszkwwowypxznqorynlt"
+		"beforeYumCSSRevision": "5a4797777994da5ba93f5b9ffeacc1059c6b64a9",
+		"afterYumCSSChange": "xlqxnyqlywumvszkwwowypxznqorynlt"
 	},
 	"defaultCatalogGate": {
 		"utilities": 414,
@@ -18,7 +18,7 @@
 		"typesDtsRawBytes": 134434,
 		"interopRawBytes": 723737,
 		"interopGzipBytes": 35581,
-		"pandwindPackageTarballBytes": 338079
+		"yumcssPackageTarballBytes": 338079
 	},
 	"playground": {
 		"generatedArtifacts": {
@@ -26,12 +26,12 @@
 			"beforeTotalRawBytes": 1248282,
 			"afterTotalRawBytes": 1015391,
 			"interopBefore": {
-				"schema": "pandwind.interop/1",
+				"schema": "yumcss.interop/1",
 				"rawBytes": 781244,
 				"gzipBytes": 43563
 			},
 			"interopAfter": {
-				"schema": "pandwind.interop/2",
+				"schema": "yumcss.interop/2",
 				"rawBytes": 548353,
 				"gzipBytes": 39537
 			},

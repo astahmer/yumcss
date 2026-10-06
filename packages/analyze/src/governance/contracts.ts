@@ -50,7 +50,7 @@ export interface GovernanceProvenance {
 	readonly source: TokenDefinitionSource;
 	/** Project-relative file, when the fact came from a file. */
 	readonly file?: string;
-	/** Loader/adapter that produced the fact (for example "pandwind"). */
+	/** Loader/adapter that produced the fact (for example "yumcss"). */
 	readonly origin?: string;
 	/** Human-readable detail (config path, artifact path, import chain). */
 	readonly detail?: string;
@@ -117,7 +117,7 @@ export interface TokenUsage {
 /**
  * Effective strict-token policy snapshot. resolved=false means the policy
  * could not be evaluated — every strictness in the report must then be
- * "unknown" (report-only, fail-open). Pandwind never invents strictness
+ * "unknown" (report-only, fail-open). YumCSS never invents strictness
  * from a guessed preset.
  */
 export interface TokenPolicySnapshot {

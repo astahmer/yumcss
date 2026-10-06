@@ -1,4 +1,4 @@
-/** Pandwind CSS type-codegen tooling. */
+/** YumCSS CSS type-codegen tooling. */
 export {
 	GENERATED_CSS_TYPES_HEADER,
 	generateCssTypes,

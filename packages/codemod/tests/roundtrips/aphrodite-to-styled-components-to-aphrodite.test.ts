@@ -42,7 +42,7 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "aphrodite -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,7 +140,7 @@ test("aphrodite -> styled-components -> aphrodite: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
+		// yumcss:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("aphrodite -> styled-components -> aphrodite: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
+		// yumcss:migrate-skip (route: aphrodite -> styled-components | lowering-residual: validation)
 		export const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -262,7 +262,7 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -336,7 +336,7 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -425,7 +425,7 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

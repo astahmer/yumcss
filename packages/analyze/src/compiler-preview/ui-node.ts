@@ -14,7 +14,7 @@ export const createNodeCompilerPreviewUiProvider = (): CompilerPreviewUiPort => 
 				cached = await readFile(artifact, "utf8");
 			} catch {
 				throw new Error(
-					"Compiler Preview UI is not built; run the pandwind-analyze package build first",
+					"Compiler Preview UI is not built; run the yumcss-analyze package build first",
 				);
 			}
 		}

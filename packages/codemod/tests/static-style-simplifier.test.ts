@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { simplifyPandwindStaticStyles } from "../src/swap/static-style-simplifier.ts";
+import { simplifyYumCSSStaticStyles } from "../src/swap/static-style-simplifier.ts";
 
-describe("simplifyPandwindStaticStyles", () => {
+describe("simplifyYumCSSStaticStyles", () => {
 	it("merges static classes and promotes Stack layout to native props", () => {
-		const source = `import { cx } from "./pandwind/cx";
+		const source = `import { cx } from "./yumcss/cx";
 
 const View = () => (
 		<Stack className={cx(
@@ -13,44 +13,44 @@ const View = () => (
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
 		expect(result.code).toContain(
 			'<Stack direction="column" gap="0" padding="2" align="center" className={css.class({ color: "red" })} />',
 		);
 		expect(result.code).not.toContain("cx(");
-		expect(result.code).not.toContain('from "./pandwind/cx"');
+		expect(result.code).not.toContain('from "./yumcss/cx"');
 	});
 
 	it("keeps dynamic class composition intact", () => {
-		const source = `import { cx } from "./pandwind/cx";
+		const source = `import { cx } from "./yumcss/cx";
 const className = "external";
 const View = () => <div className={cx(css.class({ color: "red" }), className)} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
 		expect(result.code).toContain(
 			'className={css.props(css.class({ color: "red" }), className).className}',
 		);
-		expect(result.code).not.toContain('from "./pandwind/cx"');
+		expect(result.code).not.toContain('from "./yumcss/cx"');
 	});
 
 	it("promotes static Stack layout while preserving a dynamic class", () => {
-		const source = `import { cx } from "./pandwind/cx";
+		const source = `import { cx } from "./yumcss/cx";
 const View = ({ className }: { className?: string }) => (
 		<Stack className={cx(css.class({ display: "flex", flexDirection: "column", alignItems: "center", color: "red" }), className)} />
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
 			'<Stack direction="column" align="center" className={css.props(css.class({ color: "red" }), className).className} />',
 		);
-		expect(result.code).not.toContain('import { cx } from "./pandwind/cx";');
+		expect(result.code).not.toContain('import { cx } from "./yumcss/cx";');
 	});
 
 	it("keeps responsive Stack values in the class", () => {
@@ -63,7 +63,7 @@ const View = ({ className }: { className?: string }) => (
 		})} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain('direction="column"');
 		expect(result.code).toContain('padding="2"');
@@ -76,7 +76,7 @@ const View = ({ className }: { className?: string }) => (
 	it("merges duplicate primitive declarations with last-wins semantics", () => {
 		const source = `<div className={cx(css.class({ color: "red" }), css.class({ color: "blue" }))} />;`;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
 		expect(result.code).toContain('className={css.class({ color: "blue" })}');
@@ -85,7 +85,7 @@ const View = ({ className }: { className?: string }) => (
 	it("merges responsive declarations by condition", () => {
 		const source = `<div className={cx(css.class({ color: { base: "red", md: "green" } }), css.class({ color: { base: "blue" } }))} />;`;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(true);
 		expect(result.code).toContain(
@@ -98,14 +98,14 @@ const View = ({ className }: { className?: string }) => (
 			<div className={css.class({ color })} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.changed).toBe(false);
 		expect(result.code).toBe(source);
 	});
 
 	it("hoists a named static carrier instead of leaving a render-local alias", () => {
-		const source = `import { css } from "./pandwind/css";
+		const source = `import { css } from "./yumcss/css";
 
 const View = () => {
 		const chipClassName = css.class({ color: "red" });
@@ -113,19 +113,19 @@ const View = () => {
 };
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx", {
 			hoistStaticStyles: true,
 		});
 
 		expect(result.code).toContain('const chipClassName = css.class({ color: "red" });');
 		expect(result.code).toContain("return <div className={chipClassName} />;");
 		expect(result.code).not.toContain("const chipClassName = staticClassName");
-		expect(result.code).toContain('from "./pandwind/css"');
+		expect(result.code).toContain('from "./yumcss/css"');
 	});
 
 	it("passes hoisted static carriers through css.props instead of cx", () => {
-		const source = `import { cx } from "./pandwind/cx";
-import { css } from "./pandwind/css";
+		const source = `import { cx } from "./yumcss/cx";
+import { css } from "./yumcss/css";
 
 const baseClassName = css.class({ color: "red" });
 const View = ({ className }: { className?: string }) => (
@@ -133,24 +133,24 @@ const View = ({ className }: { className?: string }) => (
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
 			'className={css.props(baseClassName, "external", className).className}',
 		);
 		expect(result.code).not.toContain("cx(");
-		expect(result.code).not.toContain('from "./pandwind/cx"');
+		expect(result.code).not.toContain('from "./yumcss/cx"');
 	});
 
 	it("collapses css.props when every carrier is static", () => {
-		const source = `import { css } from "./pandwind/css";
+		const source = `import { css } from "./yumcss/css";
 
 const baseClassName = css.class({ color: "red" });
 const emphasisClassName = css.class({ fontWeight: "700" });
 const View = () => <div className={css.props(baseClassName, emphasisClassName).className} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx", {
 			hoistStaticStyles: true,
 		});
 
@@ -164,7 +164,7 @@ const View = () => <div className={css.props(baseClassName, emphasisClassName).c
 	});
 
 	it("keeps css.props when a carrier is combined with a runtime class", () => {
-		const source = `import { css } from "./pandwind/css";
+		const source = `import { css } from "./yumcss/css";
 
 const baseClassName = css.class({ color: "red" });
 const View = ({ className }: { className?: string }) => (
@@ -172,13 +172,13 @@ const View = ({ className }: { className?: string }) => (
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain("css.props(baseClassName, className).className");
 	});
 
 	it("merges contiguous static css.props carriers around runtime values", () => {
-		const source = `import { css } from "./pandwind/css";
+		const source = `import { css } from "./yumcss/css";
 
 const baseClassName = css.class({ color: "red" });
 const emphasisClassName = css.class({ fontWeight: "700" });
@@ -187,24 +187,24 @@ const View = ({ className }: { className?: string }) => (
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
 			'className={css.props(css.class({ color: "red", fontWeight: "700" }), className).className}',
 		);
-		expect(result.code).toContain('from "./pandwind/css"');
+		expect(result.code).toContain('from "./yumcss/css"');
 	});
 
 	it("preserves dynamic and static class order", () => {
-		const source = `import { cx } from "./pandwind/cx";
-import { css } from "./pandwind/css";
+		const source = `import { cx } from "./yumcss/cx";
+import { css } from "./yumcss/css";
 
 const View = ({ className }: { className?: string }) => (
 		<div className={cx(className, css.class({ color: "red" }))} />
 );
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
 		expect(result.code).toContain(
 			'className={css.props(className, css.class({ color: "red" })).className}',
@@ -213,35 +213,35 @@ const View = ({ className }: { className?: string }) => (
 	});
 
 	it("removes an unused css import after Stack migration", () => {
-		const source = `import { css } from "./pandwind/css";
+		const source = `import { css } from "./yumcss/css";
 
 const View = () => <Stack direction="column" />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx");
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx");
 
-		expect(result.code).not.toContain('from "./pandwind/css"');
+		expect(result.code).not.toContain('from "./yumcss/css"');
 	});
 
 	it("preserves authored static class declarations when no composition was simplified", () => {
-		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 const card = css.class({ color: "red" });
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "unused.ts");
+		const result = simplifyYumCSSStaticStyles(source, "unused.ts");
 
 		expect(result.code).toContain('const card = css.class({ color: "red" });');
 	});
 
 	it("inserts hoisted classes after a module css initializer", () => {
-		const source = `import { createUnsafeCss } from "pandwind/unsafe/css";
+		const source = `import { createUnsafeCss } from "yumcss/unsafe/css";
 const css = createUnsafeCss();
 
 const View = () => <div className={css.class({ color: "red" })} />;
 `;
 
-		const result = simplifyPandwindStaticStyles(source, "View.tsx", {
+		const result = simplifyYumCSSStaticStyles(source, "View.tsx", {
 			hoistStaticStyles: true,
 		});
 

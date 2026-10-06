@@ -42,7 +42,7 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="blue" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -160,7 +160,7 @@ test("mantine -> vanilla-extract -> mantine: retains the documented secondary AP
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | parse-residual: host-framework | lowering-residual: capability | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -204,7 +204,7 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -241,7 +241,7 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -257,7 +257,7 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -294,7 +294,7 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -325,7 +325,7 @@ test("mantine -> vanilla-extract -> mantine: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -362,7 +362,7 @@ test("mantine -> vanilla-extract -> mantine: resolves token values across both c
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box c="brand.0" mx="auto" maw={400} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

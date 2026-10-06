@@ -13,7 +13,7 @@ const target = (
 	adapter: string,
 	capabilities: Partial<Record<AdapterCapabilityTag, AdapterCapabilityLevelTag>>,
 ) => ({
-	schema: "pandwind.adapter-capabilities/1" as const,
+	schema: "yumcss.adapter-capabilities/1" as const,
 	adapter,
 	capabilities,
 });
@@ -142,7 +142,7 @@ describe("static-first lowering capability families", () => {
 		expect(plan.program.declarations[0]?.value).toMatchInlineSnapshot(`
 			{
 			  "kind": "literal",
-			  "value": "var(--pandwind-dynamic-1jykje6)",
+			  "value": "var(--yumcss-dynamic-1jykje6)",
 			}
 		`);
 		expect(plan.residuals).toEqual([

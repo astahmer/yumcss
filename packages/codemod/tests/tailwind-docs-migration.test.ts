@@ -9,7 +9,7 @@ const referenceAvailability = await ensureReferenceWorkspace("tailwindcss.com");
 const referenceRoot = referenceAvailability.path;
 
 describe("Tailwind docs migration corpus", () => {
-	test("covers every supported Pandwind lane from the pinned corpus", async () => {
+	test("covers every supported YumCSS lane from the pinned corpus", async () => {
 		for (const lane of TailwindDocsMigration.lanes) {
 			const report = await TailwindDocsMigration.run(lane, { referenceRoot });
 			expect(report.referenceCommit).toMatch(/^[0-9a-f]{40}$/);

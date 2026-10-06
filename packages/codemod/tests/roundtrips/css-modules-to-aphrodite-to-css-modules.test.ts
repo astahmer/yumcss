@@ -42,7 +42,7 @@ test("css-modules -> aphrodite -> css-modules: preserves an actionable concrete 
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "css-modules -> aphrodite round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -52,7 +52,7 @@ test("css-modules -> aphrodite -> css-modules: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -88,7 +88,7 @@ test("css-modules -> aphrodite -> css-modules: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; padding: 1rem; }",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -116,7 +116,7 @@ test("css-modules -> aphrodite -> css-modules: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -169,7 +169,7 @@ test("css-modules -> aphrodite -> css-modules: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+		    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 		.card { color: red; }
 		.primary { composes: card; font-weight: 600; }",
 		    "converted": 0,
@@ -252,7 +252,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -330,7 +330,7 @@ test("css-modules -> aphrodite -> css-modules: preserves concrete theme and proj
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		      "converted": 0,
@@ -423,7 +423,7 @@ test("css-modules -> aphrodite -> css-modules: resolves token values across both
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-		// pandwind:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: aphrodite -> css-modules | lowering-residual: capability | available: static, named-map, residual)
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "1rem" }) };
 		export default styles;",
 		    "converted": 0,

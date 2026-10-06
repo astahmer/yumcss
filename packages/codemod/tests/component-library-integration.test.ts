@@ -2,10 +2,10 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } f
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
-import { buildPandwindLib } from "../src/lib/build.ts";
-import { pandwindCssVite } from "pandwind/vite";
-import { validatePandwindLibArtifact } from "pandwind/vite/lib-artifact";
+import { examplePreset } from "@yumcss/example-preset";
+import { buildYumCSSLib } from "../src/lib/build.ts";
+import { yumcssExtractVite } from "yumcss/vite";
+import { validateYumCSSLibArtifact } from "yumcss/vite/lib-artifact";
 
 const temporaryDirectories: string[] = [];
 
@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 const copyFixture = (): string => {
-	const root = mkdtempSync(join(tmpdir(), "pandwind-component-library-"));
+	const root = mkdtempSync(join(tmpdir(), "yumcss-component-library-"));
 	temporaryDirectories.push(root);
 	cpSync(resolve(import.meta.dirname, "fixtures/component-library"), root, { recursive: true });
 	return root;
@@ -26,34 +26,34 @@ describe("component-library JS and CSS distribution", () => {
 		const libraryRoot = copyFixture();
 		const sourcePath = join(libraryRoot, "src/card.ts");
 		const source = readFileSync(sourcePath, "utf8");
-		const libraryPlugin = pandwindCssVite(examplePreset, { root: libraryRoot });
+		const libraryPlugin = yumcssExtractVite(examplePreset, { root: libraryRoot });
 		const transformed = await libraryPlugin.transform!.call(null, source, sourcePath);
 
 		expect(transformed).not.toBeNull();
-		expect(transformed).toMatchObject({ code: expect.stringContaining("pandwind:runtime/css") });
+		expect(transformed).toMatchObject({ code: expect.stringContaining("yumcss:runtime/css") });
 		expect(transformed?.code).toContain("createDesignCss(undefined)");
-		expect(transformed?.code).not.toContain("@pandwind/example-preset");
+		expect(transformed?.code).not.toContain("@yumcss/example-preset");
 
-		const built = buildPandwindLib({
+		const built = buildYumCSSLib({
 			root: libraryRoot,
 			preset: examplePreset,
 			sourcePatterns: ["src"],
 		});
 		expect(built.files).toEqual([sourcePath]);
-		expect(validatePandwindLibArtifact(built.artifact)).toMatchObject({ valid: true });
+		expect(validateYumCSSLibArtifact(built.artifact)).toMatchObject({ valid: true });
 		expect(built.artifact.rules.atomic.length).toBeGreaterThan(0);
 		expect(built.artifact.rules.atomic.some((rule) => rule.css.includes("background-color"))).toBe(
 			true,
 		);
 		expect(built.artifact.rules.atomic.some((rule) => rule.css.includes("padding"))).toBe(true);
 
-		const outputPath = join(libraryRoot, "dist/pandwind.lib.json");
+		const outputPath = join(libraryRoot, "dist/yumcss.lib.json");
 		mkdirSync(join(libraryRoot, "dist"), { recursive: true });
 		writeFileSync(outputPath, `${JSON.stringify(built.artifact, null, "\t")}\n`);
 
-		const consumerRoot = mkdtempSync(join(tmpdir(), "pandwind-component-consumer-"));
+		const consumerRoot = mkdtempSync(join(tmpdir(), "yumcss-component-consumer-"));
 		temporaryDirectories.push(consumerRoot);
-		const consumerPlugin = pandwindCssVite(examplePreset, {
+		const consumerPlugin = yumcssExtractVite(examplePreset, {
 			root: consumerRoot,
 			libraries: ["@acme/ui"],
 		});
@@ -73,8 +73,8 @@ describe("component-library JS and CSS distribution", () => {
 			},
 		});
 
-		expect(requested).toBe("@acme/ui/pandwind.lib.json");
-		const virtualId = consumerPlugin.resolveId("pandwind:css");
+		expect(requested).toBe("@acme/ui/yumcss.lib.json");
+		const virtualId = consumerPlugin.resolveId("yumcss:css");
 		expect(consumerPlugin.load(virtualId!)).toContain("background-color");
 		expect(
 			await consumerPlugin.transform!.call(

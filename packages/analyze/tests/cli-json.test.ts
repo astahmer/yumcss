@@ -36,7 +36,7 @@ describe("runCli --json", () => {
 		const doc = JSON.parse(output) as Record<string, unknown>;
 
 		expect(doc["schema"]).toBe(ANALYZE_JSON_SCHEMA);
-		expect(doc["schema"]).toBe("pandwind.analyze/1");
+		expect(doc["schema"]).toBe("yumcss.analyze/1");
 		expect(doc["authoredCss"]).toEqual([]);
 		expect(doc["cssSources"]).toEqual([]);
 		expect(doc["cssDiagnostics"]).toEqual([]);
@@ -70,7 +70,7 @@ describe("runCli --json", () => {
 	test("without --json the same invocation prints the human table", async () => {
 		seed({ "a.ts": 'export const a = cx("px-2", "py-4");' });
 		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
-		expect(human).toContain("pandwind analyze — fold coverage");
+		expect(human).toContain("yumcss analyze — fold coverage");
 		expect(human).not.toContain('"schema"');
 	});
 

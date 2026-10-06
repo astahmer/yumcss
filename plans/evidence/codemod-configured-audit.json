@@ -1,13 +1,13 @@
 {
-  "schema": "pandwind.codemod-configured-audit/1",
+  "schema": "yumcss.codemod-configured-audit/1",
   "sourceFingerprint": "e3c65e6e790ea8fbe8f386599fd86fff4c76827cdab952141b641038c40c7d60",
   "sourceRevision": "460f0875ab6fb42f5f2519e57d57ffc8a55d63f5",
-  "scope": "48 primary route scenarios across eight foreign audited families and Pandwind. Configured cases use injected fixture configuration ports; target installation is proved separately. Identity routes excluded.",
+  "scope": "48 primary route scenarios across eight foreign audited families and YumCSS. Configured cases use injected fixture configuration ports; target installation is proved separately. Identity routes excluded.",
   "scenarios": [
     {
       "route": {
         "from": "chakra-ui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "source-preserved-without-recognition",
@@ -22,7 +22,7 @@
     {
       "route": {
         "from": "chakra-ui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -46,7 +46,7 @@
     {
       "route": {
         "from": "chakra-ui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -69,13 +69,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "chakra-ui"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -93,13 +93,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "chakra-ui"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -117,13 +117,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "chakra-ui"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -142,7 +142,7 @@
     {
       "route": {
         "from": "tailwind",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -166,7 +166,7 @@
     {
       "route": {
         "from": "tailwind",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -190,7 +190,7 @@
     {
       "route": {
         "from": "tailwind",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -213,13 +213,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tailwind"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -237,13 +237,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tailwind"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -261,13 +261,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tailwind"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -286,7 +286,7 @@
     {
       "route": {
         "from": "stylex",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -310,7 +310,7 @@
     {
       "route": {
         "from": "stylex",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -334,7 +334,7 @@
     {
       "route": {
         "from": "stylex",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -357,13 +357,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "stylex"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -381,13 +381,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "stylex"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -405,13 +405,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "stylex"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -430,7 +430,7 @@
     {
       "route": {
         "from": "tokenami",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -454,7 +454,7 @@
     {
       "route": {
         "from": "tokenami",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -478,7 +478,7 @@
     {
       "route": {
         "from": "tokenami",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -501,13 +501,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tokenami"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -525,13 +525,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tokenami"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -549,13 +549,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "tokenami"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -574,7 +574,7 @@
     {
       "route": {
         "from": "unocss",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "residual",
@@ -605,7 +605,7 @@
     {
       "route": {
         "from": "unocss",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -629,7 +629,7 @@
     {
       "route": {
         "from": "unocss",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -652,13 +652,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "unocss"
       },
       "configuration": "missing",
       "disposition": "residual",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 0,
       "skipped": 1,
       "residuals": [
@@ -715,13 +715,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "unocss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -739,13 +739,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "unocss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -764,7 +764,7 @@
     {
       "route": {
         "from": "styled-components",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -788,7 +788,7 @@
     {
       "route": {
         "from": "styled-components",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -808,13 +808,13 @@
         }
       ],
       "generatedFiles": [
-        "__pandwind/slot.tsx"
+        "__yumcss/slot.tsx"
       ]
     },
     {
       "route": {
         "from": "styled-components",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -834,18 +834,18 @@
         }
       ],
       "generatedFiles": [
-        "__pandwind/slot.tsx"
+        "__yumcss/slot.tsx"
       ]
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "styled-components"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -863,13 +863,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "styled-components"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -887,13 +887,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "styled-components"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -912,7 +912,7 @@
     {
       "route": {
         "from": "mui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -936,7 +936,7 @@
     {
       "route": {
         "from": "mui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -960,7 +960,7 @@
     {
       "route": {
         "from": "mui",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -983,13 +983,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "mui"
       },
       "configuration": "missing",
       "disposition": "residual",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 0,
       "skipped": 1,
       "residuals": [
@@ -1004,13 +1004,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "mui"
       },
       "configuration": "configured-blue",
       "disposition": "residual",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 0,
       "skipped": 1,
       "residuals": [
@@ -1025,13 +1025,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "mui"
       },
       "configuration": "configured-amber",
       "disposition": "residual",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 0,
       "skipped": 1,
       "residuals": [
@@ -1047,7 +1047,7 @@
     {
       "route": {
         "from": "panda",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "missing",
       "disposition": "converted",
@@ -1071,7 +1071,7 @@
     {
       "route": {
         "from": "panda",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
@@ -1095,7 +1095,7 @@
     {
       "route": {
         "from": "panda",
-        "to": "pandwind"
+        "to": "yumcss"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
@@ -1118,13 +1118,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "panda"
       },
       "configuration": "missing",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -1142,13 +1142,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "panda"
       },
       "configuration": "configured-blue",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],
@@ -1166,13 +1166,13 @@
     },
     {
       "route": {
-        "from": "pandwind",
+        "from": "yumcss",
         "to": "panda"
       },
       "configuration": "configured-amber",
       "disposition": "converted",
       "inputFile": "styles.ts",
-      "input": "import { createUnsafeCss } from \"pandwind/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
+      "input": "import { createUnsafeCss } from \"yumcss/unsafe/css\";\nconst css = createUnsafeCss();\nexport const card = css.class({ color: \"red\", padding: \"1rem\" });",
       "converted": 1,
       "skipped": 0,
       "residuals": [],

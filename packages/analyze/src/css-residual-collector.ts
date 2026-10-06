@@ -1,4 +1,4 @@
-import type { TwConfig } from "pandwind/vite/inline";
+import type { TwConfig } from "yumcss/vite/inline";
 
 export interface MissingCssSite {
 	readonly line: number;

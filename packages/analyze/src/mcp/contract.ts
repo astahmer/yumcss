@@ -93,16 +93,16 @@ export type McpBenchmarkMeasurementMode =
 	(typeof MCP_BENCHMARK_MEASUREMENT_MODE)[keyof typeof MCP_BENCHMARK_MEASUREMENT_MODE];
 
 export const MCP_RESOURCE = {
-	AdapterCatalog: "pandwind://catalog",
-	OfficialApiMatrix: "pandwind://api-matrix",
-	MigrationRouteCatalog: "pandwind://migration/routes",
-	ProjectEvidence: "pandwind://project/evidence",
-	ProjectConfiguration: "pandwind://project/configuration",
-	LatestMigration: "pandwind://migration/latest",
-	ResidualExplanations: "pandwind://migration/residuals",
-	InteropArtifact: "pandwind://project/pandwind.interop.json",
-	LatestStylePrograms: "pandwind://migration/style-programs/latest",
-	LatestComparison: "pandwind://migration/comparison/latest",
+	AdapterCatalog: "yumcss://catalog",
+	OfficialApiMatrix: "yumcss://api-matrix",
+	MigrationRouteCatalog: "yumcss://migration/routes",
+	ProjectEvidence: "yumcss://project/evidence",
+	ProjectConfiguration: "yumcss://project/configuration",
+	LatestMigration: "yumcss://migration/latest",
+	ResidualExplanations: "yumcss://migration/residuals",
+	InteropArtifact: "yumcss://project/yumcss.interop.json",
+	LatestStylePrograms: "yumcss://migration/style-programs/latest",
+	LatestComparison: "yumcss://migration/comparison/latest",
 } as const;
 
 export const MCP_MIGRATION_MODE = {

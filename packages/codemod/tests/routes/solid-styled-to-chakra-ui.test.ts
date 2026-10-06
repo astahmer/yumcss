@@ -40,10 +40,10 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "solid-styled -> chakra-ui happy");
 	expectExplicitResidualEvidence(result);
@@ -51,7 +51,7 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -100,7 +100,7 @@ test("solid-styled -> chakra-ui: carries a documented secondary solid-styled API
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -158,7 +158,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -198,7 +198,7 @@ test("solid-styled -> chakra-ui: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -250,7 +250,7 @@ test("solid-styled -> chakra-ui: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2a57c8; padding: 1rem;\`;",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -299,7 +299,7 @@ test("solid-styled -> chakra-ui: preserves malformed concrete solid-styled input
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		// pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 0,

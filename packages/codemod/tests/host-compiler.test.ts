@@ -27,7 +27,7 @@ describe("framework-native host compiler contract", () => {
 
 	test("delegates React stack folding through the native compiler seam", () => {
 		const plugin = createHostCompilerPlugin("react");
-		const source = `import { Stack } from "pandwind/stack";\nexport const App = () => <Stack gap={4}>hi</Stack>;`;
+		const source = `import { Stack } from "yumcss/stack";\nexport const App = () => <Stack gap={4}>hi</Stack>;`;
 		const result = plugin.transform(source, {
 			file: "App.tsx",
 			framework: "react",
@@ -39,7 +39,7 @@ describe("framework-native host compiler contract", () => {
 
 	test("reports native delegation gaps instead of silently rewriting other hosts", () => {
 		const plugin = createHostCompilerPlugin("vue");
-		const source = `<script>import Stack from "pandwind/stack";</script><Stack gap={4} />`;
+		const source = `<script>import Stack from "yumcss/stack";</script><Stack gap={4} />`;
 		const result = plugin.transform(source, {
 			file: "App.vue",
 			framework: "vue",

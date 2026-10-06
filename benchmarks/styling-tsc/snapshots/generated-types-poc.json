@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.generated-types-poc/1",
+	"schema": "yumcss.generated-types-poc/1",
 	"source": "runner/generated-types-poc.mts",
 	"updatedAt": "2026-09-23",
 	"samples": 3,
@@ -15,7 +15,7 @@
 			"scenario": "huge",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/generated/huge/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/huge/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/huge/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 47829,
@@ -32,7 +32,7 @@
 			"scenario": "huge",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/inferred/huge/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/huge/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/huge/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 75738,
@@ -48,7 +48,7 @@
 			"scenario": "large",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/generated/large/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/large/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/large/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 36885,
@@ -65,7 +65,7 @@
 			"scenario": "large",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/inferred/large/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/large/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/large/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 54042,
@@ -81,7 +81,7 @@
 			"scenario": "medium",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/generated/medium/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/medium/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/medium/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 34149,
@@ -98,7 +98,7 @@
 			"scenario": "medium",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/inferred/medium/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/medium/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/medium/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 48618,
@@ -114,7 +114,7 @@
 			"scenario": "minimal",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/generated/minimal/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/minimal/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/generated/minimal/tsconfig.json",
 			"metrics": {
 				"files": 81,
 				"symbols": 33465,
@@ -131,7 +131,7 @@
 			"scenario": "minimal",
 			"samples": 3,
 			"project": ".generated/generated-types-poc/inferred/minimal/tsconfig.json",
-			"command": "pnpm --filter pandwind-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/minimal/tsconfig.json",
+			"command": "pnpm --filter yumcss-styling-tsc-benchmark exec tsc --noEmit --extendedDiagnostics --pretty false --project .generated/generated-types-poc/inferred/minimal/tsconfig.json",
 			"metrics": {
 				"files": 89,
 				"symbols": 47262,

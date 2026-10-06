@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 
 describe("playground migration interop metadata", () => {

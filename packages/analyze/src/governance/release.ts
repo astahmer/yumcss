@@ -5,7 +5,7 @@ import {
 	type TokenGroup,
 	type TokenJsonValue,
 	type TokenValue,
-} from "pandwind-codemod/swap/token-document";
+} from "@yumcss/codemod/swap/token-document";
 import type { GovernanceCoverageBoundary, TokenGovernanceReport } from "./contracts.ts";
 import {
 	TOKEN_RELEASE_CHANGE_KINDS,

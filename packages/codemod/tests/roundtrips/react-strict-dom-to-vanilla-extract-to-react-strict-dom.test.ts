@@ -42,7 +42,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves an acti
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "react-strict-dom -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves an acti
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -91,7 +91,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves an acti
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "red", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -157,7 +157,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: retains the docum
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { keyframes } from "@vanilla-extract/css";
-		// pandwind:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
+		// yumcss:migrate-skip (route: vanilla-extract -> react-strict-dom | lowering-residual: validation)
 		export const pulse = keyframes({ "from": { opacity: 0 }, "to": { opacity: 1 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -234,7 +234,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves concret
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -272,7 +272,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves concret
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -289,7 +289,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves concret
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -327,7 +327,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: preserves concret
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		      "converted": 0,
@@ -359,7 +359,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: resolves token va
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,
@@ -397,7 +397,7 @@ test("react-strict-dom -> vanilla-extract -> react-strict-dom: resolves token va
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css, html } from "react-strict-dom";
-		// pandwind:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: react-strict-dom -> vanilla-extract | lowering-residual: capability | available: static, named-map, residual)
 		const styles = css.create({ card: { color: "#2563eb", padding: "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;",
 		    "converted": 0,

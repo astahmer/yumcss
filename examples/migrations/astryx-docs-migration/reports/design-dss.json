@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.astryx-docs-proof/2",
+	"schema": "yumcss.astryx-docs-proof/2",
 	"lane": "design-dss",
 	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
 	"migration": {
@@ -26,7 +26,7 @@
 		"bodyHeightMismatches": 0,
 		"linkedCssDelta": -3253,
 		"strictCssNotLarger": true,
-		"report": "/tmp/pandwind-astryx-proof/browser-parity-design-production-final.json"
+		"report": "/tmp/yumcss-astryx-proof/browser-parity-design-production-final.json"
 	},
 	"api": "createDesignCss(defaultPreset)"
 }

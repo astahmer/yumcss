@@ -46,7 +46,7 @@ const spacingBlock = (i: number): string =>
 const files = Array.from({ length: FILES }, (_, f) => ({
 	file: `src/component-${f}.tsx`,
 	content:
-		`import { tw } from "pandwind";\ndeclare function spacingProp(n: number): string;\n` +
+		`import { tw } from "yumcss";\ndeclare function spacingProp(n: number): string;\n` +
 		Array.from({ length: CALLS_PER_FILE }, (_, i) => colorBlock((f + i) % TOKENS_PER_GROUP)).join(
 			"",
 		) +

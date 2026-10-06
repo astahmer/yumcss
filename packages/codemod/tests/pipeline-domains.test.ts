@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, test, vi } from "vitest";
-import { createEmptyPandwindMeta } from "../src/meta.ts";
+import { createEmptyYumCSSMeta } from "../src/meta.ts";
 import {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
@@ -33,16 +33,16 @@ describe("Panda migration pipeline", () => {
 	});
 
 	test("executes every Panda stage against a real project workspace", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-pipeline-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-pipeline-"));
 		try {
 			writeFileSync(join(root, "Page.tsx"), 'export const page = css({ color: "red" });\n');
 			const report = await PANDA_MIGRATION_PIPELINE.run({
 				projectRoot: root,
 				patterns: ["Page.tsx"],
-				meta: createEmptyPandwindMeta(),
+				meta: createEmptyYumCSSMeta(),
 				write: false,
 				diff: false,
-				skipMarker: "pandwind:pipeline-test",
+				skipMarker: "yumcss:pipeline-test",
 			});
 			expect(report.filesScanned).toBe(1);
 			expect(report.notes.some((note) => note.includes("pipeline stages:"))).toBe(true);
@@ -53,7 +53,7 @@ describe("Panda migration pipeline", () => {
 	});
 
 	test("routes the Panda project command through the project migration port", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-command-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-command-"));
 		const output = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		try {
 			mkdirSync(join(root, "src"), { recursive: true });
@@ -73,21 +73,21 @@ describe("Panda migration pipeline", () => {
 			await command?.run({
 				projectRoot: root,
 				from: CodemodAdapterId.Panda,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				reportFormat: "json",
 				patterns: ["src/Page.tsx"],
 				filePaths: [file],
-				meta: createEmptyPandwindMeta(),
+				meta: createEmptyYumCSSMeta(),
 				diff: false,
 				report: true,
 				write: true,
-				skipMarker: "pandwind:command-test",
+				skipMarker: "yumcss:command-test",
 			});
 			expect(readFileSync(file, "utf8")).toContain("css.class");
-			expect(readFileSync(file, "utf8")).toContain('from "../pandwind/css"');
+			expect(readFileSync(file, "utf8")).toContain('from "../yumcss/css"');
 			expect(JSON.parse(output.mock.calls[0]?.join("") ?? "")).toMatchObject({
 				from: CodemodAdapterId.Panda,
-				to: CodemodAdapterId.Pandwind,
+				to: CodemodAdapterId.YumCSS,
 				report: { filesScanned: 1, filesChanged: 1, cssCallsConverted: 1 },
 			});
 		} finally {

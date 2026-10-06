@@ -22,10 +22,10 @@ const globalStylesheetSources = new Set([
 
 const migrate = async (api: OfficialApiCase): Promise<AdapterMigrationResult> => {
 	if (api.adapter === CodemodAdapterId.ChakraUi)
-		return createAdapterRouteSpec(api.adapter, CodemodAdapterId.Pandwind).runAsync({
+		return createAdapterRouteSpec(api.adapter, CodemodAdapterId.YumCSS).runAsync({
 			source: api.source,
 			file: api.file,
-			project: createAdapterRouteProject(api.adapter, CodemodAdapterId.Pandwind, "#2a57c8"),
+			project: createAdapterRouteProject(api.adapter, CodemodAdapterId.YumCSS, "#2a57c8"),
 			semantic: {
 				source: {
 					framework: api.file.endsWith("x") ? BuiltinHostFramework.React : undefined,
@@ -34,7 +34,7 @@ const migrate = async (api: OfficialApiCase): Promise<AdapterMigrationResult> =>
 		});
 	return runAdapterMigration(api.source, {
 		from: api.adapter,
-		to: CodemodAdapterId.Pandwind,
+		to: CodemodAdapterId.YumCSS,
 		file: api.file,
 		...(api.adapter === CodemodAdapterId.CssModules
 			? { root: "/project", readFile: () => undefined, listFiles: () => [] }
@@ -60,7 +60,7 @@ describe("official primary API forms", () => {
 			new Set(BUILTIN_CODEMOD_ADAPTER_IDS),
 		);
 		for (const { api, result } of results) {
-			if (api.adapter === CodemodAdapterId.Pandwind) {
+			if (api.adapter === CodemodAdapterId.YumCSS) {
 				expect(result.skipped, `${api.adapter}/${api.name}: ${api.documentation}`).toBe(0);
 				expect(result.residuals, `${api.adapter}/${api.name}: ${api.documentation}`).toEqual([]);
 				continue;
@@ -71,7 +71,7 @@ describe("official primary API forms", () => {
 				expect(result.residuals, `${api.adapter}/${api.name}`).toEqual(
 					expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 				);
-				expect(result.code).toContain("pandwind:migrate-skip");
+				expect(result.code).toContain("yumcss:migrate-skip");
 				expect(result.code.endsWith(api.source)).toBe(true);
 				continue;
 			}
@@ -90,7 +90,7 @@ describe("official primary API forms", () => {
 			{
 			  "aphrodite/StyleSheet.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
@@ -125,7 +125,7 @@ describe("official primary API forms", () => {
 			  },
 			  "authored-css/css rule": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -159,7 +159,7 @@ describe("official primary API forms", () => {
 			  },
 			  "bamboo/styled-system css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
@@ -194,7 +194,7 @@ describe("official primary API forms", () => {
 			  },
 			  "chakra-ui/Chakra style props": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ background: "#fecaca", padding: "1rem" })} />;",
 			    "converted": 1,
@@ -229,7 +229,7 @@ describe("official primary API forms", () => {
 			  },
 			  "compiled/compiled css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
@@ -264,7 +264,7 @@ describe("official primary API forms", () => {
 			  },
 			  "css-modules/module class": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 			export default styles;",
@@ -300,7 +300,7 @@ describe("official primary API forms", () => {
 			  },
 			  "emotion/@emotion/css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -336,7 +336,7 @@ describe("official primary API forms", () => {
 			  "fela/renderer.renderRule": {
 			    "changed": true,
 			    "code": "import { createRenderer } from "fela";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const renderer = createRenderer();
 			export const card = css.class({ color: "red" });",
@@ -372,7 +372,7 @@ describe("official primary API forms", () => {
 			  },
 			  "goober/css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -407,7 +407,7 @@ describe("official primary API forms", () => {
 			  },
 			  "jss/react-jss createUseStyles": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const useStyles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -442,7 +442,7 @@ describe("official primary API forms", () => {
 			  },
 			  "less/less rule": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -476,7 +476,7 @@ describe("official primary API forms", () => {
 			  },
 			  "linaria/css template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -511,7 +511,7 @@ describe("official primary API forms", () => {
 			  },
 			  "mantine/Mantine style props": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
 			    "converted": 1,
@@ -546,7 +546,7 @@ describe("official primary API forms", () => {
 			  },
 			  "mui/MUI sx prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
 			    "converted": 1,
@@ -581,7 +581,7 @@ describe("official primary API forms", () => {
 			  },
 			  "next-yak/next-yak css template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -616,7 +616,7 @@ describe("official primary API forms", () => {
 			  },
 			  "panda/generated styled-system css": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", _hover: { color: "blue" } });",
 			    "converted": 1,
@@ -649,9 +649,9 @@ describe("official primary API forms", () => {
 			      },
 			    ],
 			  },
-			  "pandwind/css.class object": {
+			  "yumcss/css.class object": {
 			    "changed": false,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 0,
@@ -662,9 +662,9 @@ describe("official primary API forms", () => {
 			    "skipped": 0,
 			    "validations": [],
 			  },
-			  "pandwind/css.vars object": {
+			  "yumcss/css.vars object": {
 			    "changed": false,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.vars({ color: "var(--card-color)" });",
 			    "converted": 0,
@@ -677,7 +677,7 @@ describe("official primary API forms", () => {
 			  },
 			  "react-native/React Native StyleSheet": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
@@ -712,7 +712,7 @@ describe("official primary API forms", () => {
 			  },
 			  "react-strict-dom/react-strict-dom css.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 			export const Card = () => <div className={styles.card} />;",
@@ -748,7 +748,7 @@ describe("official primary API forms", () => {
 			  },
 			  "sass/scss rule": {
 			    "changed": true,
-			    "code": "/* pandwind:migrate-skip (lowering-residual: capability) */
+			    "code": "/* yumcss:migrate-skip (lowering-residual: capability) */
 			.card { color: red; padding: 1rem; }",
 			    "converted": 0,
 			    "generatedFiles": [],
@@ -782,12 +782,12 @@ describe("official primary API forms", () => {
 			  },
 			  "solid-styled/solid styled template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-t6bw3o", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -820,7 +820,7 @@ describe("official primary API forms", () => {
 			  },
 			  "stitches/css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -855,8 +855,8 @@ describe("official primary API forms", () => {
 			  },
 			  "style9/style9.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
 			export const styles = css.group({ card: { color: "red" } });",
@@ -892,12 +892,12 @@ describe("official primary API forms", () => {
 			  },
 			  "styled-components/styled object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
-			import { createCx } from "pandwind/cx";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
-			const __pandwindSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
-			export const Card = __pandwindSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
+			const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
+			export const Card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-1fn70s4", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -930,7 +930,7 @@ describe("official primary API forms", () => {
 			  },
 			  "stylex/stylex.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
@@ -965,7 +965,7 @@ describe("official primary API forms", () => {
 			  },
 			  "tailwind/Tailwind arbitrary utility classes": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 			    "converted": 1,
@@ -1001,7 +1001,7 @@ describe("official primary API forms", () => {
 			  "tamagui/styled component": {
 			    "changed": true,
 			    "code": "import { View } from "tamagui";
-			import { createUnsafeCss } from "pandwind/unsafe/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = css.class({ color: "red", padding: "$4" });
 			export const App = () => <View className={Card} />;",
@@ -1037,7 +1037,7 @@ describe("official primary API forms", () => {
 			  },
 			  "tokenami/Tokenami css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", gap: "1rem" });",
 			    "converted": 1,
@@ -1072,7 +1072,7 @@ describe("official primary API forms", () => {
 			  },
 			  "treat/treat style": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
@@ -1107,7 +1107,7 @@ describe("official primary API forms", () => {
 			  },
 			  "unocss/UnoCSS utility classes": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
 			    "converted": 1,
@@ -1142,7 +1142,7 @@ describe("official primary API forms", () => {
 			  },
 			  "vanilla-extract/style object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
@@ -1177,7 +1177,7 @@ describe("official primary API forms", () => {
 			  },
 			  "vue-styled/vue styled template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,

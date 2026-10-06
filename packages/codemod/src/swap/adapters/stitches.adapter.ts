@@ -260,7 +260,7 @@ export default defineCodemodAdapter({
 			],
 		},
 		rewrite: ({ code, targetId, complete }) =>
-			targetId === CodemodAdapterId.Pandwind && complete
+			targetId === CodemodAdapterId.YumCSS && complete
 				? { code: removeStitchesBootstrap(code), residuals: [] }
 				: { code, residuals: [] },
 	},

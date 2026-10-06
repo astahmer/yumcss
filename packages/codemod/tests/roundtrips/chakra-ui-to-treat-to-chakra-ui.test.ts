@@ -44,7 +44,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "chakra-ui -> treat round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -55,7 +55,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -93,7 +93,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="red.200" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -122,7 +122,7 @@ test("chakra-ui -> treat -> chakra-ui: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -164,7 +164,7 @@ test("chakra-ui -> treat -> chakra-ui: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { defineRecipe, useRecipe } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | parse-residual: composition | lowering-residual: capability | available: named-map, residual)
 		const buttonRecipe = defineRecipe({ base: { color: "red" } });
 		export const button = useRecipe({ recipe: buttonRecipe });",
 		    "converted": 0,
@@ -209,7 +209,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -247,7 +247,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -263,7 +263,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -301,7 +301,7 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -332,7 +332,7 @@ test("chakra-ui -> treat -> chakra-ui: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -370,7 +370,7 @@ test("chakra-ui -> treat -> chakra-ui: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Box } from "@chakra-ui/react";
-		// pandwind:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: chakra-ui -> treat | lowering-residual: capability | available: static, named-map, residual)
 		export const App = () => <Box bg="brand.500" p="4" />;",
 		    "converted": 0,
 		    "generatedFiles": [],

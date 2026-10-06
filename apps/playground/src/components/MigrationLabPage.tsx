@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
-import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
+import { CodemodAdapterId } from "@yumcss/codemod/swap/browser";
 import { EditorPane } from "./EditorPane.tsx";
 import { GhostButton, Kbd, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
@@ -15,7 +15,7 @@ import {
 import { formatPlaygroundCode } from "../lib/format-playground-code.ts";
 
 const DEFAULT_SOURCE = CodemodAdapterId.StyledComponents;
-const DEFAULT_TARGET = CodemodAdapterId.Pandwind;
+const DEFAULT_TARGET = CodemodAdapterId.YumCSS;
 
 function endpointById(
 	endpoints: readonly MigrationLabEndpoint[],
@@ -845,7 +845,7 @@ export function MigrationLabPage() {
 								color: "textFaint",
 							})}
 						>
-							Route a real source adapter through Pandwind&apos;s migration contract and inspect the
+							Route a real source adapter through YumCSS&apos;s migration contract and inspect the
 							emitted code, capability checks, and anything that needs human review.
 						</p>
 					</div>

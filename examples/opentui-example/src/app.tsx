@@ -1,7 +1,7 @@
 /**
- * pandwind/opentui consumer sandbox — a REAL OpenTUI app (bun +
+ * yumcss/opentui consumer sandbox — a REAL OpenTUI app (bun +
  * @opentui/react), styled exclusively through the design vocabulary
- * lowered by `pandwind/opentui`.
+ * lowered by `yumcss/opentui`.
  *
  * What the frame demonstrates, each backed by an e2e assertion:
  * - outer box: $frame tokens (fill $blue-500, corners lg -> radius cells,
@@ -12,8 +12,8 @@
  *   OpenTUI's boolean border model;
  * - text rows: unconditional and themed content.
  */
-import { createDesignCss } from "pandwind/opentui";
-import { examplePreset } from "@pandwind/example-preset";
+import { createDesignCss } from "yumcss/opentui";
+import { examplePreset } from "@yumcss/example-preset";
 
 export interface AppProps {
 	/** Boot-time value of the `_dark` resolver (default: light). */
@@ -32,7 +32,7 @@ export function App({ dark = false }: AppProps) {
 				gap: 1,
 			}}
 		>
-			<text attributes={1}>pandwind / opentui</text>
+			<text attributes={1}>yumcss / opentui</text>
 
 			<box
 				style={{

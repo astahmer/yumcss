@@ -1,8 +1,8 @@
 {
-	"schema": "pandwind.installed-project-proof/1",
+	"schema": "yumcss.installed-project-proof/1",
 	"route": {
 		"from": "mantine",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"referenceCommit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
 	"referencePath": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind",
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {
@@ -68,6 +68,6 @@
 	"css": {
 		"sourceBytes": 231220,
 		"targetBytes": 136,
-		"note": "Mantine source bytes are its bundled stylesheet while the static Pandwind projection uses atomic class CSS. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
+		"note": "Mantine source bytes are its bundled stylesheet while the static YumCSS projection uses atomic class CSS. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
 	}
 }

@@ -11,8 +11,8 @@ import type {
 import { AdapterLossinessTag } from "./adapter-contract.ts";
 import { StyleValidatorId } from "./identifiers.ts";
 
-export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
-export const VALIDATOR_PLUGIN_SCHEMA = "pandwind.style-validator-plugin/1" as const;
+export const VALIDATOR_SCHEMA = "yumcss.style-validator/1" as const;
+export const VALIDATOR_PLUGIN_SCHEMA = "yumcss.style-validator-plugin/1" as const;
 
 export interface StyleValidationContext {
 	readonly source: StyleProgram;

@@ -2,8 +2,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, test } from "vitest";
-import { examplePreset } from "@pandwind/example-preset";
-import { define } from "pandwind/preset";
+import { examplePreset } from "@yumcss/example-preset";
+import { define } from "yumcss/preset";
 import { DEFAULT_CSS_TYPES_OUTPUT, createCssCli, parseCssCommand } from "../src/css/cli.ts";
 import { GENERATED_CSS_TYPES_HEADER, generateCssTypes } from "../src/css/generate-types.ts";
 
@@ -14,7 +14,7 @@ afterEach(() => {
 		rmSync(directory, { recursive: true, force: true });
 });
 
-describe("pandwind-codemod css", () => {
+describe("yumcss-codemod css", () => {
 	test("parses a deterministic generation command", () => {
 		expect(
 			parseCssCommand(
@@ -54,7 +54,7 @@ describe("pandwind-codemod css", () => {
 	});
 
 	test("generates a package-bound facade and verifies freshness", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-css-types-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-css-types-"));
 		temporaryDirectories.push(root);
 		const output = join(root, "src/css.generated.ts");
 		const cli = createCssCli(
@@ -120,7 +120,7 @@ describe("pandwind-codemod css", () => {
 	});
 
 	test("uses an output-relative import for a local preset", async () => {
-		const root = mkdtempSync(join(tmpdir(), "pandwind-css-types-"));
+		const root = mkdtempSync(join(tmpdir(), "yumcss-css-types-"));
 		temporaryDirectories.push(root);
 		const output = join(root, "src/css.generated.ts");
 		const cli = createCssCli(
@@ -151,10 +151,10 @@ describe("pandwind-codemod css", () => {
 	});
 
 	test("keeps the committed example facade fresh", () => {
-		const output = resolve(import.meta.dirname, "../../pandwind/tests/fixtures/generated-css.ts");
+		const output = resolve(import.meta.dirname, "../../yumcss/tests/fixtures/generated-css.ts");
 		expect(readFileSync(output, "utf8")).toBe(
 			generateCssTypes(examplePreset, {
-				presetImport: "@pandwind/example-preset",
+				presetImport: "@yumcss/example-preset",
 				presetExport: "examplePreset",
 			}).source,
 		);

@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "../../meta.ts";
+import type { YumCSSMeta } from "../../meta.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { SWAP_EMITTERS, type Emitter } from "../emit.ts";
 import { OUTBOUND_EMITTERS } from "./outbound/plugin.ts";
@@ -39,11 +39,11 @@ import { BuiltinHostFramework } from "../host-adapters.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
-	packages: [{ name: "pandwind", kind: AdapterDependencyKindTag.Runtime }],
+	packages: [{ name: "yumcss", kind: AdapterDependencyKindTag.Runtime }],
 };
 
 /** Public target dialects exposed by the browser migration lab and CLI. */
-export const PANDWIND_API_DIALECTS = [
+export const YUMCSS_API_DIALECTS = [
 	{ dialect: SwapSourceId.Css, label: "css.class" },
 	{ dialect: SwapSourceId.Dss, label: "dss" },
 	{ dialect: SwapSourceId.Tw, label: "tw" },
@@ -124,7 +124,7 @@ function parseCoreDialect(
 					{
 						kind: StyleProgramResidualKindTag.Configuration,
 						text: "tw({...})",
-						hint: "Pandwind metadata is required",
+						hint: "YumCSS metadata is required",
 					},
 				],
 			};
@@ -180,10 +180,10 @@ function makeCoreAdapter(
 		}),
 		sourceModules:
 			dialect === SwapSourceId.Tw
-				? ["pandwind/tw"]
+				? ["yumcss/tw"]
 				: dialect === SwapSourceId.Dss
-					? ["pandwind/design"]
-					: ["pandwind/css", "pandwind/unsafe/css"],
+					? ["yumcss/design"]
+					: ["yumcss/css", "yumcss/unsafe/css"],
 		capabilities: CORE_CAPABILITIES(id),
 		dependencies: CORE_DEPENDENCIES,
 		...(role === "target" && dialect === SwapSourceId.Tw
@@ -206,7 +206,7 @@ function makeCoreAdapter(
 		loadConfig: (context) => emptyConfig(id, context),
 		parse: (source, context) => parseCoreDialect(dialect, source, context),
 		emit: (program, context) => {
-			const meta: PandwindMeta | undefined = context.meta;
+			const meta: YumCSSMeta | undefined = context.meta;
 			if (meta === undefined)
 				return {
 					text: "",
@@ -214,7 +214,7 @@ function makeCoreAdapter(
 						{
 							kind: StyleProgramResidualKindTag.Configuration,
 							text: id,
-							hint: "Pandwind metadata is required",
+							hint: "YumCSS metadata is required",
 						},
 					],
 				};
@@ -226,7 +226,7 @@ function makeCoreAdapter(
 			const imports = [...(result.imports ?? [])];
 			if (result.needsCx === true) {
 				if (context.project?.cxModule === undefined) {
-					imports.push('import { createCx } from "pandwind/cx";', "const cx = createCx();");
+					imports.push('import { createCx } from "yumcss/cx";', "const cx = createCx();");
 				} else {
 					imports.push(
 						`import { cx } from "${relativeModuleImport(context.file, context.project.cxModule, "")}";`,
@@ -255,7 +255,7 @@ function makeCoreAdapter(
 				text = rendered.text;
 				if (rendered.needsCx) {
 					if (context.project?.cxModule === undefined) {
-						imports.push('import { createCx } from "pandwind/cx";', "const cx = createCx();");
+						imports.push('import { createCx } from "yumcss/cx";', "const cx = createCx();");
 					} else {
 						imports.push(
 							`import { cx } from "${relativeModuleImport(context.file, context.project.cxModule, "")}";`,
@@ -267,7 +267,7 @@ function makeCoreAdapter(
 				const modulePath = context.project?.twModule;
 				imports.push(
 					modulePath === undefined
-						? 'import { tw } from "pandwind";'
+						? 'import { tw } from "yumcss";'
 						: `import { tw } from "${relativeModuleImport(context.file, modulePath, "")}";`,
 				);
 			}
@@ -341,20 +341,20 @@ const pandaCss = makeCoreAdapter(
 	"source",
 	OUTBOUND_EMITTERS[CodemodAdapterId.Panda],
 );
-const pandwindTw = makeCoreAdapter(
-	CodemodAdapterId.Pandwind,
+const yumcssTw = makeCoreAdapter(
+	CodemodAdapterId.YumCSS,
 	SwapSourceId.Tw,
 	"target",
 	SWAP_EMITTERS[SwapSourceId.Tw],
 );
-const pandwindDss = makeCoreAdapter(
-	CodemodAdapterId.Pandwind,
+const yumcssDss = makeCoreAdapter(
+	CodemodAdapterId.YumCSS,
 	SwapSourceId.Dss,
 	"target",
 	SWAP_EMITTERS[SwapSourceId.Dss],
 );
 const cssAdapter = makeCoreAdapter(
-	CodemodAdapterId.Pandwind,
+	CodemodAdapterId.YumCSS,
 	SwapSourceId.Css,
 	"target",
 	SWAP_EMITTERS[SwapTargetId.CssClass],
@@ -365,11 +365,11 @@ export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(CodemodA
 	pandaDss,
 	pandaCss,
 ]);
-export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(
-	CodemodAdapterId.Pandwind,
-	[pandwindTw, pandwindDss, cssAdapter],
+export const YUMCSS_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(
+	CodemodAdapterId.YumCSS,
+	[yumcssTw, yumcssDss, cssAdapter],
 );
 export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [
 	PANDA_STYLE_SYSTEM,
-	PANDWIND_STYLE_SYSTEM,
+	YUMCSS_STYLE_SYSTEM,
 ];

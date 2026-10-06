@@ -26,7 +26,7 @@ describe("third-party adapter registry", () => {
 	test("reads the package manifest convention and validates adapter metadata", () => {
 		expect(
 			readAdapterPackageDeclaration({
-				pandwind: { plugin: "./dist/plugin.js", manifest: "./dist/manifest.json" },
+				yumcss: { plugin: "./dist/plugin.js", manifest: "./dist/manifest.json" },
 			}),
 		).toEqual({ plugin: "./dist/plugin.js", manifest: "./dist/manifest.json" });
 		const plugin = createStyleAdapterPlugin("bad-manifest", [
@@ -129,7 +129,7 @@ describe("third-party adapter registry", () => {
 			},
 			{
 				loadPackageJson: async (specifier) =>
-					specifier === "declared-adapter" ? { pandwind: { plugin: "./dist/plugin.js" } } : {},
+					specifier === "declared-adapter" ? { yumcss: { plugin: "./dist/plugin.js" } } : {},
 				load: async () => plugin,
 			},
 		);

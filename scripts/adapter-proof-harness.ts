@@ -13,7 +13,7 @@ const requireFromCodemod = createRequire(
 
 /**
  * Optional ecosystem compilers and engine loaders (sass, less,
- * @tailwindcss/node) are Pandwind devDependencies, not upstream-repository
+ * @tailwindcss/node) are YumCSS devDependencies, not upstream-repository
  * dependencies. Project-first resolution keeps the host boundary; the
  * packages/codemod fallback lets pinned excerpts compile without installing
  * their full upstream lockfiles. This fallback lives in the harness only:

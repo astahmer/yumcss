@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { createCx, createDesignCss } from "pandwind/react-native";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCx, createDesignCss } from "yumcss/react-native";
+import { examplePreset } from "@yumcss/example-preset";
 
 /* ---------------------------------------------------------------------------
- * rn-example — a real react-native-web host consuming pandwind/react-native.
+ * rn-example — a real react-native-web host consuming yumcss/react-native.
  *
  * The style objects flowing into `style` props are exactly what a React
  * Native app would receive; RNW processes them with real RN semantics
@@ -46,7 +46,7 @@ export function App() {
 	return (
 		<View testID="screen" style={{ flex: 1, padding: 16, gap: 12 }}>
 			<View testID="header-card" style={header}>
-				<Text testID="header-text">pandwind / react-native</Text>
+				<Text testID="header-text">yumcss / react-native</Text>
 			</View>
 			<View testID="body-card" style={body}>
 				<Text>dark mode is {dark ? "ON" : "OFF"}</Text>

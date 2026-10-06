@@ -1,21 +1,21 @@
-import { extractTwConfigFromSources, type TwConfig } from "pandwind/vite/inline";
-import type { UtilityBridge } from "pandwind/tw";
-import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { extractTwConfigFromSources, type TwConfig } from "yumcss/vite/inline";
+import type { UtilityBridge } from "yumcss/tw";
+import { UTILITY_SUBKEYS } from "yumcss/tw/compile";
 import { z } from "zod";
 import { parseTokenDocument, type TokenDocument } from "../swap/token-document.ts";
 import type { TokenFormatLoss } from "../swap/token-format-contracts.ts";
 
 /** Stable generated metadata consumed by migration and analysis tooling. */
-export const PANDWIND_INTEROP_SCHEMA = "pandwind.interop/1" as const;
+export const YUMCSS_INTEROP_SCHEMA = "yumcss.interop/1" as const;
 
-export interface PandwindInteropUtility {
+export interface YumCSSInteropUtility {
 	readonly key: string;
 	readonly base: string;
 	readonly valueType?: string;
 }
 
-export interface PandwindInteropArtifact {
-	readonly schema: typeof PANDWIND_INTEROP_SCHEMA;
+export interface YumCSSInteropArtifact {
+	readonly schema: typeof YUMCSS_INTEROP_SCHEMA;
 	/** Paths are relative to the directory containing this artifact. */
 	readonly generatedFrom: {
 		readonly types: string;
@@ -23,7 +23,7 @@ export interface PandwindInteropArtifact {
 		readonly bridge: string;
 		readonly theme?: string;
 	};
-	readonly utilities: readonly PandwindInteropUtility[];
+	readonly utilities: readonly YumCSSInteropUtility[];
 	/** Named value unions shared by utility rows that use the same generated type. */
 	readonly valueTypes: Readonly<Record<string, readonly string[]>>;
 	readonly tw: {
@@ -37,10 +37,10 @@ export interface PandwindInteropArtifact {
 		readonly variables: Readonly<Record<string, string>>;
 		readonly scopes: readonly string[];
 	};
-	readonly tokens: PandwindInteropTokenSnapshot;
+	readonly tokens: YumCSSInteropTokenSnapshot;
 }
 
-export type PandwindInteropTokenSnapshot =
+export type YumCSSInteropTokenSnapshot =
 	| {
 			readonly state: "available";
 			readonly source: {
@@ -62,7 +62,7 @@ export type PandwindInteropTokenSnapshot =
 			readonly diagnostics: readonly string[];
 	  };
 
-export interface BuildPandwindInteropArtifactOptions {
+export interface BuildYumCSSInteropArtifactOptions {
 	readonly typesDts: string;
 	readonly twTs: string;
 	readonly twRuntimeTs?: string;
@@ -72,7 +72,7 @@ export interface BuildPandwindInteropArtifactOptions {
 	readonly themeBlock?: string;
 	readonly tokenDocument?: TokenDocument;
 	readonly tokenSource?: string;
-	readonly tokenSnapshot?: PandwindInteropTokenSnapshot;
+	readonly tokenSnapshot?: YumCSSInteropTokenSnapshot;
 }
 
 const TokenLossSchema = z.strictObject({
@@ -103,8 +103,8 @@ const TokenSnapshotSchema = z.discriminatedUnion("state", [
 	}),
 ]);
 
-const PandwindInteropArtifactSchema = z.strictObject({
-	schema: z.literal(PANDWIND_INTEROP_SCHEMA),
+const YumCSSInteropArtifactSchema = z.strictObject({
+	schema: z.literal(YUMCSS_INTEROP_SCHEMA),
 	generatedFrom: z.strictObject({
 		types: z.string(),
 		runtime: z.string(),
@@ -124,18 +124,18 @@ const PandwindInteropArtifactSchema = z.strictObject({
 	tokens: TokenSnapshotSchema,
 });
 
-export const parsePandwindInteropArtifact = (value: unknown): PandwindInteropArtifact => {
-	const result = PandwindInteropArtifactSchema.safeParse(value);
+export const parseYumCSSInteropArtifact = (value: unknown): YumCSSInteropArtifact => {
+	const result = YumCSSInteropArtifactSchema.safeParse(value);
 	if (!result.success) {
 		throw new Error(
-			`pandwind interop: invalid pandwind.interop/1 artifact: ${result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
+			`yumcss interop: invalid yumcss.interop/1 artifact: ${result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ")}`,
 		);
 	}
 	const tokens =
 		result.data.tokens.state === "available"
 			? { ...result.data.tokens, document: parseTokenDocument(result.data.tokens.document) }
 			: result.data.tokens;
-	return { ...result.data, tokens } as PandwindInteropArtifact;
+	return { ...result.data, tokens } as YumCSSInteropArtifact;
 };
 
 const dashCase = (name: string): string =>
@@ -155,13 +155,13 @@ function typeLiterals(typesDts: string): Map<string, string[]> {
 }
 
 function utilityMetadataFromTypes(typesDts: string): {
-	readonly utilities: readonly PandwindInteropUtility[];
+	readonly utilities: readonly YumCSSInteropUtility[];
 	readonly valueTypes: Readonly<Record<string, readonly string[]>>;
 } {
 	const aliases = typeLiterals(typesDts);
 	const bodyMatch = /interface WindUtilities\b[^{]*\{([\s\S]*?)\n\}/.exec(typesDts);
-	if (bodyMatch === null) throw new Error("pandwind interop: no WindUtilities interface");
-	const utilities: PandwindInteropUtility[] = [];
+	if (bodyMatch === null) throw new Error("yumcss interop: no WindUtilities interface");
+	const utilities: YumCSSInteropUtility[] = [];
 	const usedValueTypes = new Set<string>();
 	const entry = /"([^"]+)"\?:\s*([A-Za-z_$][\w$]*)\s*\|\s*true/g;
 	for (const match of bodyMatch[1]!.matchAll(entry)) {
@@ -177,7 +177,7 @@ function utilityMetadataFromTypes(typesDts: string): {
 	};
 }
 
-function themeMetadata(themeBlock: string): PandwindInteropArtifact["theme"] {
+function themeMetadata(themeBlock: string): YumCSSInteropArtifact["theme"] {
 	const variables: Record<string, string> = {};
 	for (const line of themeBlock.split("\n")) {
 		const match = /^\s*(--[\w-]+):\s*(.+?)\s*;?$/.exec(line);
@@ -192,24 +192,24 @@ function themeMetadata(themeBlock: string): PandwindInteropArtifact["theme"] {
 }
 
 /** Build the JSON-safe metadata contract from generated codegen artifacts. */
-export function buildPandwindInteropArtifact(
-	options: BuildPandwindInteropArtifactOptions,
-): PandwindInteropArtifact {
+export function buildYumCSSInteropArtifact(
+	options: BuildYumCSSInteropArtifactOptions,
+): YumCSSInteropArtifact {
 	const config = extractTwConfigFromSources([
 		options.twTs,
 		...(options.twRuntimeTs === undefined ? [] : [options.twRuntimeTs]),
 		...(options.twConflictsTs === undefined ? [] : [options.twConflictsTs]),
 		...(options.twBuildTs === undefined ? [] : [options.twBuildTs]),
 	]);
-	if (config === undefined) throw new Error("pandwind interop: could not read generated tw config");
+	if (config === undefined) throw new Error("yumcss interop: could not read generated tw config");
 	const utilityMetadata = utilityMetadataFromTypes(options.typesDts);
 	return {
-		schema: PANDWIND_INTEROP_SCHEMA,
+		schema: YUMCSS_INTEROP_SCHEMA,
 		generatedFrom: {
 			types: "types.d.ts",
 			runtime: "tw.ts",
 			bridge: "bridge.ts",
-			...(options.themeBlock ? { theme: "pandwind-theme.css" } : {}),
+			...(options.themeBlock ? { theme: "yumcss-theme.css" } : {}),
 		},
 		...utilityMetadata,
 		tw: {

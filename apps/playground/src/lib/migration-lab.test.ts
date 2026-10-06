@@ -4,8 +4,8 @@ import {
 	CodemodAdapterId,
 	MigrationRouteMaturityTag,
 	MigrationRouteProofRouteId,
-	PANDWIND_API_DIALECTS,
-} from "pandwind-codemod/swap/browser";
+	YUMCSS_API_DIALECTS,
+} from "@yumcss/codemod/swap/browser";
 import {
 	MIGRATION_LAB_EXECUTION_LANE,
 	MIGRATION_LAB_EXECUTION_SCOPE,
@@ -18,11 +18,11 @@ describe("migration examples", () => {
 		const sourceIds = new Set(lab.sources.map((endpoint) => endpoint.id));
 		const targetIds = new Set(lab.targets.map((endpoint) => endpoint.id));
 
-		expect(sourceIds).toContain(CodemodAdapterId.Pandwind);
+		expect(sourceIds).toContain(CodemodAdapterId.YumCSS);
 		expect(sourceIds).toContain(CodemodAdapterId.StyledComponents);
-		expect(targetIds).toContain(CodemodAdapterId.Pandwind);
-		for (const { dialect } of PANDWIND_API_DIALECTS)
-			expect(targetIds).toContain(`${CodemodAdapterId.Pandwind}/${dialect}`);
+		expect(targetIds).toContain(CodemodAdapterId.YumCSS);
+		for (const { dialect } of YUMCSS_API_DIALECTS)
+			expect(targetIds).toContain(`${CodemodAdapterId.YumCSS}/${dialect}`);
 	});
 
 	test("offers at least one scenario for every built-in adapter", () => {
@@ -36,11 +36,11 @@ describe("migration examples", () => {
 		expect(covered).toEqual(new Set(BUILTIN_CODEMOD_ADAPTER_IDS));
 	});
 
-	test.each(PANDWIND_API_DIALECTS.map(({ dialect, label }) => [dialect, label] as const))(
-		"routes to the Pandwind %s API dialect",
+	test.each(YUMCSS_API_DIALECTS.map(({ dialect, label }) => [dialect, label] as const))(
+		"routes to the YumCSS %s API dialect",
 		(dialect, emitted) => {
 			const lab = createMigrationLab();
-			const target = `${CodemodAdapterId.Pandwind}/${dialect}`;
+			const target = `${CodemodAdapterId.YumCSS}/${dialect}`;
 			const source =
 				'import { css } from "@emotion/css";\n\n' +
 				'const card = css({ color: "#3182ce", fontSize: "0.875rem" });';
@@ -59,7 +59,7 @@ describe("migration examples", () => {
 		const lab = createMigrationLab();
 		const result = lab.migrate(
 			CodemodAdapterId.Emotion,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			lab.sampleFor(CodemodAdapterId.Emotion),
 		);
 
@@ -76,7 +76,7 @@ describe("migration examples", () => {
 		const lab = createMigrationLab();
 		const result = lab.migrate(
 			CodemodAdapterId.StyledComponents,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			lab.sampleFor(CodemodAdapterId.StyledComponents),
 		);
 
@@ -88,14 +88,14 @@ describe("migration examples", () => {
 			verified: expect.arrayContaining(["adapter-program", "residual-report"]),
 		});
 		expect(result.routeProof).toMatchObject({
-			id: MigrationRouteProofRouteId.StyledComponentsToPandwind,
+			id: MigrationRouteProofRouteId.StyledComponentsToYumCSS,
 			maturity: MigrationRouteMaturityTag.Experimental,
 		});
 	});
 
 	test("returns an explicit error for a route the registry does not know", () => {
 		const lab = createMigrationLab();
-		const result = lab.migrate("not-a-source", CodemodAdapterId.Pandwind, "const value = 1;");
+		const result = lab.migrate("not-a-source", CodemodAdapterId.YumCSS, "const value = 1;");
 
 		expect(result).toEqual({
 			ok: false,
@@ -106,10 +106,10 @@ describe("migration examples", () => {
 	test("keeps every registered sample on the safe migration path", () => {
 		const lab = createMigrationLab();
 		for (const source of lab.sources) {
-			const result = lab.migrate(source.id, CodemodAdapterId.Pandwind, lab.sampleFor(source.id));
+			const result = lab.migrate(source.id, CodemodAdapterId.YumCSS, lab.sampleFor(source.id));
 			expect(result.ok, source.id).toBe(true);
 			if (!result.ok) continue;
-			if (source.id !== CodemodAdapterId.Pandwind) {
+			if (source.id !== CodemodAdapterId.YumCSS) {
 				// Fail-closed preprocessor sources (no compiler in the browser lab)
 				// are preserved verbatim by contract; every other source must rewrite.
 				const failClosed =
@@ -128,7 +128,7 @@ describe("migration examples", () => {
 	test("does not report residuals for the built-in Tokenami and UnoCSS samples", () => {
 		const lab = createMigrationLab();
 		for (const id of [CodemodAdapterId.Tokenami, CodemodAdapterId.UnoCSS]) {
-			const result = lab.migrate(id, CodemodAdapterId.Pandwind, lab.sampleFor(id));
+			const result = lab.migrate(id, CodemodAdapterId.YumCSS, lab.sampleFor(id));
 			expect(result.ok, id).toBe(true);
 			if (!result.ok) continue;
 			expect(result.skipped, id).toBe(0);
@@ -153,7 +153,7 @@ describe("migration examples", () => {
 		expect(result.code).toContain("const Card = (props) =>");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	});
 
 	test("keeps an exported styled component usable across module boundaries", () => {
@@ -166,7 +166,7 @@ describe("migration examples", () => {
 		if (scenario === undefined) return;
 		const result = lab.migrate(
 			CodemodAdapterId.StyledComponents,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			scenario.source,
 		);
 
@@ -175,8 +175,8 @@ describe("migration examples", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("const __pandwindSlot =");
-		expect(result.code).toContain("export const Card = __pandwindSlot({ defaultComponent: (Link),");
+		expect(result.code).toContain("const __yumcssSlot =");
+		expect(result.code).toContain("export const Card = __yumcssSlot({ defaultComponent: (Link),");
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
 
@@ -190,7 +190,7 @@ describe("migration examples", () => {
 		if (scenario === undefined) return;
 		const result = lab.migrate(
 			CodemodAdapterId.StyledComponents,
-			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.YumCSS,
 			`${scenario.source}\nexport const animationName = pulse;`,
 		);
 

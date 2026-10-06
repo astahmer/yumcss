@@ -2,8 +2,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
-	buildPandwindInteropArtifact,
-	parsePandwindInteropArtifact,
+	buildYumCSSInteropArtifact,
+	parseYumCSSInteropArtifact,
 } from "../src/tw/interop-artifact.ts";
 import { generateTwBridge } from "../src/tw/generate-bridge.ts";
 import { parseDtcgTokenDocument } from "../src/swap/token-document.ts";
@@ -16,9 +16,9 @@ interface WindUtilities {
 `;
 
 const tw = `
-import { createTw } from "pandwind/tw";
-const __pandwindConfig = { variants: { hover: { join: ":" } }, conflicts: {}, compose: [] };
-export const tw = createTw(__pandwindConfig);
+import { createTw } from "yumcss/tw";
+const __yumcssConfig = { variants: { hover: { join: ":" } }, conflicts: {}, compose: [] };
+export const tw = createTw(__yumcssConfig);
 `;
 
 describe("Tailwind bridge interop artifact refresh", () => {
@@ -29,7 +29,7 @@ describe("Tailwind bridge interop artifact refresh", () => {
 			const twFile = join(project, "tw.ts");
 			const presetFile = join(project, "preset.mjs");
 			const bridgeFile = join(project, "bridge.ts");
-			const interopFile = join(project, "pandwind.interop.json");
+			const interopFile = join(project, "yumcss.interop.json");
 			writeFileSync(cssEntry, '@import "tailwindcss";\n@theme { --color-brand: #123456; }\n');
 			writeFileSync(twFile, tw);
 			writeFileSync(join(project, "types.d.ts"), types);
@@ -48,7 +48,7 @@ describe("Tailwind bridge interop artifact refresh", () => {
 					},
 				}),
 			);
-			const retainedArtifact = buildPandwindInteropArtifact({
+			const retainedArtifact = buildYumCSSInteropArtifact({
 				typesDts: types,
 				twTs: tw,
 				tokenDocument: retainedDocument,
@@ -64,16 +64,16 @@ describe("Tailwind bridge interop artifact refresh", () => {
 				presetExport: "examplePreset",
 			};
 			await generateTwBridge(options);
-			const refreshed = parsePandwindInteropArtifact(JSON.parse(readFileSync(interopFile, "utf8")));
+			const refreshed = parseYumCSSInteropArtifact(JSON.parse(readFileSync(interopFile, "utf8")));
 			expect(refreshed.tokens).toEqual(retainedArtifact.tokens);
 			expect(readFileSync(bridgeFile, "utf8")).toContain('"#123456"');
 
-			writeFileSync(interopFile, `${JSON.stringify({ schema: "pandwind.interop/future" })}\n`);
+			writeFileSync(interopFile, `${JSON.stringify({ schema: "yumcss.interop/future" })}\n`);
 			await expect(generateTwBridge(options)).rejects.toThrow(
-				"unsupported existing interop schema 'pandwind.interop/future'",
+				"unsupported existing interop schema 'yumcss.interop/future'",
 			);
 			expect(JSON.parse(readFileSync(interopFile, "utf8"))).toEqual({
-				schema: "pandwind.interop/future",
+				schema: "yumcss.interop/future",
 			});
 		} finally {
 			rmSync(project, { recursive: true, force: true });

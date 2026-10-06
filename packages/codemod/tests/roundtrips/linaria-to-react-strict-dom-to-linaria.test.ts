@@ -42,7 +42,7 @@ test("linaria -> react-strict-dom -> linaria: preserves an actionable concrete r
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "linaria -> react-strict-dom round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -141,7 +141,7 @@ test("linaria -> react-strict-dom -> linaria: retains the documented secondary A
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("linaria -> react-strict-dom -> linaria: retains the documented secondary A
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { styled } from "@linaria/react";
-		// pandwind:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: linaria -> react-strict-dom | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

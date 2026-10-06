@@ -1,4 +1,4 @@
-import { SourceBindings, SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SourceBindings, SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import type { AdapterFileChange } from "./adapter-contract.ts";
 import {
 	dirnameDocumentPath,

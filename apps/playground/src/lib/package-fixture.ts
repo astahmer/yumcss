@@ -34,7 +34,7 @@ const run = (
 	try {
 		execFileSync("pnpm", ["exec", ...args], {
 			cwd: fixture,
-			env: { ...process.env, PANDWIND_FIXTURE_OUT_DIR: outputDirectory, ...extraEnv },
+			env: { ...process.env, YUMCSS_FIXTURE_OUT_DIR: outputDirectory, ...extraEnv },
 			stdio: "pipe",
 		});
 	} catch (error) {
@@ -62,7 +62,7 @@ export const runPackageFixtureProof = (): PackageFixtureProof => {
 			.map((path) => readFileSync(path, "utf8"))
 			.join("\n");
 		if (!clientCss.includes("background-color") || !clientCss.includes("padding")) {
-			throw new Error("client build did not emit the extracted Pandwind CSS");
+			throw new Error("client build did not emit the extracted YumCSS CSS");
 		}
 		run(fixtureRoot, ssrOutput, [
 			"vite",
@@ -76,7 +76,7 @@ export const runPackageFixtureProof = (): PackageFixtureProof => {
 			throw new Error("SSR build did not emit a server bundle");
 		}
 		run(fixtureRoot, clientOutput, ["node", "test/e2e.mjs"], {
-			PANDWIND_FIXTURE_SSR_OUT_DIR: ssrOutput,
+			YUMCSS_FIXTURE_SSR_OUT_DIR: ssrOutput,
 		});
 		return {
 			lane: PLAYGROUND_EXECUTION_LANE.PackageFixture,

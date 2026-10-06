@@ -32,7 +32,7 @@ interface CompilerPreviewRuntimeInfo {
 	readonly root: string;
 	readonly viteVersion: string;
 	readonly plugins: readonly string[];
-	readonly pandwindPlugins: readonly string[];
+	readonly yumcssPlugins: readonly string[];
 }
 
 interface CompilerPreviewTransform {
@@ -74,7 +74,7 @@ const resolveViteEntry = (root: string): string => {
 			return packageRequire.resolve("vite");
 		} catch {
 			throw new Error(
-				`Vite is not installed from the project root or pandwind-analyze package: ${root}`,
+				`Vite is not installed from the project root or yumcss-analyze package: ${root}`,
 			);
 		}
 	}
@@ -110,7 +110,7 @@ export const createCompilerPreviewRuntime = async (
 			root: workspace.root,
 			viteVersion: vite.version ?? "unknown",
 			plugins,
-			pandwindPlugins: plugins.filter((name) => name.toLowerCase().includes("pandwind")),
+			yumcssPlugins: plugins.filter((name) => name.toLowerCase().includes("yumcss")),
 		},
 		files: () => workspace.files(),
 		read(file) {

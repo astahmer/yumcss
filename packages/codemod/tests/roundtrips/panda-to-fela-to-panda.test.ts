@@ -42,7 +42,7 @@ test("panda -> fela -> panda: preserves an actionable concrete round trip", asyn
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "panda -> fela round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -138,7 +138,7 @@ test("panda -> fela -> panda: retains the documented secondary API without silen
 		  "forward": {
 		    "changed": true,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> fela | lowering-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> fela | lowering-residual: composition | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -180,7 +180,7 @@ test("panda -> fela -> panda: retains the documented secondary API without silen
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { cva } from "styled-system/recipes";
-		// pandwind:migrate-skip (route: panda -> fela | lowering-residual: composition | available: named-map, residual)
+		// yumcss:migrate-skip (route: panda -> fela | lowering-residual: composition | available: named-map, residual)
 		export const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });",
 		    "converted": 0,
 		    "generatedFiles": [],

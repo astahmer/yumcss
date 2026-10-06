@@ -1,5 +1,5 @@
 {
-	"schema": "pandwind.unocss-next-installed-proof/1",
+	"schema": "yumcss.unocss-next-installed-proof/1",
 	"reference": {
 		"repository": "https://github.com/unocss/unocss",
 		"commit": "75103d5e12ec9876069daf6b97a7db1d73428829",
@@ -7,7 +7,7 @@
 	},
 	"route": {
 		"from": "unocss",
-		"to": "pandwind"
+		"to": "yumcss"
 	},
 	"fixture": {
 		"isolated": true,
@@ -16,7 +16,7 @@
 	"dependencies": {
 		"sourceInstalled": true,
 		"targetNodeModule": true,
-		"targetPackage": "file:/Users/astahmer/dev/pandwind/packages/pandwind"
+		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
 	},
 	"migration": {
 		"converted": 11,
@@ -27,7 +27,7 @@
 			"equal": true,
 			"differences": []
 		},
-		"targetUsesPandwind": true,
+		"targetUsesYumCSS": true,
 		"sourceUnoIntegrationRemoved": true,
 		"nextWebpackIntegrationPresent": true
 	},
@@ -38,7 +38,7 @@
 		"targetBuild": true
 	},
 	"next": {
-		"schema": "pandwind.next-installed-proof/1",
+		"schema": "yumcss.next-installed-proof/1",
 		"http": {
 			"checked": true,
 			"routeCount": 3,

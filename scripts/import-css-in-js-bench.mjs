@@ -4,11 +4,11 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const inputPath = process.argv[2];
-const pandwindRevision = process.argv[3];
+const yumcssRevision = process.argv[3];
 
-if (inputPath === undefined || pandwindRevision === undefined) {
+if (inputPath === undefined || yumcssRevision === undefined) {
 	throw new Error(
-		"usage: node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <pandwind-commit>",
+		"usage: node scripts/import-css-in-js-bench.mjs /path/to/BENCHMARK.json <yumcss-commit>",
 	);
 }
 
@@ -33,10 +33,10 @@ const toResults = (items, valueOf) =>
 		}))
 		.filter(({ value }) => Number.isFinite(value) && value > 0);
 
-const mainLane = "pandwind-css";
-const twBonusLane = "pandwind-buildtime";
-const namedStrategyLane = "pandwind-css-named";
-const nonPrimaryLanes = new Set(["pandwind", twBonusLane, namedStrategyLane, "vanilla"]);
+const mainLane = "yumcss-css";
+const twBonusLane = "yumcss-buildtime";
+const namedStrategyLane = "yumcss-css-named";
+const nonPrimaryLanes = new Set(["yumcss", twBonusLane, namedStrategyLane, "vanilla"]);
 const splitResults = (items, valueOf) => {
 	const results = toResults(items, valueOf);
 	return {
@@ -108,10 +108,10 @@ const workloads = [
 
 for (const workload of workloads) {
 	if (!workload.results.some(({ tech }) => tech === mainLane)) {
-		throw new Error(`required Pandwind createCss lane missing from ${workload.id}`);
+		throw new Error(`required YumCSS createCss lane missing from ${workload.id}`);
 	}
 	if (!workload.bonusResults.some(({ tech }) => tech === twBonusLane)) {
-		throw new Error(`required Pandwind tw() bonus lane missing from ${workload.id}`);
+		throw new Error(`required YumCSS tw() bonus lane missing from ${workload.id}`);
 	}
 	if (workload.results.length < 5) {
 		throw new Error(`fewer than five primary lanes have valid ${workload.id} results`);
@@ -129,10 +129,10 @@ const snapshot = {
 		repository: "jantimon/css-in-js-bench",
 		url: "https://github.com/jantimon/css-in-js-bench",
 		cssInJsBenchRevision: report.meta.gitSha,
-		pandwindRevision,
-		pandwindMainLane: mainLane,
-		pandwindTwBonusLane: twBonusLane,
-		pandwindNamedStrategyDiagnostic: namedStrategyLane,
+		yumcssRevision,
+		yumcssMainLane: mainLane,
+		yumcssTwBonusLane: twBonusLane,
+		yumcssNamedStrategyDiagnostic: namedStrategyLane,
 		wpdCompletedAt: report.meta.timestamp,
 		host: report.meta.host,
 		node: report.meta.node,

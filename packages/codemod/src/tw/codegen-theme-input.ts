@@ -381,14 +381,14 @@ export async function loadTokenDocument(modulePath: string, base: string): Promi
 	const module = (await import(specifier)) as Record<string, unknown>;
 	const groups = resolveTokenGroups(module);
 	if (groups === undefined)
-		throw new Error(`pandwind-codemod tw generate: no token groups found in ${modulePath}`);
+		throw new Error(`yumcss-codemod tw generate: no token groups found in ${modulePath}`);
 	const conditions = resolvePresetConditions(module);
 	const contextNames = new Set(Object.keys(conditions ?? {}));
 	const losses: TokenFormatLoss[] = [];
 	const root = groupFromInput(groups, [], contextNames, losses);
 	return createTokenDocument({
 		format: TokenFormatId.Preset,
-		formatVersion: "pandwind.preset/1",
+		formatVersion: "yumcss.preset/1",
 		root,
 		sourceLosses: losses,
 		sourceText: JSON.stringify(root),
@@ -448,7 +448,7 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 	const conditions = resolvePresetConditions(module);
 	if (groups === undefined) {
 		throw new Error(
-			`pandwind-codemod tw generate: no bridgeable token groups found in ${modulePath} (looked at default export and every named export for a .tokens field or raw DTCG groups)`,
+			`yumcss-codemod tw generate: no bridgeable token groups found in ${modulePath} (looked at default export and every named export for a .tokens field or raw DTCG groups)`,
 		);
 	}
 	let themeBlock = buildThemeBlock(
@@ -477,7 +477,7 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 
 /**
  * Resolve a tokens module to an importable specifier. Package specifiers
- * (e.g. `@pandwind/example-preset`) resolve against the CLI's project
+ * (e.g. `@yumcss/example-preset`) resolve against the CLI's project
  * root via CJS resolution, never against the importing file's own package:
  * a stray `package.json` anywhere between the two would otherwise redirect
  * Node's self-reference resolution and double a path segment

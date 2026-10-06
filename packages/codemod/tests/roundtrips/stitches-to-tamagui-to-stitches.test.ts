@@ -42,7 +42,7 @@ test("stitches -> tamagui -> stitches: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stitches -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -139,7 +139,7 @@ test("stitches -> tamagui -> stitches: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		// yumcss:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -178,7 +178,7 @@ test("stitches -> tamagui -> stitches: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
+		// yumcss:migrate-skip (route: stitches -> tamagui | lowering-residual: emission-empty, capability | available: static, residual)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		    "converted": 0,
 		    "generatedFiles": [],

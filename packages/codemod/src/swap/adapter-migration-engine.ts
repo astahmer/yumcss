@@ -11,7 +11,7 @@ import {
 	SourceBindings,
 	createSourceProjectBindingIndex,
 	type SourceBindingIndex,
-} from "pandwind/source";
+} from "yumcss/source";
 import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
 import {
 	inspectAdapterCapabilities,
@@ -55,7 +55,7 @@ import {
 	StyleRepresentationKind,
 	CodemodAdapterId,
 } from "./identifiers.ts";
-import { simplifyPandwindStaticStyles } from "./static-style-simplifier.ts";
+import { simplifyYumCSSStaticStyles } from "./static-style-simplifier.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 import { StyleProgramCore } from "./style-program-core.ts";
 import { materializeSourceTokenValues } from "./tokens.ts";
@@ -182,7 +182,7 @@ function runAdapterMigrationInternal(
 	const sourceOwnership = sourceModuleOwnership(sourceAdapter, config);
 	const targetOwnership = sourceModuleOwnership(targetAdapter, targetConfig);
 	if (
-		targetAdapter.id === CodemodAdapterId.Pandwind &&
+		targetAdapter.id === CodemodAdapterId.YumCSS &&
 		sourceImportsModule(source, sourceOwnership.modules, sourceOwnership.matchers)
 	) {
 		source = normalizeForeignCssBinding(
@@ -279,7 +279,7 @@ function runAdapterMigrationInternal(
 		sourceAdapter,
 		targetAdapter,
 	);
-	const marker = options.skipMarker ?? "pandwind:migrate-skip";
+	const marker = options.skipMarker ?? "yumcss:migrate-skip";
 	const renderSkipMarker = (index: number, text: string): string => {
 		const rendered = SourcePass.markerText(source, options.file, index, text);
 		return `${rendered}\n`;
@@ -928,7 +928,7 @@ function runAdapterMigrationInternal(
 				getHostComponentRewriter(framework)?.rewriteDeclaration !== undefined;
 			if (dynamicClassSubjectProjection) {
 				// A scalar dynamic value can still be static CSS: the target class
-				// contains var(--pandwind-dynamic-*), while the generated wrapper
+				// contains var(--yumcss-dynamic-*), while the generated wrapper
 				// binds that variable from the original lexical expression. Keep the
 				// component value a component; never assign a class string to Card.
 				emittedHostRepresentation = hostRepresentation;
@@ -1524,7 +1524,7 @@ function runAdapterMigrationInternal(
 	if (needsCx) {
 		runtimeEdited = support.ensureGeneratedStatement(
 			runtimeEdited,
-			'import { createCx } from "pandwind/cx";',
+			'import { createCx } from "yumcss/cx";',
 			options.file,
 		);
 		runtimeEdited = support.ensureGeneratedStatement(
@@ -1726,8 +1726,8 @@ function runAdapterMigrationInternal(
 			["css", "createCss", "createUnsafeCss", "createRuntimeCss"],
 		);
 		if (
-			imports.has('import { createUnsafeCss } from "pandwind/unsafe/css";') ||
-			imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')
+			imports.has('import { createUnsafeCss } from "yumcss/unsafe/css";') ||
+			imports.has('import { createRuntimeCss } from "yumcss/css/runtime";')
 		)
 			code = MigrationOutput.removeNamedImportSpecifiers(code, sourceModulesForRemoval, ["css"]);
 		// A demoted factory-qualified host no longer references its factory
@@ -1757,12 +1757,12 @@ function runAdapterMigrationInternal(
 			for (const statement of canonicalStatements.imports) generatedStatements.add(statement);
 		}
 	}
-	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
+	if (imports.has('import { createRuntimeCss } from "yumcss/css/runtime";')) {
 		const runtimeUsesSameBinding = [...imports].some((statement) =>
 			runtimeCssBindingPattern.test(statement),
 		);
 		if (runtimeUsesSameBinding) {
-			imports.delete('import { createUnsafeCss } from "pandwind/unsafe/css";');
+			imports.delete('import { createUnsafeCss } from "yumcss/unsafe/css";');
 			for (const statement of imports)
 				if (generatedCssBindingPattern.test(statement)) imports.delete(statement);
 		}
@@ -1772,10 +1772,10 @@ function runAdapterMigrationInternal(
 		if (converted > 0 && skipped === 0 && residuals.length === 0 && runtimeUsesSameBinding)
 			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	}
-	const targetUsesPandwindCss =
-		imports.has('import { createUnsafeCss } from "pandwind/unsafe/css";') ||
-		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
-	if (converted > 0 && skipped === 0 && residuals.length === 0 && !targetUsesPandwindCss)
+	const targetUsesYumCSSCss =
+		imports.has('import { createUnsafeCss } from "yumcss/unsafe/css";') ||
+		imports.has('import { createRuntimeCss } from "yumcss/css/runtime";');
+	if (converted > 0 && skipped === 0 && residuals.length === 0 && !targetUsesYumCSSCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
 	for (const statement of generatedStatements)
@@ -1799,8 +1799,8 @@ function runAdapterMigrationInternal(
 			code = canonicalizeGeneratedCssBinding({ text: code, imports: [] }, binding).text;
 		code = code.replace(/\bcss\s+as\s+css\b/gu, "css");
 	}
-	if (targetAdapter.id === CodemodAdapterId.Pandwind)
-		code = simplifyPandwindStaticStyles(code, outputFile, {
+	if (targetAdapter.id === CodemodAdapterId.YumCSS)
+		code = simplifyYumCSSStaticStyles(code, outputFile, {
 			hoistStaticStyles: options.hoistStaticStyles,
 		}).code;
 	if (converted > 0 && skipped === 0 && residuals.length === 0)

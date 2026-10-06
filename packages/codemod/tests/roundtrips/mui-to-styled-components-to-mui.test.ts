@@ -42,7 +42,7 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mui -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -137,7 +137,7 @@ test("mui -> styled-components -> mui: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -180,7 +180,7 @@ test("mui -> styled-components -> mui: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		// pandwind:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
+		// yumcss:migrate-skip (route: mui -> styled-components | lowering-residual: validation)
 		export const Card = styled("div")({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +280,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -360,7 +360,7 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -455,7 +455,7 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
+		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 0,
 		    "generatedFiles": [],

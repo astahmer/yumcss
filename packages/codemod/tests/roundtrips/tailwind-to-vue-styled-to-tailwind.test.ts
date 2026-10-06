@@ -42,7 +42,7 @@ test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tailwind -> vue-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -88,7 +88,7 @@ test("tailwind -> vue-styled -> tailwind: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`display: flex; align-items: center; gap: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -140,7 +140,7 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -183,7 +183,7 @@ test("tailwind -> vue-styled -> tailwind: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
+		    "code": "// yumcss:migrate-skip (route: tailwind -> vue-styled | lowering-residual: validation)
 		export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -262,7 +262,7 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #f97316; padding: 1.125rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -337,7 +337,7 @@ test("tailwind -> vue-styled -> tailwind: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 1.125rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -427,7 +427,7 @@ test("tailwind -> vue-styled -> tailwind: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: vue-styled -> tailwind | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 1.125rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

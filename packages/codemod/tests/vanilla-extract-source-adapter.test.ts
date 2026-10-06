@@ -8,14 +8,14 @@ import {
 const catalog = createBuiltinCodemodCatalog();
 
 describe("Vanilla Extract source adapter", () => {
-	test("lowers documented styleVariants into a reusable Pandwind class map", () => {
+	test("lowers documented styleVariants into a reusable YumCSS class map", () => {
 		const source = [
 			'import { styleVariants } from "@vanilla-extract/css";',
 			'export const tone = styleVariants({ regular: { color: "red" }, quiet: { color: "gray" } });',
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.VanillaExtract,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "tone.css.ts",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
@@ -29,7 +29,7 @@ describe("Vanilla Extract source adapter", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "pandwind/unsafe/css";
+			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const tone = { "regular": css.class({ color: "red" }), "quiet": css.class({ color: "gray" }) };",
 			  "converted": 1,
@@ -38,7 +38,7 @@ describe("Vanilla Extract source adapter", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -46,7 +46,7 @@ describe("Vanilla Extract source adapter", () => {
 			      "packages": [
 			        {
 			          "kind": "runtime",
-			          "name": "pandwind",
+			          "name": "yumcss",
 			        },
 			      ],
 			    },
@@ -135,7 +135,7 @@ describe("Vanilla Extract source adapter", () => {
 			          },
 			        ],
 			        "runtime": undefined,
-			        "schema": "pandwind.style-program/1",
+			        "schema": "yumcss.style-program/1",
 			        "source": {
 			          "adapter": "vanilla-extract",
 			          "end": 144,
@@ -182,7 +182,7 @@ describe("Vanilla Extract source adapter", () => {
 			  ],
 			  "reports": [
 			    {
-			      "adapter": "pandwind",
+			      "adapter": "yumcss",
 			      "blockers": [],
 			      "convertible": true,
 			      "exact": [
@@ -238,13 +238,13 @@ describe("Vanilla Extract source adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.VanillaExtract,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "theme.css.ts",
 			mode: "safe",
 			adapterRegistry: catalog.registry,
 		});
 
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
 		);
@@ -259,7 +259,7 @@ describe("Vanilla Extract source adapter", () => {
 		].join("\n");
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.VanillaExtract,
-			to: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.YumCSS,
 			file: "meter.css.ts",
 			mode: "safe",
 			adapterRegistry: catalog.registry,

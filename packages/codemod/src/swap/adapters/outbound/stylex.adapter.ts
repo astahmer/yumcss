@@ -2,12 +2,12 @@ import { SwapResidualKindTag, type SwapEntry, type SwapIR } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
-import { canonicalPandwindConditionName } from "../../pandwind-conditions.ts";
-import type { PandwindMeta } from "../../../meta.ts";
+import { canonicalYumCSSConditionName } from "../../yumcss-conditions.ts";
+import type { YumCSSMeta } from "../../../meta.ts";
 
 const stylexImport = 'import * as stylex from "@stylexjs/stylex";';
-function condition(name: string, meta: PandwindMeta): string | undefined {
-	const canonicalName = canonicalPandwindConditionName(name);
+function condition(name: string, meta: YumCSSMeta): string | undefined {
+	const canonicalName = canonicalYumCSSConditionName(name);
 	const value = meta.conditions[canonicalName] ?? meta.conditions[`_${name}`];
 	if (typeof value !== "string") return undefined;
 	const normalized = value.trim();

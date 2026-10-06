@@ -13,14 +13,14 @@
  *
  * If you change a token here, all three targets change together.
  */
-import type { DesignStyleObject } from "pandwind/design";
-import type { examplePreset } from "@pandwind/example-preset";
+import type { DesignStyleObject } from "yumcss/design";
+import type { examplePreset } from "@yumcss/example-preset";
 
 type Styles = DesignStyleObject<typeof examplePreset>;
 
 // NOTE: only the intersection of all three targets' vocabularies lives
 // here (fills/corners/padding/colors). Typography is web/RN-only
-// (terminals own fonts — pandwind/opentui refuses it loudly), which is
+// (terminals own fonts — yumcss/opentui refuses it loudly), which is
 // exactly the per-backend vocabulary-subset story of plans/021.
 export const header: Styles = {
 	$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },

@@ -38,10 +38,10 @@ test("stitches -> mantine: migrates concrete stitches syntax to mantine", () => 
 		if (result.validations.length > 0)
 			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
-		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("yumcss:migrate-skip");
 	} else {
 		expect(result.residuals.length).toBeGreaterThan(0);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(result, "stitches -> mantine happy");
 	expectExplicitResidualEvidence(result);
@@ -49,7 +49,7 @@ test("stitches -> mantine: migrates concrete stitches syntax to mantine", () => 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -73,7 +73,7 @@ test("stitches -> mantine: migrates concrete stitches syntax to mantine", () => 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -106,7 +106,7 @@ test("stitches -> mantine: carries a documented secondary stitches API explicitl
 		{
 		  "changed": true,
 		  "code": "import { globalCss } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: rule-level, validation)
 		export const reset = globalCss({ body: { margin: 0 } });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -172,7 +172,7 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -196,7 +196,7 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -220,7 +220,7 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -244,7 +244,7 @@ test("stitches -> mantine: loads concrete theme and project context variants", a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -280,7 +280,7 @@ test("stitches -> mantine: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 0,
 		  "generatedFiles": [],
@@ -304,7 +304,7 @@ test("stitches -> mantine: resolves concrete token values with project context",
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },
@@ -337,7 +337,7 @@ test("stitches -> mantine: preserves malformed concrete stitches input", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		// pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		// yumcss:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 0,
@@ -362,7 +362,7 @@ test("stitches -> mantine: preserves malformed concrete stitches input", () => {
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "hint": "Mantine standalone styles require a host style prop or a portable YumCSS artifact",
 		      "kind": "host-framework",
 		      "preserved": undefined,
 		    },

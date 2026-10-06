@@ -42,7 +42,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves an actionable concr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "vue-styled -> vanilla-extract round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -53,7 +53,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves an actionable concr
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -90,7 +90,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves an actionable concr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -119,7 +119,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: retains the documented second
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -156,7 +156,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: retains the documented second
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -201,7 +201,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -238,7 +238,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -254,7 +254,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -291,7 +291,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: preserves concrete theme and 
 		    "reverse": {
 		      "changed": false,
 		      "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -322,7 +322,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: resolves token values across 
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -359,7 +359,7 @@ test("vue-styled -> vanilla-extract -> vue-styled: resolves token values across 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import styled from "vue-styled-components";
-		// pandwind:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
+		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 0,
 		    "generatedFiles": [],

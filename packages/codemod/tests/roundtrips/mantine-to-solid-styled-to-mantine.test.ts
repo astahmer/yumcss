@@ -42,7 +42,7 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "mantine -> solid-styled round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -90,7 +90,7 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,
@@ -143,7 +143,7 @@ test("mantine -> solid-styled -> mantine: retains the documented secondary API w
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> solid-styled | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> solid-styled | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -179,7 +179,7 @@ test("mantine -> solid-styled -> mantine: retains the documented secondary API w
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { Button } from "@mantine/core";
-		// pandwind:migrate-skip (route: mantine -> solid-styled | parse-residual: host-framework | available: named-map, residual)
+		// yumcss:migrate-skip (route: mantine -> solid-styled | parse-residual: host-framework | available: named-map, residual)
 		export const App = () => <Button styles={{ root: { color: "red" } }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -261,7 +261,7 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
@@ -339,7 +339,7 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		      "converted": 1,
@@ -432,7 +432,7 @@ test("mantine -> solid-styled -> mantine: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createUnsafeCss } from "pandwind/unsafe/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
 		    "converted": 1,

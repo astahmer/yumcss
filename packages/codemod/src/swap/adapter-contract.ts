@@ -1,4 +1,4 @@
-import type { PandwindMeta } from "../meta.ts";
+import type { YumCSSMeta } from "../meta.ts";
 import type {
 	AdapterCapabilities,
 	AdapterCapability,
@@ -14,7 +14,7 @@ import type {
 	StyleRuntimeContext,
 	StyleThemeBinding,
 } from "./semantic-ir.ts";
-import type { SourceBinding, SourceBindingIndex, SourceScanResult } from "pandwind/source";
+import type { SourceBinding, SourceBindingIndex, SourceScanResult } from "yumcss/source";
 import type { StyleLowering, StyleLoweringPlan } from "./lowering.ts";
 import type {
 	StyleHostRepresentationKind,
@@ -33,7 +33,7 @@ import type {
 import type { TokenReferenceFormat } from "./tokens.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/1" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "yumcss.style-adapter/1" as const;
 
 export type AdapterDependencyKind = `${AdapterDependencyKindTag}`;
 
@@ -153,9 +153,9 @@ export interface AdapterConfigGraphPort {
 	loadConfigAsync?(context: AdapterConfigContext): Promise<AdapterProjectConfig>;
 }
 
-export const ADAPTER_TOKEN_CATALOG_SCHEMA = "pandwind.adapter-token-catalog/1" as const;
-export const ADAPTER_TOKEN_POLICY_SCHEMA = "pandwind.adapter-token-policy/1" as const;
-export const ADAPTER_TOKEN_DEFINITIONS_SCHEMA = "pandwind.adapter-token-definitions/1" as const;
+export const ADAPTER_TOKEN_CATALOG_SCHEMA = "yumcss.adapter-token-catalog/1" as const;
+export const ADAPTER_TOKEN_POLICY_SCHEMA = "yumcss.adapter-token-policy/1" as const;
+export const ADAPTER_TOKEN_DEFINITIONS_SCHEMA = "yumcss.adapter-token-definitions/1" as const;
 
 export interface AdapterTokenCatalog {
 	readonly schema: typeof ADAPTER_TOKEN_CATALOG_SCHEMA;
@@ -199,7 +199,7 @@ export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly bindings?: SourceBindingIndex;
 	/** Resolve a local binding through relative project re-export barrels. */
 	readonly resolveBinding?: (localName: string) => SourceBinding | undefined;
-	readonly meta?: PandwindMeta;
+	readonly meta?: YumCSSMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
 	readonly document?: SourceScanResult;
 	/** Source semantic metadata supplied by a framework or project integration. */
@@ -237,7 +237,7 @@ export interface AdapterEmitContext {
 	/** Residuals produced by generic lowering before target emission. */
 	readonly loweringResiduals?: readonly StyleProgramResidual[];
 	readonly index: number;
-	readonly meta?: PandwindMeta;
+	readonly meta?: YumCSSMeta;
 	/** Optional language-neutral document view for target emitters. */
 	readonly document?: SourceScanResult;
 	/** Source-owned modules whose imports are removed after target emission. */
@@ -599,7 +599,7 @@ export interface AdapterTargetMigrationPolicy {
 	 * Whether a source-adapter factory host (for example a JSX factory member) may
 	 * be collapsed to its canonical element when this target owns the style
 	 * carrier. Defaults to true: a replacement target cannot call a foreign
-	 * factory. A compose target such as Pandwind wraps any source host and opts
+	 * factory. A compose target such as YumCSS wraps any source host and opts
 	 * out so the source factory keeps styling the element it was authored on.
 	 */
 	readonly demotesFactoryHosts?: boolean;

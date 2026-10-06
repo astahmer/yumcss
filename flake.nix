@@ -1,5 +1,5 @@
 {
-  description = "pandwind development environment";
+  description = "yumcss development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

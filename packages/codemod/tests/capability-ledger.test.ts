@@ -20,7 +20,7 @@ describe("adapter capability ledger", () => {
 		const emotion = ledger.get(CodemodAdapterId.Emotion, AdapterCapabilityTag.Declarations);
 		const dynamic = ledger.get(CodemodAdapterId.Emotion, AdapterCapabilityTag.DynamicValues);
 
-		expect(ledger.schema).toBe("pandwind.adapter-capability-ledger/1");
+		expect(ledger.schema).toBe("yumcss.adapter-capability-ledger/1");
 		expect(ledger.entries.length).toBeGreaterThan(registry.adapters.length);
 		expect(emotion).toMatchObject({
 			adapter: CodemodAdapterId.Emotion,

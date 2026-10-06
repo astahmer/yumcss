@@ -7,7 +7,7 @@ import {
 	createSourceScannerContractSuite,
 	createSourceScannerRegistry,
 	type SourceLanguageAdapter,
-} from "pandwind/source";
+} from "yumcss/source";
 
 describe("language-neutral source scanner registry", () => {
 	test("proves every built-in language/framework adapter through one contract", () => {
@@ -89,21 +89,21 @@ describe("language-neutral source scanner registry", () => {
 		const registry = createSourceScannerRegistry();
 		const vueSource = [
 			'<script lang="ts">',
-			'import { css } from "pandwind/css";',
+			'import { css } from "yumcss/css";',
 			'const card = css({ color: "red" });',
 			"</script>",
 			"<template><div title=\"css({ color: 'blue' })\" /></template>",
 		].join("\n");
 		const svelteSource = [
 			'<script lang="ts">',
-			'import { css } from "pandwind/css";',
+			'import { css } from "yumcss/css";',
 			'const card = css({ color: "red" });',
 			"</script>",
 			'<div title="css({ color: \'blue\' })">css({ color: "green" })</div>',
 		].join("\n");
 		const astroSource = [
 			"---",
-			'import { css } from "pandwind/css";',
+			'import { css } from "yumcss/css";',
 			"if (!Astro.props.active) return null;",
 			'const card = css({ color: "red" });',
 			"---",
@@ -156,13 +156,13 @@ describe("language-neutral source scanner registry", () => {
 
 	test("exposes language adapters through a plugin composition boundary", () => {
 		const registry = createSourceScannerRegistry();
-		expect(registry.plugins.map((plugin) => plugin.id)).toEqual(["pandwind-source-languages"]);
+		expect(registry.plugins.map((plugin) => plugin.id)).toEqual(["yumcss-source-languages"]);
 		const custom = {
-			schema: "pandwind.source-scanner-plugin/1",
+			schema: "yumcss.source-scanner-plugin/1",
 			id: "custom-source-plugin",
 			adapters: [
 				{
-					schema: "pandwind.source-scanner/1",
+					schema: "yumcss.source-scanner/1",
 					id: "custom-source",
 					languages: ["custom"],
 					extensions: [".custom"],

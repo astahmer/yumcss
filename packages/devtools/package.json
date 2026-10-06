@@ -1,18 +1,18 @@
 {
-	"name": "pandwind-devtools",
+	"name": "@yumcss/devtools",
 	"version": "0.1.0",
-	"description": "Vite DevTools for inspecting Pandwind style programs and migrations",
+	"description": "Vite DevTools for inspecting YumCSS style programs and migrations",
 	"keywords": [
 		"css",
 		"devtools",
 		"migration",
-		"pandwind",
+		"yumcss",
 		"vite"
 	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/astahmer/pandwind.git",
+		"url": "git+https://github.com/astahmer/yumcss.git",
 		"directory": "packages/devtools"
 	},
 	"files": [
@@ -23,19 +23,19 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"pandwind": "./src/index.ts",
+			"yumcss": "./src/index.ts",
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
 		"./inspect-action": {
-			"pandwind": "./src/client/inspect-action.ts",
+			"yumcss": "./src/client/inspect-action.ts",
 			"types": "./dist/client/inspect-action.d.ts",
 			"import": "./dist/client/inspect-action.js",
 			"default": "./dist/client/inspect-action.js"
 		},
 		"./evidence": {
-			"pandwind": "./src/evidence/index.ts",
+			"yumcss": "./src/evidence/index.ts",
 			"types": "./dist/evidence/index.d.ts",
 			"import": "./dist/evidence/index.js",
 			"default": "./dist/evidence/index.js"
@@ -54,8 +54,8 @@
 	},
 	"dependencies": {
 		"@vitejs/devtools-kit": "0.7.2",
-		"pandwind": "workspace:*",
-		"pandwind-codemod": "workspace:*",
+		"yumcss": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8"
 	},

@@ -106,7 +106,7 @@ export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 				) : (
 					<EmptyState
 						title="No programs yet"
-						detail="Run a migration preview or use a Pandwind compiler integration to populate style evidence."
+						detail="Run a migration preview or use a YumCSS compiler integration to populate style evidence."
 					/>
 				)}
 			</Card>

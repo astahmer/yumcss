@@ -4,7 +4,7 @@ import type {
 	StyleValidationContext,
 } from "./validator-registry.ts";
 
-export const VALIDATOR_CONTRACT_SUITE_SCHEMA = "pandwind.validator-contract-suite/1" as const;
+export const VALIDATOR_CONTRACT_SUITE_SCHEMA = "yumcss.validator-contract-suite/1" as const;
 
 export type ValidatorContractPhase = "registration" | "execution" | "result";
 

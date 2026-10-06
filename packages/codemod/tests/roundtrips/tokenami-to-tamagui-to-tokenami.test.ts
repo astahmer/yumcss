@@ -42,7 +42,7 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "tokenami -> tamagui round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -86,7 +86,7 @@ test("tokenami -> tamagui -> tokenami: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -137,7 +137,7 @@ test("tokenami -> tamagui -> tokenami: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> tamagui | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: tokenami -> tamagui | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -170,7 +170,7 @@ test("tokenami -> tamagui -> tokenami: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		// pandwind:migrate-skip (route: tokenami -> tamagui | parse-residual: composition | available: residual)
+		// yumcss:migrate-skip (route: tokenami -> tamagui | parse-residual: composition | available: residual)
 		export const card = css.compose({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -247,7 +247,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#f97316", gap: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -318,7 +318,7 @@ test("tokenami -> tamagui -> tokenami: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -404,7 +404,7 @@ test("tokenami -> tamagui -> tokenami: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-		// pandwind:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: tamagui -> tokenami | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", gap: "1rem" });",
 		    "converted": 0,
 		    "generatedFiles": [],

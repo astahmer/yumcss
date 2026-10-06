@@ -6,7 +6,7 @@
  * composition root and adapter contracts independent from spelling mistakes.
  */
 export const enum CodemodAdapterId {
-	Pandwind = "pandwind",
+	YumCSS = "yumcss",
 	Panda = "panda",
 	StyleX = "stylex",
 	ReactStrictDom = "react-strict-dom",
@@ -41,7 +41,7 @@ export const enum CodemodAdapterId {
 }
 
 export const BUILTIN_CODEMOD_ADAPTER_IDS = [
-	CodemodAdapterId.Pandwind,
+	CodemodAdapterId.YumCSS,
 	CodemodAdapterId.Panda,
 	CodemodAdapterId.StyleX,
 	CodemodAdapterId.ReactStrictDom,
@@ -81,21 +81,21 @@ export const enum CodemodPatternId {
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
-	PandwindCssMap = "pandwind-css-map",
-	PandwindCssClass = "pandwind-css-class",
-	PandwindCssVars = "pandwind-css-vars",
-	PandwindCssGroup = "css-group",
-	PandwindCssRaw = "pandwind-css-raw",
-	PandwindCssProps = "pandwind-css-props",
-	PandwindCssKeyframes = "pandwind-css-keyframes",
+	YumCSSCssMap = "yumcss-css-map",
+	YumCSSCssClass = "yumcss-css-class",
+	YumCSSCssVars = "yumcss-css-vars",
+	YumCSSCssGroup = "css-group",
+	YumCSSCssRaw = "yumcss-css-raw",
+	YumCSSCssProps = "yumcss-css-props",
+	YumCSSCssKeyframes = "yumcss-css-keyframes",
 	ReactStrictDomCreate = "react-strict-dom-create",
 	ReactStrictDomKeyframes = "react-strict-dom-keyframes",
 	ReactStrictDomDefineVars = "react-strict-dom-define-vars",
 	ReactStrictDomCompat = "react-strict-dom-compat",
 	RuntimeSemanticRules = "runtime-semantic-rules",
 	VanillaExtractGlobalStyle = "globalStyle",
-	PandwindRecipe = "pandwind-recipe",
-	PandwindSlotRecipe = "pandwind-slot-recipe",
+	YumCSSRecipe = "yumcss-recipe",
+	YumCSSSlotRecipe = "yumcss-slot-recipe",
 }
 
 export const enum CodemodCallPatternKindTag {
@@ -171,7 +171,7 @@ export const enum SwapTargetId {
 }
 
 export const enum CodemodPluginId {
-	BuiltinAdapters = "pandwind-builtin-adapters",
+	BuiltinAdapters = "yumcss-builtin-adapters",
 }
 
 /** Resolution evidence for project configuration, ordered by authority. */
@@ -272,7 +272,7 @@ export const enum StyleValidatorId {
 	SsrHydration = "ssr-hydration",
 	Dependencies = "dependencies",
 	RscStreaming = "rsc-streaming",
-	Builtin = "pandwind-core-validators",
+	Builtin = "yumcss-core-validators",
 }
 
 export const BUILTIN_STYLE_VALIDATOR_IDS = [
@@ -292,7 +292,7 @@ export const enum StyleLoweringId {
 	RuntimeAndPlugin = "runtime-and-plugin",
 	StyleXNumericNormalization = "stylex-numeric-normalization",
 	ReactNativeNumericNormalization = "react-native-numeric-normalization",
-	Builtin = "pandwind-core-lowerings",
+	Builtin = "yumcss-core-lowerings",
 }
 
 /** Typed causes used by the source-preserving migration diagnostics. */
@@ -426,7 +426,7 @@ export const enum PandaMigrationStageId {
 }
 
 /** Runtime ids supplied by third-party plugins remain extensible. */
-export type ExternalIdentifier = string & { readonly __pandwindIdentifier: unique symbol };
+export type ExternalIdentifier = string & { readonly __yumcssIdentifier: unique symbol };
 
 export function externalIdentifier(value: string): ExternalIdentifier {
 	return value as ExternalIdentifier;

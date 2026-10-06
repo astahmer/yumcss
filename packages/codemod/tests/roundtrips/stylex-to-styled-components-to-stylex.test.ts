@@ -42,7 +42,7 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
-		expect(first.code).toContain("pandwind:migrate-skip");
+		expect(first.code).toContain("yumcss:migrate-skip");
 	}
 	expectRouteScenarioEvidence(first, "stylex -> styled-components round-trip happy forward");
 	expectExplicitResidualEvidence(first);
@@ -87,7 +87,7 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -174,7 +174,7 @@ test("stylex -> styled-components -> stylex: retains the documented secondary AP
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -277,7 +277,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -351,7 +351,7 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -440,7 +440,7 @@ test("stylex -> styled-components -> stylex: resolves token values across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-		// pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		// yumcss:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,
 		    "generatedFiles": [],

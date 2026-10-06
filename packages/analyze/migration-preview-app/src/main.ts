@@ -55,7 +55,7 @@ const status = (value: string, className = "muted") => {
 
 const call = async (path: string, body?: unknown): Promise<void> => {
 	const response = await fetch(path + "?token=" + encodeURIComponent(token), {
-		headers: { "content-type": "application/json", "x-pandwind-migration-preview-token": token },
+		headers: { "content-type": "application/json", "x-yumcss-migration-preview-token": token },
 		method: body === undefined ? "GET" : "POST",
 		body: body === undefined ? undefined : JSON.stringify(body),
 	});

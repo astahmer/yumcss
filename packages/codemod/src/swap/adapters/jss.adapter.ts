@@ -10,7 +10,7 @@ import {
 } from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
-	if (context.targetId !== CodemodAdapterId.Pandwind) {
+	if (context.targetId !== CodemodAdapterId.YumCSS) {
 		return { code: context.code, residuals: [] };
 	}
 	const edits: Array<{ start: number; end: number; text: string }> = [];

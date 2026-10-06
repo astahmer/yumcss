@@ -14,10 +14,10 @@ import { generateTwBridge } from "./generate-bridge.ts";
 import { loadThemeBlock, loadTokenDocument } from "./codegen-theme-input.ts";
 import { generateDesignSystem } from "./generate-types.ts";
 import { runTwPrune } from "./prune-theme.ts";
-import { runTwScan } from "pandwind/tw/collect";
+import { runTwScan } from "yumcss/tw/collect";
 import {
 	checkGeneratedArtifactManifest,
-	PANDWIND_GENERATED_BUDGET_SCHEMA,
+	YUMCSS_GENERATED_BUDGET_SCHEMA,
 	type GeneratedArtifactBudgetFile,
 } from "./artifact-check.ts";
 
@@ -83,7 +83,7 @@ export type TwCommandInvocation =
 	| TwManifestCommand
 	| TwVerifyCommand;
 
-const DEFAULT_PRESET_IMPORT = "pandwind/preset/default";
+const DEFAULT_PRESET_IMPORT = "yumcss/preset/default";
 const DEFAULT_PRESET_EXPORT = "defaultPreset";
 
 export interface TwCliHandlers {
@@ -149,12 +149,12 @@ const scanCommand = (cwd: string, positionals: readonly string[]): TwScanCommand
 	command: TwCommand.Scan,
 	twEntry: resolve(cwd, positionals[0] ?? "src/tw.ts"),
 	srcDir: resolve(cwd, positionals[1] ?? "src"),
-	outFile: resolve(cwd, positionals[2] ?? "src/pandwind.safelist.css"),
+	outFile: resolve(cwd, positionals[2] ?? "src/yumcss.safelist.css"),
 });
 
 const pruneCommand = (cwd: string, positionals: readonly string[]): TwPruneCommand => ({
 	command: TwCommand.Prune,
-	themeCss: resolve(cwd, positionals[0] ?? "src/pandwind-theme.css"),
+	themeCss: resolve(cwd, positionals[0] ?? "src/yumcss-theme.css"),
 	twEntry: resolve(cwd, positionals[1] ?? "src/tw.ts"),
 	srcDir: resolve(cwd, positionals[2] ?? "src"),
 	base: cwd,
@@ -179,7 +179,7 @@ const verifyCommand = (
 	return {
 		command: TwCommand.Verify,
 		root,
-		manifest: resolve(root, optionString(options, "manifest") ?? "src/pandwind.generated.json"),
+		manifest: resolve(root, optionString(options, "manifest") ?? "src/yumcss.generated.json"),
 		...(budget === undefined ? {} : { budget: resolve(root, budget) }),
 		report: optionBoolean(options, "report"),
 	};
@@ -192,7 +192,7 @@ const configureGenerate = (command: Command): void => {
 			"--conflicts <scope>",
 			"Conflict metadata scope: all, none, or a comma-separated utility list",
 		)
-		.option("--agents", "Write the machine-readable pandwind.agents.json artifact")
+		.option("--agents", "Write the machine-readable yumcss.agents.json artifact")
 		.option("--bridge", "Generate the css() bridge and refresh interop metadata")
 		.option("--bridge-file <path>", "Output path for the generated bridge module")
 		.option("--preset-import <module>", "Module specifier for the bridge preset")
@@ -200,7 +200,7 @@ const configureGenerate = (command: Command): void => {
 };
 
 const createTwCliApp = (handlers: TwCliHandlers, cwd: string): CAC => {
-	const cli = cac("pandwind-codemod tw");
+	const cli = cac("yumcss-codemod tw");
 	const generate = cli.command(
 		"generate [css-entry] [out-dir]",
 		"Generate typed Tailwind artifacts from a CSS entrypoint",
@@ -267,12 +267,12 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 		},
 		cwd,
 	);
-	cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });
+	cli.parse(["node", "yumcss-codemod tw", ...effectiveArgv], { run: false });
 	const matched = cli.matchedCommand;
 	if (matched === undefined) {
 		const requested = commandName(effectiveArgv);
 		throw new Error(
-			`pandwind-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
+			`yumcss-codemod tw: unknown command '${requested ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
 		);
 	}
 	matched.checkUnknownOptions();
@@ -329,35 +329,35 @@ const defaultHandlers: TwCliHandlers = {
 				inputs: [{ path: command.cssEntry, content: readFileSync(command.cssEntry, "utf8") }],
 			});
 			console.log(
-				`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, tw.build.ts, and bridge.ts (${bridge.propertyCount} properties)`,
+				`yumcss: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, tw.build.ts, and bridge.ts (${bridge.propertyCount} properties)`,
 			);
 			return;
 		}
 		console.log(
-			`pandwind: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, and tw.build.ts`,
+			`yumcss: generated types.d.ts (${source.utilityCount} utilities, ${source.variantCount} variants), tw.ts, tw.runtime.ts, and tw.build.ts`,
 		);
 	},
 	async scan(command) {
 		const result = await runTwScan(command);
 		console.log(
-			`pandwind: wrote ${result.classes.length} @source inline directives to ${result.outFile}`,
+			`yumcss: wrote ${result.classes.length} @source inline directives to ${result.outFile}`,
 		);
 		const unresolved = result.unresolvedTokens ?? [];
 		if (unresolved.length > 0) {
 			for (const { token, line } of unresolved) {
 				console.warn(
-					`pandwind: unresolved dynamic candidate "${token}" (line ${line}) — no exact design-system CSS; stays on the runtime path`,
+					`yumcss: unresolved dynamic candidate "${token}" (line ${line}) — no exact design-system CSS; stays on the runtime path`,
 				);
 			}
 			console.warn(
-				`pandwind: ${unresolved.length} dynamic candidate(s) need a static branch, safelist entry, or css.vars lowering`,
+				`yumcss: ${unresolved.length} dynamic candidate(s) need a static branch, safelist entry, or css.vars lowering`,
 			);
 		}
 	},
 	async prune(command) {
 		const result = await runTwPrune(command);
 		console.log(
-			`pandwind: pruned ${result.themeCss} (${result.beforeVariables} -> ${result.afterVariables} theme vars from ${result.scannedFiles} scanned files)`,
+			`yumcss: pruned ${result.themeCss} (${result.beforeVariables} -> ${result.afterVariables} theme vars from ${result.scannedFiles} scanned files)`,
 		);
 	},
 	async manifest(command) {
@@ -366,21 +366,21 @@ const defaultHandlers: TwCliHandlers = {
 			projectRoot: command.cwd,
 			inputs: command.inputFiles.map((path) => ({ path, content: readFileSync(path, "utf8") })),
 		});
-		console.log(`pandwind: refreshed generated artifact manifest in ${command.outDir}`);
+		console.log(`yumcss: refreshed generated artifact manifest in ${command.outDir}`);
 	},
 	async verify(command) {
 		let budget: GeneratedArtifactBudgetFile | undefined;
 		if (command.budget !== undefined) {
 			budget = JSON.parse(readFileSync(command.budget, "utf8")) as GeneratedArtifactBudgetFile;
-			if (budget.schema !== PANDWIND_GENERATED_BUDGET_SCHEMA)
-				throw new Error(`pandwind-codemod tw verify: unsupported budget schema ${budget.schema}`);
+			if (budget.schema !== YUMCSS_GENERATED_BUDGET_SCHEMA)
+				throw new Error(`yumcss-codemod tw verify: unsupported budget schema ${budget.schema}`);
 		}
 		const report = checkGeneratedArtifactManifest(command.root, command.manifest, budget);
 		console.log(JSON.stringify(report, null, "\t"));
 		if (!report.valid && !command.report)
 			throw new Error(
 				[
-					"Generated Pandwind artifacts failed verification:",
+					"Generated YumCSS artifacts failed verification:",
 					...report.failures.map((failure) => `- ${failure}`),
 				].join("\n"),
 			);
@@ -400,11 +400,11 @@ class DefaultTwCli implements TwCli {
 		const cli = createTwCliApp(this.handlers, this.cwd);
 		cli.help();
 		const effectiveArgv = argv.length === 0 ? [TwCommand.Generate] : [...argv];
-		cli.parse(["node", "pandwind-codemod tw", ...effectiveArgv], { run: false });
+		cli.parse(["node", "yumcss-codemod tw", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
 			throw new Error(
-				`pandwind-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
+				`yumcss-codemod tw: unknown command '${argv[0] ?? ""}'. Expected generate, scan, prune, manifest, or verify`,
 			);
 		}
 		await cli.runMatchedCommand();

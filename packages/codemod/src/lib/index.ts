@@ -1,8 +1,8 @@
-/** Publishable Pandwind design-system artifact tooling. */
+/** Publishable YumCSS design-system artifact tooling. */
 export {
-	buildPandwindLib,
-	type BuildPandwindLibOptions,
-	type BuildPandwindLibResult,
+	buildYumCSSLib,
+	type BuildYumCSSLibOptions,
+	type BuildYumCSSLibResult,
 } from "./build.ts";
 export {
 	LibCommand,

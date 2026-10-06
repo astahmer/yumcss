@@ -1,6 +1,6 @@
-import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
+import type { StyleProgram } from "@yumcss/codemod/swap/semantic-ir";
 
-export const DEVTOOLS_EVIDENCE_SCHEMA = "pandwind.devtools.evidence/1" as const;
+export const DEVTOOLS_EVIDENCE_SCHEMA = "yumcss.devtools.evidence/1" as const;
 
 export const DevtoolsEvidenceKind = {
 	Transform: "transform",

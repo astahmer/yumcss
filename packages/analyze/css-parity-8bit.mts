@@ -19,7 +19,7 @@ import { compile } from "@tailwindcss/node";
 const THEME = "/tmp/8bit-meta/tailwind.css";
 const TW_ENTRY = "/tmp/8bit-meta/tw.ts";
 const ORIG = "/tmp/8bit-orig/components";
-const MIG = "/tmp/pandwind-8bit-dogfood/components";
+const MIG = "/tmp/yumcss-8bit-dogfood/components";
 
 /** Static class strings: className JSX attrs + cn()/clsx()/twMerge()/cva() args. */
 function staticClassStrings(files: string[]): Set<string> {
@@ -95,7 +95,7 @@ const migFiles = (globSync(`${MIG}/**/*.tsx`) as string[]).toSorted();
 console.log("collecting candidates…");
 const T_orig = [...staticClassStrings(origFiles)];
 // migrated side: evaluated tw() calls + every static string that survived
-const { collectTwClasses } = await import("pandwind-codemod/tw");
+const { collectTwClasses } = await import("@yumcss/codemod/tw");
 const T_tw = await collectTwClasses(migFiles, TW_ENTRY);
 const T_verbatim = staticClassStrings(migFiles);
 const T_after = [...new Set([...T_tw, ...T_verbatim])];
