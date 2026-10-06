@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { parseSync, type Expression } from "oxc-parser";
+import { z } from "zod";
 import { define } from "yumcss/preset";
 import { evalLiteral } from "yumcss/tw/literal";
 import {
@@ -32,7 +33,34 @@ export type ProjectApiImportResolution =
 	| { readonly kind: "namespace"; readonly source: string };
 
 const MODULE_EXTENSIONS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
-type PackageImports = Readonly<Record<string, unknown>>;
+const MODULE_CACHE_LIMIT = 256;
+type PackageImportTarget =
+	| { readonly kind: "path"; readonly path: string }
+	| { readonly kind: "blocked" }
+	| { readonly kind: "array"; readonly targets: readonly PackageImportTarget[] }
+	| {
+			readonly kind: "conditions";
+			readonly targets: Readonly<Record<string, PackageImportTarget>>;
+	  };
+type PackageImports = Readonly<Record<string, PackageImportTarget>>;
+
+const PackageImportTargetSchema: z.ZodType<PackageImportTarget> = z.lazy(() =>
+	z.union([
+		z.string().transform((path): PackageImportTarget => ({ kind: "path", path })),
+		z.null().transform((): PackageImportTarget => ({ kind: "blocked" })),
+		z
+			.array(PackageImportTargetSchema)
+			.transform((targets): PackageImportTarget => ({ kind: "array", targets })),
+		z
+			.record(z.string(), PackageImportTargetSchema)
+			.transform((targets): PackageImportTarget => ({ kind: "conditions", targets })),
+	]),
+);
+
+const PackageManifestSchema = z
+	.object({ imports: z.record(z.string(), PackageImportTargetSchema).optional() })
+	.passthrough();
+
 type PackageImportsCacheEntry = {
 	readonly mtimeMs: number;
 	readonly size: number;
@@ -50,7 +78,6 @@ const DEFINE_BUILDERS = {
 const TOKEN_CATALOG_BUILDERS = new Set(["defineColorPalettes", "defineSemanticTokens"]);
 const CSS_FACTORY_SOURCES = new Set(["yumcss", "yumcss/css"]);
 const CSS_FACTORY_NAMES = new Set(["createCss", "createGeneratedCss"]);
-const MODULE_CACHE_LIMIT = 256;
 const UNRESOLVED = Symbol("unresolved project value");
 const isDefineBuilderName = (name: string): name is keyof typeof DEFINE_BUILDERS =>
 	Object.hasOwn(DEFINE_BUILDERS, name);
@@ -187,9 +214,6 @@ const candidateFiles = (path: string): readonly string[] => {
 const existingModuleFile = (path: string): string | undefined =>
 	candidateFiles(path).find((candidate) => existsSync(candidate));
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-	typeof value === "object" && value !== null && !Array.isArray(value);
-
 const nearestPackageJson = (from: string): string | undefined => {
 	let directory = dirname(from);
 	while (true) {
@@ -213,39 +237,49 @@ const importsForPackage = (packageJson: string): PackageImports | undefined => {
 		return cached.imports;
 	let imports: PackageImports | undefined;
 	try {
-		const manifest: unknown = JSON.parse(readFileSync(packageJson, "utf8"));
-		if (isRecord(manifest) && isRecord(manifest.imports)) imports = manifest.imports;
+		const manifest = PackageManifestSchema.safeParse(JSON.parse(readFileSync(packageJson, "utf8")));
+		if (manifest.success) imports = manifest.data.imports;
 	} catch {
 		imports = undefined;
+	}
+	if (packageImportsCache.size >= MODULE_CACHE_LIMIT) {
+		const oldest = packageImportsCache.keys().next().value;
+		if (oldest !== undefined) packageImportsCache.delete(oldest);
 	}
 	packageImportsCache.set(packageJson, { mtimeMs: stats.mtimeMs, size: stats.size, imports });
 	return imports;
 };
 
-const targetForImport = (value: unknown): string | undefined => {
-	if (typeof value === "string") return value;
-	if (Array.isArray(value)) {
-		for (const candidate of value) {
-			const target = targetForImport(candidate);
-			if (target !== undefined) return target;
+const targetForImport = (value: PackageImportTarget): string | undefined => {
+	switch (value.kind) {
+		case "path":
+			return value.path;
+		case "blocked":
+			return undefined;
+		case "array":
+			for (const candidate of value.targets) {
+				const target = targetForImport(candidate);
+				if (target !== undefined) return target;
+			}
+			return undefined;
+		case "conditions": {
+			const activeConditions = new Set(["node-addons", "node", "import", "default"]);
+			for (const [condition, candidate] of Object.entries(value.targets)) {
+				if (!activeConditions.has(condition)) continue;
+				return targetForImport(candidate);
+			}
+			return undefined;
 		}
-		return undefined;
 	}
-	if (!isRecord(value)) return undefined;
-	const activeConditions = new Set(["node-addons", "node", "import", "default"]);
-	for (const [condition, candidate] of Object.entries(value)) {
-		if (!activeConditions.has(condition)) continue;
-		return targetForImport(candidate);
-	}
-	return undefined;
 };
 
 const importMapTarget = (
 	imports: PackageImports,
 	source: string,
 ): { readonly target: string; readonly substitution?: string } | undefined => {
-	if (Object.hasOwn(imports, source)) {
-		const target = targetForImport(imports[source]);
+	const exact = imports[source];
+	if (exact !== undefined) {
+		const target = targetForImport(exact);
 		return target === undefined ? undefined : { target };
 	}
 	const patterns = Object.keys(imports)
@@ -268,7 +302,9 @@ const importMapTarget = (
 		);
 	const pattern = patterns[0];
 	if (pattern === undefined) return undefined;
-	const target = targetForImport(imports[pattern.key]);
+	const matched = imports[pattern.key];
+	if (matched === undefined) return undefined;
+	const target = targetForImport(matched);
 	if (target === undefined) return undefined;
 	return {
 		target,

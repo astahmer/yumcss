@@ -34,7 +34,8 @@
 	},
 	"dependencies": {
 		"oxc-parser": "0.148.0",
-		"yumcss": "workspace:*"
+		"yumcss": "workspace:*",
+		"zod": "4.5.4"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",

@@ -429,6 +429,22 @@ const createApiResolver = (
 			? apiFromImport(resolution.source, resolution.imported)
 			: undefined;
 
+	const isProjectStyleInstanceMember = (expression: unknown): boolean => {
+		if (
+			!isNode(expression) ||
+			expression.type !== NodeKind.MemberExpression ||
+			expression.object?.type !== NodeKind.Identifier
+		)
+			return false;
+		const namespace = namespaces.get(expression.object.name);
+		const exported = memberName(expression);
+		return (
+			namespace !== undefined &&
+			exported !== undefined &&
+			projectExport(namespace, exported)?.kind === "css-instance"
+		);
+	};
+
 	const registerImport = (node: AstNode): void => {
 		if (node.importKind === IMPORT_KIND.type) return;
 		const source = sourceName(node.source);
@@ -492,10 +508,10 @@ const createApiResolver = (
 			const object = expression.object.name;
 			const namespace = namespaces.get(object);
 			if (namespace !== undefined) {
-				const api =
-					apiFromImport(namespace, property) ??
-					apiForProjectImport(projectExport(namespace, property));
+				const projectResolution = projectExport(namespace, property);
+				const api = apiFromImport(namespace, property) ?? apiForProjectImport(projectResolution);
 				if (api !== undefined) return api;
+				if (projectResolution?.kind === "css-instance") return API.style;
 				if (localNamespaces.has(object)) return API.style;
 			}
 			if (instances.has(object) && STYLE_METHODS.has(property)) return API.style;
@@ -522,6 +538,24 @@ const createApiResolver = (
 		if (expression.callee?.type === NodeKind.Identifier)
 			return factories.get(expression.callee.name);
 		return resolveMember(expression.callee);
+	};
+
+	const styleFactoryForObject = (expression: unknown): string | undefined => {
+		if (!isNode(expression)) return undefined;
+		if (expression.type === NodeKind.Identifier)
+			return instances.get(expression.name) ?? localNamespaces.get(expression.name);
+		if (
+			expression.type !== NodeKind.MemberExpression ||
+			expression.object?.type !== NodeKind.Identifier
+		)
+			return undefined;
+		const namespaceName = expression.object.name;
+		const exported = memberName(expression);
+		const namespace = namespaces.get(namespaceName);
+		if (exported === undefined) return localNamespaces.get(namespaceName);
+		if (namespace !== undefined && projectExport(namespace, exported)?.kind === "css-instance")
+			return API.cssFactory;
+		return localNamespaces.get(namespaceName);
 	};
 
 	const scan = (sourceProgram: AstNode): void => {
@@ -610,7 +644,9 @@ const createApiResolver = (
 		}
 		const kind = resolveMember(call.callee);
 		if (kind === undefined) return undefined;
-		const method = memberName(call.callee);
+		const member = memberName(call.callee);
+		const styleInstanceCall = isProjectStyleInstanceMember(call.callee);
+		const method = styleInstanceCall ? undefined : member;
 		const calleeObject = call.callee.object;
 		const objectName =
 			calleeObject?.type === NodeKind.Identifier
@@ -619,30 +655,12 @@ const createApiResolver = (
 					  calleeObject.object?.type === NodeKind.Identifier
 					? calleeObject.object.name + "." + memberName(calleeObject)
 					: undefined;
-		if (objectName === undefined || method === undefined) return undefined;
-		const factory =
-			calleeObject?.type === NodeKind.Identifier
-				? (instances.get(calleeObject.name) ?? localNamespaces.get(calleeObject.name))
-				: calleeObject?.type === NodeKind.MemberExpression &&
-					  calleeObject.object?.type === NodeKind.Identifier
-					? (() => {
-							const namespaceName = calleeObject.object.name;
-							const exported = memberName(calleeObject);
-							const namespace = namespaces.get(namespaceName);
-							return (
-								localNamespaces.get(namespaceName) ??
-								(namespace !== undefined &&
-								exported !== undefined &&
-								projectExport(namespace, exported)?.kind === "css-instance"
-									? API.cssFactory
-									: undefined)
-							);
-						})()
-					: undefined;
+		if (objectName === undefined || member === undefined) return undefined;
+		const factory = styleInstanceCall ? API.cssFactory : styleFactoryForObject(calleeObject);
 		return {
 			kind,
-			name: objectName + "." + method,
-			...(factory !== undefined ? { method, factory } : {}),
+			name: objectName + "." + member,
+			...(factory !== undefined ? { ...(method === undefined ? {} : { method }), factory } : {}),
 		};
 	};
 

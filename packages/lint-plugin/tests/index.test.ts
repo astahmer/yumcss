@@ -401,7 +401,9 @@ import * as styles from "#app/styles";
 import { tw as utility } from "#app/core";
 import * as core from "#app/core";
 const [color, setColor] = useState("fg" as const);
+css({ color });
 css.class({ color });
+styles.css({ color });
 styles.css.class({ color });
 utility(theme.color);
 core.tw(theme.color);`,
@@ -410,9 +412,11 @@ core.tw(theme.color);`,
 				const filename = resolve(directory, "src/accordion.tsx");
 				const source = readFileSync(filename, "utf8");
 				const reports = runRule("no-dynamic-values", source, [], {}, filename);
-				expect(reports).toHaveLength(4);
+				expect(reports).toHaveLength(6);
 				expect(reports.map(({ data }) => data.name)).toEqual([
+					"css",
 					"css.class",
+					"styles.css",
 					"styles.css.class",
 					"utility",
 					"core.tw",
@@ -1544,7 +1548,7 @@ css.vars({ color: theme.color });`,
 		);
 
 		expect(staleReports).toHaveLength(1);
-		expect(staleReports[0]?.fixRange).toEqual([31, 82]);
+		expect(staleReports[0]?.fixRange).toEqual([29, 78]);
 		expect(staleReports).toMatchInlineSnapshot(`
 			[
 			  {
@@ -1552,8 +1556,8 @@ css.vars({ color: theme.color });`,
 			      "name": "tw",
 			    },
 			    "fixRange": [
-			      31,
-			      82,
+			      29,
+			      78,
 			    ],
 			    "message": "yumcss: migration skip marker is stale because the following call is statically foldable",
 			    "nodeType": "Line",
