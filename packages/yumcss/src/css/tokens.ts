@@ -221,8 +221,12 @@ export function resolveTokenValue(
 	if (group) {
 		const tokenPath = `${group}.${valueOrTokenName}`;
 		const token = maps.flatTokens.get(tokenPath);
-		if (opts?.concrete && token && typeof token.value === "string") {
-			return token.value;
+		if (opts?.concrete && token !== undefined) {
+			const target = resolveTokenTarget(maps, token.path);
+			if (typeof target?.value === "string") return target.value;
+			throw new Error(
+				`yumcss: token '${token.path}' requires a theme context and cannot be resolved to one concrete CSS value.`,
+			);
 		}
 		return (token as SemanticToken | undefined)?.cssVar ?? valueOrTokenName;
 	}
@@ -230,14 +234,4 @@ export function resolveTokenValue(
 	const tokenPath = `${prop}.${valueOrTokenName}`;
 	const token = maps.flatTokens.get(tokenPath);
 	return (token as SimpleToken | undefined)?.value ?? valueOrTokenName;
-}
-
-/** Convenience: build the maps once and get a (prop, value) resolver. */
-export function createTokenResolver(
-	preset: CssConfigReturn<DefinePresetOptions>,
-	debug = false,
-	tokenVariableNames: TokenVariableNames = "hashed",
-): (prop: string, value: string) => string {
-	const maps = buildTokenMaps(preset, debug, tokenVariableNames);
-	return (prop, value) => resolveTokenValue(maps, prop, value);
 }

@@ -26,7 +26,7 @@
  */
 import { dashCase } from "../css/hash.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
-import { createTokenResolver } from "../css/tokens.ts";
+import { buildTokenMaps, resolveTokenValue } from "../css/tokens.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
 import type { TwVariantsMeta } from "./compile.ts";
 
@@ -105,8 +105,11 @@ export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 	const { variants, bridge } = options;
 	const preset = options.preset;
 	const conditions: AnyConditions | undefined = preset?.conditions;
-	const resolveValue =
-		preset === undefined ? (_prop: string, value: string) => value : createTokenResolver(preset);
+	const tokenMaps = preset === undefined ? undefined : buildTokenMaps(preset, false);
+	const resolveValue = (property: string, value: string): string =>
+		tokenMaps === undefined
+			? value
+			: resolveTokenValue(tokenMaps, property, value, { concrete: true });
 
 	const isCondition = (part: string): boolean => {
 		if (conditions !== undefined && conditions[part] !== undefined) return true;
