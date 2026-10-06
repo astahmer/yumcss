@@ -87,7 +87,9 @@ const declarationValue = (
 });
 
 const cssProperty = (value: string): string =>
-	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
+	value.startsWith("--")
+		? value
+		: value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
 const authoredVariantCondition = (name: string): StyleCondition => ({
 	kind: "named",

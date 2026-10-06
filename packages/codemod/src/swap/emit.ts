@@ -286,7 +286,7 @@ export const emitCssClass: Emitter = (ir, meta, ctx) => {
 /* ------------------------------------------------------------------ */
 
 const camel = (prop: string): string =>
-	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
+	prop.startsWith("--") ? prop : prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
 /** Forward bridge: camelProp|value -> utility class (WeakMap-cached). */
 const forwardIndexCache = new WeakMap<YumCSSMeta, Map<string, string>>();
