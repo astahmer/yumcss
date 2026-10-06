@@ -1641,10 +1641,7 @@ test("the checked-in dynamic example exercises both compiler carrier rewrites", 
 		file,
 	);
 
-	const transformedSource = transformed?.code.replace(
-		/\/\* yumcss:migrate-skip[\s\S]*?\*\//gu,
-		"",
-	);
+	const transformedSource = transformed?.code.replace(/\/\* yumcss:migrate-skip[\s\S]*?\*\//gu, "");
 	expect(transformedSource?.match(/\{\s*\.\.\.\(\(values\) =>/g)?.length).toBe(2);
 	expect(transformedSource).not.toContain("className={untypedCss.class");
 	expect(transformedSource).not.toContain("{...untypedCss(");

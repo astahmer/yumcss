@@ -1,11 +1,11 @@
 ---
 title: CSS-in-JS adapter contract
-description: The versioned semantic adapter protocol used by pandwind migrations.
+description: The versioned semantic adapter protocol used by yumcss migrations.
 sidebar:
   order: 7
 ---
 
-pandwind adapters implement `pandwind.style-adapter/1`. An adapter is both a
+yumcss adapters implement `yumcss.style-adapter/1`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
 The current contract adds target-owned named-style host projection; adapters
 must declare their version rather than silently accepting a different schema.
@@ -40,7 +40,7 @@ async migration entry point for project-aware runs:
 ```ts
 const result = await runAdapterMigrationAsync(source, {
 	from: "unocss",
-	to: "pandwind",
+	to: "yumcss",
 	file: "src/App.tsx",
 	root: projectRoot,
 });
@@ -51,16 +51,16 @@ adapter's syntax-level fallback or an explicitly supplied resolver; an
 installed loader that cannot evaluate a custom configuration produces a
 structured configuration residual. This keeps presets, plugins, merged themes,
 shortcuts, and generated tokens from being silently mistaken for a small
-handwritten approximation. The Pandwind target also discovers
-`pandwind.interop.json` and its generated optional bridge/preset during async
+handwritten approximation. The YumCSS target also discovers
+`yumcss.interop.json` and its generated optional bridge/preset during async
 migration, so code emission consumes the same project token context as the
 generated runtime. The bridge is tooling metadata unless the project
-explicitly imports its `twAdapter`; Pandwind does not add it to a runtime graph
+explicitly imports its `twAdapter`; YumCSS does not add it to a runtime graph
 automatically. An unreadable artifact is reported as a configuration residual;
 when no artifact exists, the adapter safely keeps literal values instead of
 guessing target token names.
 
-The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
+The built-in registry currently includes yumcss, Panda, Tailwind, Emotion,
 styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,
 Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled, StyleX,
 React Strict DOM, Solid/Vue styled systems, Bamboo, Next-yak, React Native, Tamagui, CSS
@@ -71,8 +71,8 @@ framework checks. The stylesheet and component-source adapters are included in
 the registry but are documented separately from the CSS-in-JS syntax corpus.
 
 Third-party packages opt in through the explicit plugin manifest convention
-documented in [`ADAPTER_SDK.md`](https://github.com/astahmer/pandwind/blob/main/packages/codemod/ADAPTER_SDK.md).
-Discovery reads only packages advertised by the project metadata; Pandwind
+documented in [`ADAPTER_SDK.md`](https://github.com/astahmer/yumcss/blob/main/packages/codemod/ADAPTER_SDK.md).
+Discovery reads only packages advertised by the project metadata; YumCSS
 does not scan or execute arbitrary `node_modules` code.
 
 ## Safety modes

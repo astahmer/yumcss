@@ -1,20 +1,20 @@
 ---
 title: Current limitations and criticism
-description: A candid review of Pandwind's current strengths, weaknesses, and product risks.
+description: A candid review of YumCSS's current strengths, weaknesses, and product risks.
 sidebar:
   order: 6
 ---
 
 _Review snapshot: 2026-09-22._
 
-The blunt answer: Pandwind is technically ambitious, but currently tries to be
+The blunt answer: YumCSS is technically ambitious, but currently tries to be
 too many products at once. The core idea is useful; the weakest parts are
 adoption simplicity, real-world proof, and scope discipline.
 
 ## The criticism people will make
 
-- "Why use Pandwind instead of Tailwind, Panda, StyleX, or vanilla-extract?"
-  Pandwind's primary path is typed `css()` objects with build-time atomic CSS;
+- "Why use YumCSS instead of Tailwind, Panda, StyleX, or vanilla-extract?"
+  YumCSS's primary path is typed `css()` objects with build-time atomic CSS;
   `tw()` supports projects keeping Tailwind, while migration and other tools
   support teams evaluating a move. The repository still combines many adapters,
   non-web backends, the Inspector, DevTools, Playground, and MCP, so the product
@@ -32,7 +32,7 @@ adoption simplicity, real-world proof, and scope discipline.
   is only a runtime dependency when the project explicitly selects its
   `twAdapter`. Stale or missing generated output can break the editor or build.
   `generated:check` catches drift for the checked-in example and Playground, and
-  `pandwind-codemod tw verify` gives consumer projects a copyable freshness,
+  `yumcss-codemod tw verify` gives consumer projects a copyable freshness,
   ownership, and raw/gzip budget check. Generated project files remain a real
   adoption cost.
 - "The core package is too large conceptually." The repository currently
@@ -66,7 +66,7 @@ adoption simplicity, real-world proof, and scope discipline.
   evidence. A fixture pass still does not prove browser hydration or an
   arbitrary consumer project.
 - There are now 19 bounded installed-project proofs for web routes into
-  Pandwind, covering the Tailwind, Panda, styled-components, UnoCSS, Vanilla
+  YumCSS, covering the Tailwind, Panda, styled-components, UnoCSS, Vanilla
   Extract, Stitches, MUI, Mantine, Tokenami, JSS, Fela, Aphrodite, Compiled,
   Style9, Next-yak, Linaria, Treat, Solid Styled, and Vue Styled lanes. The
   registry-owned gate runs the real migration, installed dependencies,
@@ -99,7 +99,7 @@ adoption simplicity, real-world proof, and scope discipline.
 ## Things that are still weak today
 
 - The generated-artifact gate covers the checked-in example and Playground;
-  arbitrary consumer projects still need to add `pandwind-codemod tw verify` to
+  arbitrary consumer projects still need to add `yumcss-codemod tw verify` to
   their own build validation.
 - Reference repositories are intentionally unavailable on machines that have
   not prepared them. The corpus tests report that state explicitly now, but a
@@ -108,7 +108,7 @@ adoption simplicity, real-world proof, and scope discipline.
   codemod reports roughly 76% statements and 64% branches; analyze reports
   roughly 74% statements and 61% branches.
 - The architecture is cleaner than it used to be, but it is still large for a
-  `0.1.0` product: about 129 Pandwind source files, 149 codemod source files,
+  `0.1.0` product: about 129 YumCSS source files, 149 codemod source files,
   dozens of registries and contracts, and many ecosystem adapters. The
   abstraction cost is real.
 
@@ -118,19 +118,19 @@ The repository now records route proof in one catalog and exposes the same
 boundary through the evidence report, MCP, and browser tooling. These labels
 describe evidence, not a promise that every construct in a route is lossless.
 
-| Surface                                       | Maturity     | Evidence currently available                                                                                                                                                                  | Still required before a stronger claim                                               |
-| --------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `tw()` / `css()` / `cx()` runtime contracts   | stable       | package tests, type tests, pack/import smoke, generated artifact checks                                                                                                                       | consumer-project coverage and host-specific behavior                                 |
-| Codegen and Vite integration                  | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                                                                                                                             | repeated proof in dependency-installed consumer projects                             |
-| Cataloged codemod routes                      | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals                                                                                                                  | installed project typecheck, build, browser, SSR/hydration, and size proof           |
-| Tailwind -> Pandwind bounded fixture          | experimental | installed CLI, generated preset, two-source-module migration, typecheck, build, SSR, hydration, browser pixels                                                                                | more utilities, themes, plugins, frameworks, and larger projects                     |
-| styled-components -> Pandwind bounded fixture | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels                                                                                                   | themes, component composition, dynamic props, and multi-file projects                |
-| Panda -> Pandwind bounded fixture             | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                                   | recipes, plugins, themes, frameworks, and multi-file projects                        |
-| UnoCSS -> Pandwind bounded fixture            | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                                            | shortcuts, transformers, variants, frameworks, and multi-file projects               |
-| Playground                                    | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection, and a real package/Vite fixture with TypeScript, client build, SSR build, Chromium, and hydration evidence | broader framework fixtures                                                           |
-| MCP and analyzer                              | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Migration Preview evidence         | richer framework/browser hosts and durable project evidence                          |
-| React Native/OpenTUI backends                 | experimental | backend contract/type coverage plus bounded real hosts: react-native-web Chromium toggle assertions and OpenTUI headless/PTY assertions                                                       | real external consumers, native-device/platform proof, and broader backend semantics |
-| React Strict DOM and other non-web backends   | research     | contract, typing, and adapter coverage                                                                                                                                                        | real consumers and backend-specific runtime proof                                    |
+| Surface                                     | Maturity     | Evidence currently available                                                                                                                                                                  | Still required before a stronger claim                                               |
+| ------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `tw()` / `css()` / `cx()` runtime contracts | stable       | package tests, type tests, pack/import smoke, generated artifact checks                                                                                                                       | consumer-project coverage and host-specific behavior                                 |
+| Codegen and Vite integration                | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                                                                                                                             | repeated proof in dependency-installed consumer projects                             |
+| Cataloged codemod routes                    | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals                                                                                                                  | installed project typecheck, build, browser, SSR/hydration, and size proof           |
+| Tailwind -> YumCSS bounded fixture          | experimental | installed CLI, generated preset, two-source-module migration, typecheck, build, SSR, hydration, browser pixels                                                                                | more utilities, themes, plugins, frameworks, and larger projects                     |
+| styled-components -> YumCSS bounded fixture | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels                                                                                                   | themes, component composition, dynamic props, and multi-file projects                |
+| Panda -> YumCSS bounded fixture             | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                                   | recipes, plugins, themes, frameworks, and multi-file projects                        |
+| UnoCSS -> YumCSS bounded fixture            | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                                            | shortcuts, transformers, variants, frameworks, and multi-file projects               |
+| Playground                                  | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection, and a real package/Vite fixture with TypeScript, client build, SSR build, Chromium, and hydration evidence | broader framework fixtures                                                           |
+| MCP and analyzer                            | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Migration Preview evidence         | richer framework/browser hosts and durable project evidence                          |
+| React Native/OpenTUI backends               | experimental | backend contract/type coverage plus bounded real hosts: react-native-web Chromium toggle assertions and OpenTUI headless/PTY assertions                                                       | real external consumers, native-device/platform proof, and broader backend semantics |
+| React Strict DOM and other non-web backends | research     | contract, typing, and adapter coverage                                                                                                                                                        | real consumers and backend-specific runtime proof                                    |
 
 The catalog has 19 named installed-project route policies plus three explicit
 unavailable reverse-direction policies, and it generates an unavailable research
@@ -160,8 +160,8 @@ project metadata, `tw()`/`css()` static extraction, `css.vars()` runtime escape
 hatch, and shared adapter registry are all defensible. Those solve real
 problems.
 
-The strongest version of Pandwind would narrow its promise to: **typed,
-project-aware Tailwind/Pandwind authoring plus reliable migration between the
+The strongest version of YumCSS would narrow its promise to: **typed,
+project-aware Tailwind/YumCSS authoring plus reliable migration between the
 top few ecosystems, with real build/browser/SSR proof.** Everything else should
 be separately packaged, explicitly experimental, or deferred until a real
 consumer requires it.

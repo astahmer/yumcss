@@ -1,6 +1,6 @@
 ---
 title: Known limitations
-description: What pandwind deliberately does not cover today.
+description: What yumcss deliberately does not cover today.
 sidebar:
   order: 4
 ---

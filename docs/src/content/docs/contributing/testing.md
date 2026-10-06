@@ -1,11 +1,11 @@
 ---
-title: Testing pandwind
+title: Testing yumcss
 description: Run the unit, integration, browser, native, terminal, and coverage checks.
 sidebar:
   order: 2
 ---
 
-Pandwind is tested at several boundaries. A unit test proves a local policy; an
+YumCSS is tested at several boundaries. A unit test proves a local policy; an
 integration test proves package wiring; an end-to-end fixture proves observable
 output in a real host. Run the broadest applicable check before changing a
 compiler, adapter, backend, or generated artifact.
@@ -30,7 +30,7 @@ pnpm run pivot:proof:adapter-output
 pnpm run pivot:proof:chakra
 pnpm run test:e2e:playground
 pnpm run test:e2e:authored-tokens
-pnpm --filter pandwind-codemod run test:e2e
+pnpm --filter yumcss-codemod run test:e2e
 ```
 
 `test:all` runs every workspace test serially. Serial execution is deliberate:
@@ -50,9 +50,9 @@ values and the computed styles driven through `var(...)`.
 package falls below its checked-in threshold. Coverage directories are local
 artifacts and are ignored by Git.
 
-`bench:tsc` runs the `pandwind` package typecheck with TypeScript extended
+`bench:tsc` runs the `yumcss` package typecheck with TypeScript extended
 diagnostics and compares the median of seven fresh processes with
-`plans/evidence/pandwind-tsc.json`. Instantiation growth is checked on every
+`plans/evidence/yumcss-tsc.json`. Instantiation growth is checked on every
 platform; memory and check-time growth are checked when the OS and architecture
 match the recorded baseline. Refresh the record only after an intentional type
 surface change:
@@ -64,14 +64,14 @@ pnpm run bench:tsc -- --update
 `bench:tsc:example` runs the same gate against `examples/example`, a real
 consumer that exercises `css()`, `css.props()`, `css.vars()`, `css.group()`,
 `css.input()`, `tw()`, and `dss()` through its application source. Its baseline
-is stored in `plans/evidence/pandwind-example-tsc.json` and can be refreshed
+is stored in `plans/evidence/yumcss-example-tsc.json` and can be refreshed
 with:
 
 ```sh
 pnpm run bench:tsc:example -- --update
 ```
 
-`pandwind` also runs `tests/tsc-performance.test.ts` as part of its normal
+`yumcss` also runs `tests/tsc-performance.test.ts` as part of its normal
 package test. It measures isolated public-API fixtures for `css`, custom
 presets, dynamic values, design CSS, runtime CSS, `cx`, `tw`, and a combined
 component-style app. It also separates a complete anonymized product-theme
@@ -80,22 +80,22 @@ catalog cost and downstream usage cost remain visible independently. Those
 stress fixtures are invoked explicitly by this benchmark and excluded from the
 package-wide TypeScript project, so the package baseline does not measure the
 benchmark fixture's own maintenance cost. The checked-in
-`packages/pandwind/tests/snapshots/tsc.json.snap` records files, symbols,
+`packages/yumcss/tests/snapshots/tsc.json.snap` records files, symbols,
 types, instantiations, memory, check time, and total time for three fresh
 TypeScript processes per scenario. Refresh it only after reviewing an
 intentional type-surface or fixture change:
 
 ```sh
-pnpm --filter pandwind run test:tsc
-pnpm --filter pandwind exec vitest run tsc-performance -u
+pnpm --filter yumcss run test:tsc
+pnpm --filter yumcss exec vitest run tsc-performance -u
 ```
 
 `bench:tsc:styling` runs the version-pinned ecosystem comparison under
-`benchmarks/styling-tsc`. It regenerates inferred and generated Pandwind, Panda CSS, StyleX,
+`benchmarks/styling-tsc`. It regenerates inferred and generated YumCSS, Panda CSS, StyleX,
 Vanilla Extract, Emotion, styled-components, Goober, Linaria, Compiled,
 Griffel, Stitches, JSS, React-JSS, Fela, Aphrodite, Style9, Treat, TypeStyle,
 next-yak, and React Strict DOM fixtures, runs natural and stress workloads in fresh
-TypeScript processes, and compares the Pandwind rows with the committed
+TypeScript processes, and compares the YumCSS rows with the committed
 baseline. Use `--update` only after reviewing the resulting JSON and Markdown
 evidence:
 
@@ -104,9 +104,9 @@ pnpm run bench:tsc:styling -- --update
 ```
 
 The styling and generated-types benchmarks refresh the root
-[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md)
-and detailed [`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md)
-when their snapshots are updated. Package/example TSC and Pandwind runtime-size
+[`PERF-SUMMARY.md`](https://github.com/astahmer/yumcss/blob/main/PERF-SUMMARY.md)
+and detailed [`PERF.md`](https://github.com/astahmer/yumcss/blob/main/PERF.md)
+when their snapshots are updated. Package/example TSC and YumCSS runtime-size
 snapshot updates do the same. `bench:summary:check` verifies both reports
 against all committed source snapshots.
 
@@ -154,10 +154,10 @@ public repositories and can take substantially longer:
 pnpm run pivot:proof:references
 ```
 
-That command materializes `${PANDWIND_REFERENCE_ROOT:-~/.references}`, verifies
+That command materializes `${YUMCSS_REFERENCE_ROOT:-~/.references}`, verifies
 every checkout at its exact commit, runs the source corpus, and writes the
-generated report to a temporary output path (or to `PANDWIND_PROOF_OUTPUT` if
-set). It never vendors upstream source into Pandwind. CI runs this workflow on
+generated report to a temporary output path (or to `YUMCSS_PROOF_OUTPUT` if
+set). It never vendors upstream source into YumCSS. CI runs this workflow on
 schedule and through manual dispatch; the offline gate runs with the regular
 suite.
 
@@ -170,7 +170,7 @@ turning a source-only result into a production claim.
 
 `pnpm run pivot:proof:adapter-output` is the local and CI gate for the generated
 module itself. It installs the pinned runtime packages selected by each
-generated import, links the local Pandwind package, and runs strict TypeScript
+generated import, links the local YumCSS package, and runs strict TypeScript
 resolution in a disposable project. An added import with no pin fails the run,
 so a fabricated target path cannot hide behind an ambient declaration. Filters
 keep debugging fast:
@@ -201,7 +201,7 @@ is the ownership gate for public subpaths and dynamic entry points.
 
 ### Unit and type tests
 
-`packages/pandwind/tests` covers `tw()`, `css()`, `cx()`, design resolution,
+`packages/yumcss/tests` covers `tw()`, `css()`, `cx()`, design resolution,
 tokens, conditions, recipes, CSS ordering, runtime sheets, SSR, object
 backends, host adapters, codegen, and type-level contracts. The codemod and
 analyzer packages have analogous unit/fixture suites.
@@ -209,10 +209,10 @@ analyzer packages have analogous unit/fixture suites.
 Run a focused package or file while developing:
 
 ```sh
-pnpm --filter pandwind run test
-pnpm --filter pandwind-codemod run test
-pnpm --filter pandwind-analyze run test
-pnpm --dir packages/pandwind exec vitest run tests/css-output.test.ts
+pnpm --filter yumcss run test
+pnpm --filter yumcss-codemod run test
+pnpm --filter yumcss-analyze run test
+pnpm --dir packages/yumcss exec vitest run tests/css-output.test.ts
 ```
 
 ### Integration tests
@@ -224,8 +224,8 @@ source-loader and module-resolution failures that isolated unit tests miss.
 
 The codemod integration matrix in
 `packages/codemod/tests/adapter-migration-matrix.test.ts` exercises every
-registered adapter in both directions: each source lowers to Pandwind, and a
-representative Pandwind program emits to every registered target. It also
+registered adapter in both directions: each source lowers to YumCSS, and a
+representative YumCSS program emits to every registered target. It also
 asserts explicit evidence for dynamic values and composes the real
 Chakra-to-Tailwind and Tailwind-dialect-to-Chakra routes. This is deliberately
 separate from the adapter contract fixture: the contract checks one adapter's
@@ -239,12 +239,12 @@ residual evidence; a skipped route may never be silent.
 
 The adapter use-case matrix in
 `packages/codemod/tests/adapter-cli-e2e.test.ts` runs every registered adapter
-in both `adapter → Pandwind` and `Pandwind → adapter` directions with virtual
+in both `adapter → YumCSS` and `YumCSS → adapter` directions with virtual
 files, parses the same migration results in-process, and checks that
 source-preserving skips carry typed residual markers. Run it alone with:
 
 ```sh
-pnpm --filter pandwind-codemod run test:e2e
+pnpm --filter yumcss-codemod run test:e2e
 ```
 
 The same file keeps one real CLI boundary test for argument parsing, file
@@ -282,11 +282,11 @@ the residual scenario keeps non-happy behavior visible to users.
 
 Current measured package baselines are:
 
-| Package            | Statements | Branches | Functions |  Lines |
-| ------------------ | ---------: | -------: | --------: | -----: |
-| `pandwind`         |     87.38% |   75.59% |    87.22% | 89.79% |
-| `pandwind-codemod` |     76.08% |   63.85% |    85.32% | 79.18% |
-| `pandwind-analyze` |     74.13% |   60.70% |    74.87% | 75.18% |
+| Package          | Statements | Branches | Functions |  Lines |
+| ---------------- | ---------: | -------: | --------: | -----: |
+| `yumcss`         |     87.38% |   75.59% |    87.22% | 89.79% |
+| `yumcss-codemod` |     76.08% |   63.85% |    85.32% | 79.18% |
+| `yumcss-analyze` |     74.13% |   60.70% |    74.87% | 75.18% |
 
 These are regression floors, not a claim that every branch is equally
 valuable. CLI process entrypoints, source-language edge adapters, generated

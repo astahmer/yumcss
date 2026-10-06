@@ -3,9 +3,9 @@ import { parseMigrateArgs } from "../src/swap/cli-args.ts";
 
 describe("migrate CLI static style hoisting", () => {
 	it("keeps static style calls colocated by default", () => {
-		expect(
-			parseMigrateArgs(["--from=styled-components", "--to=yumcss-css", "src"]),
-		).toMatchObject({ hoistStaticStyles: false });
+		expect(parseMigrateArgs(["--from=styled-components", "--to=yumcss-css", "src"])).toMatchObject({
+			hoistStaticStyles: false,
+		});
 	});
 
 	it("allows source hoisting as an explicit opt-in", () => {

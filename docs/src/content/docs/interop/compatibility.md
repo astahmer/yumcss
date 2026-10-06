@@ -6,10 +6,10 @@ sidebar:
 ---
 
 Every claim below is checked against the real `tailwindcss` compiler, with
-postcss as an independent parsing oracle — never against pandwind's own output
+postcss as an independent parsing oracle — never against yumcss's own output
 parsers. The suites in
-`packages/pandwind/tests/tw-tailwind-parity.test.ts` and
-`packages/pandwind/tests/css-tw-parity.test.ts` are the proof:
+`packages/yumcss/tests/tw-tailwind-parity.test.ts` and
+`packages/yumcss/tests/css-tw-parity.test.ts` are the proof:
 
 - **Every `tw()` candidate is a real Tailwind class.** All ~23,000 utilities
   in `getClassList()` compile through `@tailwindcss/node`; nothing fails.
@@ -26,7 +26,7 @@ parsers. The suites in
   engines resolve to byte-identical `(property, value)` declarations, with the
   same pseudo-class on variants.
 - **A committed snapshot of real Tailwind output** —
-  `packages/pandwind/tests/snapshots/tw-tailwind-compiled.css.snap` — pins the
+  `packages/yumcss/tests/snapshots/tw-tailwind-compiled.css.snap` — pins the
   compiler output the corpus relies on, so an engine upgrade that changes
   emitted CSS is visible in review.
 
@@ -43,7 +43,7 @@ exactly what the [tailwind adapter](/interop/tailwind-adapter/) does, proven
 against real Tailwind output in `tests/tw-adapter.test.ts`.
 
 Non-happy paths are covered too:
-`packages/pandwind/tests/robustness.test.ts` throws empty/nullish/unknown/
+`packages/yumcss/tests/robustness.test.ts` throws empty/nullish/unknown/
 weird inputs at `tw()`, `css()`, `cx()`, the adapter and the static extractors
 and asserts three invariants — nothing crashes, nothing is silently dropped,
 and every emitted class still compiles through real Tailwind.
@@ -51,7 +51,7 @@ and every emitted class still compiles through real Tailwind.
 ## Container queries
 
 Container-query variants work through the whole stack, proven in
-`packages/pandwind/tests/container-variants.test.ts`: nested keys emit the
+`packages/yumcss/tests/container-variants.test.ts`: nested keys emit the
 escaped classes (`{"@md": { p: "4" }}` -> `@md\:p-4`), `cx()` scopes them
 distinctly from base (a later base `bg` never kills an `@md:` override and
 vice versa), and real Tailwind compiles them inside `@container (...)`

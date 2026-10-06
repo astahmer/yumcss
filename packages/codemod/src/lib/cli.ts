@@ -198,9 +198,7 @@ const artifactSource = (artifact: YumCSSLibArtifact): string =>
 	`${JSON.stringify(artifact, null, "\t")}\n`;
 
 const isGeneratedLibArtifact = (value: unknown): boolean =>
-	isRecord(value) &&
-	value.schema === YUMCSS_LIB_SCHEMA &&
-	value.generator === YUMCSS_LIB_GENERATOR;
+	isRecord(value) && value.schema === YUMCSS_LIB_SCHEMA && value.generator === YUMCSS_LIB_GENERATOR;
 
 const defaultHandlers = (dependencies: LibCliDependencies): LibCliHandlers => ({
 	async build(command) {

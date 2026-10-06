@@ -32,8 +32,8 @@ export function DogfoodApp() {
 			>
 				<h1 className={dss.class({ $text: { size: "2xl", color: "$gray-900" } })}>dogfooding</h1>
 				<p className={MUTED_TEXT}>
-					This card is authored entirely through YumCSS design atoms, token references, and a
-					single mixed <code>cx()</code> call.
+					This card is authored entirely through YumCSS design atoms, token references, and a single
+					mixed <code>cx()</code> call.
 				</p>
 			</div>
 		</section>

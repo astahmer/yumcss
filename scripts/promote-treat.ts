@@ -1,5 +1,10 @@
 import {
-	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+	normalizeInstalledTargetPackage,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
@@ -339,10 +344,9 @@ export const render = () => renderToString(React.createElement(App));
 				},
 				migration: {
 					...migration,
-					targetUsesYumCSS: readFileSync(
-						join(targetRoot, "src/Button.treat.js"),
-						"utf8",
-					).includes("yumcss"),
+					targetUsesYumCSS: readFileSync(join(targetRoot, "src/Button.treat.js"), "utf8").includes(
+						"yumcss",
+					),
 				},
 				checks: {
 					sourceTypecheck: true,

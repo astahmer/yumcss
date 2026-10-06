@@ -15,9 +15,9 @@
 	"dependencies": {
 		"@yumcss/example-preset": "workspace:*",
 		"class-variance-authority": "0.7.1",
-		"yumcss": "workspace:*",
 		"react": "19.2.8",
-		"react-dom": "19.2.8"
+		"react-dom": "19.2.8",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@rollup/plugin-node-resolve": "16.0.3",

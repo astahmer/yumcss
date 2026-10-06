@@ -1,6 +1,6 @@
 ---
 title: Codegen — commands & flags
-description: pandwind-codemod code generation commands, with every flag.
+description: yumcss-codemod code generation commands, with every flag.
 sidebar:
   order: 1
 ---
@@ -9,32 +9,32 @@ These are published package binaries and are deterministic: identical inputs
 produce byte-identical outputs. The examples use `pnpm`, but any package
 manager's equivalent executable command works.
 
-## `pandwind-codemod lib build` — publish extracted component-library rules
+## `yumcss-codemod lib build` — publish extracted component-library rules
 
 ```sh
-	pnpm exec pandwind-codemod lib build [root] [out-file] \
+	pnpm exec yumcss-codemod lib build [root] [out-file] \
 	[--include <glob>] [--css-source <module>] \
 	[--preset-import <module>] [--preset-export <name>] \
 	[--namespace <name>] [--cascade specificity|layers] \
 	[--cascade-layer <name>] [--check]
 ```
 
-The defaults are the current directory, `dist/pandwind.lib.json`, the
-`pandwind/preset/default` export `defaultPreset`, and `css`/`design` import
+The defaults are the current directory, `dist/yumcss.lib.json`, the
+`yumcss/preset/default` export `defaultPreset`, and `css`/`design` import
 sources.
 Repeat `--include` for source globs and `--css-source` for custom CSS factory
 module names. The command scans source with the shared workspace, compiles
 literal `css()`/`css.class()` calls, includes structural rules for
 `css.vars()`, preset-owned `web` CSS, and writes a deterministic
-`pandwind.lib/1` artifact.
+`yumcss.lib/1` artifact.
 
 The artifact records used token declarations, stable rule identities and
 priorities, source content hashes, and a compatibility fingerprint covering
 the preset, compiler contract, namespace, cascade mode, cascade layer, and
 default class strategy. Pass `--cascade-layer <name>` together with
 `--cascade layers` when the published rules belong to a named layer. Expose
-`pandwind.lib.json` from the library package and register its package name with
-`pandwindCssVite(css, { libraries: ["@acme/ui"] })`.
+`yumcss.lib.json` from the library package and register its package name with
+`yumcssExtractVite(css, { libraries: ["@acme/ui"] })`.
 `--check` rebuilds in memory and fails when the packed artifact is missing or
 stale. Invalid or incompatible artifacts fail closed; ordinary local source
 extraction remains available when no library is registered.
@@ -43,10 +43,10 @@ This is a package distribution boundary, not a generated `styled-system`
 package. It does not add shorthands, recipes, patterns, JSX factories, or a
 static-CSS-only runtime.
 
-## `pandwind-codemod css generate` — concrete types for large presets
+## `yumcss-codemod css generate` — concrete types for large presets
 
 ```sh
-pnpm exec pandwind-codemod css generate [root] [out-file] \
+pnpm exec yumcss-codemod css generate [root] [out-file] \
 	[--preset-import <module>] [--preset-export <name>] \
 	[--token-variable-names <hashed|authored>] [--check]
 ```
@@ -66,7 +66,7 @@ export const button = css.class({
 });
 ```
 
-The generated facade uses `createGeneratedCss` from `pandwind/css/generated`. It has the
+The generated facade uses `createGeneratedCss` from `yumcss/css/generated`. It has the
 same runtime and complete `css`, `class`, `vars`, `raw`, `props`, `group`,
 `input`, and `keyframes` behavior as `createCss(preset)`; only the expensive
 preset-derived type computation is replaced with concrete generated types. It
@@ -79,13 +79,13 @@ spellings for custom properties; the default remains `hashed`. `--check` verifie
 without writing it, so it can be added to CI after the preset build is
 available.
 
-Regenerate after changing the preset or upgrading Pandwind. Generated files
+Regenerate after changing the preset or upgrading YumCSS. Generated files
 are source artifacts and should not be edited by hand.
 
-## `pandwind-codemod tw generate` — typed runtime from your tailwind.css
+## `yumcss-codemod tw generate` — typed runtime from your tailwind.css
 
 ```
-pnpm exec pandwind-codemod tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
+pnpm exec yumcss-codemod tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
                          [--bridge] [--bridge-file <path>]
                          [--conflicts <all|none|utility,...>]
                          [--preset-import <module>] [--preset-export <name>]
@@ -108,15 +108,15 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   explicitly imports the generated conflict configuration.
 - `<out-dir>/tw.build.ts` — build-only wildcard candidate metadata read by Vite
   and codemod tooling; runtime bindings never import it.
-- With `--tokens <module-path>` — also emits `pandwind-theme.css` (the DTCG →
+- With `--tokens <module-path>` — also emits `yumcss-theme.css` (the DTCG →
   Tailwind v4 `@theme` bridge) and injects token-derived values into the
   generated unions. Accepts a bare groups object, `{ tokens }`, or any export
   carrying a `.tokens` field (a full preset works).
 - With `--bridge` — additionally writes the optional `bridge.ts` and refreshes
-  the bridge section of `pandwind.interop.json`, using the configured preset.
-  Pandwind does not import this file automatically. Its `twAdapter` becomes a
+  the bridge section of `yumcss.interop.json`, using the configured preset.
+  YumCSS does not import this file automatically. Its `twAdapter` becomes a
   runtime dependency only when the project explicitly selects Tailwind class
-  output for `createDesignCss` or `pandwindCssVite`; otherwise it remains
+  output for `createDesignCss` or `yumcssExtractVite`; otherwise it remains
   build-time/migration metadata. `--bridge` can be combined with
   `--bridge-file`, `--preset-import`, and `--preset-export`.
 - With `--conflicts <scope>` — controls the optional conflict catalog. The
@@ -126,48 +126,48 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   catalog is safe only when every arbitrary runtime class that must merge is
   covered by the selected prefixes; unknown classes remain opaque instead of
   being guessed.
-- With `--agents` — additionally writes `pandwind.agents.json`, the
+- With `--agents` — additionally writes `yumcss.agents.json`, the
   machine-readable capability file: every utility key with its literal value
   union (capped, with counts), variant set, conflict families, compose list,
   theme scopes, semantic tokens, plus the verify commands an agent runs
   (`typecheck`, `analyze --json`, the missing-css gate).
 
-## `pandwind-codemod runtime generate` — specialized `createUnsafeCss` for non-Vite builds
+## `yumcss-codemod runtime generate` — specialized `createUnsafeCss` for non-Vite builds
 
 ```
-pnpm exec pandwind-codemod runtime generate [out-file] \
+pnpm exec yumcss-codemod runtime generate [out-file] \
   [--methods all|call|<method>[,<method>...]] [--check]
 ```
 
 This writes a typed `createUnsafeCss` module for static bundlers that do not perform
-Pandwind's Vite usage analysis. The default output is
-`src/pandwind-runtime.ts`, and the default `all` selection preserves the full
+YumCSS's Vite usage analysis. The default output is
+`src/yumcss-runtime.ts`, and the default `all` selection preserves the full
 unsafe CSS behavior. Use `--methods call` for the callable core only, or
 select any comma-separated subset of `class`, `vars`, `raw`, `props`, `group`,
 and `input`. `group` automatically includes its `vars` dependency.
 
 The generated file intentionally exposes the unbound/unsafe lane and imports
-only the selected runtime attachments through Pandwind's private runtime
-entries. Use `createCss(preset)` from `pandwind/css` when preset-aware typing
+only the selected runtime attachments through YumCSS's private runtime
+entries. Use `createCss(preset)` from `yumcss/css` when preset-aware typing
 and token resolution are required. It is version-tied generated output: do not edit it by hand, and
-regenerate it after upgrading Pandwind. `--check` verifies that the file is
+regenerate it after upgrading YumCSS. `--check` verifies that the file is
 present and byte-for-byte current without writing it; add that command to CI.
 Vite users already receive equivalent usage-aware virtual modules from
-`pandwindCssVite`, so this command is primarily for non-Vite/static builds.
+`yumcssExtractVite`, so this command is primarily for non-Vite/static builds.
 
-## `pandwind-codemod runtime explain` — inspect Vite runtime pruning
+## `yumcss-codemod runtime explain` — inspect Vite runtime pruning
 
 ```
-pnpm exec pandwind-codemod runtime explain src/styles.ts \
-  [--preset @pandwind/example-preset#examplePreset] [--json]
+pnpm exec yumcss-codemod runtime explain src/styles.ts \
+  [--preset @yumcss/example-preset#examplePreset] [--json]
 ```
 
 This reports which CSS factory methods, style keys, conditions, preset metadata,
 and token entries the Vite runtime pruner can retain for a source module. An
 `escaped` or `fallback-dynamic-shape` result identifies code that correctly
 keeps the conservative runtime. Use `--preset` with the same preset configured
-in `pandwindVite` to see projected token-group and entry counts; `--json` emits
-the versioned `pandwind.runtime-explain/1` report for CI or bundle tooling.
+in `yumcssVite` to see projected token-group and entry counts; `--json` emits
+the versioned `yumcss.runtime-explain/1` report for CI or bundle tooling.
 
 For example, this source exposes a dynamic color but a literal spacing token:
 
@@ -199,49 +199,49 @@ aliases required by that carrier. `lib build` remains a CSS distribution
 boundary: it publishes the rules and token declarations, while the consuming
 Vite build decides whether its JavaScript carrier can be lowered directly.
 
-This report is complementary to `pandwind-codemod lib build`. `lib build`
+This report is complementary to `yumcss-codemod lib build`. `lib build`
 publishes extracted CSS rules and used token declarations for a component
 library; it does not carry consumer-specific JavaScript runtime usage. Build a
 library's JavaScript through the Vite transform (or use `runtime generate` for
-a static build), and register its `pandwind.lib.json` separately so the host
+a static build), and register its `yumcss.lib.json` separately so the host
 can consume the CSS artifact without rescanning the library source.
 
-## `pandwind-codemod tw scan` — safelist from real call sites
+## `yumcss-codemod tw scan` — safelist from real call sites
 
 ```
-pnpm exec pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
+pnpm exec yumcss-codemod tw scan [tw-entry] [src-dir] [out-file]
 ```
 
-Defaults: `src/tw.ts src src/pandwind.safelist.css`. Statically evaluates
+Defaults: `src/tw.ts src src/yumcss.safelist.css`. Statically evaluates
 every `tw({ ... })` call through the same runtime and writes Tailwind v4
 `@source inline("...")` directives for every design-system-verified class.
 Import the generated file from `tailwind.css` so dynamic candidates get
 compiled CSS; no generated JS lands in your source tree.
 
-## `pandwind-codemod tw prune` — drop unused theme variables
+## `yumcss-codemod tw prune` — drop unused theme variables
 
 ```
-pnpm exec pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
+pnpm exec yumcss-codemod tw prune [theme-css] [tw-entry] [src-dir]
 ```
 
-Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned
+Defaults: `src/yumcss-theme.css src/tw.ts src`. Re-compiles the scanned
 classes through the real engine and keeps only the `@theme` variables the
 compiled CSS actually references. Opt-in; breaks dynamic token access; run
-after `pandwind-codemod tw generate` whenever sources change.
+after `yumcss-codemod tw generate` whenever sources change.
 
-## `pandwind-codemod tw verify` — consumer freshness and size gate
+## `yumcss-codemod tw verify` — consumer freshness and size gate
 
 ```sh
-pnpm exec pandwind-codemod tw verify . \
-	--manifest src/pandwind.generated.json \
-	--budget pandwind.generated-budget.json
+pnpm exec yumcss-codemod tw verify . \
+	--manifest src/yumcss.generated.json \
+	--budget yumcss.generated-budget.json
 ```
 
 This checks the hashes for every input and generated file recorded by the
-manifest. The optional budget file uses schema `pandwind.generated-budget/1`
+manifest. The optional budget file uses schema `yumcss.generated-budget/1`
 and maps generated paths to `maxRawBytes`, `maxGzipBytes`, and an optional
 ownership tag. It is safe to run after formatting because the manifest can be
-refreshed with `pandwind-codemod tw manifest src src/tailwind.css`. Add the
+refreshed with `yumcss-codemod tw manifest src src/tailwind.css`. Add the
 verify command to the consumer project's ordinary typecheck/build workflow so
 stale generated declarations, runtime bindings, or bridge artifacts fail with
 the exact path visible in the report.
@@ -249,12 +249,12 @@ the exact path visible in the report.
 ## `analyze` — coverage & budget reports
 
 ```
-pnpm exec pandwind-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
+pnpm exec yumcss-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
 ```
 
 - `--tw <path>` — generated tw module (default `src/tw.ts` resolved against
   `--root`).
-- `--json` — JSON output tagged with schema `pandwind.analyze/1`. In addition
+- `--json` — JSON output tagged with schema `yumcss.analyze/1`. In addition
   to fold coverage, it includes `authoredCss` explicit web stylesheet imports,
   `cssSources` call-site provenance and
   `cssDiagnostics` with source positions, reasons, and suggestions for calls

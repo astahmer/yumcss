@@ -216,9 +216,7 @@ const validateCompatibility = (value: unknown): string[] => {
 export const validateYumCSSLibArtifact = (value: unknown): YumCSSLibValidation => {
 	if (!isRecord(value)) return { valid: false, errors: ["artifact must be an object"] };
 	const errors = [
-		...(value.schema !== YUMCSS_LIB_SCHEMA
-			? [`artifact.schema must be ${YUMCSS_LIB_SCHEMA}`]
-			: []),
+		...(value.schema !== YUMCSS_LIB_SCHEMA ? [`artifact.schema must be ${YUMCSS_LIB_SCHEMA}`] : []),
 		...(value.generator !== YUMCSS_LIB_GENERATOR
 			? [`artifact.generator must be ${YUMCSS_LIB_GENERATOR}`]
 			: []),

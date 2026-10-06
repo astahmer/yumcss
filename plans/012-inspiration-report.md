@@ -2,10 +2,10 @@
 
 Researched 2026-08-23 by direct source study (shallow clones of astahmer/
 pandabox, tokenami/tokenami, facebook/stylex) and live docs (panda-css.com,
-npm registry). Each item: what it does → what to steal for pandwind → concrete
+npm registry). Each item: what it does → what to steal for yumcss → concrete
 adoption sketch (files/mechanics), or why it does not apply.
 
-Pandwind assets to map against: codegen-first types (`types.d.ts`, conflict/
+YumCSS assets to map against: codegen-first types (`types.d.ts`, conflict/
 variant/compose meta), vite folding passes (`vite/inline.ts`, `cx-inline.ts`,
 shared engine context), `ClassNameStrategy` contract, DTCG → `@theme`
 pipeline (`generate-theme.ts`), `packages/analyze` fold-coverage CLI,
@@ -23,13 +23,13 @@ variables/keyframes from output. Zero runtime, no Panda CLI/postcss needed.
 **Steal:** validates our unplugin adoption (in-flight); two additional ideas:
 
 - **Output-shape toggle**: they support inlining as `atomic` _or_ `grouped`
-  class names per call site. For pandwind this maps onto `ClassNameStrategy`
+  class names per call site. For yumcss this maps onto `ClassNameStrategy`
   selection — expose it as a per-call-site escape hatch
-  (`/* pandwind:strategy=named-atoms */`) rather than global-only config.
+  (`/* yumcss:strategy=named-atoms */`) rather than global-only config.
 - **Unused-CSS-variable pruning**: same pruning pass applies to our `@theme`
   artifact — prune theme vars whose utilities never appear in scanned sources.
   **Adoption sketch:** pruning lives in `generate-theme.ts` consumers
-  (`pandwindCssVite` collect pass already walks every scanned file; feed found
+  (`yumcssExtractVite` collect pass already walks every scanned file; feed found
   utility var names into a `gen.theme({ usedVars })` filter). Gate behind an
   option default-off, same documented caveat pandabox has (breaks dynamic
   `token()` access).
@@ -41,7 +41,7 @@ variables/keyframes from output. Zero runtime, no Panda CLI/postcss needed.
 
 **What:** warns when a CSS rule was used at runtime but could not be
 statically extracted.
-**Steal:** this is the missing half of `pandwind analyze` — today we report
+**Steal:** this is the missing half of `yumcss analyze` — today we report
 fold coverage of _calls_, not whether emitted classes are guaranteed to have
 CSS. Add a warnings lane: every unfolded `cx()`/`css()` result class must be
 present in the generated stylesheet/Tailwind candidate set; anything else is
@@ -55,7 +55,7 @@ class names against the stylesheet's selector set (already available from
 
 **What:** runtime/type-level enforcement scopes for `strictTokens`, prop
 restrictions on the styled factory.
-**Why not applicable:** pandwind enforces token strictness at typegen time
+**Why not applicable:** yumcss enforces token strictness at typegen time
 (generated literal unions) — there is no runtime escape to police, and we
 have no styled-JSX factory. Skip.
 
@@ -137,7 +137,7 @@ extension.
    no-conditionals-with-dynamic-branches (ours can partially fold, so the
    rule becomes a _warning tier_, not error).
    **Sketch:** oxlint custom rule or a standalone check inside
-   `pandwind analyze --ci` reusing the evaluator's NOT_STATIC reasons.
+   `yumcss analyze --ci` reusing the evaluator's NOT_STATIC reasons.
 2. **Metadata API pattern for multi-bundler output.** StyleX decouples
    "transform code" from "collect CSS" via returned metadata rather than
    virtual modules. If unplugin adoption hits virtual-module ordering issues,
@@ -164,11 +164,11 @@ guarantees replacing what our generated conflict map already does better
 tokens, semantic tokens, recipes, patterns, conditions — generated straight
 from the config; deployable as a standalone portal.
 **Steal:** the roadmap "panda-cloud analytics" idea should start as a
-read-only local studio for pandwind: serve the DTCG groups, generated
+read-only local studio for yumcss: serve the DTCG groups, generated
 `@theme`, utility unions, bridge map, and `analyze` results as a browsable
 dashboard. Everything it needs already exists as data (preset tokens,
 generated types, analyze output).
-**Sketch:** `packages/studio` (or `pandwind studio` script): tiny vite dev
+**Sketch:** `packages/studio` (or `yumcss studio` script): tiny vite dev
 server importing the preset + codegen artifacts read-only. Parked until
 analyze stabilizes — but the data plumbing is done, which was historically
 the hard part.
@@ -179,7 +179,7 @@ the hard part.
 **Steal:** cheap and high-leverage for us: our generated metadata
 (`tw.ts` variants/conflicts/compose, bridge map, token groups, analyze
 stats) is exactly what an agent needs to author correct styles. An
-`pandwind-mcp` package exposing: list-utilities-per-key, resolve-token,
+`yumcss-mcp` package exposing: list-utilities-per-key, resolve-token,
 check-conflicts(cxInputs) → winner, fold-preview(source snippet).
 **Sketch:** stdio MCP server over the existing generated artifacts +
 `createCx` for live conflict queries; ~small surface, no engine changes.
@@ -189,7 +189,7 @@ check-conflicts(cxInputs) → winner, fold-preview(source snippet).
 **Findings:** no official `panda-doctor` npm package exists (user note was
 aspirational); panda "debug" is the ecosystem utility that annotates rendered
 elements with the origin of each style. Both map to items already on our
-roadmap: doctor ≈ `pandwind analyze --ci` + PR bot (done/in-flight); debug ≈
+roadmap: doctor ≈ `yumcss analyze --ci` + PR bot (done/in-flight); debug ≈
 the parked dev-annotations idea (see stylex devtools above). Nothing new to
 build beyond those.
 
@@ -201,7 +201,7 @@ build beyond those.
 | --- | ------------------------------------ | ---------------------- | ---------------------------------------- |
 | 1   | analyze missing-CSS warnings (1b)    | S                      | closes the last correctness blind spot   |
 | 2   | oxlint static-extraction rules (3.1) | M                      | makes fold coverage a _contract_         |
-| 3   | `pandwind-mcp` (4b)                  | S–M                    | unique capability, near-zero engine risk |
+| 3   | `yumcss-mcp` (4b)                    | S–M                    | unique capability, near-zero engine risk |
 | 4   | var-inline strategy (2.1)            | L (design spike first) | solves dynamic styling properly          |
 | 5   | @theme var pruning (1a)              | S                      | smaller shipped CSS, documented caveat   |
 | 6   | styled-components fixtures port (1d) | S                      | feeds committed codemod roadmap          |
@@ -241,9 +241,9 @@ condition-bound override rules intact. Live result on examples/example:
 dynamic token access; the step is deliberately NOT in predev — run
 `pnpm tw:prune` after codegen when wanted.
 
-### 4b — pandwind-mcp: REJECTED (2026-08-23, user decision)
+### 4b — yumcss-mcp: REJECTED (2026-08-23, user decision)
 
-Dropped from the ranking. Rationale: pandwind's contract is checked-in text
+Dropped from the ranking. Rationale: yumcss's contract is checked-in text
 artifacts (types.d.ts, tw.ts, conflict map) — agents already have editor
 types, grep, and `analyze`; conflict checks are a 5-line node -e against the
 runtime. An MCP server wraps queries the filesystem already answers and adds

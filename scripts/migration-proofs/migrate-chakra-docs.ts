@@ -96,10 +96,7 @@ function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): strin
 		imports,
 	);
 	if (generated.includes('import { createUnsafeCss } from "yumcss/unsafe/css";')) {
-		generated = generated.replace(
-			'import { createUnsafeCss } from "yumcss/unsafe/css";',
-			imports,
-		);
+		generated = generated.replace('import { createUnsafeCss } from "yumcss/unsafe/css";', imports);
 		generated = generated.replace("const css = createUnsafeCss();", "");
 	}
 	generated = generated.replace(

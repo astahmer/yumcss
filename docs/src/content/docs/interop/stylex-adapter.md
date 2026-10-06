@@ -1,6 +1,6 @@
 ---
 title: The StyleX adapter — compatible atomic identities
-description: createStyleXAdapter gives css() StyleX-shaped atomic class names while Pandwind owns the stylesheet.
+description: createStyleXAdapter gives css() StyleX-shaped atomic class names while YumCSS owns the stylesheet.
 sidebar:
   order: 2
 ---
@@ -10,8 +10,8 @@ StyleX-shaped atomic class names without adding the StyleX runtime to the
 application:
 
 ```ts
-import { createStyleXAdapter } from "pandwind/css/stylex";
-import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createStyleXAdapter } from "yumcss/css/stylex";
+import { createUnsafeCss } from "yumcss/unsafe/css";
 
 const css = createUnsafeCss({
 	className: createStyleXAdapter(),
@@ -22,7 +22,7 @@ css.class({ color: "red" }); // e.g. "x1e2nbdu"
 
 The adapter uses StyleX's stable atomic hash inputs — dashed property,
 normalized value, and a sorted condition modifier — and uses `x` as the
-default prefix. It is sheet-backed, so Pandwind still emits the stylesheet and
+default prefix. It is sheet-backed, so YumCSS still emits the stylesheet and
 `cx()` can reason about the generated declarations.
 
 Pass the resolved preset conditions when custom selectors or at-rules should

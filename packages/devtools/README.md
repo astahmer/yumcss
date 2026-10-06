@@ -1,4 +1,4 @@
-# pandwind-devtools
+# yumcss-devtools
 
 Use the DevTools dock when you are asking “why did this style produce this
 CSS?” It keeps the answer next to the running Vite app: source transforms,
@@ -8,23 +8,23 @@ It is development-only and read-only. Add it to a Vite config:
 
 ```ts
 import { DevTools } from "@vitejs/devtools";
-import { pandwindDevtools } from "pandwind-devtools";
+import { yumcssDevtools } from "yumcss-devtools";
 
 export default {
-	plugins: [DevTools(), pandwindDevtools()],
+	plugins: [DevTools(), yumcssDevtools()],
 };
 ```
 
-`pandwind-devtools` adds one Vite DevTools dock for inspecting the evidence produced by Pandwind's existing compiler, scanner, analyzer, and migration services.
+`yumcss-devtools` adds one Vite DevTools dock for inspecting the evidence produced by YumCSS's existing compiler, scanner, analyzer, and migration services.
 
 Install the Vite DevTools host and add both plugins to a development Vite config:
 
 ```ts
 import { DevTools } from "@vitejs/devtools";
-import { pandwindDevtools } from "pandwind-devtools";
+import { yumcssDevtools } from "yumcss-devtools";
 
 export default {
-	plugins: [DevTools(), pandwindDevtools()],
+	plugins: [DevTools(), yumcssDevtools()],
 };
 ```
 
@@ -34,8 +34,8 @@ The dock contains six surfaces:
 
 - **Inspector**: use the `Inspect styles` host action and click an element in the running app.
 - **Style graph**: see source-to-program edges and expand the raw IR when needed.
-- **Tokens**: inspect resolved variables from `pandwind.interop.json`.
-- **Migration**: preview registered routes through the existing `pandwind-codemod` service; previews never write files.
+- **Tokens**: inspect resolved variables from `yumcss.interop.json`.
+- **Migration**: preview registered routes through the existing `yumcss-codemod` service; previews never write files.
 - **Diagnostics**: review scanner warnings and migration residual counts.
 - **Performance**: inspect source size, transform timings, and HMR events.
 

@@ -1,8 +1,8 @@
 ---
-"pandwind": minor
-"pandwind-codemod": minor
-"pandwind-analyze": minor
-"@pandwind/lint-plugin": minor
+"yumcss": minor
+"@yumcss/codemod": minor
+"@yumcss/analyze": minor
+"@yumcss/lint-plugin": minor
 ---
 
 Release preparation: publishable package metadata (files/engines/repository/license),

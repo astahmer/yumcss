@@ -5,10 +5,10 @@ sidebar:
   order: 1
 ---
 
-You do not need to understand the whole Pandwind repository to use it. Pick
+You do not need to understand the whole YumCSS repository to use it. Pick
 the path that matches your app today:
 
-The setup examples assume an existing React and Vite app. They add Pandwind
+The setup examples assume an existing React and Vite app. They add YumCSS
 and the selected styling tools; your app scaffold supplies Vite and its React
 plugin. The Vite snippets use `@vitejs/plugin-react-swc`; keep your existing
 React plugin if your scaffold uses a different one.
@@ -20,19 +20,19 @@ React plugin if your scaffold uses a different one.
 | You already use Tailwind                  | [Tailwind compatibility](/api/tw/)              |
 | You are replacing another styling library | [Migration guide](/guides/migrations/)          |
 
-For new Pandwind code, start with the atomic CSS path. The Tailwind path is
+For new YumCSS code, start with the atomic CSS path. The Tailwind path is
 for applications where Tailwind already owns the stylesheet or its ecosystem
-is the reason you are adopting Pandwind.
+is the reason you are adopting YumCSS.
 
 ## The primary atomic CSS path
 
-Choose this path for new Pandwind code when you want typed CSS objects and an
+Choose this path for new YumCSS code when you want typed CSS objects and an
 extracted atomic stylesheet without making Tailwind the stylesheet engine.
 
-### 1. Add Pandwind
+### 1. Add YumCSS
 
 ```sh
-pnpm add pandwind
+pnpm add yumcss
 ```
 
 The Vite integration uses Vite's native plugin API and does not require
@@ -40,13 +40,13 @@ unplugin. For other bundlers, see [multi-bundler support](/tooling/multi-bundler
 
 ### 2. Create a preset
 
-`createCss(preset)` is the typed form. For a ready-to-use Pandwind app, start
+`createCss(preset)` is the typed form. For a ready-to-use YumCSS app, start
 with `defaultPreset`:
 
 ```ts
 // src/styles.ts
-import { createCss } from "pandwind/css";
-import { defaultPreset } from "pandwind/preset/default";
+import { createCss } from "yumcss/css";
+import { defaultPreset } from "yumcss/preset/default";
 
 export const css = createCss(defaultPreset);
 ```
@@ -57,18 +57,18 @@ export const css = createCss(defaultPreset);
 // vite.config.ts
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { css } from "./src/styles";
 
 export default defineConfig({
-	plugins: [pandwindCssVite(css), react()],
+	plugins: [yumcssExtractVite(css), react()],
 });
 ```
 
 Import the virtual stylesheet once from your application entry point:
 
 ```ts
-import "pandwind:css";
+import "yumcss:css";
 ```
 
 ### 4. Author a component
@@ -106,8 +106,8 @@ the final stylesheet.
 ### 1. Add Tailwind tooling
 
 ```sh
-pnpm add pandwind
-pnpm add -D tailwindcss @tailwindcss/vite pandwind-codemod
+pnpm add yumcss
+pnpm add -D tailwindcss @tailwindcss/vite @yumcss/codemod
 ```
 
 ### 2. Create the stylesheet entry
@@ -122,7 +122,7 @@ Import this file once from your application entry point.
 ### 3. Generate the typed helper
 
 ```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src
 ```
 
 The command reads the Tailwind design system and writes `src/tw.ts`,
@@ -141,14 +141,14 @@ or theme changes.
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
-import { pandwindVite } from "pandwind/vite";
+import { yumcssVite } from "yumcss/vite";
 
 export default defineConfig({
-	plugins: [pandwindVite(), tailwindcss(), react()],
+	plugins: [yumcssVite(), tailwindcss(), react()],
 });
 ```
 
-`pandwindVite()` turns literal calls into the class strings Tailwind already
+`yumcssVite()` turns literal calls into the class strings Tailwind already
 knows how to compile. Your existing Tailwind workflow stays recognizable.
 
 ### 5. Use it
@@ -185,14 +185,14 @@ choice can produce several utility classes, tell Tailwind about those
 candidates:
 
 ```sh
-pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css
+pnpm exec yumcss-codemod tw scan ./src/tw.ts ./src ./src/yumcss.safelist.css
 ```
 
 Then import the generated file:
 
 ```css
 @import "tailwindcss";
-@import "./pandwind.safelist.css";
+@import "./yumcss.safelist.css";
 ```
 
 The scanner is only needed when the possible class names are not present as
@@ -212,4 +212,4 @@ literal source that Tailwind can see.
 
 If a page starts with compiler terminology you do not recognize, skip it for
 now. The [API reference](/api/css/) is designed for looking up a decision after
-you have chosen a lane, not as a prerequisite for using Pandwind.
+you have chosen a lane, not as a prerequisite for using YumCSS.

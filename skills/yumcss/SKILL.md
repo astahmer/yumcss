@@ -1,16 +1,16 @@
 ---
-name: pandwind
-description: Work with Pandwind's typed styling APIs in this repository. Use when writing or changing tw(), css(), createDesignCss, presets, themes, tokens, or cx() calls, regenerating codegen artifacts, wiring Vite plugins, fixing missing CSS or safelist issues, or choosing between utility, atomic, and design-system styles.
+name: yumcss
+description: Work with YumCSS's typed styling APIs in this repository. Use when writing or changing tw(), css(), createDesignCss, presets, themes, tokens, or cx() calls, regenerating codegen artifacts, wiring Vite plugins, fixing missing CSS or safelist issues, or choosing between utility, atomic, and design-system styles.
 ---
 
-# pandwind
+# yumcss
 
 ## Rules
 
 - Never hand-edit generated files: `types.d.ts`, `tw.ts`, the optional
-  `bridge.ts`, `pandwind.interop.json`, `pandwind.generated.json`,
-  `pandwind.agents.json`, the safelist (`pandwind.safelist.css`), and
-  `pandwind-theme.css`. They are outputs of codegen or editor tooling. Change
+  `bridge.ts`, `yumcss.interop.json`, `yumcss.generated.json`,
+  `yumcss.agents.json`, the safelist (`yumcss.safelist.css`), and
+  `yumcss-theme.css`. They are outputs of codegen or editor tooling. Change
   the preset, `tailwind.css`, source token contract, or call sites, then
   regenerate.
 - The compiler is the contract: if a value doesn't autocomplete or fails the
@@ -37,7 +37,7 @@ description: Work with Pandwind's typed styling APIs in this repository. Use whe
   `xcss?: ReturnType<typeof css>` prop and compose `css.props(base, xcss)`.
 - Use `cx()` when inputs are genuinely mixed or opaque class strings from
   `tw()`, CSS modules, or another styling system need conflict resolution.
-  Keep it off the path for already-authored Pandwind style maps; never
+  Keep it off the path for already-authored YumCSS style maps; never
   concatenate class strings manually.
 - Pick the right css() return shape (all methods take the same style object,
   differ only in what they return):
@@ -54,8 +54,8 @@ description: Work with Pandwind's typed styling APIs in this repository. Use whe
 - For overloaded utilities prefer the semantic sub-keys (`textSize`,
   `textColor`, `textAlign`) over array spellings when the intent is single-
   concern.
-- Non-web targets import different subpaths (`pandwind/react-native`,
-  `pandwind/opentui`); never mix targets in one module graph, and never fake
+- Non-web targets import different subpaths (`yumcss/react-native`,
+  `yumcss/opentui`); never mix targets in one module graph, and never fake
   `tw()` outside the web target.
 
 ## Standard flow
@@ -82,16 +82,16 @@ description: Work with Pandwind's typed styling APIs in this repository. Use whe
 - `bridge.ts` — an optional generated Tailwind compatibility artifact. It is
   build-time metadata unless the application explicitly selects its
   `twAdapter` for a design/CSS output strategy.
-- `pandwind-theme.css` — DTCG tokens bridged into a Tailwind v4 `@theme`
+- `yumcss-theme.css` — DTCG tokens bridged into a Tailwind v4 `@theme`
   block; import from `tailwind.css`.
-- `pandwind.interop.json` — the versioned metadata artifact consumed by
+- `yumcss.interop.json` — the versioned metadata artifact consumed by
   migration and build tooling when a generated bridge exists.
-- `pandwind.generated.json` — freshness manifest for generated inputs and
+- `yumcss.generated.json` — freshness manifest for generated inputs and
   outputs, used by `tw verify`.
-- `pandwind.agents.json` — optional machine-readable capability file with
+- `yumcss.agents.json` — optional machine-readable capability file with
   utility unions, conflict families, and verify commands. Read it before
   inventing class names.
-- `pandwind.safelist.css` — scanner output for Tailwind candidates that cannot
+- `yumcss.safelist.css` — scanner output for Tailwind candidates that cannot
   be discovered from static source alone.
 
 ## Useful docs

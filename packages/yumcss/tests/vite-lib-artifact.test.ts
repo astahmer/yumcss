@@ -7,10 +7,7 @@ import { examplePreset } from "@yumcss/example-preset";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createCssExtractorPluginCore } from "../src/vite/css-core.ts";
 import { yumcssExtractVite } from "../src/vite/css.ts";
-import {
-	createYumCSSLibArtifact,
-	createYumCSSLibCompatibility,
-} from "../src/vite/lib-artifact.ts";
+import { createYumCSSLibArtifact, createYumCSSLibCompatibility } from "../src/vite/lib-artifact.ts";
 
 const temporaryDirectories: string[] = [];
 

@@ -1,6 +1,6 @@
 ---
 title: Build a component library
-description: Package reusable, typed, SSR-safe components on top of pandwind.
+description: Package reusable, typed, SSR-safe components on top of yumcss.
 sidebar:
   order: 4
 ---
@@ -27,7 +27,7 @@ Keep the public entry point small:
 
 ```ts
 // src/styles.ts
-import { createDesignCss } from "pandwind/design";
+import { createDesignCss } from "yumcss/design";
 import { preset } from "./preset";
 
 export const dss = createDesignCss(preset);
@@ -38,7 +38,7 @@ export const dss = createDesignCss(preset);
 ```tsx
 // src/Button.tsx
 import type { ComponentPropsWithoutRef } from "react";
-import { cx } from "pandwind/cx";
+import { cx } from "yumcss/cx";
 import { dss } from "./styles";
 
 type ButtonProps = ComponentPropsWithoutRef<"button">;
@@ -69,28 +69,28 @@ through a different semantic role without changing `Button`.
 ## Configure the consumer build
 
 The application that consumes the library should run the appropriate
-Pandwind plugin. For atomic CSS:
+YumCSS plugin. For atomic CSS:
 
 ```ts
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { dss } from "@acme/ui/styles";
 
 export default {
-	plugins: [pandwindCssVite(dss)],
+	plugins: [yumcssExtractVite(dss)],
 };
 ```
 
-Import `pandwind:css` once from the host entry. For the Tailwind lane, expose
+Import `yumcss:css` once from the host entry. For the Tailwind lane, expose
 generated helpers or compile the library's literal calls as part of the host
-source scan, then run `pandwindVite()` before Tailwind.
+source scan, then run `yumcssVite()` before Tailwind.
 
 ## Publish extracted library rules
 
-For a package that is built and consumed independently, publish Pandwind's
+For a package that is built and consumed independently, publish YumCSS's
 build artifact so the host does not scan the library source again:
 
 ```sh
-pnpm exec pandwind-codemod lib build . dist/pandwind.lib.json \
+pnpm exec yumcss-codemod lib build . dist/yumcss.lib.json \
 	--preset-import ./src/preset.ts \
 	--preset-export preset \
 	--include 'src/**/*.{ts,tsx}'
@@ -102,7 +102,7 @@ Expose the generated JSON from the package:
 {
 	"exports": {
 		".": "./dist/index.js",
-		"./pandwind.lib.json": "./dist/pandwind.lib.json"
+		"./yumcss.lib.json": "./dist/yumcss.lib.json"
 	}
 }
 ```
@@ -110,12 +110,12 @@ Expose the generated JSON from the package:
 Register the package in the consuming Vite build:
 
 ```ts
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { dss } from "@acme/ui/styles";
 
 export default {
 	plugins: [
-		pandwindCssVite(dss, {
+		yumcssExtractVite(dss, {
 			libraries: ["@acme/ui"],
 		}),
 	],
@@ -124,20 +124,20 @@ export default {
 
 The package artifact is validated against the consumer's preset, namespace,
 cascade mode and layer, and class-output strategy before its rules are merged. Keep the
-same Pandwind preset semantics on both sides; token/property/condition or
+same YumCSS preset semantics on both sides; token/property/condition or
 compiler mismatches fail the build with the differing compatibility fields.
-Use `pandwind-codemod lib build --check` in the library's CI to catch stale
+Use `yumcss-codemod lib build --check` in the library's CI to catch stale
 output. The artifact contains extracted atomic and variable-carrier rules,
 used token declarations, and the generated `preset.web` section; it does not
 replace the library's JavaScript runtime, dynamic `css.vars()` values, or
 authored CSS imports.
 
 Runtime pruning is a separate JavaScript-build concern. If the library ships
-unbundled modules that still import Pandwind factories, run its distributable
-build through `pandwindCssVite` so static calls and unused runtime attachments
+unbundled modules that still import YumCSS factories, run its distributable
+build through `yumcssExtractVite` so static calls and unused runtime attachments
 are removed before publishing. A consuming Vite build intentionally does not
 rewrite `node_modules` from the JSON artifact alone. Use
-`pandwind-codemod runtime explain` against library source when checking the
+`yumcss-codemod runtime explain` against library source when checking the
 expected method and token projection; use `lib build` for the reusable CSS
 artifact.
 
@@ -157,13 +157,13 @@ Expose the component entry points and the preset intentionally:
 		"./styles": "./dist/styles.js"
 	},
 	"peerDependencies": {
-		"pandwind": "workspace:^",
+		"yumcss": "workspace:^",
 		"react": ">=18"
 	}
 }
 ```
 
-Use a peer dependency for Pandwind when the host must share its engine,
+Use a peer dependency for YumCSS when the host must share its engine,
 preset, or virtual stylesheet. Keep framework-specific exports separate from
 the core component contract.
 

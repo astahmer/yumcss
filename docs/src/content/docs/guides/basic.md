@@ -6,9 +6,9 @@ sidebar:
 ---
 
 This guide assumes your app already has a generated `tw()` helper and the
-Pandwind Vite plugin. For first-time setup, follow [Getting started](/getting-started/).
+YumCSS Vite plugin. For first-time setup, follow [Getting started](/getting-started/).
 Here, focus on writing component styles that stay visible to Tailwind and
-Pandwind's build-time analysis.
+YumCSS's build-time analysis.
 
 ## Keep finite choices static
 

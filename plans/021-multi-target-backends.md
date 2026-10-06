@@ -1,7 +1,7 @@
 # Plan 021 — Multi-target style backends (CSS / RN StyleSheet / canvas / TUI)
 
 **Status: steps 1–4 and 6 landed 2026-08-25 (IR + css backend extraction,
-object-emitting skeleton, `pandwind/react-native`, `pandwind/opentui`, docs
+object-emitting skeleton, `yumcss/react-native`, `yumcss/opentui`, docs
 
 - parity suites); canvas deferred pending a concrete consumer. Design
   decisions approved 2026-08-25; implementation go-ahead recorded in session.
@@ -19,7 +19,7 @@ design vocabulary (css()/createDesignCss: ~30 Figma-style props, $frame/$layout/
        ├─ named-atoms           readable classes, sheetBacked
        └─ tailwind adapter      external compiler, not sheetBacked
   → atom registry               css/atoms.ts
-  → generated stylesheet        vite/css-extract.ts (pandwindCssVite), unplugin.ts
+  → generated stylesheet        vite/css-extract.ts (yumcssExtractVite), unplugin.ts
   → cx()                        merge = drop shadowed class names
 ```
 
@@ -43,12 +43,12 @@ semantics) staying target-independent.
 A `StyleBackend` (name TBD) layer below `resolveDesignStyle()` that owns the
 lowering from resolved style objects to target artifacts:
 
-| Backend        | Terminal artifact                                             | Registry/sheet equivalent               |
-| -------------- | ------------------------------------------------------------- | --------------------------------------- |
-| `css` (today)  | class strings + stylesheet                                    | atom registry + `pandwindCssVite` sheet |
-| `react-native` | style objects / refs on the RN `style` prop (array-mergeable) | runtime registry keyed by atom hash     |
-| `opentui`      | plain style objects on OpenTUI's `style` prop (spread-merged) | runtime registry keyed by atom hash     |
-| `canvas`       | plain style objects consumed by draw code (later — see steps) | runtime registry                        |
+| Backend        | Terminal artifact                                             | Registry/sheet equivalent                 |
+| -------------- | ------------------------------------------------------------- | ----------------------------------------- |
+| `css` (today)  | class strings + stylesheet                                    | atom registry + `yumcssExtractVite` sheet |
+| `react-native` | style objects / refs on the RN `style` prop (array-mergeable) | runtime registry keyed by atom hash       |
+| `opentui`      | plain style objects on OpenTUI's `style` prop (spread-merged) | runtime registry keyed by atom hash       |
+| `canvas`       | plain style objects consumed by draw code (later — see steps) | runtime registry                          |
 
 In scope:
 
@@ -80,7 +80,7 @@ Out of scope:
   Today it is web-locked; RN/canvas/TUI apps get nothing from it.
 - Dogfooding: any of our own TUI/canvas tooling could consume the same tokens.
 - Competitive framing (plan 019): tamagui/nativewind solve RN by forking the API
-  or compiling Tailwind classes at runtime; pandwind's design layer is a cleaner
+  or compiling Tailwind classes at runtime; yumcss's design layer is a cleaner
   portable core if the terminal artifact is pluggable.
 
 ## How
@@ -102,7 +102,7 @@ backend (the existing three strategies keep working unchanged).
 
 ### Operations / behavior
 
-- Backend selection lives in **subpath exports** (`pandwind/rn`, `pandwind/opentui`):
+- Backend selection lives in **subpath exports** (`yumcss/rn`, `yumcss/opentui`):
   each re-exports target-bound `css` / `createDesignCss` / `cx`. Zero changes to
   the frozen core API; per-app granularity (the right scope — a module graph
   should not mix targets); two css instances can't fight over one registry.
@@ -128,7 +128,7 @@ backend (the existing three strategies keep working unchanged).
 | Where the abstraction sits | Below `resolveDesignStyle`, not inside `ClassNameStrategy`                                                  | Strategy only names classes; RN/canvas don't have classes at all                                |
 | `tw()` portability         | none — stays CSS-only                                                                                       | Tailwind semantics are class-string-shaped; faking it elsewhere is nativewind's pain, not ours  |
 | IR shape                   | reuse today's flat `StyleObject` (keys `_cond__prop`)                                                       | Already target-independent; zero churn for the css backend                                      |
-| Target selection surface   | subpath exports (`pandwind/rn`, `pandwind/opentui`)                                                         | Frozen-API-safe; per-app granularity; no registry collisions                                    |
+| Target selection surface   | subpath exports (`yumcss/rn`, `yumcss/opentui`)                                                             | Frozen-API-safe; per-app granularity; no registry collisions                                    |
 | Non-CSS emission           | runtime-only                                                                                                | No Metro/babel integration; dedup via atom-hash registry; build-time can layer on later         |
 | Ambition model             | layered: shared tokens+vocabulary always; shared call sites wherever the backend's vocabulary subset allows | "Both" of write-once and share-the-system, enforced by the type system instead of a mode switch |
 | TUI target                 | OpenTUI (plain style objects, yoga layout)                                                                  | Concrete consumer identified via ~/.references/state-machine                                    |
@@ -164,10 +164,10 @@ app code (css()/createDesignCss calls, any target)
 2. Object-emitting skeleton (serves RN + OpenTUI + canvas): runtime registry
    keyed by atom hash, per-backend value/unit policy, per-backend merge
    (array vs spread), strict condition policy.
-3. `pandwind/rn` subpath: RN vocabulary subset (flexbox, camelCase, unitless
+3. `yumcss/rn` subpath: RN vocabulary subset (flexbox, camelCase, unitless
    numbers, no selectors/units/cascade), cx() → merged registered style object,
    parity tests vs css-backend merge semantics.
-4. `pandwind/opentui` subpath: same skeleton, OpenTUI vocabulary (borders,
+4. `yumcss/opentui` subpath: same skeleton, OpenTUI vocabulary (borders,
    color downsample policy, cell spacing policy `round(step/4)` default),
    parity tests.
 5. canvas backend — only when a concrete consumer appears (draw-call semantics
@@ -179,8 +179,8 @@ app code (css()/createDesignCss calls, any target)
 1. ~~Ambition~~ → **resolved**: layered model (see Tech choices) — tokens and
    vocabulary always shared; call-site portability wherever the backend's typed
    vocabulary subset allows. Write-once is a property of the subset, not a mode.
-2. ~~API surface~~ → **resolved**: subpath exports (`pandwind/rn`,
-   `pandwind/opentui`), implemented via an internal `createCss({ backend })`.
+2. ~~API surface~~ → **resolved**: subpath exports (`yumcss/rn`,
+   `yumcss/opentui`), implemented via an internal `createCss({ backend })`.
 3. ~~Priority~~ → **resolved**: RN and OpenTUI together — they share the
    object-emitting skeleton; canvas deferred until a real consumer exists.
 4. ~~Metro gap~~ → **resolved**: runtime-only; build-time Metro story deferred.
@@ -199,7 +199,7 @@ Remaining (smaller):
    DTCG tokens (see decisions log); RN automatic, OpenTUI declared-with-default.
 9. ~~Package split~~ → **resolved**: no new packages — subpath exports only.
    Object backends emit structurally-typed plain objects and never import
-   `react-native` / opentui types, so `pandwind` stays dependency-free.
+   `react-native` / opentui types, so `yumcss` stays dependency-free.
 
 ## Acceptance criteria
 
@@ -210,7 +210,7 @@ Remaining (smaller):
       cx merge parity tests against the css backend semantics.
   - [x] react-native (step 3): value/unit policy + shorthand expansion +
         condition-policy + stable-identity/cx tests (`backends-react-native.test.ts`).
-        Note: export is `pandwind/react-native` (module `src/rn.ts`, avoids the
+        Note: export is `yumcss/react-native` (module `src/rn.ts`, avoids the
         `react-native.ts` vs `react-native/` resolution clash).
   - [x] opentui (step 4): value/unit policy (`cellSize` default 4,
         px→cells via round(px/cellSize), rem ×16), boolean border model,
@@ -218,7 +218,7 @@ Remaining (smaller):
         (`tests/backends-opentui.test.ts`). Vocabulary subset enforced at
         runtime as structural plain-object typing (no @opentui imports);
         module `src/opentui.ts` avoids resolution clashes.
-  - [x] Cross-backend parity suite `packages/pandwind/tests/backends-parity.test.ts`:
+  - [x] Cross-backend parity suite `packages/yumcss/tests/backends-parity.test.ts`:
         cx merge later-wins-per-property vs css-backend semantics, token-value
         consistency across targets, condition-policy parity (css conditions
         are stylesheet-scoped atoms vs object backends' eager strict resolvers).
@@ -261,4 +261,4 @@ React Native, arbitrary OpenTUI applications, canvas, or build-time Metro.
 | 2026-08-25 | TUI target = OpenTUI; RN + OpenTUI first, canvas deferred                                                                                                                                             | Concrete consumer mined from ~/.references/state-machine; both share the object-emitting skeleton                                                                                      |
 | 2026-08-25 | cx() returns one merged value on every backend (class string / merged registered style object)                                                                                                        | Today's cx resolves conflicts eagerly; arrays would defer resolution to render order and break parity semantics. Hash-registry the merged object → stable reference for RN memoization |
 | 2026-08-25 | Unit policy per backend over the same DTCG tokens: RN = automatic (px token value → unitless dp number, 1:1); OpenTUI = declared policy, default `step → round(step/4)` cells, per-preset overridable | RN dp ≈ px at 1x so the mapping is honest; px→cells has no honest automatic conversion, so OpenTUI declares one with a 4px-per-step default                                            |
-| 2026-08-25 | No split packages — subpath exports only; object backends never import react-native/opentui types                                                                                                     | Keeps pandwind dependency-free; plain objects type structurally                                                                                                                        |
+| 2026-08-25 | No split packages — subpath exports only; object backends never import react-native/opentui types                                                                                                     | Keeps yumcss dependency-free; plain objects type structurally                                                                                                                          |

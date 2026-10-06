@@ -1,18 +1,18 @@
 ---
-title: Why pandwind exists
-description: Decide whether Pandwind fits your team before learning its internals.
+title: Why yumcss exists
+description: Decide whether YumCSS fits your team before learning its internals.
 sidebar:
   order: 2
 ---
 
-Pandwind exists for a common middle ground:
+YumCSS exists for a common middle ground:
 
 - raw class strings are easy to start with but easy to mistype;
 - a large CSS-in-JS system can make every component depend on a runtime; and
 - a design system needs a vocabulary that is smaller and more intentional than
   every CSS property in the browser.
 
-Pandwind keeps the authoring surface small and lets the build system do the
+YumCSS keeps the authoring surface small and lets the build system do the
 work it can prove.
 
 ## You should try it if…
@@ -34,8 +34,8 @@ work it can prove.
 - you want a framework-specific recipe system and do not need a typed CSS
   compiler or migration tool.
 
-Pandwind is meant to fit beside existing CSS. It is not a requirement that
-every rule in an application move into a Pandwind function.
+YumCSS is meant to fit beside existing CSS. It is not a requirement that
+every rule in an application move into a YumCSS function.
 
 ## The decisions in plain language
 
@@ -53,7 +53,7 @@ and tooling should improve behind the stable surface instead.
 Literal styles can be turned into class strings or extracted atomic CSS before
 the browser runs. This is the default path for production applications.
 
-When a value is genuinely dynamic, Pandwind keeps it dynamic and makes the
+When a value is genuinely dynamic, YumCSS keeps it dynamic and makes the
 boundary visible through `css.vars()`, a Tailwind safelist, or authored CSS.
 There is no promise that user input, global browser behavior, or framework
 runtime semantics can be compiled away.
@@ -69,7 +69,7 @@ from what the build actually accepts.
 
 Broad globals, fonts, layers, and complex selectors belong naturally in
 authored `.css` files. A preset can also own flat build-time selectors, named
-keyframes, and typed font faces through the third `define.preset(theme, options, web)` argument; Pandwind
+keyframes, and typed font faces through the third `define.preset(theme, options, web)` argument; YumCSS
 does not force every browser primitive through a TypeScript API. A
 component-local animation remains available through `css.keyframes()`, which
 emits a plain `@keyframes` rule.
@@ -85,7 +85,7 @@ interpolation, and other unsupported semantics need a human decision.
 
 ## The trade-off
 
-Pandwind asks you to accept generated files and a build step in exchange for:
+YumCSS asks you to accept generated files and a build step in exchange for:
 
 - editor feedback from your own tokens and utilities;
 - conflict behavior derived from the actual CSS engine;

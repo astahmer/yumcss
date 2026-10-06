@@ -54,9 +54,7 @@ describe("playground editor declarations", () => {
 		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/unsafe/css"]).toBe(
 			"generated/yumcss/unsafe/css.d.ts",
 		);
-		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset"]).toBe(
-			"generated/yumcss/preset/index.d.ts",
-		);
+		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset"]).toBe("generated/yumcss/preset/index.d.ts");
 		expect(YUMCSS_EDITOR_MODULE_PATHS["yumcss/preset/csstype"]).toBe(
 			"generated/yumcss/preset/csstype.d.ts",
 		);

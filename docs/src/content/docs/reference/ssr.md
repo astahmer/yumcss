@@ -1,6 +1,6 @@
 ---
 title: SSR, hydration, and framework matrix
-description: What pandwind guarantees on the server and which bundler integrations are proven.
+description: What yumcss guarantees on the server and which bundler integrations are proven.
 sidebar:
   order: 6
 ---
@@ -10,7 +10,7 @@ sidebar:
 The dynamic CSS contract is server-safe: `css.vars()` returns a plain
 `{ class, style }` object. Serialize those values into the element rendered by
 your host framework and pass the same values to the client during hydration.
-pandwind does not touch `window`, `document`, or a global style injector while
+yumcss does not touch `window`, `document`, or a global style injector while
 creating classes or variable values.
 
 The build-time stylesheet generator is also idempotent. Repeated collection of
@@ -26,7 +26,7 @@ use the inline custom properties returned by `css.vars()` or an adapter-owned
 runtime sheet.
 
 `createCss(preset)` is the normal choice when the application has a build-time
-CSS entry: `pandwindCssVite()` emits the stable rules for `css.vars()` and
+CSS entry: `yumcssExtractVite()` emits the stable rules for `css.vars()` and
 `css.input()` while the rendered values remain serializable inline props.
 `createRuntimeCss(preset)` is the explicit choice when the host must collect
 atomic rules during rendering, has no generated CSS entry, or needs the

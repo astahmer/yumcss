@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"installed": true,
-		"targetPackage": "file:/Users/astahmer/dev/yumcss/packages/yumcss",
+		"targetPackage": "file:packages/yumcss",
 		"targetNodeModule": true
 	},
 	"migration": {

@@ -1174,8 +1174,7 @@ function buildSandbox(
 			const isCssFactory = imp.source === "yumcss/css" && imp.imported === "createCss";
 			const isUnsafeCssFactory =
 				imp.source === "yumcss/unsafe/css" && imp.imported === "createUnsafeCss";
-			const isDesignFactory =
-				imp.source === "yumcss/design" && imp.imported === "createDesignCss";
+			const isDesignFactory = imp.source === "yumcss/design" && imp.imported === "createDesignCss";
 			const isRuntimeFactory =
 				typeof resolvedImport === "function" &&
 				((imp.source === "yumcss/css/runtime" &&
@@ -1278,8 +1277,7 @@ function buildSandbox(
 				sandbox[imp.local] = instrumentedBuiltins[imp.imported];
 			} else {
 				// Default imports are not part of the supported YumCSS entrypoints.
-				sandbox[imp.local] =
-					imp.source === "yumcss" ? instrumentedBuiltins : input.createUnsafeCss;
+				sandbox[imp.local] = imp.source === "yumcss" ? instrumentedBuiltins : input.createUnsafeCss;
 			}
 			continue;
 		}

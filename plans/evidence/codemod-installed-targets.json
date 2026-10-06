@@ -1,7 +1,7 @@
 {
 	"schema": "yumcss.codemod-installed-targets/1",
-	"sourceFingerprint": "800ff359e94c7be4b02db253f0ab83b11a0aa9dfa0d0a9d6495037860e1ce8a3",
-	"proofImplementationHash": "0c975e9549507db64f6b07647d2caac403570a8edda58e8bc554bab2f9c378ce",
+	"sourceFingerprint": "8cfcc82a5d115a2507bd9f578a87633e2537eabdca249ab2cae0229f3cf79e7c",
+	"proofImplementationHash": "65559ae87c26a9b747437b4e2e9ecbae4946798130948d1c3b9434a97794ddb9",
 	"scope": "Nine exact static React route scenarios; no route maturity promotion or universal framework claim.",
 	"reports": [
 		{
@@ -29,7 +29,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -110,7 +110,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "3e59a1ecc273ead357ac07150db8ef4f9a8c2054c3ee4a66e871af10038ebc2d",
@@ -191,7 +191,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -272,7 +272,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -358,7 +358,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "7507ed23351691848a837feeabe0d5ce025ffae3ec7c6c98dfac3131397e15a8",
@@ -439,7 +439,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -520,7 +520,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -610,7 +610,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -696,7 +696,7 @@
 				"unocss": "66.10.0",
 				"@unocss/core": "66.10.0",
 				"@unocss/config": "66.10.0",
-				"yumcss": "file:/Users/astahmer/dev/yumcss/packages/yumcss"
+				"yumcss": "file:packages/yumcss"
 			},
 			"fixture": {
 				"sourceHash": "74080326348793429730fe2682fe5ce744bf5768f828402d41b83c58bbd7f18c",
@@ -758,5 +758,5 @@
 			}
 		}
 	],
-	"reportFingerprint": "3fd64b6c845a617b78b9cff3cb5a53c396f41d0bd639712d4b2f18deb3736552"
+	"reportFingerprint": "777b44d9ffbae19d0098cb1c860077d91a6205dfc61cadeecc5a54ebcad345bb"
 }

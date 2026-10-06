@@ -87,13 +87,7 @@ describe("adapter route round-trip contract", () => {
 				undefined,
 			);
 			const generated = `import { Box } from "@example/host"; ${result.code}`;
-			const reverse = migrate(
-				generated,
-				targetId,
-				CodemodAdapterId.YumCSS,
-				"Card.tsx",
-				undefined,
-			);
+			const reverse = migrate(generated, targetId, CodemodAdapterId.YumCSS, "Card.tsx", undefined);
 			expect(result.residuals).toEqual([]);
 			expect(reverse.converted).toBeGreaterThan(0);
 			expect(reverse.residuals).toEqual([]);

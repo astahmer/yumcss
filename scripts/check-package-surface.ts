@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
@@ -45,7 +45,9 @@ if (inventory.schema !== "yumcss.package-surface/1") {
 }
 
 const manifests = readdirSync(packageRoot, { withFileTypes: true })
-	.filter((entry) => entry.isDirectory())
+	.filter(
+		(entry) => entry.isDirectory() && existsSync(join(packageRoot, entry.name, "package.json")),
+	)
 	.map((entry) => {
 		const directory = join(packageRoot, entry.name);
 		return {

@@ -151,8 +151,13 @@ async function main() {
 					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
 					if (path.includes(browserBundleMarker)) continue;
 					if (executableTargets.has(path)) continue;
-					if (manifest.name === "@yumcss/analyze" && privatePresetImport.test(readFileSync(path, "utf8"))) {
-						broken.push(`${path.replace(`${extracted}/`, "")}: imports private @yumcss/example-preset`);
+					if (
+						manifest.name === "@yumcss/analyze" &&
+						privatePresetImport.test(readFileSync(path, "utf8"))
+					) {
+						broken.push(
+							`${path.replace(`${extracted}/`, "")}: imports private @yumcss/example-preset`,
+						);
 					}
 					try {
 						await import(pathToFileURL(path).href);
@@ -217,18 +222,19 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 		const directory = packageDirectories.get(name);
 		if (directory === undefined) throw new Error(`No workspace package found for ${name}`);
 		const workspaceManifest = JSON.parse(readFileSync(join(directory, "package.json"), "utf8"));
-		const packOutput = execFileSync(
-			"pnpm",
-			["pack", "--json", "--pack-destination", workdir],
-			{ cwd: directory, encoding: "utf8" },
-		);
+		const packOutput = execFileSync("pnpm", ["pack", "--json", "--pack-destination", workdir], {
+			cwd: directory,
+			encoding: "utf8",
+		});
 		const packResult = JSON.parse(packOutput);
 		const packEntry = Array.isArray(packResult) ? packResult[0] : packResult;
-		if (packEntry?.filename === undefined) throw new Error(`pnpm pack produced no tarball for ${name}`);
+		if (packEntry?.filename === undefined)
+			throw new Error(`pnpm pack produced no tarball for ${name}`);
 		const workspaceTarballPath = resolve(packEntry.filename);
 		tarballs.set(name, workspaceTarballPath);
 		for (const [dependencyName, version] of Object.entries(workspaceManifest.dependencies ?? {})) {
-			if (typeof version === "string" && version.startsWith("workspace:")) pending.push(dependencyName);
+			if (typeof version === "string" && version.startsWith("workspace:"))
+				pending.push(dependencyName);
 		}
 	}
 
@@ -245,20 +251,29 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 			]),
 		),
 	};
-	writeFileSync(join(consumerDirectory, "package.json"), `${JSON.stringify(consumerManifest, null, 2)}\n`);
-	execFileSync("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"], {
-		cwd: consumerDirectory,
-		stdio: "ignore",
-	});
+	writeFileSync(
+		join(consumerDirectory, "package.json"),
+		`${JSON.stringify(consumerManifest, null, 2)}\n`,
+	);
+	execFileSync(
+		"npm",
+		["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"],
+		{
+			cwd: consumerDirectory,
+			stdio: "ignore",
+		},
+	);
 	const importCheck = [
 		'import { DEFAULT_GOVERNANCE_PRESET } from "yumcss-analyze";',
 		'import { loadOfficialPresetModule } from "@yumcss/analyze/governance";',
 		'await import("yumcss/cx");',
 		'await import("@yumcss/codemod/swap");',
-		'const preset = await loadOfficialPresetModule(DEFAULT_GOVERNANCE_PRESET, process.cwd());',
+		"const preset = await loadOfficialPresetModule(DEFAULT_GOVERNANCE_PRESET, process.cwd());",
 		'if (preset.status !== "loaded") throw new Error(JSON.stringify(preset));',
 	].join("\n");
-	execFileSync(process.execPath, ["--input-type=module", "-e", importCheck], { cwd: consumerDirectory });
+	execFileSync(process.execPath, ["--input-type=module", "-e", importCheck], {
+		cwd: consumerDirectory,
+	});
 	execFileSync(
 		process.execPath,
 		[join(consumerDirectory, "node_modules/@yumcss/analyze/dist/cli.js"), "--help"],

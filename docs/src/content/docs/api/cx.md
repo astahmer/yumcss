@@ -1,11 +1,11 @@
 ---
 title: cx() — merge everything, last-wins
-description: Combine Pandwind output, ordinary class strings, and conditional styles at component boundaries.
+description: Combine YumCSS output, ordinary class strings, and conditional styles at component boundaries.
 sidebar:
   order: 4
 ---
 
-Pandwind has two equal CSS projections for known style objects: `css(...)`
+YumCSS has two equal CSS projections for known style objects: `css(...)`
 returns a mergeable declaration map, while `css.class(...)` returns a class
 string. Choose the shape the host needs. Use `css.props(base, override)` when a
 component is composing already-compiled style maps, such as an `xcss` prop.
@@ -21,7 +21,7 @@ the host already wants one final class string.
 
 This is the same kind of host boundary that makes StyleX's
 [`stylex.props(...)`](https://stylexjs.com/docs/api/javascript/props/) useful:
-the host projection receives compiled style values. Pandwind lets the caller
+the host projection receives compiled style values. YumCSS lets the caller
 choose either the declaration-map `css(...)` path or the direct class-string
 `css.class(...)` path before using `css.props(...)` where host props are useful.
 
@@ -31,9 +31,9 @@ the uncommon case where arbitrary runtime Tailwind strings need exact
 last-wins merging, pass the generated conflict metadata explicitly:
 
 ```ts
-import { __pandwindConflictConfig } from "./tw.conflicts";
+import { __yumcssConflictConfig } from "./tw.conflicts";
 
-const conflictAwareCx = createCx({ css, ...__pandwindConflictConfig });
+const conflictAwareCx = createCx({ css, ...__yumcssConflictConfig });
 ```
 
 `createCx({ css, variants, conflicts, compose })` merges raw class strings,
@@ -41,15 +41,15 @@ const conflictAwareCx = createCx({ css, ...__pandwindConflictConfig });
 semantics as a single `tw()` call:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { createCx } from "pandwind/cx";
+import { createCss } from "yumcss/css";
+import { createCx } from "yumcss/cx";
 
-import { examplePreset } from "@pandwind/example-preset";
+import { examplePreset } from "@yumcss/example-preset";
 import { tw } from "./tw";
-import { __pandwindConflictConfig } from "./tw.conflicts";
+import { __yumcssConflictConfig } from "./tw.conflicts";
 
 const css = createCss(examplePreset);
-const cx = createCx({ css, ...__pandwindConflictConfig });
+const cx = createCx({ css, ...__yumcssConflictConfig });
 
 const knownStyles = css({ color: "blue", padding: 4 }, { color: "navy" });
 const knownProps = css.props(knownStyles);
@@ -63,14 +63,14 @@ cx(tw({ bg: "red-500" }), "px-4", knownStyles, directClass, "bg-blue-500");
 `tw.ts` entry does not import it, and plain `createCx({ css })` does not import
 it either. `tw.runtime.ts` contains the separate optional dynamic `tw()`
 metadata, while `tw.build.ts` is tooling-only and is never a runtime import.
-When `pandwindVite()` folds all calls to literals, all generated metadata is
+When `yumcssVite()` folds all calls to literals, all generated metadata is
 removed from the browser bundle. Only the explicit conflict-aware form above
 pays for the catalog needed to preserve arbitrary runtime conflict semantics.
 
 For a smaller known-vocabulary catalog, pass a scope during generation:
 
 ```sh
-pnpm exec pandwind-codemod tw generate src/tailwind.css src --conflicts bg,p,text
+pnpm exec yumcss-codemod tw generate src/tailwind.css src --conflicts bg,p,text
 ```
 
 This keeps only those conflict prefixes. Use it only when arbitrary runtime
@@ -97,7 +97,7 @@ really are mixed, so it must inspect class and atom metadata.
 
 ## Compile-time `cx()` — tree-shakeable for static apps
 
-When a file imports both tw and cx, `pandwindVite` folds statically-evaluable
+When a file imports both tw and cx, `yumcssVite` folds statically-evaluable
 `cx(...)` calls into their final class string at build time — by running the
 merge through a real `createCx(config)` built from the same generated
 metadata, so build output is byte-identical to the runtime by construction.

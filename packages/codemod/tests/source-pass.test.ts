@@ -52,12 +52,7 @@ describe("SourcePass", () => {
 
 	test("inserts an indented skip marker at the containing line", () => {
 		expect(
-			SourcePass.insertSkipMarker(
-				"  css({ color: value });",
-				10,
-				"dynamic",
-				"yumcss:migrate-skip",
-			),
+			SourcePass.insertSkipMarker("  css({ color: value });", 10, "dynamic", "yumcss:migrate-skip"),
 		).toBe("  // yumcss:migrate-skip (dynamic)\n  css({ color: value });");
 	});
 
@@ -109,9 +104,7 @@ describe("SourcePass", () => {
 			"App.tsx",
 		);
 
-		expect(migrated).toContain(
-			'    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge gap="2" />',
-		);
+		expect(migrated).toContain('    {/* yumcss:migrate-skip (dynamic) */}\n    <Badge gap="2" />');
 		expect(migrated).not.toContain("    // yumcss:migrate-skip");
 	});
 
@@ -192,9 +185,7 @@ describe("SourcePass", () => {
 			"App.tsx",
 		);
 
-		expect(migrated).toContain(
-			"        {/* yumcss:migrate-skip (residual) */}\n        <Badge />",
-		);
+		expect(migrated).toContain("        {/* yumcss:migrate-skip (residual) */}\n        <Badge />");
 	});
 
 	test("keeps nested JSX comments valid inside a JSX callback attribute", () => {
@@ -218,9 +209,7 @@ describe("SourcePass", () => {
 			"App.tsx",
 		);
 
-		expect(migrated).toContain(
-			"        {/* yumcss:migrate-skip (residual) */}\n        <Badge />",
-		);
+		expect(migrated).toContain("        {/* yumcss:migrate-skip (residual) */}\n        <Badge />");
 	});
 
 	test("keeps markers inside JSX attributes as JavaScript comments", () => {

@@ -198,9 +198,7 @@ class DefaultCssCli implements CssCli {
 		cli.parse(["node", "yumcss-codemod css", ...effectiveArgv], { run: false });
 		if (cli.matchedCommand === undefined) {
 			if (argv.includes("--help") || argv.includes("-h")) return;
-			throw new Error(
-				`yumcss-codemod css: unknown command '${argv[0] ?? ""}'. Expected generate`,
-			);
+			throw new Error(`yumcss-codemod css: unknown command '${argv[0] ?? ""}'. Expected generate`);
 		}
 		await cli.runMatchedCommand();
 	}

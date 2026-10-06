@@ -1,11 +1,11 @@
 ---
 name: css-compiler-regression
-description: Validate Pandwind compiler, CSS serialization, extraction, and lint changes across authored input, emitted CSS, runtime behavior, and performance boundaries.
+description: Validate YumCSS compiler, CSS serialization, extraction, and lint changes across authored input, emitted CSS, runtime behavior, and performance boundaries.
 ---
 
 # CSS Compiler Regression
 
-Use when changing Pandwind's compiler, CSS emitters, style extraction,
+Use when changing YumCSS's compiler, CSS emitters, style extraction,
 typed-CSS rules, codemods, or runtime serialization.
 
 ## Establish the behavior boundary

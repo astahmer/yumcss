@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `pandwind` are documented here. The project has no
+All notable changes to `yumcss` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
@@ -16,7 +16,7 @@ current `0.1.0` state.
 
 ### Analyzer tooling
 
-- Bundle the example preset into `pandwind-analyze`, exercise the packed
+- Bundle the example preset into `yumcss-analyze`, exercise the packed
   analyzer in a clean consumer install, and refresh the installed migration
   proof for all nine target routes. Source revisions: `1e79b296`, `8bffdc38`.
 
@@ -25,7 +25,7 @@ current `0.1.0` state.
 ### API / codemod
 
 - Treat finite literal style objects and arrays, including responsive JSX
-  values, as static Pandwind styles. Migrations now emit one `css.class()` call
+  values, as static YumCSS styles. Migrations now emit one `css.class()` call
   instead of wrapping those values in `css.props(css.vars(...))`; unresolved
   expressions still stay on the runtime carrier path. Source revisions:
   `d29997b3`, `70e0f374`, `290bf570`, `6a18667a`.
@@ -39,7 +39,7 @@ current `0.1.0` state.
   custom-property mappings, while `colorPalette.*` references resolve through
   the app-owned color tokens.
 - Preserve Panda color-palette roots, include/exclude settings, and virtual
-  references when emitting a Pandwind preset, without importing Panda's default
+  references when emitting a YumCSS preset, without importing Panda's default
   token catalog or introducing a runtime theme bridge.
 
 Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
@@ -49,11 +49,11 @@ Source revisions: `qqyulusz`, `rrxooprr`, `uspqzmlu`, `zwtzvqvk`, `nqoyxvkq`,
 
 ### API / codemod
 
-- Use underscore-prefixed names for Pandwind's built-in state, selector, and
+- Use underscore-prefixed names for YumCSS's built-in state, selector, and
   mode conditions. Generated Panda and project presets collapse bare aliases
   to that canonical spelling while leaving responsive and custom conditions
   unchanged. Source revision: `snuqwnpr`.
-- Make the Pandwind target adapter consume the first-party preset condition
+- Make the YumCSS target adapter consume the first-party preset condition
   catalog even without a loaded project config, so migrated `_hover`, authored
   underscore conditions, and common raw pseudo selectors stay on typed preset
   keys instead of becoming arbitrary selector properties.
@@ -67,9 +67,9 @@ Source revisions: `snuqwnpr`, `aad9c82d`, `83421402`, `e4caec1f`, `11be10fd`.
 ### API / codemod
 
 - Carry target-owned condition catalogs through both synchronous and
-  asynchronous migrations, so configured Pandwind conditions remain typed
+  asynchronous migrations, so configured YumCSS conditions remain typed
   across every adapter route.
-- Preserve Pandwind underscore condition keys when emitting Panda again,
+- Preserve YumCSS underscore condition keys when emitting Panda again,
   recognize nested media and selector objects as structural CSS conditions,
   and reuse the configured parser dialect for referenced style objects.
 - Keep undeclared conditions and ambiguous values as source plus typed
@@ -96,7 +96,7 @@ Source revisions: `utqmmrto`, `kwnsukvw`, `mkmlsrsv`.
   separate static and runtime project bindings when a migration needs both.
   Existing runtime modules exporting a custom binding remain supported through
   project binding discovery and aliasing.
-- Make Pandwind's own runtime-rule parser accept the configured local binding,
+- Make YumCSS's own runtime-rule parser accept the configured local binding,
   and remove duplicate host arrows when an adapter lowers a global component.
 
 Source revisions: `38c52079`, `785d7229`.
@@ -107,13 +107,13 @@ Source revisions: `38c52079`, `785d7229`.
 
 - Keep literal `css.class()` calls beside their JSX use by default. The
   `--hoist-static-styles` option opts into module-scope carriers for projects
-  that prefer that source shape; the Pandwind Vite/unplugin compiler can still
+  that prefer that source shape; the YumCSS Vite/unplugin compiler can still
   fold colocated literal calls to raw class strings at build time. Source
   revision: `70aa6df1`.
 - Keep existing host classes inside `css.props` when migrating StyleX props
   spreads, covering both expression and quoted `className` attributes without
   generating a second `cx` merge. The static simplifier also flattens nested
-  `cx` calls around hoisted Pandwind carriers into one `css.props(...).className`
+  `cx` calls around hoisted YumCSS carriers into one `css.props(...).className`
   projection for every adapter. Source revision: `lqvmzxpt`.
 - Keep Chakra and Panda migrations independently owned: each adapter recognizes
   its own imports and aliases, while a mixed file can run either adapter first
@@ -124,7 +124,7 @@ Source revisions: `38c52079`, `785d7229`.
 
 ### Performance
 
-- Apply Panda v2's type-graph lessons to Pandwind: use named value boundaries,
+- Apply Panda v2's type-graph lessons to YumCSS: use named value boundaries,
   one shared selector/condition nesting map, and an owned CSS property
   vocabulary instead of repeatedly expanding `csstype` unions.
 - Remove the open CSS-config index signature's `any` and preserve arbitrary
@@ -133,7 +133,7 @@ Source revisions: `38c52079`, `785d7229`.
 - Local package measurement with `tsc --extendedDiagnostics` improved from
   `399743` to `271161` type instantiations and from `299989K` to `285452K` peak
   memory; repeated check time moved from `0.168s` to `0.140s`. These are
-  Pandwind package measurements, not a reproduction of Panda's fixture corpus.
+  YumCSS package measurements, not a reproduction of Panda's fixture corpus.
 
 Source revision: `c05a1b28`, `c05a1b28`
 
@@ -141,7 +141,7 @@ Source revision: `c05a1b28`, `c05a1b28`
 
 ### API
 
-- Export a curated `PandwindProperties` contract for common CSS declarations.
+- Export a curated `YumCSSProperties` contract for common CSS declarations.
   The built-in preset applies Panda-style finite-value filtering to strict
   keyword properties while projects that need the complete grammar can
   explicitly bring their own `csstype` config.
@@ -168,7 +168,7 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
   while only genuine runtime values use `css.vars()`. Generated code now uses
   `css` by default, with a collision-specific fallback when source code already
   owns that binding.
-- Make external-adapter routes into Pandwind target-aware: Chakra, Mantine, and
+- Make external-adapter routes into YumCSS target-aware: Chakra, Mantine, and
   MUI keep authored/static values instead of fabricating foreign CSS variables,
   canonicalize supported hosts to intrinsic elements, remove their source
   bootstrap when the migration is complete, and leave unsupported components or
@@ -182,7 +182,7 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 
 ### Fixes
 
-- `pandwindCssVite` accepts the composed `createCss()` or `createDesignCss()`
+- `yumcssExtractVite` accepts the composed `createCss()` or `createDesignCss()`
   function used by the application and follows its Vite module graph during
   HMR. Editing the composition or its imported theme refreshes the virtual
   stylesheet without a preset path or separate config file.
@@ -193,14 +193,14 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 
 - Replace declaration-wide `important` output with opt-in `cascade:
 "specificity"` (StyleX-like priority specificity) or `cascade: "layers"`
-  (`@layer pandwind`). Default CSS output remains unchanged.
+  (`@layer yumcss`). Default CSS output remains unchanged.
 
 ## Unreleased — 2026-08-25 wave (multi-target backends)
 
 ### API
 
-- **Style backends** (`pandwind/react-native`, `pandwind/opentui`, plus the
-  render-agnostic `pandwind/stack` / `pandwind/stack/react` subpaths): the
+- **Style backends** (`yumcss/react-native`, `yumcss/opentui`, plus the
+  render-agnostic `yumcss/stack` / `yumcss/stack/react` subpaths): the
   design layer now lowers a resolved flat style IR to non-web targets — RN
   registered style objects, OpenTUI plain style objects — with per-target
   unit policies and a strict condition policy (unresolvable conditions throw
@@ -238,7 +238,7 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
 - Literal `css()` / `css.class()` calls fold to atom classes inside `cx()` at
   build time (byte-identical to generated stylesheet rules).
 - DTCG token groups bridge into a Tailwind v4 `@theme` block:
-  `tw:codegen --tokens <preset>` emits `pandwind-theme.css` and injects token
+  `tw:codegen --tokens <preset>` emits `yumcss-theme.css` and injects token
   utilities into the generated types. Example app's hand-mirrored theme
   replaced by the generated artifact.
 
@@ -279,7 +279,7 @@ Source revision: `c756d727d606533b6efdfdf9420c2ea3587cb65e`
   `createDesignCss()` Figma-inspector vocabulary (`$frame`/`$layout`/`$text`).
 - `cx()` last-wins merge across raw strings, `tw()` output and css atoms via
   the generated conflict map + atom registry.
-- `pandwindVite` / `pandwindCssVite` build-time plugins; tree-shakable barrel
+- `yumcssVite` / `yumcssExtractVite` build-time plugins; tree-shakable barrel
   (`sideEffects: false`), proven by esbuild gate + real vite build tests.
 - Tailwind-compatibility proof suite and the three-layer runtime-size
   regression gate (see SIZE.md).

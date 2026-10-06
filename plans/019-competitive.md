@@ -5,7 +5,7 @@ Sources: known landscape (npm-checked where noted) + the user's GitHub stars
 
 ## Feature matrix
 
-| capability                                      | pandwind                               | tailwind v4             | panda-css           | stylex                    | unocss             | vanilla-extract        | next-yak        | tokenami        | master-css       |
+| capability                                      | yumcss                                 | tailwind v4             | panda-css           | stylex                    | unocss             | vanilla-extract        | next-yak        | tokenami        | master-css       |
 | ----------------------------------------------- | -------------------------------------- | ----------------------- | ------------------- | ------------------------- | ------------------ | ---------------------- | --------------- | --------------- | ---------------- |
 | zero-runtime utilities                          | ✅                                     | ✅ (engine)             | ✅                  | ✅                        | ✅                 | ✅                     | ✅              | ✅              | ⚠️ hybrid        |
 | typed utility unions (tsc errors on typos)      | ✅ generated                           | ❌                      | ⚠️ ts types         | ❌                        | ❌                 | ❌ (TS but not unions) | ❌              | ❌              | ❌               |
@@ -55,10 +55,10 @@ in-time competitive snapshot.
 3. **Agent-readiness as a positioning pillar** (M, differentiator): the stars
    show where the ecosystem is going — `design.md` spec (27.5k★),
    `impeccable` (62k★), Meta's `astryx` ("agent ready" design system, 12k★).
-   Pandwind's frozen typed API + generated artifacts are _already_ the safest
+   YumCSS's frozen typed API + generated artifacts are _already_ the safest
    surface for AI authors: wrong classes are type errors, `analyze` verifies
    fold coverage, missing-css flags hallucinations. Emit a machine-readable
-   capability/context file alongside codegen (`pandwind.agents.json`) and
+   capability/context file alongside codegen (`yumcss.agents.json`) and
    document the workflow. Nobody else can prove their output like this.
 4. **Critical-CSS extraction** (M/L): completes the perf story started by
    splitByRoute.
@@ -72,7 +72,7 @@ in-time competitive snapshot.
 - `facebook/astryx` (12.3k★) — "design system, fully customizable, agent
   ready": validates the agent-positioning bet (#3).
 - `google-labs-code/design.md` (27.5k★) / `pbakaus/impeccable` (62k★) —
-  design-context formats for coding agents; pandwind could EMIT one from the
+  design-context formats for coding agents; yumcss could EMIT one from the
   preset (tokens + unions + constraints) — cheaper than building an LLM
   integration and immediately useful.
 - `open-pencil/twirlwind` — Tailwind-v4-first CSS→utility serializer: the
@@ -107,7 +107,7 @@ npm registry metadata (version + last publish), live docs where reachable.
 | --------------------------------------- | ------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | wallace-cli 4.0.3 / projectwallace      | OSS core, hosted app paid | full CSS-shape analytics (specificity, complexity, decl distributions) | chart-heavy shareable reports                             | active (2026-08)   | **HIGH** — @projectwallace/css-parser (active, "optimized for CSS inspection") could power richer Stats-tab charts |
 | analyze-css 2.4.48                      | OSS                       | selector complexity + performance-oriented metrics                     | perf-focused metric set (selectors per rule, duplication) | active (2026-08)   | **MED** — borrow metric taxonomy for --css lane                                                                    |
-| stylelint 17.x (+ statistics formatter) | OSS                       | lint + aggregate stats via formatter                                   | convention enforcement at scale                           | very active        | MED — our oxlint plugin covers the pandwind-specific half                                                          |
+| stylelint 17.x (+ statistics formatter) | OSS                       | lint + aggregate stats via formatter                                   | convention enforcement at scale                           | very active        | MED — our oxlint plugin covers the yumcss-specific half                                                            |
 | size-limit 13.x                         | OSS                       | size budgets with CI annotations                                       | FAILS CI on budget breach + posts PR comments             | very active        | **HIGH** — adopt its PR-comment pattern for our size/css gates                                                     |
 | css-audit 0.0.1                         | OSS                       | syntax-tree audit                                                      | —                                                         | dead (2022)        | none                                                                                                               |
 

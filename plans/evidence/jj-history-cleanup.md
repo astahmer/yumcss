@@ -17,7 +17,7 @@ This record belongs to the history-consolidation operation started on 2026-08-30
   workspace now has a clean empty `wip` commit directly on `main` at
   `1a305744c8abe6a429e9234c0e70c756e04a5616`.
 
-The consolidated candidate passes `pnpm test:all`: Pandwind, playground,
+The consolidated candidate passes `pnpm test:all`: YumCSS, playground,
 browser, React Native, OpenTUI, showcase, analyzer, codemod, and inspector
 checks are green. The candidate also retains the official-config, Emotion,
 PostHog, and Astryx proof evidence; duplicate PostHog replay commits were

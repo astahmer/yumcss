@@ -1020,16 +1020,7 @@ const __yumcssWildcardValues38: string[] = [
 	"zoom-out",
 ];
 const __yumcssWildcardValues39: string[] = ["0", "1", "2", "auto", "from-font"];
-const __yumcssWildcardValues40: string[] = [
-	"100",
-	"1000",
-	"150",
-	"200",
-	"300",
-	"500",
-	"700",
-	"75",
-];
+const __yumcssWildcardValues40: string[] = ["100", "1000", "150", "200", "300", "500", "700", "75"];
 const __yumcssWildcardValues41: string[] = ["fractions"];
 const __yumcssWildcardValues42: string[] = ["2xl", "lg", "md", "none", "sm", "xl", "xs"];
 const __yumcssWildcardValues43: string[] = ["in", "in-out", "linear", "out"];

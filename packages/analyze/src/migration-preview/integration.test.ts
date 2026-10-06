@@ -19,9 +19,7 @@ afterEach(() => {
 
 describe("migration-preview integration", () => {
 	test("evaluates a real adapter through the authenticated HTTP session", async () => {
-		const root = mkdtempSync(
-			join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-http-"),
-		);
+		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-http-"));
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
 		writeFileSync(

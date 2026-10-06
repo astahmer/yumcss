@@ -16,10 +16,7 @@ const yumcssPackageRoot = join(repositoryRoot, "packages/yumcss");
 const requireFromYumCSS = createRequire(join(yumcssPackageRoot, "package.json"));
 
 /** Checked-in data module this generator owns. */
-export const pandaPresetModulePath = join(
-	yumcssPackageRoot,
-	"src/preset/generated/panda-theme.ts",
-);
+export const pandaPresetModulePath = join(yumcssPackageRoot, "src/preset/generated/panda-theme.ts");
 
 export interface PandaTokenLeaf {
 	readonly value: string | number | ReadonlyArray<string>;

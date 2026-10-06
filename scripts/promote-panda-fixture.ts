@@ -6,7 +6,12 @@
  * behavior.
  */
 import {
-	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+	normalizeInstalledTargetPackage,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
 import { z } from "zod";
@@ -338,7 +343,10 @@ async function main(): Promise<void> {
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@pandacss/dev"),
-					targetPackage: normalizeInstalledTargetPackage(`file:${yumcssPackageRoot}`, repositoryRoot),
+					targetPackage: normalizeInstalledTargetPackage(
+						`file:${yumcssPackageRoot}`,
+						repositoryRoot,
+					),
 					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {

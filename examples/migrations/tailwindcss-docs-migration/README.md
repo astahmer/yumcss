@@ -27,11 +27,11 @@ Materialize a complete Next.js app for browser/build validation:
 
 ```sh
 nub scripts/run-migration-proof.ts run tailwind-docs tw \
-	--output-root /tmp/pandwind-tailwind-docs-tw
+	--output-root /tmp/yumcss-tailwind-docs-tw
 ```
 
 The output directory is intentionally disposable. Install its upstream
-dependencies there, add the local Pandwind package, run `next build`, and
+dependencies there, add the local YumCSS package, run `next build`, and
 compare it with a baseline materialized from the same pinned commit. The
 acceptance contract is: the app builds, all generated routes are reachable,
 browser errors stay empty, route geometry stays equal, and unsupported source
@@ -60,6 +60,6 @@ bytes while emitting declarations through the SSR insertion hook. The
 incremental style blocks.
 
 The upstream repository itself does not need to be JJ-versioned. Git already
-pins the external source; Pandwind JJ revisions pin the migration runner,
+pins the external source; YumCSS JJ revisions pin the migration runner,
 generated metadata contract, and lane proof reports. The same policy applies
 to the StyleX reference repository.

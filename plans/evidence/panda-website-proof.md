@@ -16,7 +16,7 @@ pnpm run pivot:proof:installed:panda:website
 
 Add `-- --keep` when a failed proof needs its disposable source and target
 directories retained for inspection. The runner links the checked-out, built
-Pandwind package into the isolated target because Pandwind is not published;
+YumCSS package into the isolated target because YumCSS is not published;
 the smaller `panda-installed-proof.json` fixture separately proves a local
 file dependency through package installation.
 

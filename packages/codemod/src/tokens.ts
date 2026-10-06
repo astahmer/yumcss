@@ -133,10 +133,7 @@ function parseVariants(token: string, meta: YumCSSMeta): { variants: string[]; r
 }
 
 /** Longest-prefix match of the utility against the conflict map keys. */
-function splitPrefix(
-	utility: string,
-	meta: YumCSSMeta,
-): { prefix: string; value: string } | null {
+function splitPrefix(utility: string, meta: YumCSSMeta): { prefix: string; value: string } | null {
 	if (meta.conflicts.has(utility)) return { prefix: utility, value: "" };
 	let best: { prefix: string; value: string } | null = null;
 	for (const prefix of meta.conflicts.keys()) {

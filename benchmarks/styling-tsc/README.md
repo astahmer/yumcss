@@ -1,7 +1,7 @@
 # Styling TypeScript benchmark
 
 This is a version-pinned comparison of the typecheck cost of realistic styling
-code. It measures Pandwind against a broad set of type-dependent CSS-in-JS and
+code. It measures YumCSS against a broad set of type-dependent CSS-in-JS and
 static-CSS authoring APIs using each library's native API.
 
 The compact cross-library ranking and generated-facade result are kept in
@@ -26,7 +26,7 @@ complete library list. The benchmark package and its runner can be typechecked
 independently:
 
 ```sh
-pnpm --filter pandwind-styling-tsc-benchmark run typecheck
+pnpm --filter yumcss-styling-tsc-benchmark run typecheck
 ```
 
 ## Workloads
@@ -39,7 +39,7 @@ workload sizes for every library:
 - <code>stress</code>: 180 repeated component-style uses and a 128-entry token
   catalog.
 
-Pandwind's inferred and generated fixtures exercise <code>css()</code>, <code>css.class()</code>,
+YumCSS's inferred and generated fixtures exercise <code>css()</code>, <code>css.class()</code>,
 <code>css.props()</code>, <code>css.vars()</code>, <code>css.group()</code>,
 <code>css.input()</code>, <code>createCx()</code>, tokens, semantic tokens,
 color palettes, conditions, and strict property typing. The comparison lanes
@@ -81,7 +81,7 @@ generator before every run. All other sources are recreated by
 the committed JSON/Markdown files under <code>snapshots/</code> are the
 reviewable evidence.
 
-The Pandwind natural and stress rows are regression gates. They allow 10%
+The YumCSS natural and stress rows are regression gates. They allow 10%
 growth in instantiations and memory and 50% growth in check and total time;
 the wider time bound accounts for sub-10ms process noise.
 TypeScript, Node, platform, or architecture changes require reviewing and
@@ -90,9 +90,9 @@ machine environment differs. Competitor rows are descriptive rather than CI
 gates because their generated declaration graphs and dependency sets are
 owned by their pinned releases.
 
-The `pandwind-generated` row runs the same natural/stress workload after
-`pandwind-codemod css generate` materializes a concrete facade from the same
-preset. It is regression-checked alongside inferred Pandwind; the other
+The `yumcss-generated` row runs the same natural/stress workload after
+`yumcss-codemod css generate` materializes a concrete facade from the same
+preset. It is regression-checked alongside inferred YumCSS; the other
 libraries remain descriptive comparison rows.
 
 These numbers compare typecheck workloads, not universal library quality or
@@ -103,9 +103,9 @@ measurement.
 
 ## Generated CSS type facade benchmark
 
-The generated-types benchmark compares the normal preset-inferred Pandwind
+The generated-types benchmark compares the normal preset-inferred YumCSS
 surface with the opt-in concrete facade emitted by
-`pandwind-codemod css generate`. Both lanes exercise the same `css()`,
+`yumcss-codemod css generate`. Both lanes exercise the same `css()`,
 `css.class()`, `css.vars()`, `css.props()`, `css.raw()`, `css.group()`,
 `css.input()`, `cx()`, and `cx.vars()` workload. The generated lane replaces
 repeated preset/type-level evaluation with concrete property and token unions
@@ -121,7 +121,7 @@ It measures these paired catalog/app sizes and stores the evidence in
 - `huge`: 512 component styles and 1024 generated catalog entries.
 
 ```sh
-pnpm --filter pandwind run build
+pnpm --filter yumcss run build
 pnpm run bench:tsc:generated -- --update
 pnpm run bench:tsc:generated
 ```

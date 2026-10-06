@@ -98,7 +98,10 @@ export function writeJson(path: string, value: unknown): void {
 	writeFileSync(path, `${JSON.stringify(value, null, "\t")}\n`);
 }
 
-export const normalizeInstalledTargetPackage = (targetPackage: string, repositoryRoot: string): string => {
+export const normalizeInstalledTargetPackage = (
+	targetPackage: string,
+	repositoryRoot: string,
+): string => {
 	if (targetPackage !== `file:${resolve(repositoryRoot, "packages/yumcss")}`) return targetPackage;
 	return "file:packages/yumcss";
 };

@@ -6,7 +6,7 @@ sidebar:
 ---
 
 Status as of 2026-08-25 (plan
-[021](https://github.com/astahmer/pandwind/blob/main/plans/021-multi-target-backends.md),
+[021](https://github.com/astahmer/yumcss/blob/main/plans/021-multi-target-backends.md),
 steps 1–4 and 6 landed; canvas deferred). This is the guide to the
 `StyleBackend` layer and the non-web targets.
 
@@ -14,7 +14,7 @@ steps 1–4 and 6 landed; canvas deferred). This is the guide to the
 
 | Surface                           | Product role                                                                                    |
 | --------------------------------- | ----------------------------------------------------------------------------------------------- |
-| CSS backend and Vite extraction   | Primary path for new Pandwind code.                                                             |
+| CSS backend and Vite extraction   | Primary path for new YumCSS code.                                                               |
 | React Strict DOM backend          | Supporting integration for projects already using that host.                                    |
 | React Native and OpenTUI backends | Experimental targets; these examples describe the renderer contract, not broad app-level proof. |
 | Canvas backend                    | Deferred.                                                                                       |
@@ -25,7 +25,7 @@ does not establish support for every platform.
 
 ## Why
 
-pandwind's differentiator is the design layer: a typed, token-constrained
+yumcss's differentiator is the design layer: a typed, token-constrained
 vocabulary (~30 Figma-style props, `$frame`/`$layout`/`$text`) resolved
 against DTCG tokens. Until now everything downstream of it assumed the
 terminal artifact was **CSS class names plus a stylesheet** — which locked the
@@ -67,13 +67,13 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
 
 ## Targets
 
-| Backend            | Export                      | Terminal artifact                                  | Unit policy                                                             |
-| ------------------ | --------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
-| `css` (default)    | `pandwind/css`              | class strings + generated stylesheet               | CSS units verbatim                                                      |
-| `react-native`     | `pandwind/react-native`     | registered style objects (`style` prop)            | automatic: px → unitless dp numbers, rem × 16                           |
-| `react-strict-dom` | `pandwind/react-strict-dom` | StyleX-compatible web maps or native style objects | web atomic classes; native RN unit/shorthand policy                     |
-| `opentui`          | `pandwind/opentui`          | plain style objects (`style` prop)                 | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
-| `canvas`           | —                           | draw-call style objects                            | deferred until a concrete consumer exists                               |
+| Backend            | Export                    | Terminal artifact                                  | Unit policy                                                             |
+| ------------------ | ------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| `css` (default)    | `yumcss/css`              | class strings + generated stylesheet               | CSS units verbatim                                                      |
+| `react-native`     | `yumcss/react-native`     | registered style objects (`style` prop)            | automatic: px → unitless dp numbers, rem × 16                           |
+| `react-strict-dom` | `yumcss/react-strict-dom` | StyleX-compatible web maps or native style objects | web atomic classes; native RN unit/shorthand policy                     |
+| `opentui`          | `yumcss/opentui`          | plain style objects (`style` prop)                 | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
+| `canvas`           | —                         | draw-call style objects                            | deferred until a concrete consumer exists                               |
 
 Selection is per-module via subpath imports — a module graph should not mix
 targets, two css instances cannot fight over one registry, and existing web
@@ -82,8 +82,8 @@ apps change nothing (zero-churn: the subpaths are purely additive).
 ### React Native
 
 ```ts
-import { createDesignCss, createCx } from "pandwind/react-native";
-import { examplePreset } from "./pandwind.preset";
+import { createDesignCss, createCx } from "yumcss/react-native";
+import { examplePreset } from "./yumcss.preset";
 
 // Lengths become unitless dp numbers ("20px" -> 20, "0.5rem" -> 8).
 // Shorthand lists split per side / corner like CSS.
@@ -108,8 +108,8 @@ last-wins per property and returns one registered merged object.
 ### OpenTUI
 
 ```ts
-import { createDesignCss, createCx } from "pandwind/opentui";
-import { examplePreset } from "./pandwind.preset";
+import { createDesignCss, createCx } from "yumcss/opentui";
+import { examplePreset } from "./yumcss.preset";
 
 // Lengths quantize to terminal cells: round(px / cellSize), cellSize 4 by
 // default ("20px" -> 5 cells); override with { cellSize: 8 }. Hex colors
@@ -131,12 +131,12 @@ styles.
 
 ### React Strict DOM
 
-React Strict DOM uses a platform-dependent `style` artifact. Pandwind keeps the
+React Strict DOM uses a platform-dependent `style` artifact. YumCSS keeps the
 same target identity while selecting the artifact explicitly:
 
 ```tsx
 import { html } from "react-strict-dom";
-import { createCss, ReactStrictDomPlatform } from "pandwind/react-strict-dom";
+import { createCss, ReactStrictDomPlatform } from "yumcss/react-strict-dom";
 
 const webCss = createCss();
 const webStyles = webCss.create({ card: { color: "red", padding: "1rem" } });
@@ -149,11 +149,11 @@ export const Card = () => <html.div style={webStyles.card} />;
 export const NativeCard = () => <html.div style={nativeStyles.card} />;
 ```
 
-The web map carries RSD's `$$css` marker and atomic class values. Pandwind's
+The web map carries RSD's `$$css` marker and atomic class values. YumCSS's
 CSS extraction or runtime-sheet path must provide the matching stylesheet.
 The native map uses the React Native backend's unit and shorthand policy.
 `react-strict-dom` remains the owner of `html.*`, host props, events, and its
-platform compiler; Pandwind does not bundle those dependencies.
+platform compiler; YumCSS does not bundle those dependencies.
 
 For migration coverage and the conservative residual policy, see the
 [React Strict DOM integration guide](/interop/react-strict-dom/).

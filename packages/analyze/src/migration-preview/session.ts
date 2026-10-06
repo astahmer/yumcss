@@ -76,9 +76,7 @@ class DefaultMigrationPreviewSession implements MigrationPreviewSession {
 
 	private async refresh(): Promise<MigrationPreviewSnapshot> {
 		if (this.workspace === null) {
-			throw new Error(
-				"YumCSS Migration Preview session must be opened before it can be evaluated",
-			);
+			throw new Error("YumCSS Migration Preview session must be opened before it can be evaluated");
 		}
 		const request: MigrationPreviewEvaluationRequest = {
 			workspace: this.workspace,

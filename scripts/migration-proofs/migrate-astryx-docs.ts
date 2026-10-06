@@ -439,10 +439,7 @@ function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 				await writeFile(layoutFile, layout);
 			})(),
 			(async () => {
-				await writeFile(
-					join(outputRoot, "src/yumcss-css.d.ts"),
-					'declare module "yumcss:css";\n',
-				);
+				await writeFile(join(outputRoot, "src/yumcss-css.d.ts"), 'declare module "yumcss:css";\n');
 			})(),
 			(async () => {
 				const tsconfigFile = join(outputRoot, "tsconfig.json");

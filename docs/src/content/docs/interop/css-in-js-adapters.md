@@ -1,11 +1,11 @@
 ---
 title: CSS-in-JS adapter migrations
-description: Safely move CSS-in-JS styles through pandwind's semantic adapter boundary.
+description: Safely move CSS-in-JS styles through yumcss's semantic adapter boundary.
 sidebar:
   order: 2
 ---
 
-pandwind's codemod treats the semantic style program as the pivot boundary. A
+yumcss's codemod treats the semantic style program as the pivot boundary. A
 source adapter detects a library, parses its declarations and rule structure,
 and emits a target adapter without making the target understand the source
 library.
@@ -13,10 +13,10 @@ library.
 ## Migrate a project
 
 Run a dry migration first. The external adapter path does not require generated
-pandwind metadata:
+yumcss metadata:
 
 ```sh
-pandwind-codemod migrate \
+yumcss-codemod migrate \
   --from=emotion \
   --to=css.class \
   --dry-run --diff --report \
@@ -26,18 +26,18 @@ pandwind-codemod migrate \
 The built-in adapter set covers `emotion`, `styled-components`, `chakra-ui`, `mui`, `mantine`,
 `vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
 `aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `react-strict-dom`, `solid-styled`,
-`vue-styled`, `bamboo`, `next-yak`, `tokenami`, `unocss`, and `pandwind`.
+`vue-styled`, `bamboo`, `next-yak`, `tokenami`, `unocss`, and `yumcss`.
 Static source adapters additionally cover `tamagui`, `css-modules`, `sass`,
 `less`, and authored `css`. Their stylesheet-aware file migrations can emit
-Pandwind class maps or preserve/emit authored CSS according to the target
+YumCSS class maps or preserve/emit authored CSS according to the target
 contract; they are not treated as runtime CSS-in-JS libraries.
 Bamboo's object dialect
 and Next-yak's extracted `css`/`styled` template and css-prop lanes share the
-same semantic adapter contract. `--to=css.class` is the pandwind target
+same semantic adapter contract. `--to=css.class` is the yumcss target
 spelling; external targets can be selected directly too:
 
 ```sh
-pandwind-codemod migrate --from=styled-components --to=emotion --dry-run "src/**/*.tsx"
+yumcss-codemod migrate --from=styled-components --to=emotion --dry-run "src/**/*.tsx"
 ```
 
 See the [official API matrix](/interop/official-api-matrix/) for the
@@ -53,7 +53,7 @@ metadata.
 Safe mode is the default. It rewrites a call only when the target capability
 contract and parser prove that the complete call is representable. Dynamic
 interpolations, unsupported at-rules, computed keys, and parse failures stay in
-place with a `pandwind:migrate-skip` marker and a machine-readable residual in
+place with a `yumcss:migrate-skip` marker and a machine-readable residual in
 the adapter result.
 
 Adapters also declare the package modules they own. After a successful rewrite,
@@ -118,7 +118,7 @@ an exported standalone component. Dynamic declarations are not treated as
 host rewrites merely because they are functions: the runner first checks for a
 real host use, then asks the target policy whether a standalone class or
 component representation is valid. This is why a valid Emotion/styled-
-components theme callback can remain target-native while a static Pandwind
+components theme callback can remain target-native while a static YumCSS
 host use becomes `css.class(...)` plus an intrinsic element rewrite.
 
 Framework provenance alone is not a framework requirement. A hostless carrier
@@ -132,7 +132,7 @@ hostless dynamic values. Static-only targets still produce a residual for the
 same input unless their own adapter can lower it to a custom property or other
 validated carrier. Tailwind's class target now owns that latter projection for
 React/Preact host bindings: it emits an arbitrary utility using
-`var(--pandwind-dynamic-...)` and adds the matching inline custom-property
+`var(--yumcss-dynamic-...)` and adds the matching inline custom-property
 binding. Existing style props and non-JSX hosts remain residuals until their
 host adapter can merge the binding safely. UnoCSS uses the same custom-property
 carrier and host port, while preserving the same fail-closed behavior for
@@ -142,7 +142,7 @@ The same carrier is available to class-oriented CSS-in-JS targets that opt in
 through their adapter contract: Bamboo, Vanilla Extract, JSS, Aphrodite,
 Style9, Compiled, Treat, and Linaria. In safe mode, a scalar dynamic value
 whose target declares only partial native dynamic support is lowered to a
-static `var(--pandwind-dynamic-...)` declaration and an inline React/Preact
+static `var(--yumcss-dynamic-...)` declaration and an inline React/Preact
 binding. This keeps the generated stylesheet static; only the value lookup is
 runtime code. Targets that cannot prove this carrier, or hosts whose existing
 style binding cannot be merged, remain residuals.
@@ -185,13 +185,13 @@ adapter that rewrites bindings, attributes, and lifecycle semantics, so safe
 mode reports `framework-semantics` until that adapter exists.
 
 MUI also demonstrates a host-prop projection in the other direction. A
-Pandwind class binding used as `className={card}` becomes an object binding
+YumCSS class binding used as `className={card}` becomes an object binding
 plus `sx={card}`. An inline expression becomes an object-valued `sx` prop.
 There is deliberately no standalone MUI `sx()` function. Static unused
 standalone bindings therefore select an explicit portable-artifact fallback:
-the MUI adapter keeps Pandwind's `css.class(...)` carrier and declares the
-extra Pandwind dependency, preserving the style without pretending that MUI
-has a standalone `sx()` API. Dynamic unused bindings use the same Pandwind
+the MUI adapter keeps YumCSS's `css.class(...)` carrier and declares the
+extra YumCSS dependency, preserving the style without pretending that MUI
+has a standalone `sx()` API. Dynamic unused bindings use the same YumCSS
 carrier as an explicit runtime fallback, while dynamic unknown hosts still
 produce a typed `host-framework` residual. Intrinsic hosts
 such as `<div>` become `<Box component="div" sx={...}>`, preserving the
@@ -207,7 +207,7 @@ intrinsic use is rewritten from `<Card />` to
 StyleX's `props` helper owns the returned host props, and the adapter keeps a
 residual for unsupported framework or attribute shapes.
 
-JSS has a target-native static class carrier as well. A static Pandwind style
+JSS has a target-native static class carrier as well. A static YumCSS style
 used by a React host can become
 `jss.createStyleSheet({ style: {...} }).attach().classes.style`, preserving the
 existing `className` contract. The adapter does not substitute a
@@ -221,7 +221,7 @@ adapter-owned, so the central route runner remains independent of Style9's
 callable wrapper.
 
 React Native is a style-prop target rather than a DOM class target. A static
-Pandwind binding used by a file importing `react-native` becomes
+YumCSS binding used by a file importing `react-native` becomes
 `StyleSheet.create({ style: {...} }).style`, and the host use is rewritten from
 `className={card}` to `style={card}`. The projection is deliberately rejected
 for ordinary React or template hosts until a compatible host adapter is
@@ -230,7 +230,7 @@ React Native code by itself.
 
 Standalone subjects are a separate case from class bindings. For static
 `const Card = styled.div\`...\``declarations without a local`<Card />` use,
-the Pandwind target emits a static class carrier inside a host-native component
+the YumCSS target emits a static class carrier inside a host-native component
 wrapper. React-family/Solid JSX and Vue SFC output have different wrapper
 contracts, so the host adapter owns the syntax and import placement. Runtime
 CSS is used only when the declaration contains a genuinely dynamic
@@ -272,7 +272,7 @@ are safe when their values are literal; composition remains explicit until a
 target provides an equivalent mixin or recipe lowering.
 
 ```sh
-pandwind-codemod migrate --from=tokenami --to=css.class --safe --diff \
+yumcss-codemod migrate --from=tokenami --to=css.class --safe --diff \
   "src/**/*.{ts,tsx}"
 ```
 
@@ -287,7 +287,7 @@ tokens, and variants are authoritative. Unknown utilities remain residuals
 instead of being guessed.
 
 ```ts
-import { createUnoCssResolverFromCss } from "pandwind-codemod/swap";
+import { createUnoCssResolverFromCss } from "@yumcss/codemod/swap";
 
 const resolver = createUnoCssResolverFromCss(generatedUnoCss);
 // Register createUnoCssAdapter({ resolver }) in the explicit plugin registry.

@@ -15,7 +15,7 @@ Every web row uses the same two-copy runner shape:
    a disposable source checkout.
 2. Install the reference project's declared dependencies and run its official
    typecheck/build command.
-3. Copy the host into a target checkout, run the normal `pandwind-codemod
+3. Copy the host into a target checkout, run the normal `yumcss-codemod
 migrate` route, and install the target dependency from the local built
    package.
 4. Run target typecheck/build, start source and target servers, and compare the
@@ -44,7 +44,7 @@ upstream `HelloWorld.css.ts` example at
 `881c256a867f55386f96a7fe95068300bac720e6`, preserves typed custom
 properties, fallback variables, and keyframes, and passes typecheck, build,
 SSR, hydration, and base/hover browser parity. Its tiny CSS byte comparison
-is intentionally diagnostic: fused source CSS and Pandwind atomic runtime CSS
+is intentionally diagnostic: fused source CSS and YumCSS atomic runtime CSS
 are different representations, so the route does not claim non-growth from
 that fixture.
 
@@ -94,7 +94,7 @@ UnoCSS PostCSS generator during migration, then removes the UnoCSS config,
 plugin bridge, and direct dependencies from the target. The target passes
 typecheck, Next Webpack build, HTTP route checks, RSC streaming, browser text
 parity, and canonical CSS equality; CSS falls from 5,462 to 2,647 bytes. The
-proof uses Next 16's Webpack mode because the generated Pandwind integration is
+proof uses Next 16's Webpack mode because the generated YumCSS integration is
 a Webpack plugin in this host; the existing Vite proof remains the browser
 pixel-parity check for UnoCSS hover and responsive states.
 
@@ -141,7 +141,7 @@ residual territory.
 Linaria, Treat, Solid Styled, and Vue Styled now have installed-project proofs
 as well. `scripts/promote-framework-css-in-js.ts` covers the pinned Astro/Solid,
 Solid test-host, and Vue SFC examples; `scripts/promote-treat.ts` uses Treat's
-official Webpack compiler for the source copy and Pandwind's Vite integration
+official Webpack compiler for the source copy and YumCSS's Vite integration
 for the target. Their reports are `linaria-installed-proof.json`,
 `solid-styled-installed-proof.json`, `vue-styled-installed-proof.json`, and
 `treat-installed-proof.json`. Each passes canonical migration, dependency
@@ -167,7 +167,7 @@ contract below.
 React Native cannot satisfy web CSS-size or DOM-SSR checks. It should not be
 silently counted as passing those dimensions. Add a pinned local fixture under
 `examples/migrations/react-native-installed-proof/` with `react-native-web`,
-the installed source adapter, and the Pandwind React Native backend. Its report
+the installed source adapter, and the YumCSS React Native backend. Its report
 must use:
 
 ```text

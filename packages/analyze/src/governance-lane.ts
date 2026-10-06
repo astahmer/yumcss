@@ -156,8 +156,7 @@ export async function runTokenReleaseLane(args: CliArgs): Promise<string> {
 			"analyze release: --release-current is required when comparing multiple consumer roots",
 		);
 	}
-	const currentPath =
-		args.releaseCurrentPath ?? resolve(consumers[0]!, "src/yumcss.interop.json");
+	const currentPath = args.releaseCurrentPath ?? resolve(consumers[0]!, "src/yumcss.interop.json");
 	const baseline = await tokenDocumentCodec.fromFile(args.releaseFormat, args.releaseBaselinePath);
 	let interop: ReturnType<typeof parseYumCSSInteropArtifact>;
 	try {

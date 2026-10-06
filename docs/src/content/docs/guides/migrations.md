@@ -6,10 +6,10 @@ sidebar:
 ---
 
 You do not need to migrate an entire application in one step. Start with one
-representative component, preview the target code, and keep anything Pandwind
+representative component, preview the target code, and keep anything YumCSS
 cannot prove equivalent in the report for a human to decide.
 
-Pandwind is a pivot layer, not a promise that every source semantic can be
+YumCSS is a pivot layer, not a promise that every source semantic can be
 rewritten blindly. A migration has two targets:
 
 1. preserve observable styling with the smallest possible manual change; and
@@ -30,7 +30,7 @@ a representative fixture before changing the whole repository.
 
 ### 2. Prepare the target contract
 
-Create a Pandwind preset. `css()` is the default target for new Pandwind code.
+Create a YumCSS preset. `css()` is the default target for new YumCSS code.
 Use another target only when the project calls for that workflow:
 
 - `tw()` and Tailwind classes when Tailwind remains the stylesheet engine; or
@@ -49,9 +49,9 @@ Use the CLI below when you need a reviewable diff and residual report:
 For an adapter-backed source, use:
 
 ```sh
-pnpm exec pandwind-codemod migrate \
+pnpm exec yumcss-codemod migrate \
   --from=<source> --to=css.class \
-  --out=pandwind --dry-run --diff --report \
+  --out=yumcss --dry-run --diff --report \
   'src/**/*.{js,jsx,ts,tsx,vue,svelte,astro}'
 ```
 
@@ -77,8 +77,8 @@ Panda is the closest semantic source because both systems have typed style
 objects, conditions, tokens, and recipe concepts.
 
 ```sh
-pnpm exec pandwind-codemod migrate \
-  --from=panda --to=css.class --out=pandwind --diff --report \
+pnpm exec yumcss-codemod migrate \
+  --from=panda --to=css.class --out=yumcss --diff --report \
   'src/**/*.{ts,tsx}'
 ```
 
@@ -98,7 +98,7 @@ are emitted as target modules, while unsupported behavior remains a residual.
 ## StyleX
 
 ```sh
-pnpm exec pandwind-codemod migrate \
+pnpm exec yumcss-codemod migrate \
   --from=stylex --to=css.class --safe --diff --report \
   'src/**/*.{js,jsx,ts,tsx}'
 ```
@@ -117,12 +117,12 @@ framework or prop semantics.
 
 ## Tailwind
 
-Tailwind is both a Pandwind target and a source lane. For class-heavy code,
+Tailwind is both a YumCSS target and a source lane. For class-heavy code,
 use the scanner and typed `tw()` helper rather than rewriting every string by
 hand. For object-style wrappers, use the same migration command:
 
 ```sh
-pnpm exec pandwind-codemod migrate --from=tw --to=css.class --diff --report \
+pnpm exec yumcss-codemod migrate --from=tw --to=css.class --diff --report \
   'src/**/*.{ts,tsx,vue,svelte,astro}'
 ```
 
@@ -141,7 +141,7 @@ contract.
 ## Emotion
 
 ```sh
-pnpm exec pandwind-codemod migrate --from=emotion --to=css.class --diff --report \
+pnpm exec yumcss-codemod migrate --from=emotion --to=css.class --diff --report \
   'src/**/*.{ts,tsx,js,jsx}'
 ```
 
@@ -186,15 +186,15 @@ boundary. See [adapter contracts](/reference/adapter-contract/) and
 ## CSS Modules, Sass, Less, and authored CSS
 
 ```sh
-pnpm exec pandwind-codemod migrate --from=css-modules --to=css.class \
+pnpm exec yumcss-codemod migrate --from=css-modules --to=css.class \
   --diff --report 'src/**/*.module.css'
-pnpm exec pandwind-codemod migrate --from=sass --to=authored-css \
+pnpm exec yumcss-codemod migrate --from=sass --to=authored-css \
   --diff --report 'src/**/*.{scss,sass}'
-pnpm exec pandwind-codemod migrate --from=less --to=authored-css \
+pnpm exec yumcss-codemod migrate --from=less --to=authored-css \
   --diff --report 'src/**/*.less'
 ```
 
-CSS Modules local classes can become a typed Pandwind class map; known
+CSS Modules local classes can become a typed YumCSS class map; known
 workspace consumers are proposed as atomic import changes. `composes`, global
 selectors, and externally visible hashed class names stay preserved or
 residual until their consumers are proven. Sass and Less use their official

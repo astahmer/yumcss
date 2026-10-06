@@ -8,7 +8,7 @@ conservative representation: it preserves the original property exactly and
 works for custom properties and unusual values. However, Tailwind also has
 property-aware arbitrary-value utilities such as `text-[red]` and `p-[1rem]`.
 
-Pandwind already has the required architectural boundaries:
+YumCSS already has the required architectural boundaries:
 
 - `StyleProgram` carries rich semantic declarations and token provenance;
 - flat `SwapIR` remains the fast path for simple declaration swaps;
@@ -50,7 +50,7 @@ adapter. For each statically known declaration it should:
 6. retain structured provenance explaining the selected representation.
 
 The policy is internal to the Tailwind target adapter. It must not add a new
-author-facing Pandwind API or leak Tailwind-specific branches into the route
+author-facing YumCSS API or leak Tailwind-specific branches into the route
 runner, semantic core, or generic serializer.
 
 Candidate families should initially cover only unambiguous, high-value
@@ -165,7 +165,7 @@ literal.
 This rule applies to every registered codemod target that exposes a verified
 token catalog, not only Tailwind. The source adapter carries a resolved scalar
 and source token provenance; the target adapter owns the property-to-token
-group mapping and its native spelling. Panda, Chakra, Pandwind, Tokenami,
+group mapping and its native spelling. Panda, Chakra, YumCSS, Tokenami,
 Stitches, MUI, Mantine, Tailwind, and UnoCSS therefore reuse target token
 names when an exact unique match exists. Mantine emits its CSS-variable token
 form for style values because a bare theme path is not a valid CSS value. A
@@ -367,7 +367,7 @@ encoded only as an unstructured residual string.
       candidate is unverified.
 - [x] Re-running migration is deterministic and does not oscillate between
       candidate and fallback forms.
-- [x] No new author-facing Pandwind API or generic Tailwind branch is added.
+- [x] No new author-facing YumCSS API or generic Tailwind branch is added.
 
 ## Decisions log
 

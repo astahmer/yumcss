@@ -198,8 +198,7 @@ describe("route proof contract", () => {
 	test("includes generated stylesheet files in the reverse project", () => {
 		const route = createAdapterRouteSpec(CodemodAdapterId.YumCSS, CodemodAdapterId.AuthoredCss);
 		const input = {
-			source:
-				'import { css } from "yumcss/css";\nexport const card = css.class({ color: "red" });',
+			source: 'import { css } from "yumcss/css";\nexport const card = css.class({ color: "red" });',
 			file: "src/card.ts",
 		};
 		const forward = route.run(input);

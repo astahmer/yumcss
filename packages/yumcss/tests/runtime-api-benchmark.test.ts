@@ -56,10 +56,7 @@ import {
 	createCx as createReactStrictDomCx,
 } from "../src/react-strict-dom.ts";
 import { stackClasses, stackStyle, createStackClassName } from "../src/stack/index.ts";
-import {
-	createYumCSSLibArtifact,
-	createYumCSSLibCompatibility,
-} from "../src/vite/lib-artifact.ts";
+import { createYumCSSLibArtifact, createYumCSSLibCompatibility } from "../src/vite/lib-artifact.ts";
 import { createSourceScannerRegistry, SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
 import { createSourceWorkspace } from "../src/source-workspace.ts";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";

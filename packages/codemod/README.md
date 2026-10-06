@@ -1,6 +1,6 @@
-# pandwind-codemod
+# yumcss-codemod
 
-Move to Pandwind in a reviewable way, or generate the typed files your
+Move to YumCSS in a reviewable way, or generate the typed files your
 Tailwind project needs.
 
 ## The shortest path
@@ -8,9 +8,9 @@ Tailwind project needs.
 Preview a migration before writing anything:
 
 ```sh
-pnpm exec pandwind-codemod migrate \
+pnpm exec yumcss-codemod migrate \
 	--from styled-components \
-	--to pandwind-css \
+	--to yumcss-css \
 	--dry-run --diff --report \
 	"src/**/*.tsx"
 ```
@@ -23,7 +23,7 @@ adapters.
 If you already use Tailwind, generate the typed helper instead:
 
 ```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src
 ```
 
 That creates project-owned `tw.ts`, `tw.runtime.ts`, and `tw.build.ts` artifacts.
@@ -44,20 +44,20 @@ explains how to choose a route and handle dynamic behavior.
 The sections below are the detailed reference for adapter authors, CI
 budgets, virtual bundler migrations, and token-format conversion.
 
-The migration pivot is also available as the `pandwind-codemod/swap` entry
+The migration pivot is also available as the `@yumcss/codemod/swap` entry
 point. Third-party packages can export one `StyleAdapter`, a
 `StyleAdapterPlugin`, or `{ adapters }` and register/discover it through
 `createStyleAdapterRegistry`. Discovery is explicit and injectable, so CLI,
 bundler, and test environments can choose their own package-loading policy.
 
 ```ts
-import { createStyleAdapterRegistry } from "pandwind-codemod/swap";
+import { createStyleAdapterRegistry } from "@yumcss/codemod/swap";
 
 const registry = createStyleAdapterRegistry();
-await registry.discover(["my-pandwind-adapter"]);
+await registry.discover(["my-yumcss-adapter"]);
 ```
 
-Adapters implement the versioned `pandwind.style-adapter/1` contract and are
+Adapters implement the versioned `yumcss.style-adapter/1` contract and are
 routed through the semantic style-program IR. Target adapters may own a named
 style-use projection when lowering a source style map also requires rewriting
 its JSX host. Unsupported capabilities produce residual reports instead of
@@ -71,19 +71,19 @@ intentionally external to the codemod bundle.
 ## Tailwind project tooling
 
 The `tw` subcommand owns the project-aware Tailwind loader and generated
-Pandwind artifacts. It keeps the Tailwind compiler and codegen dependencies out
-of the runtime `pandwind` package:
+YumCSS artifacts. It keeps the Tailwind compiler and codegen dependencies out
+of the runtime `yumcss` package:
 
 ```sh
-pandwind-codemod tw generate [css-entry] [out-dir] [--tokens <module>] [--bridge]
-pandwind-codemod tw scan [tw-entry] [src-dir] [out-file]
-pandwind-codemod tw prune [theme-css] [tw-entry] [src-dir]
-pandwind-codemod tw verify [project-root] [--manifest <path>] [--budget <path>]
+yumcss-codemod tw generate [css-entry] [out-dir] [--tokens <module>] [--bridge]
+yumcss-codemod tw scan [tw-entry] [src-dir] [out-file]
+yumcss-codemod tw prune [theme-css] [tw-entry] [src-dir]
+yumcss-codemod tw verify [project-root] [--manifest <path>] [--budget <path>]
 ```
 
 `generate` emits the typed `tw.ts` entry, declarations, split runtime/build
 metadata, the optional preset theme bridge, and the optional `css()` bridge.
-`tw.ts` is a project-owned runtime binding: Pandwind does not import it
+`tw.ts` is a project-owned runtime binding: YumCSS does not import it
 automatically, and static calls are folded away by the Vite plugin. The entry
 contains only variant-join metadata. `tw.runtime.ts` is an optional conflict
 catalog for the explicit exact-merge path; ordinary dynamic `tw()` and plain
@@ -92,45 +92,45 @@ catalog for the explicit exact-merge path; ordinary dynamic `tw()` and plain
 tooling; runtime bindings never import it.
 
 `bridge.ts` is a separate, optional artifact. It is generated for build-time
-and migration tooling, but Pandwind does not import it automatically. Its
+and migration tooling, but YumCSS does not import it automatically. Its
 `twAdapter` becomes a runtime dependency only when the application explicitly
 chooses Tailwind utility classes as its `ClassNameStrategy` (for example, in
-`createDesignCss(..., { className: twAdapter })`). Ordinary Pandwind `css()`
+`createDesignCss(..., { className: twAdapter })`). Ordinary YumCSS `css()`
 and `tw()` usage does not need the bridge. The playground imports it only for
 its explicit Tailwind adapter selector.
 
 `scan` and `prune` are explicit follow-up passes for dynamic candidates and
 unused generated theme variables. `verify` is the consumer-side freshness
 gate: it checks every input and generated artifact hash in
-`pandwind.generated.json`, and an optional budget file can declare
+`yumcss.generated.json`, and an optional budget file can declare
 `maxRawBytes`, `maxGzipBytes`, and expected ownership for each generated path.
 Use `--report` when a CI job should collect the JSON report without failing the
-process. The same lane is available as `pandwind-codemod/tw` for scripts that
+process. The same lane is available as `@yumcss/codemod/tw` for scripts that
 need the typed tooling ports instead of a subprocess.
 
 ## Generated CSS types
 
-For large Pandwind presets, generate a concrete CSS type facade:
+For large YumCSS presets, generate a concrete CSS type facade:
 
 ```sh
-pandwind-codemod css generate [root] [out-file] \
+yumcss-codemod css generate [root] [out-file] \
 	[--preset-import <module>] [--preset-export <name>] [--check]
 ```
 
 By default it reads `./src/preset.ts` (`preset` export) and writes
 `./src/css.generated.ts`. The generated module imports the preset and calls
-`createGeneratedCss` from `pandwind/css/generated`; it has the same runtime and complete
+`createGeneratedCss` from `yumcss/css/generated`; it has the same runtime and complete
 CSS projection surface as `createCss(preset)`, while avoiding repeated
 preset-derived type evaluation at consumer call sites. This is an opt-in
 typecheck optimization, not a separate runtime or static-CSS-only mode.
 Commit the generated source and run `--check` in CI after changing the preset
-or upgrading Pandwind.
+or upgrading YumCSS.
 
 Example budget file:
 
 ```json
 {
-	"schema": "pandwind.generated-budget/1",
+	"schema": "yumcss.generated-budget/1",
 	"artifacts": {
 		"src/tw.ts": {
 			"ownership": "runtime",
@@ -154,12 +154,12 @@ migration runs before the target ecosystem's official plugin, which remains
 responsible for final CSS generation.
 
 ```ts
-import { pandwindMigrateUnplugin } from "pandwind-codemod/swap/unplugin";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { yumcssMigrateUnplugin } from "@yumcss/codemod/swap/unplugin";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
 
 export default {
 	plugins: [
-		pandwindMigrateUnplugin.vite({
+		yumcssMigrateUnplugin.vite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 		}),
@@ -167,7 +167,7 @@ export default {
 };
 ```
 
-Use `pandwindMigrateUnplugin.rollup`, `.webpack`, `.esbuild`, or another
+Use `yumcssMigrateUnplugin.rollup`, `.webpack`, `.esbuild`, or another
 named platform export in the corresponding host configuration. This lane is
 reversible and virtual; use the CLI when the migration should become a
 committed source change.
@@ -186,35 +186,35 @@ The command writes changes by default. Use --dry-run for a read-only plan and
 add --diff or --report when reviewing the result:
 
 ```sh
-# Tailwind classes -> a project-owned typed Pandwind tw() module
-pnpm exec pandwind-codemod migrate -f tailwindcss -t pandwind-tw src
+# Tailwind classes -> a project-owned typed YumCSS tw() module
+pnpm exec yumcss-codemod migrate -f tailwindcss -t yumcss-tw src
 
-# styled-components -> Pandwind css.class(), with a preview
-pnpm exec pandwind-codemod migrate -f styled-components -t pandwind-css \
+# styled-components -> YumCSS css.class(), with a preview
+pnpm exec yumcss-codemod migrate -f styled-components -t yumcss-css \
 	--dry-run --diff --report "src/**/*.tsx"
 
-# Pandwind -> another registered adapter
-pnpm exec pandwind-codemod migrate --from pandwind --to unocss src
+# YumCSS -> another registered adapter
+pnpm exec yumcss-codemod migrate --from yumcss --to unocss src
 ```
 
 -f is short for --from, -t is short for --to, and --root selects a project
 root when the command is run outside it. -h and --help work at the root, after
 migrate or tokens, and after a command's arguments.
 
-Static `css.class({...})` calls stay beside their JSX use by default. Pandwind's
+Static `css.class({...})` calls stay beside their JSX use by default. YumCSS's
 Vite/unplugin compiler can fold literal calls to raw class strings at build
 time, so the codemod does not need to move them to module scope for runtime
 performance. Pass `--hoist-static-styles` when the generated source should
 share module-scope static carriers instead.
 
-When the target is Pandwind, the command bootstraps shared project support in
-pandwind/ by default: an app-owned define.preset module, css.ts, runtime.ts, cx.ts,
+When the target is YumCSS, the command bootstraps shared project support in
+yumcss/ by default: an app-owned define.preset module, css.ts, runtime.ts, cx.ts,
 the typed tw.ts, its optional bridge, types.d.ts, the versioned interop
 artifact, and a derived theme file when the source configuration proves one.
 Converted files import those shared modules; they do not create a new
 createUnsafeCss() instance at every call site. The generated preset owns the
 migrated tokens, semantic tokens, conditions, and property associations; it
-does not import or spread Pandwind's default token/property preset. Use --out
+does not import or spread YumCSS's default token/property preset. Use --out
 <dir> to change that folder. The optional bridge is not a default runtime
 import; keep it only when the target project needs the Tailwind-class strategy
 or build-time bridge metadata. A `dss.ts` binding is generated only for the
@@ -240,7 +240,7 @@ offline run. The installer deduplicates packages already declared in the
 project and separates runtime, peer, development, and config dependencies.
 
 All registered adapters can be used as a source or target where their contract
-supports it. The catalog includes Pandwind, Tailwind CSS, Panda, UnoCSS,
+supports it. The catalog includes YumCSS, Tailwind CSS, Panda, UnoCSS,
 Chakra UI, styled-components, Emotion, MUI, Mantine, vanilla-extract,
 Stitches, Linaria, JSS, Fela, Goober, Aphrodite, StyleX, Style9, Treat,
 Compiled, Solid Styled, Vue Styled, Tokenami, Bamboo, Next-Yak, React Native,
@@ -250,27 +250,27 @@ file, or pass a canonical adapter id.
 Every route crosses the semantic style-program contract. A fully representable
 site is rewritten into the target's documented carrier; unsupported, dynamic,
 ambiguous, or conflicting semantics keep the source and receive a typed
-pandwind:migrate-skip residual. --report prints residual details and
+yumcss:migrate-skip residual. --report prints residual details and
 --report-format json exposes them to CI.
 
-### Pandwind API targets
+### YumCSS API targets
 
-| target                  | output                                                |
-| ----------------------- | ----------------------------------------------------- |
-| pandwind-css / pandwind | shared css.class() bindings and a generated preset    |
-| pandwind-tw / tw        | shared generated typed tw() binding and bridge        |
-| pandwind-dss / dss      | Pandwind design-system object calls                   |
-| css.class               | existing Pandwind css binding, with condition nesting |
-| design / dss            | $frame, $layout, $text, and $raw vocabulary           |
+| target              | output                                              |
+| ------------------- | --------------------------------------------------- |
+| yumcss-css / yumcss | shared css.class() bindings and a generated preset  |
+| yumcss-tw / tw      | shared generated typed tw() binding and bridge      |
+| yumcss-dss / dss    | YumCSS design-system object calls                   |
+| css.class           | existing YumCSS css binding, with condition nesting |
+| design / dss        | $frame, $layout, $text, and $raw vocabulary         |
 
 ### External targets
 
 The same command handles routes such as:
 
 ```sh
-pnpm exec pandwind-codemod migrate -f tailwindcss -t panda src
-pnpm exec pandwind-codemod migrate -f unocss -t tailwindcss src
-pnpm exec pandwind-codemod migrate -f styled-components -t chakra-ui-v3 src
+pnpm exec yumcss-codemod migrate -f tailwindcss -t panda src
+pnpm exec yumcss-codemod migrate -f unocss -t tailwindcss src
+pnpm exec yumcss-codemod migrate -f styled-components -t chakra-ui-v3 src
 ```
 
 Target emitters own their documented imports, component carriers, token
@@ -305,16 +305,16 @@ the information it preserves and any loss it would introduce:
 
 ```sh
 # DTCG JSON -> Tailwind @theme CSS
-pnpm exec pandwind-codemod tokens --from dtcg --to theme tokens.json --out theme.css
+pnpm exec yumcss-codemod tokens --from dtcg --to theme tokens.json --out theme.css
 
 # panda.config.ts tokens -> DTCG JSON with a Resolver sidecar
-pnpm exec pandwind-codemod tokens --from panda --to dtcg panda.config.ts --resolver-out tokens.resolver.json --out tokens.json
+pnpm exec yumcss-codemod tokens --from panda --to dtcg panda.config.ts --resolver-out tokens.resolver.json --out tokens.json
 
 # Select an explicit source context when a single static token state is wanted
-pnpm exec pandwind-codemod tokens --from preset --to dtcg preset.ts --context preset=dark --out dark.tokens.json
+pnpm exec yumcss-codemod tokens --from preset --to dtcg preset.ts --context preset=dark --out dark.tokens.json
 
-# a Pandwind define.preset file -> Panda snippet on stdout
-pnpm exec pandwind-codemod tokens --from preset --to panda src/preset.ts
+# a YumCSS define.preset file -> Panda snippet on stdout
+pnpm exec yumcss-codemod tokens --from preset --to panda src/preset.ts
 ```
 
 Supported formats are dtcg, dtcg-resolver, theme, panda, preset, sd, figma,
@@ -361,8 +361,8 @@ features affected by the selected document.
 - writes are enabled by default; --dry-run disables all source and generated-file writes;
   --diff shows unified diffs;
 - --report prints per-file counts and residual details; --report-format json is suitable for CI;
-- --meta selects existing Pandwind metadata when bootstrapping is not desired;
-- --skip-marker changes the opt-out marker, whose default is pandwind:migrate-skip;
+- --meta selects existing YumCSS metadata when bootstrapping is not desired;
+- --skip-marker changes the opt-out marker, whose default is yumcss:migrate-skip;
 - static style calls stay colocated by default; --hoist-static-styles opts into
   module-scope static carriers;
 - --safe requires the target capability contract; --partial permits partial lowering;
@@ -379,26 +379,26 @@ The registry includes the official API families for styled-components, StyleX,
 Bamboo, Next-Yak, Chakra UI, MUI, Mantine, Emotion, vanilla-extract,
 Stitches, Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled,
 Solid Styled, Vue Styled, Tokenami, UnoCSS, Panda, Tailwind CSS, and the
-Pandwind APIs. Each adapter owns detection, official configuration loading,
+YumCSS APIs. Each adapter owns detection, official configuration loading,
 semantic parsing, target emission, dependencies, capabilities, and residuals.
 
 For example, the following routes use the same command and project-aware
 configuration boundary:
 
 ```sh
-pnpm exec pandwind-codemod migrate -f styled-components -t pandwind-css src
-pnpm exec pandwind-codemod migrate -f tailwindcss -t pandwind-tw src
-pnpm exec pandwind-codemod migrate -f panda -t pandwind-css src
-pnpm exec pandwind-codemod migrate -f pandwind -t unocss src
+pnpm exec yumcss-codemod migrate -f styled-components -t yumcss-css src
+pnpm exec yumcss-codemod migrate -f tailwindcss -t yumcss-tw src
+pnpm exec yumcss-codemod migrate -f panda -t yumcss-css src
+pnpm exec yumcss-codemod migrate -f yumcss -t unocss src
 ```
 
 ## Panda inbound migration (`migrate --from=panda`)
 
-Migrates a panda-css codebase to pandwind:
+Migrates a panda-css codebase to yumcss:
 
 ```bash
-pnpm add pandwind
-pnpm exec pandwind-codemod migrate --from=panda --to=pandwind-css '<site>/{src,app,theme}/**/*.{ts,tsx}' --out=pandwind
+pnpm add yumcss
+pnpm exec yumcss-codemod migrate --from=panda --to=yumcss-css '<site>/{src,app,theme}/**/*.{ts,tsx}' --out=yumcss
 ```
 
 - `css({...})` → `dss.class({...})` — shorthands expanded, `_hover`/`_dark`/
@@ -416,8 +416,8 @@ pnpm exec pandwind-codemod migrate --from=panda --to=pandwind-css '<site>/{src,a
   Generated files are placed under the alias target (`@/* -> src/*` emits
   `src/<out>`), not blindly at the repository root. Alias detection:
   package.json#imports → next/vite/components.json/tsconfig paths.
-- The generated bootstrap imports `pandwind/design` and `pandwind/cx`, so the
-  target project must have the `pandwind` package installed before typechecking.
+- The generated bootstrap imports `yumcss/design` and `yumcss/cx`, so the
+  target project must have the `yumcss` package installed before typechecking.
   Existing generated modules are preserved on reruns; add `--force` to regenerate them.
 
 Migration proof: [baseline report](../../plans/024-baseline-report.md) and

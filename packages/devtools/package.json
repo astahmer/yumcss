@@ -6,8 +6,8 @@
 		"css",
 		"devtools",
 		"migration",
-		"yumcss",
-		"vite"
+		"vite",
+		"yumcss"
 	],
 	"license": "MIT",
 	"repository": {
@@ -54,10 +54,10 @@
 	},
 	"dependencies": {
 		"@vitejs/devtools-kit": "0.7.2",
-		"yumcss": "workspace:*",
 		"@yumcss/codemod": "workspace:*",
 		"react": "19.2.8",
-		"react-dom": "19.2.8"
+		"react-dom": "19.2.8",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",

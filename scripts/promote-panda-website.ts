@@ -244,9 +244,7 @@ function countRemainingPandaImports(root: string): number {
 async function main(): Promise<void> {
 	if (process.argv.includes("--prepare")) await ensureReferenceWorkspace("panda");
 	const workspace = createReferenceWorkspace();
-	const websiteRoot = resolve(
-		process.env.YUMCSS_PANDA_WEBSITE ?? workspace.path("panda/website"),
-	);
+	const websiteRoot = resolve(process.env.YUMCSS_PANDA_WEBSITE ?? workspace.path("panda/website"));
 	const referenceRoot = resolve(websiteRoot, "..");
 	if (!existsSync(join(referenceRoot, ".git")))
 		throw new Error(

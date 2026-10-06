@@ -14,9 +14,9 @@
 	},
 	"dependencies": {
 		"@yumcss/example-preset": "workspace:*",
-		"yumcss": "workspace:*",
 		"react": "19.2.8",
-		"react-dom": "19.2.8"
+		"react-dom": "19.2.8",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@tailwindcss/vite": "4.3.3",

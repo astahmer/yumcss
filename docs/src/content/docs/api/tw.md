@@ -11,7 +11,7 @@ PostCSS config or runtime CSS injection.
 
 > **Tailwind compatibility lane — when to use this:** Tailwind already owns
 > your stylesheet, or you specifically want its utility vocabulary, plugins,
-> and scanning ecosystem. For new Pandwind code, start with
+> and scanning ecosystem. For new YumCSS code, start with
 > [engine css()](/api/css/). If you want Tailwind class output while keeping
 > CSS-property authoring, use the [Tailwind class-name strategy](/interop/tailwind-adapter/)
 > instead.
@@ -29,15 +29,15 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
 4. Scan only the genuinely dynamic class choices.
 
 ```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src
 ```
 
 You own the generated helper and can inspect it like any other source file.
-Pandwind does not hide a second Tailwind theme behind it.
+YumCSS does not hide a second Tailwind theme behind it.
 
 ## What gets generated
 
-- **`pandwind-codemod tw generate`** — loads your `tailwind.css` through Tailwind's own design
+- **`yumcss-codemod tw generate`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates the typed helper plus its companion artifacts next
   to it:
   - `types.d.ts` — one key per utility with literal value unions (including
@@ -48,12 +48,12 @@ Pandwind does not hide a second Tailwind theme behind it.
     applications that explicitly need exact runtime conflict merging. The small `tw.ts` entry
     does not import it; Vite and codemod tooling read it as a companion artifact.
   - `tw.build.ts` — build-only wildcard candidate metadata read by Vite and codemod tooling; it
-    is never imported by runtime bindings. Pandwind does not import these generated modules
-    automatically. Static calls folded by `pandwindVite()` remove the entry and both companions
+    is never imported by runtime bindings. YumCSS does not import these generated modules
+    automatically. Static calls folded by `yumcssVite()` remove the entry and both companions
     from the browser graph. A genuinely arbitrary runtime conflict merge is an explicit opt-in;
     ordinary generated `tw()` and plain `cx()` do not pull the large catalog into the bundle.
   - `bridge.ts` when `--bridge` is enabled — an optional build-time and
-    migration artifact for the Tailwind `ClassNameStrategy`. Pandwind does not
+    migration artifact for the Tailwind `ClassNameStrategy`. YumCSS does not
     import it automatically; it enters the runtime graph only when the project
     explicitly selects its generated `twAdapter`.
 - **`tw()` runtime** — a few dozen lines that walk the style object and
@@ -61,7 +61,7 @@ Pandwind does not hide a second Tailwind theme behind it.
   (`ring: ["1", "gray-900/5"]`), negative utilities (`"-translateX": "1/2"`),
   compound bases (`flex: "col"` -> `flex flex-col`) and arbitrarily deep
   variant stacks.
-- **`pandwind-codemod tw scan`** — Tailwind v4 scans source files for literal candidates, so
+- **`yumcss-codemod tw scan`** — Tailwind v4 scans source files for literal candidates, so
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for. Finite dynamic arguments —
@@ -73,7 +73,7 @@ Pandwind does not hide a second Tailwind theme behind it.
   saw) is never invented; it is reported with its source line in
   `TwScanResult.unresolvedTokens` and printed per-token by the CLI as a
   warning.
-- **`pandwindVite()`** — statically inlines literal `tw({ ... })` calls with
+- **`yumcssVite()`** — statically inlines literal `tw({ ... })` calls with
   literal arguments into plain class strings before Tailwind's scanner sees
   them. The runtime cost becomes zero and the generated runtime entry plus
   metadata tree-shake out of the bundle (the generated `tw.ts` is marked
@@ -84,7 +84,7 @@ Pandwind does not hide a second Tailwind theme behind it.
 
 ## For CI and automation
 
-Run codegen with `--agents` and pandwind also emits `pandwind.agents.json`: a
+Run codegen with `--agents` and yumcss also emits `yumcss.agents.json`: a
 versioned machine-readable capability file — every utility key with its
 literal value union (capped, with counts), the variant set, conflict families,
 compose list, theme scopes and semantic tokens — plus the exact commands an
@@ -106,7 +106,7 @@ When a finite dynamic value is a raw value that your configured tokens also
 produce (for example `tw({ bg: theme === "dark" ? "#3b82f6" : "#111827" })`
 where `blue-500` and `gray-900` resolve to exactly those values), the
 generated artifact carries a value-to-token catalog built by
-`pandwind-codemod tw generate`. Candidates then reference the token spelling
+`yumcss-codemod tw generate`. Candidates then reference the token spelling
 (`bg-blue-500`, `bg-gray-900`) instead of arbitrary values, so they merge,
 conflict, and theme like hand-written classes. The remap is exact-match and
 provenance-backed only: a value the catalog cannot prove stays an arbitrary
@@ -122,7 +122,7 @@ and produce an explicit coverage diagnostic instead of a silent CSS gap.
 ## Semantic sub-keys for overloaded utilities
 
 Tailwind overloads one class prefix for several CSS concerns (`text-2xl` size,
-`text-gray-900` color, `text-center` alignment). pandwind adds narrower
+`text-gray-900` color, `text-center` alignment). yumcss adds narrower
 spellings that resolve onto the same classes:
 
 ```ts
@@ -162,7 +162,7 @@ modifier such as `group-hover/item:` — keep that class as a literal string and
 compose it at the class boundary:
 
 ```tsx
-import { createCx } from "pandwind/cx";
+import { createCx } from "yumcss/cx";
 import { tw } from "./tw";
 
 const cx = createCx();
@@ -170,10 +170,10 @@ const className = cx(tw({ textColor: "blue-500" }), "group-hover/item:text-blue-
 ```
 
 This is intentionally an escape hatch: the raw class is not checked by
-Pandwind's generated TypeScript contract. Tailwind remains responsible for
+YumCSS's generated TypeScript contract. Tailwind remains responsible for
 validating and compiling it, so keep the string visible to Tailwind's scanner
 or add it to `@source inline(...)` when it is constructed indirectly. Do not
-put an unknown variant key in `tw({ ... })`; Pandwind cannot safely generate
+put an unknown variant key in `tw({ ... })`; YumCSS cannot safely generate
 CSS for a condition that the generated metadata does not prove.
 
 ## Conflict resolution (tailwind-merge, but generated)
@@ -195,18 +195,18 @@ the bundled class strings are already conflict-free. The generated `tw.ts`
 entry intentionally omits this full catalog: unbounded runtime objects use the
 small class assembler, while applications that require exact runtime
 last-wins merging must explicitly import and pass the generated
-`__pandwindRuntimeConfig` from `tw.runtime.ts`. Prefer finite values that the
+`__yumcssRuntimeConfig` from `tw.runtime.ts`. Prefer finite values that the
 Vite plugin can verify, or `css.vars()` for genuinely arbitrary values, when
 the full catalog is not worth the runtime cost.
 
 ## DTCG design tokens → `@theme`
 
 Your preset's DTCG token groups are the single source of truth for both
-engines. `pandwind-codemod tw generate --tokens <preset-module>` bridges them into a Tailwind v4
+engines. `yumcss-codemod tw generate --tokens <preset-module>` bridges them into a Tailwind v4
 `@theme {}` block (only real theme namespaces: color, radius, text, leading,
 font-weight, font, tracking) and injects it while generating types:
 
-- the generated `pandwind-theme.css` artifact is imported from your
+- the generated `yumcss-theme.css` artifact is imported from your
   `tailwind.css`, so Tailwind compiles token-backed utilities (`bg-success`,
   `text-error`) with zero hand-mirroring;
 - token-derived values appear in the generated literal unions next to raw
@@ -214,7 +214,7 @@ font-weight, font, tracking) and injects it while generating types:
 - no `--tokens` flag = byte-identical generated output as before.
 
 ```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an

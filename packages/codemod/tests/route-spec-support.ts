@@ -265,10 +265,7 @@ function routeProjectLoader(
 							["color", "backgroundColor", "padding", "bg"].includes(property),
 					} as T;
 			}
-			if (
-				hasAdapter(adapters, CodemodAdapterId.YumCSS) &&
-				packageName === "yumcss/preset/default"
-			)
+			if (hasAdapter(adapters, CodemodAdapterId.YumCSS) && packageName === "yumcss/preset/default")
 				return {
 					defaultPreset: {
 						tokens: {

@@ -162,7 +162,8 @@
 				"e2e/**/*.ts",
 				"src/ui-theme.ts!"
 			],
-			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"]
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"],
+			"ignoreDependencies": ["@yumcss/codemod"]
 		},
 		"examples/*": {
 			"entry": ["src/{main,index,App}.{ts,tsx}!", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"],
@@ -216,6 +217,7 @@
 				"@vanilla-extract/css",
 				"@vanilla-extract/recipes",
 				"@vanilla-extract/sprinkles",
+				"@yumcss/codemod",
 				"aphrodite",
 				"csstype",
 				"fela",

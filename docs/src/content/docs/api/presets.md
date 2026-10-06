@@ -10,7 +10,7 @@ It does not create a second styling API: it describes the values that
 `createCss(preset)`, `createDesignCss(preset)`, and the stylesheet compiler are
 allowed to resolve.
 
-Pandwind uses a bring-your-own-types (BYOT) boundary for CSS properties. It
+YumCSS uses a bring-your-own-types (BYOT) boundary for CSS properties. It
 does not maintain a second CSS value grammar: `config` is a type witness
 supplied by the application or design-system package.
 
@@ -28,9 +28,9 @@ Keep the four responsibilities separate:
 | `createCss(preset)` | the consumer                                  | returns a CSS function whose props and values follow the preset            |
 
 The preset is the boundary between an open-ended CSS function and a design
-system. The safe `pandwind/css` entrypoint requires that preset. If properties
+system. The safe `yumcss/css` entrypoint requires that preset. If properties
 are discovered at runtime, import `createUnsafeCss` from
-`pandwind/unsafe/css`; its lack of a catalog is then visible at the call site.
+`yumcss/unsafe/css`; its lack of a catalog is then visible at the call site.
 
 `define.preset` defaults to `strict: true`. Mapped properties therefore accept
 their declared token names by default; opt out deliberately with
@@ -45,10 +45,10 @@ token groups. Token variables remain hashed by default; pass
 `{ tokenVariableNames: "authored" }` to use the mapped names instead:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { define, type PandwindProperties } from "pandwind/preset";
+import { createCss } from "yumcss/css";
+import { define, type YumCSSProperties } from "yumcss/preset";
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 const preset = define.preset(
 	{ config: cssConfig, tokens: { colors: { "$brand-500": "#2563eb" } } },
 	{
@@ -69,7 +69,7 @@ so an unmapped token keeps its hashed fallback.
 
 Pass `web` as the third argument when a design-system preset owns a small
 amount of browser-global CSS that should be emitted with the generated
-stylesheet. This lets Pandwind type token values after it sees the theme and
+stylesheet. This lets YumCSS type token values after it sees the theme and
 property mappings:
 
 ```ts
@@ -108,7 +108,7 @@ their configured groups by default; unmapped CSS properties and custom
 properties accept scalar CSS values.
 
 The build-time stylesheet compiler and Vite/Unplugin output include this CSS;
-route splitting keeps it in the common bucket, and `pandwind.lib/1` artifacts
+route splitting keeps it in the common bucket, and `yumcss.lib/1` artifacts
 carry it for registered component libraries. The runtime stylesheet does not
 consume `web`, so importing a preset does not create a browser-global side
 effect. This is intentionally not a second CSS language: use authored CSS for
@@ -123,23 +123,23 @@ form keeps a small preset easy to read.
 
 ## Choose a built-in preset layer
 
-Pandwind keeps its built-in choices in explicit tiers so a structural CSS
+YumCSS keeps its built-in choices in explicit tiers so a structural CSS
 contract does not silently become a design-token contract:
 
-| preset               | import                        | use it for                                                   |
-| -------------------- | ----------------------------- | ------------------------------------------------------------ |
-| `csstypePreset`      | `pandwind/preset/csstype`     | tokenless structural CSS with values owned by your app       |
-| `defaultPreset`      | `pandwind/preset/default`     | the ordinary Pandwind app with stock scales, no palette      |
-| `tailwindPreset`     | `pandwind/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                          |
-| `chakraPreset`       | `pandwind/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog    |
-| `pandaPreset`        | `pandwind/preset/panda`       | Panda CSS's token scales, conditions, and color paths        |
-| `shadcnPreset`       | `pandwind/preset/shadcn`      | shadcn/ui's default registry roles, radii, and fonts         |
-| `createShadcnPreset` | `pandwind/preset/shadcn`      | the same preset, parameterized by the create-page selections |
-| `examplePreset`      | `@pandwind/example-preset`    | the repository's rich semantic-token and palette showcase    |
+| preset               | import                      | use it for                                                   |
+| -------------------- | --------------------------- | ------------------------------------------------------------ |
+| `csstypePreset`      | `yumcss/preset/csstype`     | tokenless structural CSS with values owned by your app       |
+| `defaultPreset`      | `yumcss/preset/default`     | the ordinary YumCSS app with stock scales, no palette        |
+| `tailwindPreset`     | `yumcss/preset/tailwindcss` | Tailwind v4's vocabulary in `css()`                          |
+| `chakraPreset`       | `yumcss/preset/chakra`      | Chakra UI v3's vocabulary and color modes, widest catalog    |
+| `pandaPreset`        | `yumcss/preset/panda`       | Panda CSS's token scales, conditions, and color paths        |
+| `shadcnPreset`       | `yumcss/preset/shadcn`      | shadcn/ui's default registry roles, radii, and fonts         |
+| `createShadcnPreset` | `yumcss/preset/shadcn`      | the same preset, parameterized by the create-page selections |
+| `examplePreset`      | `@yumcss/example-preset`    | the repository's rich semantic-token and palette showcase    |
 
 The csstype preset uses the common `csstype` property grammar and default
 conditions, but its `tokens` map and property-token bindings are empty, so
-every value stays authored CSS. The default preset keeps Pandwind's stock
+every value stays authored CSS. The default preset keeps YumCSS's stock
 property mappings and its spacing, radius, shadow, and typography scales, but
 it ships no color palette: color properties accept the CSS-wide keywords
 (`inherit`, `initial`, `revert`, `revert-layer`, `unset`) plus the
@@ -148,9 +148,9 @@ the preset's explicit `black` and `white` tokens. A name such as `"red.500"`
 therefore stays authored CSS in both presets:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { csstypePreset } from "pandwind/preset/csstype";
-import { defaultPreset } from "pandwind/preset/default";
+import { createCss } from "yumcss/css";
+import { csstypePreset } from "yumcss/preset/csstype";
+import { defaultPreset } from "yumcss/preset/default";
 
 const csstypeCss = createCss(csstypePreset);
 const defaultCss = createCss(defaultPreset);
@@ -161,7 +161,7 @@ defaultCss.class({ color: "currentColor" });
 ```
 
 Use `csstypePreset` when the application or a published design system supplies its
-own token catalog. Use `defaultPreset` when you want Pandwind's ready-to-use
+own token catalog. Use `defaultPreset` when you want YumCSS's ready-to-use
 scales and a bring-your-own palette. The example package is deliberately
 separate and should remain a showcase fixture rather than an implicit default
 dependency.
@@ -244,13 +244,13 @@ project's registry variables are the migration target.
 
 ## A complete typed preset
 
-This is a small preset with Pandwind's curated common CSS properties available,
+This is a small preset with YumCSS's curated common CSS properties available,
 while the three properties used by the design system also accept named token
 references.
 
 ```ts
-import { createCss } from "pandwind/css";
-import { define, type PandwindProperties } from "pandwind/preset";
+import { createCss } from "yumcss/css";
+import { define, type YumCSSProperties } from "yumcss/preset";
 
 const tokens = define.tokens({
 	colors: {
@@ -269,7 +269,7 @@ const properties = define.properties({
 	padding: { $tokens: "spacing", $strict: false },
 });
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 
 const preset = define.preset(
 	{ config: cssConfig, tokens },
@@ -295,17 +295,17 @@ css.class({
 
 The `$tokens` entries bind a CSS property to a token group. The
 `$strict: false` entries deliberately allow both that token group
-and the raw value type from Pandwind's curated `PandwindProperties` contract.
+and the raw value type from YumCSS's curated `YumCSSProperties` contract.
 
 ## Bring your own CSS type
 
-Use Pandwind's curated `PandwindProperties` for the common web case. When a
+Use YumCSS's curated `YumCSSProperties` for the common web case. When a
 preset needs the complete CSS grammar or a specialized variant, bring that
 type directly from `csstype`:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { define } from "pandwind/preset";
+import { createCss } from "yumcss/css";
+import { define } from "yumcss/preset";
 import type { StandardProperties as CsstypeStandardProperties } from "csstype";
 
 type CardProperties = Pick<CsstypeStandardProperties, "backgroundColor" | "color" | "padding">;
@@ -340,7 +340,7 @@ css.class({
 
 `Pick` makes the package boundary explicit: this component contract exposes
 three CSS properties, while the values still come from the complete CSS type.
-Use Pandwind's `PandwindProperties` directly for its curated common surface.
+Use YumCSS's `YumCSSProperties` directly for its curated common surface.
 For a custom or third-party property vocabulary, compose your own type instead:
 
 ```ts
@@ -350,8 +350,8 @@ type AppProperties = CsstypeStandardProperties & Record<`--${string}`, string>;
 That custom-property extension describes the host values your application
 owns; it does not turn runtime values into tokens. For specialized `csstype`
 variants such as hyphenated, SVG, vendor, or custom generic forms, import the
-variant directly from `csstype`. Pandwind's BYOT boundary accepts those types
-without converting them into a Pandwind-specific CSS grammar.
+variant directly from `csstype`. YumCSS's BYOT boundary accepts those types
+without converting them into a YumCSS-specific CSS grammar.
 
 ## What belongs in `config`?
 
@@ -359,14 +359,14 @@ without converting them into a Pandwind-specific CSS grammar.
 understands. `define.theme` returns the object unchanged; an empty typed config
 does not create a runtime object full of CSS properties.
 
-| config type                                      | use it when                                                                             |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `PandwindProperties`                             | the preset should expose Pandwind's curated common CSS surface                          |
-| `Pick<PandwindProperties, "color" \| "padding">` | the preset intentionally exposes an even smaller, closed CSS surface                    |
-| `Record<string, never>`                          | mapped properties should be token-only and there should be no raw CSS value vocabulary  |
-| `Record<string, unknown>`                        | an integration boundary truly has an open record; expect weaker property/value checking |
+| config type                                    | use it when                                                                             |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `YumCSSProperties`                             | the preset should expose YumCSS's curated common CSS surface                            |
+| `Pick<YumCSSProperties, "color" \| "padding">` | the preset intentionally exposes an even smaller, closed CSS surface                    |
+| `Record<string, never>`                        | mapped properties should be token-only and there should be no raw CSS value vocabulary  |
+| `Record<string, unknown>`                      | an integration boundary truly has an open record; expect weaker property/value checking |
 
-Use Pandwind's `PandwindProperties` for a normal web design system. Use `Pick`
+Use YumCSS's `YumCSSProperties` for a normal web design system. Use `Pick`
 when the package owns a deliberately small contract. Import the full
 `StandardProperties` directly from `csstype` only when the long-tail grammar is
 intentional. A broad record is useful at a migration or compatibility boundary,
@@ -375,7 +375,7 @@ not as a substitute for a design-system type.
 ## What does `properties` do?
 
 `properties` has two jobs: it selects which CSS property names appear in a
-preset-aware style object, and it tells Pandwind which token names can resolve
+preset-aware style object, and it tells YumCSS which token names can resolve
 for each property.
 
 ### `true`: use the config's raw values
@@ -386,7 +386,7 @@ const properties = define.properties({
 });
 ```
 
-`borderRadius: true` uses `PandwindProperties["borderRadius"]`. It does not
+`borderRadius: true` uses `YumCSSProperties["borderRadius"]`. It does not
 attach a token group, and `strict` does not turn it into a token-only property.
 
 ### A token map: bind a property to a group
@@ -426,7 +426,7 @@ const properties = define.properties({
 	color: { $tokens: "colors", $strict: false },
 });
 
-// color accepts the colors group and raw PandwindProperties["color"] values.
+// color accepts the colors group and raw YumCSSProperties["color"] values.
 // padding is available because of $all, but it accepts its config values only
 // until padding receives an explicit $tokens mapping.
 ```
@@ -470,7 +470,7 @@ css.class({ backgroundColor: "var(--brand-from-host)" });
 ```
 
 The second call is valid in the complete preset above because that property
-explicitly inherits the raw `PandwindProperties` value type. Remove
+explicitly inherits the raw `YumCSSProperties` value type. Remove
 `$strict: false` and the same call becomes a type error while the
 token call remains valid.
 
@@ -481,7 +481,7 @@ to the theme. A component token can point at one semantic token by string
 reference, or choose different semantic tokens for different conditions:
 
 ```ts
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 import { tokens } from "./tokens";
 
 const conditions = {
@@ -534,7 +534,7 @@ use a JavaScript lookup when you intentionally want to copy the current value
 as a literal.
 
 ```ts
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 
 const tokens = define.tokens({
 	colors: {
@@ -582,8 +582,8 @@ subtree under `colors.*`, and explicit role maps must point each role to a
 use ordinary token references for groups such as `spacing` and `radii`.
 
 ```ts
-import { createCss } from "pandwind/css";
-import { define } from "pandwind/preset";
+import { createCss } from "yumcss/css";
+import { define } from "yumcss/preset";
 
 const tokens = define.tokens({
 	colors: {

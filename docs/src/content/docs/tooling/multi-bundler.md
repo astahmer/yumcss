@@ -17,18 +17,18 @@ pnpm add -D unplugin
 
 ```ts
 // rollup.config.mjs
-import { pandwindRollup, pandwindRollupCss } from "pandwind/unplugin";
+import { yumcssRollup, yumcssRollupCss } from "yumcss/unplugin";
 import { preset } from "./preset";
 
 export default {
-	plugins: [pandwindRollup({ css: { preset } }), pandwindRollupCss(preset)],
+	plugins: [yumcssRollup({ css: { preset } }), yumcssRollupCss(preset)],
 };
 ```
 
-- `pandwindUnplugin` / `pandwindUnpluginCss` are the generic factories (with
+- `yumcssUnplugin` / `yumcssUnpluginCss` are the generic factories (with
   `.vite`, `.rollup`, `.webpack`, … slices).
-- `pandwindRollup(Css)` and `pandwindWebpack(Css)` are ready-made aliases.
-- Under vite prefer `pandwindVite` / `pandwindCssVite` — identical behavior,
+- `yumcssRollup(Css)` and `yumcssWebpack(Css)` are ready-made aliases.
+- Under vite prefer `yumcssVite` / `yumcssExtractVite` — identical behavior,
   plus native module-graph config resolution.
 - Generic adapters resolve the generated tw module from relative imports on
   the filesystem; bare/aliased tw imports are a vite-only capability.
@@ -38,12 +38,12 @@ export default {
 The repository runs a real Rollup + Chromium fixture covering the shared
 contract: extracted static atoms, `css.vars()` values and conditional rules,
 and an explicitly imported authored stylesheet containing a global selector and
-keyframes. The host bundler owns the authored stylesheet; the Pandwind CSS
+keyframes. The host bundler owns the authored stylesheet; the YumCSS CSS
 plugin emits only the generated atomic stylesheet. See
 `examples/css-example/test/rollup-e2e.ts` for the executable proof.
 
 The Webpack adapter also has a real production-build smoke test in
-`packages/pandwind/tests/unplugin-webpack.test.ts`. It verifies that the
+`packages/yumcss/tests/unplugin-webpack.test.ts`. It verifies that the
 generic transform folds a literal `tw()` call and removes the runtime call from
 the emitted bundle. This is adapter proof, not a claim that every Webpack
 framework integration is turnkey; framework loaders and CSS asset ownership
@@ -51,7 +51,7 @@ remain host configuration.
 
 The same fixture verifies the CSS virtual module through Webpack with a
 minimal host CSS loader. Webpack users still choose the loader/injection or
-extraction policy; Pandwind supplies the generated stylesheet content.
+extraction policy; YumCSS supplies the generated stylesheet content.
 
 The Vite example also has a browser-level HMR fixture in
 `examples/css-example/test/hmr-e2e.mjs`. It edits a source declaration while a
@@ -60,9 +60,9 @@ page does not reload. This proves the client-visible virtual-module update in
 addition to the lower-level module-graph tests.
 
 There is also a packed-package consumer fixture in
-`packages/pandwind/tests/packed-consumer.test.ts`. It builds a temporary Vite
-consumer against `pnpm pack` output and resolves `pandwind/vite` and
-`pandwind/preset` through the tarball's export map, catching missing shipped
+`packages/yumcss/tests/packed-consumer.test.ts`. It builds a temporary Vite
+consumer against `pnpm pack` output and resolves `yumcss/vite` and
+`yumcss/preset` through the tarball's export map, catching missing shipped
 files and package-resolution mistakes that workspace-source tests cannot.
 
 ## HMR and watch invalidation coverage

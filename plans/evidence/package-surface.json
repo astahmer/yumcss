@@ -18,7 +18,9 @@
 			],
 			"owner": "runtime",
 			"maturity": "stable",
-			"dependencies": ["csstype"],
+			"dependencies": [
+				"csstype"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
@@ -30,7 +32,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./preset/tailwindcss"],
+			"exportPaths": [
+				"./preset/tailwindcss"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -44,7 +48,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./preset/chakra"],
+			"exportPaths": [
+				"./preset/chakra"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -58,7 +64,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./preset/shadcn"],
+			"exportPaths": [
+				"./preset/shadcn"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -72,7 +80,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./preset/panda"],
+			"exportPaths": [
+				"./preset/panda"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -86,7 +96,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./reset/tailwindcss"],
+			"exportPaths": [
+				"./reset/tailwindcss"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -101,7 +113,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./reset/panda"],
+			"exportPaths": [
+				"./reset/panda"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -116,7 +130,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./reset/yumcss"],
+			"exportPaths": [
+				"./reset/yumcss"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -131,7 +147,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./prose/tailwindcss"],
+			"exportPaths": [
+				"./prose/tailwindcss"
+			],
 			"owner": "runtime",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -164,10 +182,14 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./css/generated"],
+			"exportPaths": [
+				"./css/generated"
+			],
 			"owner": "tooling",
 			"maturity": "experimental",
-			"dependencies": ["csstype"],
+			"dependencies": [
+				"csstype"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
@@ -211,21 +233,30 @@
 			],
 			"owner": "build",
 			"maturity": "stable",
-			"dependencies": ["oxc-parser", "postcss"],
+			"dependencies": [
+				"oxc-parser",
+				"postcss"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
 				"README.md",
 				"docs/src/content/docs/tooling/codegen.md"
 			],
-			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in yumcss-codemod."
+			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in @yumcss/codemod."
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./vite", "./vite/preset-context", "./unplugin"],
+			"exportPaths": [
+				"./vite",
+				"./vite/preset-context",
+				"./unplugin"
+			],
 			"owner": "integration",
 			"maturity": "stable",
-			"dependencies": ["unplugin"],
+			"dependencies": [
+				"unplugin"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
@@ -237,7 +268,9 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./vite/lib-artifact"],
+			"exportPaths": [
+				"./vite/lib-artifact"
+			],
 			"owner": "build",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -251,10 +284,14 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./vite/runtime-pruner"],
+			"exportPaths": [
+				"./vite/runtime-pruner"
+			],
 			"owner": "tooling",
 			"maturity": "stable",
-			"dependencies": ["oxc-parser"],
+			"dependencies": [
+				"oxc-parser"
+			],
 			"externalContract": false,
 			"evidence": [
 				"packages/yumcss/package.json",
@@ -282,7 +319,10 @@
 			],
 			"owner": "build",
 			"maturity": "experimental",
-			"dependencies": ["oxc-parser", "postcss"],
+			"dependencies": [
+				"oxc-parser",
+				"postcss"
+			],
 			"externalContract": false,
 			"evidence": [
 				"packages/yumcss/package.json",
@@ -320,16 +360,20 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./package.json"],
+			"exportPaths": [
+				"./package.json"
+			],
 			"owner": "runtime",
 			"maturity": "stable",
 			"dependencies": [],
 			"externalContract": true,
-			"evidence": ["packages/yumcss/package.json"],
+			"evidence": [
+				"packages/yumcss/package.json"
+			],
 			"note": "Standard package metadata entry."
 		},
 		{
-			"packageName": "yumcss-codemod",
+			"packageName": "@yumcss/codemod",
 			"exportPaths": [
 				".",
 				"./tw",
@@ -369,11 +413,16 @@
 			"note": "The supported migration and virtual-bundler tooling contract."
 		},
 		{
-			"packageName": "yumcss-codemod",
-			"exportPaths": ["./lib"],
+			"packageName": "@yumcss/codemod",
+			"exportPaths": [
+				"./lib"
+			],
 			"owner": "tooling",
 			"maturity": "experimental",
-			"dependencies": ["cac", "yumcss"],
+			"dependencies": [
+				"cac",
+				"yumcss"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",
@@ -383,7 +432,7 @@
 			"note": "Publishable YumCSS design-system artifact builder and CLI boundary."
 		},
 		{
-			"packageName": "yumcss-codemod",
+			"packageName": "@yumcss/codemod",
 			"exportPaths": [
 				"./swap/official-api-cases",
 				"./swap/identifiers",
@@ -401,7 +450,7 @@
 			"note": "Catalog and proof data used by the migration lab and verification tooling."
 		},
 		{
-			"packageName": "yumcss-codemod",
+			"packageName": "@yumcss/codemod",
 			"exportPaths": [
 				"./migration/class-sorter",
 				"./migration/arbitrary-values",
@@ -411,7 +460,10 @@
 			],
 			"owner": "tooling",
 			"maturity": "experimental",
-			"dependencies": ["magic-string", "oxc-parser"],
+			"dependencies": [
+				"magic-string",
+				"oxc-parser"
+			],
 			"externalContract": true,
 			"evidence": [
 				"packages/codemod/package.json",
@@ -424,7 +476,10 @@
 		},
 		{
 			"packageName": "yumcss",
-			"exportPaths": ["./stack/svelte", "./stack/astro"],
+			"exportPaths": [
+				"./stack/svelte",
+				"./stack/astro"
+			],
 			"owner": "integration",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -438,7 +493,7 @@
 			"note": "Renderer-specific Stack host projections; the shared style mapping remains owned by the YumCSS stack contract."
 		},
 		{
-			"packageName": "yumcss-analyze",
+			"packageName": "@yumcss/analyze",
 			"exportPaths": [
 				".",
 				"./collect",
@@ -461,8 +516,13 @@
 			"note": "Analyzer, Migration Preview, and MCP are host tooling rather than runtime authoring APIs."
 		},
 		{
-			"packageName": "yumcss-devtools",
-			"exportPaths": [".", "./inspect-action", "./evidence", "./package.json"],
+			"packageName": "@yumcss/devtools",
+			"exportPaths": [
+				".",
+				"./inspect-action",
+				"./evidence",
+				"./package.json"
+			],
 			"owner": "tooling",
 			"maturity": "experimental",
 			"dependencies": [],
@@ -474,7 +534,9 @@
 		},
 		{
 			"packageName": "@yumcss/lint-plugin",
-			"exportPaths": ["."],
+			"exportPaths": [
+				"."
+			],
 			"owner": "tooling",
 			"maturity": "experimental",
 			"dependencies": [],

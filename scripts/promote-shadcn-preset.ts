@@ -212,7 +212,7 @@ const bundleReference = async (): Promise<ShadcnReferenceModule> => {
 		target: "node22",
 		jsx: "automatic",
 		absWorkingDir: appRoot,
-		nodePaths: [join(repositoryRoot, "node_modules")],
+		nodePaths: [join(yumcssPackageRoot, "node_modules"), join(repositoryRoot, "node_modules")],
 		logLevel: "silent",
 		plugins: [
 			{

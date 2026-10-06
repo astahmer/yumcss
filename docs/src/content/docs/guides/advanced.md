@@ -1,11 +1,11 @@
 ---
 title: Advanced mode
-description: The complete guide to pandwind's runtime, compiler, adapters, and validation surfaces.
+description: The complete guide to yumcss's runtime, compiler, adapters, and validation surfaces.
 sidebar:
   order: 2
 ---
 
-Open this page when you are integrating Pandwind into a component library,
+Open this page when you are integrating YumCSS into a component library,
 custom build, migration service, or non-DOM renderer. For a normal web app,
 start with the [typed `css()` API](/api/css/) instead.
 
@@ -27,9 +27,9 @@ the backend supports it.
 ### Static Tailwind lowering
 
 ```ts
-import { pandwindVite } from "pandwind/vite";
+import { yumcssVite } from "yumcss/vite";
 
-pandwindVite({
+yumcssVite({
 	twSources: ["/src/tw.ts", /generated\/tw/],
 	cxSources: ["/src/cx.ts"],
 	onUnresolved: "warn",
@@ -43,10 +43,10 @@ Dynamic values remain runtime values and need a scanner/safelist strategy.
 ### Static atomic extraction
 
 ```ts
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { css } from "./src/css";
 
-pandwindCssVite(css, {
+yumcssExtractVite(css, {
 	cssSources: [/\/src\/styles\//],
 	include: [/\.(tsx|ts|vue|svelte|astro)$/],
 	exclude: [/\.stories\./],
@@ -56,23 +56,23 @@ pandwindCssVite(css, {
 ```
 
 The extractor scans source files, canonicalizes atoms, and serves the result
-from `pandwind:css`. Route splitting is opt-in. `inlineCritical` can inline a
+from `yumcss:css`. Route splitting is opt-in. `inlineCritical` can inline a
 route's common and exclusive CSS into its built HTML, with `capBytes` as a
 guardrail.
 
 ### One engine context
 
-When `pandwindVite({ css })` and `pandwindCssVite()` participate in the same
+When `yumcssVite({ css })` and `yumcssExtractVite()` participate in the same
 build, pass one context created from one preset:
 
 ```ts
-import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
+import { createYumCSSEngineContext, yumcssExtractVite, yumcssVite } from "yumcss/vite";
 import { css } from "./src/css";
 import { preset } from "./src/theme";
 
-const engine = createPandwindEngineContext({ preset });
+const engine = createYumCSSEngineContext({ preset });
 
-plugins: [pandwindVite({ css: { preset, engine } }), pandwindCssVite(css, { engine })];
+plugins: [yumcssVite({ css: { preset, engine } }), yumcssExtractVite(css, { engine })];
 ```
 
 This keeps folded classes and extracted rules on the same identity and
@@ -154,7 +154,7 @@ runtime expression/custom property or keep an explicit residual.
 
 ## Vite and other bundlers
 
-`pandwindVite` options:
+`yumcssVite` options:
 
 | Option           | Purpose                                                |
 | ---------------- | ------------------------------------------------------ |
@@ -167,7 +167,7 @@ runtime expression/custom property or keep an explicit residual.
 | `css.cssSources` | CSS/design module import sources                       |
 | `onUnresolved`   | `off`, `warn`, or `error` for unresolved folded tokens |
 
-`pandwindCssVite` options:
+`yumcssExtractVite` options:
 
 | Option                      | Purpose                                                   |
 | --------------------------- | --------------------------------------------------------- |
@@ -176,7 +176,7 @@ runtime expression/custom property or keep an explicit residual.
 | `root`                      | Scan root; defaults to the current directory              |
 | `virtualId`                 | Virtual CSS module id                                     |
 | `className`                 | Tailwind or named class strategy                          |
-| `namespace`                 | Pandwind-owned dynamic carriers and critical markers      |
+| `namespace`                 | YumCSS-owned dynamic carriers and critical markers        |
 | `engine`                    | Shared engine context                                     |
 | `splitByRoute`              | Route-specific CSS buckets                                |
 | `inlineCritical`            | Inline route CSS into built HTML                          |

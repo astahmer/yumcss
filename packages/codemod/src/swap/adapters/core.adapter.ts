@@ -365,10 +365,11 @@ export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(CodemodA
 	pandaDss,
 	pandaCss,
 ]);
-export const YUMCSS_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(
-	CodemodAdapterId.YumCSS,
-	[yumcssTw, yumcssDss, cssAdapter],
-);
+export const YUMCSS_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(CodemodAdapterId.YumCSS, [
+	yumcssTw,
+	yumcssDss,
+	cssAdapter,
+]);
 export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [
 	PANDA_STYLE_SYSTEM,
 	YUMCSS_STYLE_SYSTEM,

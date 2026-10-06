@@ -2,7 +2,7 @@
 
 ## Context
 
-Pandwind already has a versioned `StyleProgram` that is the semantic AST for
+YumCSS already has a versioned `StyleProgram` that is the semantic AST for
 rich migrations, plus the flat `SwapIR` fast path for literal declaration
 swaps. The program currently has to be assembled through low-level object
 literals and `styleProgramFromRules`, which makes adapter implementations and
@@ -25,7 +25,7 @@ route contract and works alongside
 ## Goal
 
 Make semantic program construction concise, typed, invariant-preserving, and
-easy to use in real adapters and tests without expanding Pandwind's frozen
+easy to use in real adapters and tests without expanding YumCSS's frozen
 runtime API or coupling the semantic layer to any target library.
 
 The useful form is a scoped builder/factory, not a mutable user-facing
@@ -255,10 +255,10 @@ adapter needs it.
 
 ## Decisions log
 
-| Date       | Decision                                                                               | Rationale                                                                                                                    |
-| ---------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 2026-09-01 | Treat `StyleProgram` as the AST and add a construction façade over it                  | A second node hierarchy would duplicate the versioned semantic contract.                                                     |
-| 2026-09-01 | Use a scoped build-time program builder rather than a runtime `StyleNode` API          | The current need is adapter/test construction, while the application runtime API is frozen.                                  |
-| 2026-09-01 | Keep target emission in registered adapters                                            | Target ownership is the core hexagonal boundary; generic `styleNodeToX` functions would recreate a central switchboard.      |
-| 2026-09-01 | Preserve `SwapIR` as an independent fast path                                          | Rich semantic construction must not tax simple literal migrations.                                                           |
-| 2026-09-01 | Export the builder from `pandwind-codemod/swap` and adopt it first in Tailwind parsing | Adapter authors are the current consumers, and the real parser adoption proves the façade removes object-literal repetition. |
+| Date       | Decision                                                                              | Rationale                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-01 | Treat `StyleProgram` as the AST and add a construction façade over it                 | A second node hierarchy would duplicate the versioned semantic contract.                                                     |
+| 2026-09-01 | Use a scoped build-time program builder rather than a runtime `StyleNode` API         | The current need is adapter/test construction, while the application runtime API is frozen.                                  |
+| 2026-09-01 | Keep target emission in registered adapters                                           | Target ownership is the core hexagonal boundary; generic `styleNodeToX` functions would recreate a central switchboard.      |
+| 2026-09-01 | Preserve `SwapIR` as an independent fast path                                         | Rich semantic construction must not tax simple literal migrations.                                                           |
+| 2026-09-01 | Export the builder from `@yumcss/codemod/swap` and adopt it first in Tailwind parsing | Adapter authors are the current consumers, and the real parser adoption proves the façade removes object-literal repetition. |

@@ -1,9 +1,9 @@
 ---
-name: pandwind-migrate-repo
-description: Migrate a real repository from Tailwind, Panda, StyleX, styled-components, Emotion, MUI, Chakra, Mantine, Linaria, JSS, Vanilla Extract, Stitches, or another styling system to Pandwind. Use when converting a website or component library, auditing migration coverage, proving static CSS parity, or adding a source adapter.
+name: yumcss-migrate-repo
+description: Migrate a real repository from Tailwind, Panda, StyleX, styled-components, Emotion, MUI, Chakra, Mantine, Linaria, JSS, Vanilla Extract, Stitches, or another styling system to YumCSS. Use when converting a website or component library, auditing migration coverage, proving static CSS parity, or adding a source adapter.
 ---
 
-# Pandwind repository migration
+# YumCSS repository migration
 
 ## Quick start
 
@@ -33,7 +33,7 @@ description: Migrate a real repository from Tailwind, Panda, StyleX, styled-comp
   plugin transform, or framework behavior. Emit a structured residual or add
   the missing adapter/lowering.
 - Migration is a pipeline: source adapter → StyleProgram/SwapIR → target
-  adapter → validator; do not create bespoke `XToPandwind` branches.
+  adapter → validator; do not create bespoke `XToYumCSS` branches.
 - Static extraction is the default. Runtime CSS is an explicit, measured
   fallback—not the normal answer for dynamic values.
 - Keep adapter-specific logic inside its adapter. Shared runners consume

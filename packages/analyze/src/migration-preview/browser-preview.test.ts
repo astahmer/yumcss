@@ -36,9 +36,7 @@ describe("Migration Preview browser host", () => {
 			},
 		});
 
-		expect(
-			await host.start?.(request(".yumcss-migration-preview-probe { color: red; }")),
-		).toEqual({
+		expect(await host.start?.(request(".yumcss-migration-preview-probe { color: red; }"))).toEqual({
 			host: MigrationPreviewHostId.Browser,
 			status: "ready",
 			url: "http://127.0.0.1:5173/preview",

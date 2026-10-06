@@ -1031,11 +1031,7 @@ export const generateFixtures = (): void => {
 			switch (library) {
 				case "yumcss":
 				case "yumcss-generated":
-					writeFile(
-						projectRoot,
-						"src/preset.ts",
-						generateYumCSSPresetSource(options.catalogCount),
-					);
+					writeFile(projectRoot, "src/preset.ts", generateYumCSSPresetSource(options.catalogCount));
 					writeFile(
 						projectRoot,
 						"src/styles.ts",

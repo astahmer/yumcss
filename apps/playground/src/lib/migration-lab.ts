@@ -368,9 +368,7 @@ export function createMigrationLab(options: MigrationLabOptions = {}): Migration
 			target: endpointFor(adapter, "target"),
 			adapter,
 		}));
-	const yumcssTargets = YUMCSS_API_DIALECTS.map((api) =>
-		yumcssApiEndpoint(catalog.registry, api),
-	);
+	const yumcssTargets = YUMCSS_API_DIALECTS.map((api) => yumcssApiEndpoint(catalog.registry, api));
 	return {
 		ready: options.ready ?? Promise.resolve(),
 		sources: endpoints.map(({ source }) => source),

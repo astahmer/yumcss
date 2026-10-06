@@ -470,9 +470,7 @@ describe("YumCSS project bootstrap", () => {
 			content:
 				'"use client";\n\nimport "yumcss-css.css";\nexport default function Layout() { return <html />; }\n',
 		});
-		const runtimePreset = support.files.find(
-			(file) => file.path === "yumcss/preset.mjs",
-		)?.content;
+		const runtimePreset = support.files.find((file) => file.path === "yumcss/preset.mjs")?.content;
 		expect(runtimePreset).toBeDefined();
 		expect(runtimePreset).not.toContain(" as const");
 		expect(runtimePreset).not.toContain("type YumCSSProperties");

@@ -2,7 +2,7 @@
 
 ## Decision
 
-Use Effect 4 as an optional implementation detail for long-running Pandwind
+Use Effect 4 as an optional implementation detail for long-running YumCSS
 tooling workflows only. The shipped runtime, Vite transform hot path, pure
 `StyleProgram` transformations, backend renderers, and public adapter
 contracts remain independent of Effect.
@@ -11,11 +11,11 @@ Effect is useful here for the work that is genuinely effectful and
 orchestrated: reading/writing reference workspaces, running bounded batches of
 migrations, cancellation, and collecting typed failures. It is not a reason to
 replace the existing synchronous ports or to make `effect` a runtime
-dependency of `pandwind`.
+dependency of `yumcss`.
 
 ## Ports and ownership
 
-Existing Pandwind ports remain the boundary:
+Existing YumCSS ports remain the boundary:
 
 - `SourceWorkspaceFileSystem` owns source workspace I/O.
 - `ProjectModuleLoader` owns host-project package loading.
@@ -41,7 +41,7 @@ policy into a generic runner.
 
 ## Guardrails
 
-- No import from `effect` may be reachable from `packages/pandwind/src` runtime
+- No import from `effect` may be reachable from `packages/yumcss/src` runtime
   entry points or browser bundles.
 - No `effect/unstable/*` import is allowed; Effect 4 beta APIs outside the
   unstable namespace are the only supported surface.

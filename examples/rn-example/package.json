@@ -12,11 +12,11 @@
 	},
 	"dependencies": {
 		"@yumcss/example-preset": "workspace:*",
-		"yumcss": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
 		"react-native": "npm:react-native-web@0.21.2",
-		"react-native-web": "0.21.2"
+		"react-native-web": "0.21.2",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/react": "19.2.18",

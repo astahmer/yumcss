@@ -5,7 +5,12 @@
  * hydration, and browser base/hover behavior.
  */
 import {
-	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+	normalizeInstalledTargetPackage,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
@@ -253,7 +258,10 @@ export async function runStyledComponentsInstalledProof(): Promise<StyledCompone
 				fixture: { files: ["src/App.tsx", "vite.config.ts"], isolated: true },
 				dependencies: {
 					installed: true,
-					targetPackage: normalizeInstalledTargetPackage(installedTargetPackage.dependencies?.yumcss ?? "", repositoryRoot),
+					targetPackage: normalizeInstalledTargetPackage(
+						installedTargetPackage.dependencies?.yumcss ?? "",
+						repositoryRoot,
+					),
 					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {

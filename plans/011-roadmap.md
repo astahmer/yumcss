@@ -7,13 +7,13 @@ parked with notes.
 ## [NOW] 1. Docs + dogfooding
 
 - README sections for: condition-bound semantic tokens → @theme bridge,
-  cross-module const propagation, `pandwind analyze`.
+  cross-module const propagation, `yumcss analyze`.
 - Example app dogfoods all of it (semantic tokens, subkeys, mixed cx+css).
 
 ## [NOW] 2. `analyze` polish
 
 - `--json` output (machine-readable; the PR bot should consume this instead
-  of duplicating logic), corpus integration so `pandwind analyze` reproduces
+  of duplicating logic), corpus integration so `yumcss analyze` reproduces
   the vite-cx-coverage numbers on demand.
 
 ## Completed — condition-bound semantic-token bridge
@@ -33,11 +33,11 @@ parked with notes.
 - tokenami (CSS-var-first authoring, no-runtime philosophy)
 - stylex (static extraction discipline, atomic collision rules)
 - panda-css studio/doctor/debug/mcp (token usage analytics, visual tooling)
-- Deliverable: what to steal, mapped onto pandwind's architecture.
+- Deliverable: what to steal, mapped onto yumcss's architecture.
 
 ## [NOW] 5. Codemod sources expansion
 
-- styled-components / stylex / panda-css → pandwind migration modes
+- styled-components / stylex / panda-css → yumcss migration modes
   (literal-only first pass; interpolated styles get flagged not converted).
 
 ## [NOW] 6. unplugin adoption
@@ -51,7 +51,7 @@ parked with notes.
   limited prop set compiled away entirely; see welii ui-kit layout.tsx /
   component-props.ts as the pattern source. Needs a runtime-less primitive
   story per renderer — big design project.
-- **Component library** on top of pandwind primitives (prebuilt patterns).
+- **Component library** on top of yumcss primitives (prebuilt patterns).
 - **Per-page CSS splitting**: page-scoped stylesheet chunks in the vite
   plugins (currently one global virtual module).
 - **Dynamic styles / multi-theme**: theme switching via var-swapping layers,

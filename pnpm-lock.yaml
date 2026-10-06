@@ -196,6 +196,9 @@ importers:
       '@yumcss/analyze':
         specifier: workspace:*
         version: link:../../packages/analyze
+      '@yumcss/codemod':
+        specifier: workspace:*
+        version: link:../../packages/codemod
       react:
         specifier: 19.2.8
         version: 19.2.8

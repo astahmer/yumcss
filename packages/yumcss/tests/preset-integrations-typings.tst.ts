@@ -7,11 +7,7 @@ import { createStyleXAdapter } from "yumcss/css/stylex";
 import { createUnoCssAdapter } from "yumcss/css/unocss";
 import type { ClassNameStrategy } from "yumcss/css";
 import { createCx, type CxOptions } from "yumcss/cx";
-import {
-	createHostStyleRegistry,
-	type HostStyleAdapter,
-	type HostStylePlugin,
-} from "yumcss/host";
+import { createHostStyleRegistry, type HostStyleAdapter, type HostStylePlugin } from "yumcss/host";
 import {
 	createCssBackend,
 	createObjectBackend,

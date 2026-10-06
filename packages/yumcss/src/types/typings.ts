@@ -1,9 +1,5 @@
 import type { AnySelector } from "./selectors.d.ts";
-import type {
-	CssWideValue,
-	YumCSSColorPropertyName,
-	YumCSSPropertyValue,
-} from "./css-values.ts";
+import type { CssWideValue, YumCSSColorPropertyName, YumCSSPropertyValue } from "./css-values.ts";
 import type { FirstThatWorksValue } from "../css/first-that-works.ts";
 
 export type { CssWideValue } from "./css-values.ts";

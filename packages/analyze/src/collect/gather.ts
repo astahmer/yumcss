@@ -215,7 +215,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		for (const extracted of cssExtraction.extract(content, file, names)) {
 			const site = cssSourcesByStart.get(`${file}:${extracted.provenance.start}`);
 			if (site === undefined) continue;
-		const sheet = createStylesheet(activePreset);
+			const sheet = createStylesheet(activePreset);
 			sheet.process([extracted.style]);
 			const rules = sheet.gen.atomicEntries().map(({ id, css }) => ({ id, css }));
 			site.rules = [...(site.rules ?? []), ...rules];

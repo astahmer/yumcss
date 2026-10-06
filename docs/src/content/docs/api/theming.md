@@ -37,7 +37,7 @@ stable contract without importing a JavaScript token map:
 
 ```ts
 // tokens.ts — the design-system package
-import { define, type PandwindProperties } from "pandwind/preset";
+import { define, type YumCSSProperties } from "yumcss/preset";
 
 const rawTokens = define.tokens({
 	colors: {
@@ -104,7 +104,7 @@ const tokens = semanticTokens.defineSemanticTokens(themeConditions, {
 	},
 });
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 
 export const preset = define.preset(
 	{ config: cssConfig, tokens },
@@ -128,7 +128,7 @@ export const preset = define.preset(
 The component uses those paths directly:
 
 ```tsx
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 import { preset } from "./tokens";
 
 const css = createCss(preset);
@@ -159,7 +159,7 @@ The component owns no raw color and does not choose between semantic roles at
 runtime. A component token may be a single string alias, such as
 `component.card.radius`, or a condition map. Here `component.state.emptyBg`
 uses `semantic.bg.muted` in the base scope and `semantic.bg.primary` in the
-dark scope; `component.state.hoverBg` makes the opposite choice. Pandwind
+dark scope; `component.state.hoverBg` makes the opposite choice. YumCSS
 emits one component variable with condition-scoped aliases to the semantic
 variables. Switching `data-theme` changes those references without changing
 the component, its props, or its class name. The string refs are checked

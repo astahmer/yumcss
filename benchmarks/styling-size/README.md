@@ -33,12 +33,12 @@ Static lanes use the library's normal build integration and report extracted
 CSS as shipped assets. Runtime lanes use an actually dynamic value and report
 the JavaScript required to create the styles; injected CSS is created in the
 browser and therefore is not a shipped CSS asset. The runtime table labels
-`injected` versus Pandwind's `none` fallback delivery explicitly so a zero
+`injected` versus YumCSS's `none` fallback delivery explicitly so a zero
 CSS-asset delta is not mistaken for zero runtime styling work.
 
-The static comparison includes Pandwind, Tailwind CSS, Panda CSS, StyleX,
+The static comparison includes YumCSS, Tailwind CSS, Panda CSS, StyleX,
 Vanilla Extract, Sprinkles, UnoCSS, and Linaria. The runtime comparison includes
-Pandwind's preset-bound, runtime-sheet, and unsafe paths plus Emotion,
+YumCSS's preset-bound, runtime-sheet, and unsafe paths plus Emotion,
 styled-components, and Goober. Component-library overhead, React DOM, and
 framework rendering are intentionally outside the fixture.
 
@@ -51,5 +51,5 @@ The runner generates isolated consumer projects from per-library source
 templates. Their manifest dependencies are consumed by those generated
 projects, so the Knip configuration records them as dynamic benchmark inputs.
 
-Competitor rows are descriptive. Only Pandwind rows are regression-gated,
+Competitor rows are descriptive. Only YumCSS rows are regression-gated,
 because competitor releases and compiler output can change independently.

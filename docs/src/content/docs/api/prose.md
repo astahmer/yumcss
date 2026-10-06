@@ -1,6 +1,6 @@
 ---
 title: Prose stylesheets
-description: Style rendered markdown with pandwind/prose/tailwindcss, the Tailwind Typography scale as a plain CSS asset.
+description: Style rendered markdown with yumcss/prose/tailwindcss, the Tailwind Typography scale as a plain CSS asset.
 sidebar:
   order: 7
 ---
@@ -9,15 +9,15 @@ Documentation sites, changelogs, and blog posts render HTML nobody authored by
 hand: headings, paragraphs, lists, blockquotes, tables, and code blocks come out
 of a markdown pipeline. Tailwind answers that with its Typography plugin, one
 `.prose` class on a container plus a `--tw-prose-*` custom-property layer for
-theming. A project that moves its style objects to Pandwind would lose the whole
-scale, so Pandwind publishes the same family as a plain CSS asset.
+theming. A project that moves its style objects to YumCSS would lose the whole
+scale, so YumCSS publishes the same family as a plain CSS asset.
 
-| prose         | import                       | family                                                              |
-| ------------- | ---------------------------- | ------------------------------------------------------------------- |
-| `tailwindcss` | `pandwind/prose/tailwindcss` | Tailwind Typography, compiled from `@tailwindcss/typography@0.5.20` |
+| prose         | import                     | family                                                              |
+| ------------- | -------------------------- | ------------------------------------------------------------------- |
+| `tailwindcss` | `yumcss/prose/tailwindcss` | Tailwind Typography, compiled from `@tailwindcss/typography@0.5.20` |
 
 ```ts
-import "pandwind/prose/tailwindcss";
+import "yumcss/prose/tailwindcss";
 ```
 
 ```html
@@ -83,13 +83,13 @@ values by declaring them again on the `.prose` container or on `:root`:
 }
 ```
 
-That override is also the way to drive the scale from a Pandwind preset: the
+That override is also the way to drive the scale from a YumCSS preset: the
 preset's token custom properties are ordinary custom properties, so a color
 theme is a handful of `var()` assignments, not a second copy of the ruleset.
 
 ## Cascade layers
 
-The rules sit in `@layer prose`. On Pandwind's default `specificity` cascade
+The rules sit in `@layer prose`. On YumCSS's default `specificity` cascade
 nothing has to be declared, because unlayered rules beat layered ones and an
 atomic class therefore wins over every prose declaration for the same element.
 
@@ -97,13 +97,13 @@ A project that opts into `cascade: "layers"` declares the order once, ahead of
 all three stylesheets:
 
 ```css
-@layer reset, prose, pandwind;
+@layer reset, prose, yumcss;
 ```
 
-For a named generated layer, replace `pandwind` with the configured layer path.
+For a named generated layer, replace `yumcss` with the configured layer path.
 
 Layer order is fixed by the first time a layer name appears, so a declaration
-that stops at `pandwind` sorts the whole prose scale after every generated atom
+that stops at `yumcss` sorts the whole prose scale after every generated atom
 and prose would win the properties both set. If the application gives generated
 rules a custom layer, use that name in the declaration instead. Tailwind emits
 the same relationship inside `@layer utilities`, where the `.prose` rules come
@@ -114,7 +114,7 @@ first and the utility classes follow.
 The asset is ported, not copied verbatim. Four differences, all mechanical:
 
 1. The rules sit in `@layer prose` instead of Tailwind's `@layer utilities`,
-   because Pandwind does not ship that layer and the project declares its order
+   because YumCSS does not ship that layer and the project declares its order
    instead.
 2. The `.not-prose` guard is written `.not-prose, .not-prose *` where upstream
    writes `[class~="not-prose"], [class~="not-prose"] *`. Both selectors sit
@@ -137,11 +137,11 @@ is read.
 The three names are close and describe unrelated layers. The import is the only
 thing that should decide which one a project reaches for:
 
-| asset  | import                        | what it is                                                                                     |
-| ------ | ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| preset | `pandwind/preset/<ecosystem>` | the typed vocabulary `createCss(preset)` resolves: token groups, property bindings, conditions |
-| reset  | `pandwind/reset/<ecosystem>`  | a baseline stylesheet that runs before authored CSS and flattens browser defaults              |
-| prose  | `pandwind/prose/<ecosystem>`  | a stylesheet applied to a subtree the author marks, styling elements the author did not write  |
+| asset  | import                      | what it is                                                                                     |
+| ------ | --------------------------- | ---------------------------------------------------------------------------------------------- |
+| preset | `yumcss/preset/<ecosystem>` | the typed vocabulary `createCss(preset)` resolves: token groups, property bindings, conditions |
+| reset  | `yumcss/reset/<ecosystem>`  | a baseline stylesheet that runs before authored CSS and flattens browser defaults              |
+| prose  | `yumcss/prose/<ecosystem>`  | a stylesheet applied to a subtree the author marks, styling elements the author did not write  |
 
 A project typically imports one preset and, at most, one asset from each
 stylesheet family. See [Reset stylesheets](/api/resets/) for the baseline half
@@ -154,7 +154,7 @@ A Vite project that already references `vite/client` in its `tsconfig` types
 has it. Anywhere else, declare the module once:
 
 ```ts
-declare module "pandwind/prose/tailwindcss";
+declare module "yumcss/prose/tailwindcss";
 ```
 
 ## Provenance and license

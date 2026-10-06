@@ -223,7 +223,7 @@ const reports = await withInstalledProofProject(
 			const targetCss = generatedCss(target) + targetSsr.css;
 			reports.push({
 				route: { from: route.from, to: route.to },
-				versions,
+				versions: { ...versions, yumcss: "file:packages/yumcss" },
 				fixture: {
 					sourceHash: digest(route.source),
 					outputHash: digest(migration.code),

@@ -7,7 +7,7 @@ sidebar:
 
 `css()` with the Vite plugin is the default path for new code. These supporting
 tools answer different questions; you do not need to run all of them to use
-Pandwind:
+YumCSS:
 
 | Surface                                                    | Product role                                                                  |
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -121,7 +121,7 @@ pnpm run analyze
 For a consumer project, the published command can emit JSON for CI:
 
 ```sh
-pnpm exec pandwind-analyze \
+pnpm exec yumcss-analyze \
 	--root . \
 	--tw src/tw.ts \
 	"src/**/*"
@@ -148,10 +148,10 @@ developing and `--json` when a CI job or editor needs structured data.
 Migration Preview opens a project-shaped, read-only migration workspace:
 
 ```sh
-pnpm exec pandwind-migration-preview /path/to/project --no-open
+pnpm exec yumcss-migration-preview /path/to/project --no-open
 ```
 
-Open the printed localhost URL. Choose a source adapter and a Pandwind target,
+Open the printed localhost URL. Choose a source adapter and a YumCSS target,
 then inspect:
 
 1. the source file the tool found;
@@ -165,7 +165,7 @@ overlay; it does not write the project. Use the CLI when you are ready to
 produce a real diff:
 
 ```sh
-pnpm exec pandwind-codemod migrate \
+pnpm exec yumcss-codemod migrate \
 	--from=emotion \
 	--to=css.class \
 	--dry-run --diff --report \
@@ -202,8 +202,8 @@ The current audit records 32 canonical identity pairs, 177 safe residual pairs,
 and 815 unverified pairs. No non-identity route is classified as canonical.
 Route maturity is separate: 22 routes are experimental and 1,002 are research.
 Fixture results have not promoted a route. See the
-[full route audit](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-audit.md)
-and [machine-readable ledger](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
+[full route audit](https://github.com/astahmer/yumcss/blob/main/plans/evidence/codemod-canonicality-audit.md)
+and [machine-readable ledger](https://github.com/astahmer/yumcss/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
 for exact inputs and outputs.
 
 That honesty is the point. A green browser sandbox result is useful feedback,

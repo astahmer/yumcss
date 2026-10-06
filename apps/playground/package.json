@@ -16,16 +16,16 @@
 	"dependencies": {
 		"@ark-ui/react": "5.39.0",
 		"@monaco-editor/react": "4.7.0",
-		"@yumcss/example-preset": "workspace:*",
 		"@tanstack/react-router": "1.170.32",
+		"@yumcss/codemod": "workspace:*",
+		"@yumcss/example-preset": "workspace:*",
 		"csstype": "3.2.3",
 		"oxc-parser": "0.148.0",
-		"yumcss": "workspace:*",
-		"@yumcss/codemod": "workspace:*",
 		"prettier": "3.9.6",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
-		"shiki": "4.4.3"
+		"shiki": "4.4.3",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@oxc-parser/binding-wasm32-wasi": "0.148.0",

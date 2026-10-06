@@ -1,6 +1,6 @@
 ---
 title: Vite plugins
-description: pandwindVite() folds tw()/cx() at build time; pandwindCssVite() extracts css() atoms into a generated stylesheet.
+description: yumcssVite() folds tw()/cx() at build time; yumcssExtractVite() extracts css() atoms into a generated stylesheet.
 sidebar:
   order: 2
 ---
@@ -8,7 +8,7 @@ sidebar:
 Two vite plugins do the build-time work. They run _before_ Tailwind's scanner
 so folded output is found naturally.
 
-## `pandwindVite()` — tw/cx folding
+## `yumcssVite()` — tw/cx folding
 
 Statically inlines literal `tw({ ... })` calls with literal arguments into
 plain class strings before Tailwind's scanner sees them:
@@ -26,12 +26,12 @@ plain class strings before Tailwind's scanner sees them:
   in `tests/vite-cx-inline.test.ts`).
 
 ```ts
-import { pandwindVite } from "pandwind/vite";
+import { yumcssVite } from "yumcss/vite";
 
-plugins: [pandwindVite({ preset })];
+plugins: [yumcssVite({ preset })];
 ```
 
-## `pandwindCssVite()` — css() extraction
+## `yumcssExtractVite()` — css() extraction
 
 Scans source files for literal `css(...)` / `css.class(...)` calls, resolves
 them through the design layer, rewrites the statically representable calls to
@@ -41,13 +41,13 @@ contains static calls. Dynamic values and unsupported helpers stay on the
 runtime fallback path:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { pandwindCssVite } from "pandwind/vite";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { yumcssExtractVite } from "yumcss/vite";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 
-plugins: [pandwindCssVite(css)];
+plugins: [yumcssExtractVite(css)];
 ```
 
 The Vite runtime transform also specializes the JavaScript runtime when a
@@ -75,18 +75,18 @@ conservative runtime instead.
 
 ```ts
 // main.tsx
-import "pandwind:css";
+import "yumcss:css";
 ```
 
 ### Consuming a published component-library artifact
 
-A library can publish `pandwind.lib.json` and expose it from its package. Add
+A library can publish `yumcss.lib.json` and expose it from its package. Add
 the package specifier to the host extractor so its pre-extracted rules are
 loaded without scanning library source:
 
 ```ts
 plugins: [
-	pandwindCssVite(css, {
+	yumcssExtractVite(css, {
 		libraries: ["@acme/ui"],
 	}),
 ];
@@ -104,8 +104,8 @@ JavaScript runtime methods a consumer will call. The Vite runtime transform
 therefore still analyzes source in the current bundle. Registered library
 packages are excluded from that source transform by default: a library that
 wants its own JavaScript runtime specialized should run its library build
-through `pandwindCssVite` (or use `runtime generate` for a non-Vite build),
-while the consuming application registers the `pandwind.lib.json` only for CSS.
+through `yumcssExtractVite` (or use `runtime generate` for a non-Vite build),
+while the consuming application registers the `yumcss.lib.json` only for CSS.
 This keeps the JSON artifact small and reusable instead of coupling it to one
 consumer's runtime usage.
 
@@ -115,21 +115,21 @@ The bare `Stack` renderer and `stackFoldVite()` are an explicit
 Tailwind-compatible fast path. Use them only when Tailwind, or another
 compiler that owns the same utility classes, generates the stylesheet.
 
-When the app uses a Pandwind class-name strategy, bind the renderer to the
+When the app uses a YumCSS class-name strategy, bind the renderer to the
 same CSS compiler and pass the same engine to both build plugins:
 
 ```ts
-import { createCss } from "pandwind/css";
-import { createNamedAtomsStrategy } from "pandwind/css/named";
-import { createStack } from "pandwind/stack/react";
-import { createPandwindEngineContext, pandwindCssVite, stackFoldVite } from "pandwind/vite";
+import { createCss } from "yumcss/css";
+import { createNamedAtomsStrategy } from "yumcss/css/named";
+import { createStack } from "yumcss/stack/react";
+import { createYumCSSEngineContext, yumcssExtractVite, stackFoldVite } from "yumcss/vite";
 
 const className = createNamedAtomsStrategy("app");
-const engine = createPandwindEngineContext({ preset, className });
+const engine = createYumCSSEngineContext({ preset, className });
 export const css = createCss(preset, { className });
 export const Stack = createStack(css);
 
-plugins: [stackFoldVite({ engine }), pandwindCssVite(css, { engine })];
+plugins: [stackFoldVite({ engine }), yumcssExtractVite(css, { engine })];
 ```
 
 Static `<Stack>` props, including fully static responsive and variant objects,
@@ -144,7 +144,7 @@ are useful when the host compiler is Svelte or Astro:
 
 ```svelte
 <script lang="ts">
-  import Stack from "pandwind/stack/svelte";
+  import Stack from "yumcss/stack/svelte";
 </script>
 
 <Stack direction={{ base: "column", md: "row" }} gap={{ base: 2, md: 4 }} class="demo">
@@ -154,7 +154,7 @@ are useful when the host compiler is Svelte or Astro:
 
 ```astro
 ---
-import Stack from "pandwind/stack/astro";
+import Stack from "yumcss/stack/astro";
 ---
 
 <Stack direction={{ base: "column", md: "row" }} gap={{ base: 2, md: 4 }} class="demo">
@@ -164,7 +164,7 @@ import Stack from "pandwind/stack/astro";
 
 These native files stay in the host framework's compilation lane and use the
 default Tailwind-compatible classes. Use `class` for additional project
-utilities; configured Pandwind class-name strategies remain available through
+utilities; configured YumCSS class-name strategies remain available through
 the JavaScript `createStack(css)` renderers above. `stackFoldVite()` also
 recognizes static `<Stack>` usages in `.svelte` and `.astro` files, so place it
 before the host framework plugin when those props should fold into generated
@@ -179,7 +179,7 @@ separate config file is needed:
 
 ```ts
 // src/css.ts
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 import { preset } from "./theme";
 
 export const css = createCss(preset);
@@ -187,15 +187,15 @@ export const css = createCss(preset);
 
 ```ts
 // vite.config.ts
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { css } from "./src/css";
 
-plugins: [pandwindCssVite(css)];
+plugins: [yumcssExtractVite(css)];
 ```
 
 ### Multiple presets or source lanes
 
-Most applications need one `pandwindCssVite()` instance. Use more than one
+Most applications need one `yumcssExtractVite()` instance. Use more than one
 when different source modules belong to different presets—for example, an
 application shell with its own theme alongside a sandbox or component library
 with a separate design system.
@@ -206,18 +206,18 @@ instance a unique `virtualId`:
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { appCss } from "./src/app-css";
 import { sandboxCss } from "./src/sandbox-css";
 
 export default defineConfig({
 	plugins: [
-		pandwindCssVite(appCss, {
+		yumcssExtractVite(appCss, {
 			cssSources: ["css"],
 		}),
-		pandwindCssVite(sandboxCss, {
+		yumcssExtractVite(sandboxCss, {
 			cssSources: ["sandbox-css"],
-			virtualId: "pandwind:sandbox-css",
+			virtualId: "yumcss:sandbox-css",
 		}),
 	],
 });
@@ -227,7 +227,7 @@ The source modules must use the same presets as their extractor instances:
 
 ```ts
 // src/app-css.ts
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 import { appPreset } from "./app-preset";
 
 export const appCss = createCss(appPreset);
@@ -235,7 +235,7 @@ export const appCss = createCss(appPreset);
 
 ```ts
 // src/sandbox-css.ts
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 import { sandboxPreset } from "./sandbox-preset";
 
 export const sandboxCss = createCss(sandboxPreset);
@@ -248,10 +248,10 @@ runtime factory:
 ```ts
 const css = createCss(appPreset, { namespace: "checkout" });
 
-plugins: [pandwindCssVite(css, { namespace: "checkout" })];
+plugins: [yumcssExtractVite(css, { namespace: "checkout" })];
 ```
 
-The default namespace is `pw`. The option only changes Pandwind-owned
+The default namespace is `pw`. The option only changes YumCSS-owned
 `css.vars()` carriers and critical-style marker attributes; custom
 `ClassNameStrategy` output remains untouched.
 
@@ -259,8 +259,8 @@ Load every generated sheet from the application entry:
 
 ```ts
 // main.tsx
-import "pandwind:css";
-import "pandwind:sandbox-css";
+import "yumcss:css";
+import "yumcss:sandbox-css";
 ```
 
 `cssSources` matches the import source used for the CSS factory, not a
@@ -277,7 +277,7 @@ but this is opt-in because it changes a `className` attribute into a
 `className`/`style` props spread:
 
 ```ts
-pandwindCssVite(css, { transformDynamicClassName: true });
+yumcssExtractVite(css, { transformDynamicClassName: true });
 ```
 
 With the option enabled in the default or a sheet-backed class-name mode, this
@@ -388,14 +388,14 @@ The same lowering recognizes an explicit flat
 It keeps the public composition untouched for non-string additional props,
 fallback declarations, or any other shape whose merge semantics cannot be
 proven equivalent. The same structural analyzer is available to
-`@pandwind/lint-plugin`; enable
-`pandwind-extraction/no-dynamic-carrier-fallback` at `error` severity to make
+`@yumcss/lint-plugin`; enable
+`yumcss-extraction/no-dynamic-carrier-fallback` at `error` severity to make
 these remaining fallback shapes visible in the IDE. The Vite transform keeps
 the runtime carrier because it is semantically valid; the lint rule is the
 fail-fast authoring boundary and therefore does not require a build-breaking
 exception for ordinary valid fallback code.
 
-Enable `pandwind-extraction/no-dynamic-keyframes` as well. A
+Enable `yumcss-extraction/no-dynamic-keyframes` as well. A
 `css.keyframes()` body is a build-time-only contract: the extractor must prove
 one static step object per call before it can emit the matching deterministic
 `@keyframes` rule and replace the call with its name. The rule shares the Vite
@@ -406,14 +406,14 @@ bodies are reported at the source call site.
 ## Per-route CSS splitting (opt-in)
 
 ```ts
-pandwindCssVite(css, {
+yumcssExtractVite(css, {
 	splitByRoute: [{ match: /\/routes\/admin\//, name: "admin" }],
 });
 ```
 
-Route-exclusive atoms are served from `pandwind:css?route=<name>` while shared
+Route-exclusive atoms are served from `yumcss:css?route=<name>` while shared
 atoms and unmatched files stay in the global sheet; a virtual
-`pandwind:css-manifest` module exports the route -> id map. Default remains
+`yumcss:css-manifest` module exports the route -> id map. Default remains
 one global stylesheet.
 
 ## Critical-CSS inlining (opt-in)

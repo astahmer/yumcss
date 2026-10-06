@@ -1,5 +1,4 @@
-import {
-	normalizeInstalledTargetPackage, execFileSync } from "node:child_process";
+import { normalizeInstalledTargetPackage, execFileSync } from "node:child_process";
 import {
 	cpSync,
 	existsSync,

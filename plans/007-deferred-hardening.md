@@ -10,8 +10,8 @@ workstream merges. Each is small-to-medium; none blocks the other. Ordered by
 with the generated directional hierarchy now covering the remaining
 multi-property families. The historical defects were found by a token-level
 differential prober against tailwind-merge
-while integrating pandwind into jantimon/css-in-js-bench (SSR microbench:
-pandwind runtime-merge lane at 0.24× twMerge geo-mean; up to 12× slower on
+while integrating yumcss into jantimon/css-in-js-bench (SSR microbench:
+yumcss runtime-merge lane at 0.24× twMerge geo-mean; up to 12× slower on
 long class lists).
 **Three concrete defects:**
 
@@ -25,7 +25,7 @@ long class lists).
    **Acceptance:**
 
 - exact class-list parity with twMerge on all 10 css-in-js-bench cases
-  (prober harness exists in /Users/astahmer/dev/css-in-js-bench/techs/pandwind);
+  (prober harness exists in /Users/astahmer/dev/css-in-js-bench/techs/yumcss);
 - existing suites stay green unmodified (cx.test, cx-fuzz golden corpus —
   extend the golden corpus if legitimate outputs change, documenting why);
 - BENCH.md re-measured after landing (target: ≥1M ops/sec under load,
@@ -44,11 +44,11 @@ call are left at runtime.
 keep the whole cx runtime alive, defeating tree-shaking for mixed apps.
 **Approach:**
 
-1. The blocker is cross-plugin state: `pandwindVite` (tw/cx inlining) and
-   `pandwindCssVite` (stylesheet + atom registry) each build their own engine
+1. The blocker is cross-plugin state: `yumcssVite` (tw/cx inlining) and
+   `yumcssExtractVite` (stylesheet + atom registry) each build their own engine
    instance. Extract a shared per-build engine context (preset + strategy +
    atom registry) created once and handed to both plugins via a shared options
-   object or a virtual module (`pandwind:engine`).
+   object or a virtual module (`yumcss:engine`).
 2. Teach the cx evaluator to compile `css(...)` literals through the shared
    engine's registry so folded strings contain the same hashed/named classes
    the stylesheet pass generates for the same source file.
@@ -155,7 +155,7 @@ Actual registry publication remains operator-gated:
 1. `exports` map audit: ensure `./css`, `./tw`, `./cx`, `/generate*` subpaths +
    `"types"` conditions are all declared; generate-theme/generate-types are
    currently reachable only via repo paths — decide whether to ship them under
-   `pandwind/codegen`.
+   `yumcss/codegen`.
 2. README quickstart for a fresh app (codegen → vite plugin → preset) using the
    example app as the canonical path.
 3. Changesets or manual CHANGELOG.md capturing the 2026-08-22 wave.
@@ -216,19 +216,19 @@ Residual risks / not done:
   express "later p kills earlier px, but not vice versa". Current semantics
   cover every pattern in the bench corpus and the defect list; deeper patterns
   (e.g. `py-2` after `p-6 px-4`) may keep both where twMerge keeps both.
-- The css-in-js-bench lane (techs/pandwind/lib.ts) predates some of these
+- The css-in-js-bench lane (techs/yumcss/lib.ts) predates some of these
   refinements (border-2 width filtering, static transition decoupling) — its
   shim could adopt them for slightly better lane numbers.
 
 ### A. Outcomes
 
-- Shared per-build engine context: `createPandwindEngineContext({ preset,
+- Shared per-build engine context: `createYumCSSEngineContext({ preset,
 className?, debug? })` (`src/vite/engine-context.ts`) bundles preset +
   strategy + atom registry + a `foldLiteralStyle(literal)` compiler that
   mirrors `createStylesheet.processFlatStyles` exactly (design-resolve,
-  flatten, drop the empty condition, sort path parts). `pandwindVite({
+  flatten, drop the empty condition, sort path parts). `yumcssVite({
 css: { engine | preset/className } })` folds literal `css()` /
-  `css.class()` atoms inside `cx()`; `pandwindCssVite(preset, { engine })`
+  `css.class()` atoms inside `cx()`; `yumcssExtractVite(preset, { engine })`
   accepts the same context (preset identity asserted) so both plugins are
   wired to one configuration source.
 - Naming parity: folded atoms are byte-identical to what the stylesheet
@@ -280,12 +280,12 @@ vs twMerge's 2.22M headline. Profiling + analysis showed two things:
    re-ran the full merge.
 
 Fix: added a whole-input result cache to `createCx` — same strategy as
-tailwind-merge, with one extra correctness guard pandwind needs: entries
+tailwind-merge, with one extra correctness guard yumcss needs: entries
 record the atom-registry size at compute time (css atoms resolve live), and a
 hit with a changed registry size re-computes. Only pure-string argument lists
 are cached; arrays/objects always take the merge path. Also replaced the
 `/\d+$/` opacity-modifier regexes on the parse hot path with manual scans.
-Committed harness: `packages/pandwind/cx-bench.mts` (short pair, long pair,
+Committed harness: `packages/yumcss/cx-bench.mts` (short pair, long pair,
 long single, cold unique-token shapes).
 
 Measured (quiet machine, median-of-15, before → after):
@@ -310,7 +310,7 @@ conflict/compose metadata (no hardcoded lists); token signatures become int
 bitmasks. Conflict check = single AND; multi-prop kill = bit clear.
 Targets: cold path >=1.5x (from ~119K), warm long-pair no regression (~1.7M).
 Zero behavior change — parity/fuzz/golden suites green unmodified.
-Harness: packages/pandwind/cx-bench.mts. Report before/after + size delta.
+Harness: packages/yumcss/cx-bench.mts. Report before/after + size delta.
 
 This remains an optional cold-path experiment. The current generated metadata
 has more than 64 canonical signatures and CSS atoms can add further
@@ -319,7 +319,7 @@ and allocation cost. It is not part of the correctness completion bar.
 
 ### A++ — cross-module constant propagation (compiler)
 
-Repo-wide exported-const registry in pandwindVite state (Map absPath ->
+Repo-wide exported-const registry in yumcssVite state (Map absPath ->
 exports, invalidated on HMR); resolve import bindings one barrel level deep;
 only string literals propagate; circular/non-literal/dynamic => untouched,
 never throw. Tests: fixtures + differential equivalence + invalidation +

@@ -1,4 +1,4 @@
-# Agent guidance — pandwind
+# Agent guidance — yumcss
 
 For every decision, ask what the best expert in that field would do and why they would reject your current choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge correct, never for what satisfies the stated constraints most cheaply. Every trade-off you take must be stated to the user, never absorbed.
 
@@ -30,7 +30,7 @@ What is always welcome (no pushback needed):
 
 Current approved-but-not-built examples of the bar: var-inline strategy
 (dynamic values only). Per-page CSS splitting already shipped
-(`splitByRoute` / `inlineCritical` on `pandwindCssVite`) — treat it as part of
+(`splitByRoute` / `inlineCritical` on `yumcssExtractVite`) — treat it as part of
 the frozen surface now.
 
 Do not retain deprecated aliases, overloads, or compatibility projections for
@@ -41,7 +41,7 @@ preserved as such.
 
 ## Interface-first architecture policy
 
-Pandwind is a pivot library, so extensibility is a product requirement, not a
+YumCSS is a pivot library, so extensibility is a product requirement, not a
 future cleanup. When a domain can have more than one implementation, model it
 as a versioned interface plus a registry/factory. Do not make callers know
 which concrete module to import or grow a switch statement in a central runner.
@@ -49,7 +49,7 @@ which concrete module to import or grow a switch statement in a central runner.
 - Migration is composed from a source dialect adapter, the semantic IR, and a
   target dialect adapter. A route from X to Y is not a bespoke `XToY` function.
   Systems may expose nested dialect adapters: Panda can register `tw`, `dss`,
-  and `css` source dialects under one Panda system adapter, while Pandwind can
+  and `css` source dialects under one Panda system adapter, while YumCSS can
   register multiple target dialects under its target adapter.
 - Adapter contracts must carry identity, detection, configuration, parse,
   emit, dependencies, capabilities, validation, and lossiness. Adding one
@@ -96,15 +96,15 @@ which concrete module to import or grow a switch statement in a central runner.
   patterns, diagnostics, and user-authored names may remain strings when they
   are not registry keys or control-flow identities.
 - Third-party style adapters use the versioned plugin registry in
-  `pandwind-codemod/swap`; discovery is explicit and injectable, never an
+  `@yumcss/codemod/swap`; discovery is explicit and injectable, never an
   ambient global scan. A plugin may export one adapter, a plugin object, or an
   adapter collection.
-- The source scanner contract is owned by `pandwind/source`. Codemod is only a
+- The source scanner contract is owned by `yumcss/source`. Codemod is only a
   compatibility projection; Vite, analyze, and Panda compiler paths must use
   the same parser/language-selection service rather than reimplementing
   extension checks.
 - The Oxlint plugin is a source-shape guard, not a project-config evaluator.
-  Its rules must resolve real Pandwind imports (including aliases and
+  Its rules must resolve real YumCSS imports (including aliases and
   namespaces) and must ignore unrelated local functions with the same name.
   Configuration-sensitive checks require explicit verified policy input; never
   encode a guessed ecosystem vocabulary as a hardcoded lint allow-list.
@@ -122,7 +122,7 @@ which concrete module to import or grow a switch statement in a central runner.
   package or config is unavailable. Official-loader failures must become
   structured diagnostics/residuals; never silently treat an unevaluated
   custom preset as the complete project configuration. Do not bundle optional
-  ecosystem packages into Pandwind's runtime dependencies.
+  ecosystem packages into YumCSS's runtime dependencies.
 - Never create an adapter-owned partial copy of an ecosystem's default utility,
   shorthand, condition, variant, or style-prop vocabulary. Load the effective
   project configuration (including the library's presets/plugins) and derive
@@ -130,11 +130,11 @@ which concrete module to import or grow a switch statement in a central runner.
   unavailable, use only a neutral empty vocabulary and preserve or residualize
   the source; a hardcoded fallback that happens to satisfy one corpus is a
   correctness bug.
-- Effect 4 is tooling infrastructure, not a Pandwind domain contract. Keep it
+- Effect 4 is tooling infrastructure, not a YumCSS domain contract. Keep it
   behind internal script-level ports for long-running repository/proof work:
   bounded task batches, cancellation, and Node filesystem/path access may use
   the official `effect` and `@effect/platform-node` services. Do not import
-  Effect from `packages/pandwind/src`, runtime/Vite hot paths, pure
+  Effect from `packages/yumcss/src`, runtime/Vite hot paths, pure
   `StyleProgram` transformations, backend renderers, or browser bundles. Do
   not use `effect/unstable/*`; the adapter must remain replaceable by the
   existing synchronous ports.
@@ -166,13 +166,13 @@ which concrete module to import or grow a switch statement in a central runner.
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.
 - Generated design-system context is exchanged through the versioned
-  `pandwind.interop.json` artifact. Codegen owns its contents; bridge generation
+  `yumcss.interop.json` artifact. Codegen owns its contents; bridge generation
   refreshes the bridge section; migration tooling may consume pre-artifact
   generated files only when a project has not produced the versioned artifact.
   Never hardcode an example preset or application-specific metadata in a
   generic migration path.
 - Playground Monaco declarations are generated from the workspace-linked
-  `pandwind` package exports. From `apps/playground`, run `pnpm editor:types`.
+  `yumcss` package exports. From `apps/playground`, run `pnpm editor:types`.
   Do not hand-maintain a second `CssFn`, `CxFn`, design, or option signature in
   the editor. Keep third-party migration-example shims explicitly separate and
   label them as shims when the package is not a playground dependency.
@@ -200,7 +200,7 @@ which concrete module to import or grow a switch statement in a central runner.
   names, patterns, and semantic exceptions do not belong in `cli.ts`, the
   migration runner, or a shared “extra adapters” switchboard.
 - A family interface may contain nested dialect implementations. For example,
-  Panda-to-Pandwind is a route family whose `tw`, `dss`, and `css` dialects are
+  Panda-to-YumCSS is a route family whose `tw`, `dss`, and `css` dialects are
   independently registered source adapters. The orchestrator sees only ports
   and resolves a route from the registry.
 - Comments follow ownership, not history. Keep comments that explain semantic
@@ -217,7 +217,7 @@ which concrete module to import or grow a switch statement in a central runner.
   its declared package name and subpath exports. Do not import
   `packages/*/src/*` or `node_modules/*/src/*` from applications, scripts,
   tests, examples, or documentation. Build-time commands use the package's
-  declared binaries (for example, `pandwind-codemod tw generate`) rather than reaching
+  declared binaries (for example, `yumcss-codemod tw generate`) rather than reaching
   into source files. Direct source paths are allowed only when a harness must
   load an exact historical worktree revision or intentionally bundles a
   package from the current repository; those sites must document that reason.
@@ -301,7 +301,7 @@ We have not launched and have no production users or production data. Revisit th
 
 ## Product naming
 
-- Start Pandwind names from practical utility. Favor natural, balanced names
+- Start YumCSS names from practical utility. Favor natural, balanced names
   over clever or overly technical wordplay.
-- Do not start Pandwind product or package names with "style" or "css"; those
+- Do not start YumCSS product or package names with "style" or "css"; those
   prefixes were explicitly ruled out.

@@ -6,8 +6,7 @@
  * provider-owned runtime theme callbacks remain an explicit adapter residual;
  * this proof covers the static Box/sx lane that can be lowered losslessly.
  */
-import {
-	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {

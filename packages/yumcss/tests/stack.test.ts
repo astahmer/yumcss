@@ -322,8 +322,7 @@ describe("foldStackElements — vite fold pass", () => {
 		expect(svelte?.code).not.toContain("yumcss/stack/svelte");
 
 		const astro = plugin.transform(
-			`---\nimport Stack from "yumcss/stack/astro";\n---\n` +
-				`<Stack gap={4} data-kind="demo" />`,
+			`---\nimport Stack from "yumcss/stack/astro";\n---\n<Stack gap={4} data-kind="demo" />`,
 			"/src/App.astro",
 		);
 		expect(astro?.code).toContain(`<div class="flex gap-4" data-kind="demo"></div>`);

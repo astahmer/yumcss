@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-This proof exercises Pandwind against the pinned documentation site in the
+This proof exercises YumCSS against the pinned documentation site in the
 [Emotion repository](https://github.com/emotion-js/emotion), rather than a
 synthetic fixture. The source is pinned to commit
 `b882bcba85132554992e4bd49e94c95939bbf810` and the migrated app is built from
@@ -13,7 +13,7 @@ the repository's `site` project.
 
 ## What is migrated
 
-The migration uses the `emotion → pandwind` codemod lane and emits static
+The migration uses the `emotion → yumcss` codemod lane and emits static
 `css()` output wherever the source is safely extractable. A file that still
 needs runtime Emotion semantics is retained as a runtime island, along with
 its local dependency closure. This prevents an extracted class from being
@@ -48,28 +48,28 @@ hydration behavior remain part of the comparison.
 
 ## Reproduce it
 
-From the Pandwind checkout:
+From the YumCSS checkout:
 
 ```sh
 nub scripts/run-migration-proof.ts run emotion-site \
-	--output-root /tmp/pandwind-emotion-site-candidate
+	--output-root /tmp/yumcss-emotion-site-candidate
 ```
 
 Build the candidate app:
 
 ```sh
-cd /tmp/pandwind-emotion-site-candidate/site
+cd /tmp/yumcss-emotion-site-candidate/site
 pnpm run build
 ```
 
 Run the route, CSS-size, screenshot, and hydration proof:
 
 ```sh
-cd /path/to/pandwind
+cd /path/to/yumcss
 node scripts/verify-emotion-site.mjs \
-  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/emotion-clean/site/out" \
-  /tmp/pandwind-emotion-site-candidate/site/out \
-  /tmp/pandwind-emotion-browser-report.json
+  "${YUMCSS_REFERENCE_ROOT:-$HOME/.references}/emotion-clean/site/out" \
+  /tmp/yumcss-emotion-site-candidate/site/out \
+  /tmp/yumcss-emotion-browser-report.json
 ```
 
 The verifier fails on HTTP errors, browser errors, visible-text changes,

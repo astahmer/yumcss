@@ -18,26 +18,27 @@ original behavior.
 
 ## Reproduce
 
-From the Pandwind repository:
+From the YumCSS repository:
 
 ```sh
 nub scripts/run-migration-proof.ts run effect-docs tw \
-	--output-root /tmp/pandwind-effect-tw
-cd /tmp/pandwind-effect-tw
+	--output-root /tmp/yumcss-effect-tw
+cd /tmp/yumcss-effect-tw
 pnpm install --no-frozen-lockfile
 pnpm exec vp run build
 ```
 
 The baseline is built from the read-only clone without migration. Compare the
-baseline and all lanes with:
+baseline and all lanes with the verification helper from the separate Effect
+migration checkout (`EFFECT_MIGRATION_REPO`):
 
 ```sh
-node /Users/astahmer/dev/pandwind-effect-migration/scripts/verify-effect-docs.mjs \
-  /tmp/pandwind-effect-baseline/apps/web/dist/client \
-  /tmp/pandwind-effect-tw/apps/web/dist/client \
-  /tmp/pandwind-effect-css/apps/web/dist/client \
-  /tmp/pandwind-effect-design/apps/web/dist/client \
-  /tmp/pandwind-effect-parity.json
+node "$EFFECT_MIGRATION_REPO/scripts/verify-effect-docs.mjs" \
+  /tmp/yumcss-effect-baseline/apps/web/dist/client \
+  /tmp/yumcss-effect-tw/apps/web/dist/client \
+  /tmp/yumcss-effect-css/apps/web/dist/client \
+  /tmp/yumcss-effect-design/apps/web/dist/client \
+  /tmp/yumcss-effect-parity.json
 ```
 
 The proof requires every generated route to respond, no newly introduced

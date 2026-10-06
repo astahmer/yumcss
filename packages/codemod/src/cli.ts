@@ -38,10 +38,7 @@ import { createCssCli } from "./css/cli.ts";
 import { extractArbitraryValueProposals } from "./arbitrary-values.ts";
 import { sortStaticClassSource } from "./class-sorter.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
-import {
-	createYumCSSProjectSupport,
-	type YumCSSProjectSupport,
-} from "./swap/project-bootstrap.ts";
+import { createYumCSSProjectSupport, type YumCSSProjectSupport } from "./swap/project-bootstrap.ts";
 import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
 import {
 	AdapterDependencyKindTag,
@@ -1292,9 +1289,7 @@ async function main(argv = process.argv.slice(2)): Promise<void> {
 		try {
 			await createTwCli().run(argv.slice(1));
 		} catch (error) {
-			console.error(
-				`yumcss-codemod tw: ${error instanceof Error ? error.message : String(error)}`,
-			);
+			console.error(`yumcss-codemod tw: ${error instanceof Error ? error.message : String(error)}`);
 			process.exitCode = 1;
 		}
 		return;

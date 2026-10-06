@@ -1,5 +1,10 @@
 import {
-	normalizeInstalledTargetPackage, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+	normalizeInstalledTargetPackage,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
@@ -164,9 +169,7 @@ const packageJson = (target: boolean): Record<string, unknown> => ({
 		typecheck: "tsc --noEmit",
 	},
 	dependencies: {
-		...(target
-			? { yumcss: versions.yumcss }
-			: { "@stitches/react": versions["@stitches/react"] }),
+		...(target ? { yumcss: versions.yumcss } : { "@stitches/react": versions["@stitches/react"] }),
 		react: versions.react,
 		"react-dom": versions["react-dom"],
 	},
@@ -312,7 +315,10 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 				},
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "@stitches/react"),
-					targetPackage: normalizeInstalledTargetPackage(targetPackage.dependencies?.yumcss ?? "", repositoryRoot),
+					targetPackage: normalizeInstalledTargetPackage(
+						targetPackage.dependencies?.yumcss ?? "",
+						repositoryRoot,
+					),
 					targetNodeModule: existsSync(join(targetRoot, "node_modules/yumcss/package.json")),
 				},
 				migration: {

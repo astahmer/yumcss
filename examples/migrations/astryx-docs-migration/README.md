@@ -1,7 +1,7 @@
 # Astryx docsite migration corpus
 
 This corpus exercises the pinned Astryx documentation site through three
-Pandwind authoring lanes:
+YumCSS authoring lanes:
 
 - `static-css`: compile-time `createUnsafeCss()` extraction;
 - `runtime-css`: the same static-first lane, with runtime CSS enabled only for
@@ -19,22 +19,22 @@ and screenshots remain disposable artifacts under `/private/tmp` and `/tmp`.
 
 ## Reproduce a lane
 
-Run from the Pandwind repository root:
+Run from the YumCSS repository root:
 
 ```sh
 nub scripts/run-migration-proof.ts run astryx-docs static-css \
 	--references-root /Users/astahmer/.references \
-	--output-root /private/tmp/pandwind-astryx-repo/apps/docsite \
+	--output-root /private/tmp/yumcss-astryx-repo/apps/docsite \
 	--no-prepare
 
 nub scripts/run-migration-proof.ts run astryx-docs runtime-css \
 	--references-root /Users/astahmer/.references \
-	--output-root /private/tmp/pandwind-astryx-runtime-final/apps/docsite \
+	--output-root /private/tmp/yumcss-astryx-runtime-final/apps/docsite \
 	--no-prepare
 
 nub scripts/run-migration-proof.ts run astryx-docs design-dss \
 	--references-root /Users/astahmer/.references \
-	--output-root /private/tmp/pandwind-astryx-design-final/apps/docsite \
+	--output-root /private/tmp/yumcss-astryx-design-final/apps/docsite \
 	--no-prepare
 ```
 
@@ -42,12 +42,13 @@ The migrated output must have a writable copy of the monorepo `packages/`
 directory because the docs registry executes source templates from
 `packages/cli/assets/templates/pages`. Do not make that directory a symlink to
 the immutable reference checkout. Each output is disposable. Build it with
-the pinned Astryx dependency installation:
+the pinned Astryx dependency installation. Set `ASTRYX_MIGRATION_REPO` to the
+separate proof-helper checkout:
 
 ```sh
-cd /private/tmp/pandwind-astryx-repo/apps/docsite
+cd /private/tmp/yumcss-astryx-repo/apps/docsite
 /Users/astahmer/.references/astryx/node_modules/.bin/next build --webpack
-node /Users/astahmer/dev/pandwind-astryx-migration/scripts/prepare-astryx-production-proof.mjs .
+node "$ASTRYX_MIGRATION_REPO/scripts/prepare-astryx-production-proof.mjs" .
 ```
 
 Start the baseline and candidate on separate ports, then run:
@@ -56,7 +57,7 @@ Start the baseline and candidate on separate ports, then run:
 node scripts/verify-astryx-docs-browser.mjs \
   http://localhost:4321 \
   http://localhost:4322 \
-  /tmp/pandwind-astryx-proof/browser-parity-static-production-final.json
+  /tmp/yumcss-astryx-proof/browser-parity-static-production-final.json
 ```
 
 The browser matrix covers 12 representative routes at desktop and mobile

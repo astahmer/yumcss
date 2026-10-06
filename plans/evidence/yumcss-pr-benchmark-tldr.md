@@ -1,13 +1,13 @@
-# Pandwind PR-style benchmark TL;DR
+# YumCSS PR-style benchmark TL;DR
 
-This is a local comparison report using Pandwind lanes added to working copies
+This is a local comparison report using YumCSS lanes added to working copies
 of the two reference benchmark repositories. The upstream repositories were
-not modified, committed, or pushed. The lanes use Pandwind's real APIs and the
+not modified, committed, or pushed. The lanes use YumCSS's real APIs and the
 benchmark harnesses' own measurement tools.
 
 Measured context:
 
-- Pandwind: current working tree, macOS arm64, Node `v24.19.0`.
+- YumCSS: current working tree, macOS arm64, Node `v24.19.0`.
 - [css-in-js-bench](https://github.com/jantimon/css-in-js-bench): pinned
   reference `3dee1bc32e651ace01c5e4d9306c541337d0c1ce`.
 - [css-in-js-arena](https://github.com/gajus/css-in-js-arena): pinned
@@ -15,14 +15,14 @@ Measured context:
 
 ## The short answer
 
-Pandwind's strongest measured result is not its raw runtime call speed. It is
+YumCSS's strongest measured result is not its raw runtime call speed. It is
 the static-first path:
 
 ```text
 literal tw() / css() / dss()
         -> compiler extraction
         -> ordinary class strings + one generated stylesheet
-        -> zero Pandwind style work at render time
+        -> zero YumCSS style work at render time
 ```
 
 That puts the extracted `tw()` path in the same performance category as
@@ -35,14 +35,14 @@ The dynamic fallback is still useful, but it is a different product shape:
 
 | API     | Current direct-call evidence | Static literal behavior                                 | Honest conclusion                                                          |
 | ------- | ---------------------------: | ------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `tw()`  |     **1.12M ops/sec** median | Extractable; dynamic calls retain runtime compilation   | Fastest Pandwind style-object API in this sample                           |
+| `tw()`  |     **1.12M ops/sec** median | Extractable; dynamic calls retain runtime compilation   | Fastest YumCSS style-object API in this sample                             |
 | `dss()` |     **534K ops/sec** median* | Extractable after design-vocabulary resolution          | More work than `tw()` because it resolves `$frame`/`$text` semantics first |
 | `css()` |      **422K ops/sec** median | Extractable; compiler-pruned calls pay no style runtime | General CSS fallback is slower but remains small and fully expressive      |
 
 \* `dss()` is an exploratory current-process measurement using the example
 preset, not yet a committed benchmark snapshot or an external-harness lane.
 
-## Pandwind-only ranking
+## YumCSS-only ranking
 
 For the current direct-call sample, higher throughput ranks as follows:
 
@@ -62,21 +62,21 @@ The repository's existing competitor table reports different call shapes and
 was measured under a different run. It is useful for orientation, not a
 formal league table:
 
-| Implementation                    | Median ops/sec | Interpretation                                    |
-| --------------------------------- | -------------: | ------------------------------------------------- |
-| StyleX `props()`                  |          7.83M | Precompiled object iteration                      |
-| Pandwind `cx()` current snapshot  |          6.17M | Warm class-string merge; included for context     |
-| `tailwind-merge()`                |          2.62M | Precomputed class-string merge                    |
-| Pandwind `tw()` current snapshot  |          1.12M | Style-object compilation fallback                 |
-| Pandwind `dss()` exploratory      |           534K | Design vocabulary resolution plus CSS compilation |
-| Emotion `css()`                   |           472K | Runtime hashing/cache path                        |
-| Pandwind `css()` current snapshot |           422K | General CSS-object compilation fallback           |
-| Panda generated `css()`           |           429K | Runtime system walk                               |
+| Implementation                  | Median ops/sec | Interpretation                                    |
+| ------------------------------- | -------------: | ------------------------------------------------- |
+| StyleX `props()`                |          7.83M | Precompiled object iteration                      |
+| YumCSS `cx()` current snapshot  |          6.17M | Warm class-string merge; included for context     |
+| `tailwind-merge()`              |          2.62M | Precomputed class-string merge                    |
+| YumCSS `tw()` current snapshot  |          1.12M | Style-object compilation fallback                 |
+| YumCSS `dss()` exploratory      |           534K | Design vocabulary resolution plus CSS compilation |
+| Emotion `css()`                 |           472K | Runtime hashing/cache path                        |
+| YumCSS `css()` current snapshot |           422K | General CSS-object compilation fallback           |
+| Panda generated `css()`         |           429K | Runtime system walk                               |
 
-The comparison is intentionally not presented as “Pandwind beats every
+The comparison is intentionally not presented as “YumCSS beats every
 library”: StyleX and `tailwind-merge` do less work in their respective rows,
 and the measurements are not the same harness or machine. The meaningful
-production comparison is the compiler path, where Pandwind avoids these
+production comparison is the compiler path, where YumCSS avoids these
 per-call costs for static source.
 
 ## `css-in-js-bench` comparison
@@ -90,7 +90,7 @@ This reference benchmark measures the same React cases across lanes:
 - scaling as the number of instances grows;
 - CSS and markup actually emitted by each lane.
 
-### Measured Pandwind lanes
+### Measured YumCSS lanes
 
 The local run used the harness's full current microbench and payload
 measurement command. It generated 196 cells (`19` lanes × `13` cases). The
@@ -99,10 +99,10 @@ cells; the microbench and payload result files were written and are the data
 reported here. WPD/browser rank is therefore intentionally not claimed for
 this repository.
 
-| Lane                 | Real API exercised                                              | Measured result                                                                     |
-| -------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `pandwind`           | `createCx()` runtime merge                                      | 230,048 renders/sec mean of case medians; mean rank 14.2 across the 10 shared cases |
-| `pandwind-buildtime` | Vite-folded literal `tw()`/`cx()`; `css.class()` in mixed cases | 756,723 renders/sec mean of medians across the 10 shared cases; mean rank 6.3       |
+| Lane               | Real API exercised                                              | Measured result                                                                     |
+| ------------------ | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `yumcss`           | `createCx()` runtime merge                                      | 230,048 renders/sec mean of case medians; mean rank 14.2 across the 10 shared cases |
+| `yumcss-buildtime` | Vite-folded literal `tw()`/`cx()`; `css.class()` in mixed cases | 756,723 renders/sec mean of medians across the 10 shared cases; mean rank 6.3       |
 
 The build-time lane's strongest shared-case results were `compose-6` at rank
 1/18 (2,206,897 renders/sec), `compose-3` at rank 3/18 (1,213,654),
@@ -120,10 +120,10 @@ case.
 
 ## `css-in-js-arena` comparison
 
-The pinned arena compares Bamboo, StyleX, Panda, and a locally added Pandwind
-lane on the same six-page React Router application. Pandwind starts from the
-arena's StyleX workload, is migrated through the real StyleX→Pandwind codemod,
-and is built with Pandwind's extraction plugins. Its recorded route matrix and
+The pinned arena compares Bamboo, StyleX, Panda, and a locally added YumCSS
+lane on the same six-page React Router application. YumCSS starts from the
+arena's StyleX workload, is migrated through the real StyleX→YumCSS codemod,
+and is built with YumCSS's extraction plugins. Its recorded route matrix and
 bytes tool now include all four engines.
 
 | Rank in original arena tally | Engine | Rows won |
@@ -134,11 +134,11 @@ bytes tool now include all four engines.
 
 The original tally is retained because the arena's scoring tool is still
 three-engine-specific. The four-engine measurements below are the comparable
-Pandwind result; they are not silently folded into the old 30-row score.
+YumCSS result; they are not silently folded into the old 30-row score.
 
 The arena's measured headline values include:
 
-| Axis                  |    Bamboo |    StyleX |     Panda |  Pandwind |
+| Axis                  |    Bamboo |    StyleX |     Panda |    YumCSS |
 | --------------------- | --------: | --------: | --------: | --------: |
 | Full first load       | 105,091 B | 106,122 B | 112,835 B | 107,641 B |
 | CSS brotli            |   6,845 B |   7,008 B |   9,518 B |   6,527 B |
@@ -148,13 +148,13 @@ The arena's measured headline values include:
 | CSS rules             |       525 |       467 |       532 |       457 |
 | Class-attribute bytes |    93,036 |    70,843 |    92,738 |    64,550 |
 
-Pandwind ranks first for CSS Brotli, CSS rule count, class-attribute bytes,
+YumCSS ranks first for CSS Brotli, CSS rule count, class-attribute bytes,
 mean SSR HTML gzip, and both build-time columns in this local four-engine
-run. Bamboo remains first for full first-load bytes because Pandwind's client
-JavaScript is 3.3% larger gzip than Bamboo in this workload. Pandwind's full
+run. Bamboo remains first for full first-load bytes because YumCSS's client
+JavaScript is 3.3% larger gzip than Bamboo in this workload. YumCSS's full
 first load is 2.4% larger than Bamboo despite 4.6% smaller CSS Brotli.
 
-Browser comparison covered 24 Pandwind route/viewport/theme states. 20/24
+Browser comparison covered 24 YumCSS route/viewport/theme states. 20/24
 were below the arena's 0.05% pixel-diff threshold; the other four were small
 differences on projects-tablet-light (0.0532%), lab-tablet-light (0.0552%),
 lab-mobile-light (0.0897%), and projects-desktop-dark (0.1026%). The
@@ -166,7 +166,7 @@ It does not separately rank `tw()` or `dss()`; those API surfaces require a
 workload authored in their respective semantic vocabulary rather than a
 misleading textual substitution.
 
-## Current Pandwind size evidence
+## Current YumCSS size evidence
 
 The committed runtime snapshot currently records:
 
@@ -184,25 +184,25 @@ have a separate size row because it wraps the CSS engine and shares its
 runtime/extraction machinery.
 
 There is also a current gate issue that must be fixed before treating the
-size record as a clean release result: `pnpm --filter pandwind run test:size`
+size record as a clean release result: `pnpm --filter yumcss run test:size`
 currently measures `tw()` at **2,678 minified bytes**, above its **2,400-byte
 budget**. This report does not refresh the snapshot or alter runtime code.
 
 ## Final verdict
 
-| Question                                                                 | Answer                                                                                                                                                                        |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Is Pandwind's static strategy competitive with compile-time libraries?   | **Architecturally yes; externally unranked until it is a real benchmark lane.**                                                                                               |
-| Is `tw()` the fastest Pandwind style-object fallback?                    | **Yes in the current local sample.**                                                                                                                                          |
-| Is `dss()` slower than `tw()`?                                           | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                                 |
-| Is `css()` the most flexible fallback?                                   | **Yes; its lower throughput buys general CSS expressiveness.**                                                                                                                |
-| Can we claim Pandwind wins `css-in-js-bench` or `css-in-js-arena` today? | **We can claim measured wins on specific axes, not a universal win.** The build-time lane ranks strongly; the runtime `cx()` lane is slower than specialized merge libraries. |
-| What remains unmeasured here?                                            | A dedicated `dss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence.                     |
+| Question                                                               | Answer                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Is YumCSS's static strategy competitive with compile-time libraries?   | **Architecturally yes; externally unranked until it is a real benchmark lane.**                                                                                               |
+| Is `tw()` the fastest YumCSS style-object fallback?                    | **Yes in the current local sample.**                                                                                                                                          |
+| Is `dss()` slower than `tw()`?                                         | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                                 |
+| Is `css()` the most flexible fallback?                                 | **Yes; its lower throughput buys general CSS expressiveness.**                                                                                                                |
+| Can we claim YumCSS wins `css-in-js-bench` or `css-in-js-arena` today? | **We can claim measured wins on specific axes, not a universal win.** The build-time lane ranks strongly; the runtime `cx()` lane is slower than specialized merge libraries. |
+| What remains unmeasured here?                                          | A dedicated `dss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence.                     |
 
-The defensible TL;DR is: **Pandwind now has measured local lanes in both
+The defensible TL;DR is: **YumCSS now has measured local lanes in both
 external harnesses. Its static build-time lane is competitive—rank 1 on some
 shared cases and mean rank 6.3 across the common set—and its extracted arena
 CSS is the smallest of the four engines. The runtime fallback is slower but
 explicitly prices genuinely dynamic work. The remaining evidence gap is a
 dedicated `dss()` workload and a refreshed WPD manifest, not an absent
-Pandwind measurement.**
+YumCSS measurement.**

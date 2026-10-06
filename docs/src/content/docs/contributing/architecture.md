@@ -1,11 +1,11 @@
 ---
 title: Architecture
-description: Interface-first boundaries for Pandwind's compilers and tooling.
+description: Interface-first boundaries for YumCSS's compilers and tooling.
 ---
 
 ## Core rule
 
-Pandwind is a pivot layer. A domain that has multiple ecosystems, hosts,
+YumCSS is a pivot layer. A domain that has multiple ecosystems, hosts,
 formats, policies, or lifecycle stages is represented by a port and a registry
 or factory. Composition roots assemble the default implementations; domain
 code depends on the port.
@@ -38,7 +38,7 @@ Published command entry points use the lightweight `cac` command parser for
 syntax, generated help, option/value validation, subcommands, and positional
 arity. They only normalize validated arguments and call the existing use-case
 ports; parsing, filesystem access, reporting, and process exit handling stay at
-the composition root. This keeps command behavior consistent across Pandwind,
+the composition root. This keeps command behavior consistent across YumCSS,
 analyze, and codemod while preventing a second migration or analysis engine from
 growing inside a CLI parser.
 
@@ -137,7 +137,7 @@ requires a substitution test; it is not a blanket permission for the runner to
 reinterpret function-valued styles or overwrite an existing style prop.
 
 `ClassNameStrategy` is intentionally limited to synchronous, declaration-level
-class naming. It is appropriate for Pandwind's own atomic strategy and stable
+class naming. It is appropriate for YumCSS's own atomic strategy and stable
 compatibility policies such as Tailwind or StyleX. Panda and UnoCSS are not
 exposed as generic runtime strategies: their official generators depend on a
 project's loaded presets, plugins, extractors, and generated artifacts. Those
@@ -157,7 +157,7 @@ substitution test proves that a new class adapter receives the projection
 without adding a central adapter branch.
 
 Panda and Tokenami also advertise this carrier. Their object-style class
-emitters accept the static `var(--pandwind-dynamic-*)` declaration, allowing a
+emitters accept the static `var(--yumcss-dynamic-*)` declaration, allowing a
 styled-components or Emotion subject with a scalar theme expression to move to
 either target without a capability skip. The generated host wrapper evaluates
 the original expression while the target stylesheet remains statically
@@ -166,7 +166,7 @@ framework-specific host behavior still require their own target contracts.
 
 The same contract applies to a dynamic styled subject such as
 `const Card = styled.div({ color: theme.foreground })`. When the target is a
-class carrier, the generated CSS remains static (`var(--pandwind-dynamic-*)`),
+class carrier, the generated CSS remains static (`var(--yumcss-dynamic-*)`),
 and the subject becomes a small host wrapper that binds the original
 expression. The JSX use stays `<Card />`; assigning the generated class string
 to `Card` or rewriting the use to `className={Card}` would change the public
@@ -180,7 +180,7 @@ lexical scope; the adapter marks that representation explicitly so validation
 does not count the preserved IR residual as a failed conversion. Chakra's
 `system.css()` is an official style-object interop utility, not a class-name
 carrier: it is valid for a style object and may be used for a hostless Chakra
-target projection, but Pandwind never emits `className={system.css(...)}` or
+target projection, but YumCSS never emits `className={system.css(...)}` or
 synthesizes `createSystem(defaultConfig)` as a generic target. This does not
 bless function-valued callbacks, provider-specific theme lookups, or
 framework-only bindings: those still require a target wrapper or an explicit
@@ -194,7 +194,7 @@ excluded from validation only because the target explicitly owns that runtime
 representation.
 
 Mantine uses its host `style` prop for dynamic JSX style programs. Standalone
-programs use the portable Pandwind artifact because Mantine does not expose a
+programs use the portable YumCSS artifact because Mantine does not expose a
 general standalone style factory; the adapter no longer emits a fabricated
 standalone API for that case.
 
@@ -341,15 +341,15 @@ the resulting theme. If the package or theme module cannot be evaluated, the
 adapter emits a configuration residual and preserves the uncertain source
 semantics.
 
-Pandwind is the target-side exception: its async adapter loader discovers the
-project's generated `pandwind.interop.json` and `bridge.ts`, then imports the
+YumCSS is the target-side exception: its async adapter loader discovers the
+project's generated `yumcss.interop.json` and `bridge.ts`, then imports the
 same project preset that codegen uses. This lets a migration reuse the actual
 target token catalog without a second hand-maintained token map. If the
 artifact is present but cannot be loaded, the adapter reports a configuration
 residual; if no artifact exists, it falls back to literal output rather than
 emitting references that the target cannot resolve.
 
-These packages are optional integration dependencies, not Pandwind runtime
+These packages are optional integration dependencies, not YumCSS runtime
 dependencies. If they are absent, the adapter uses its documented deterministic
 fallback. If an official loader is present but fails, the adapter records a
 configuration residual so a migration cannot claim that custom semantics were
@@ -386,12 +386,12 @@ the selectors emitted by the official engine.
 ## Boundaries
 
 The publishable CSS artifact is its own boundary: `vite/lib-artifact.ts` owns
-the `pandwind.lib/1` contract, compatibility fingerprint (including the
+the `yumcss.lib/1` contract, compatibility fingerprint (including the
 cascade layer), content validation,
 and rule-entry types; `packages/codemod/src/lib/` owns source scanning and
 artifact writing; `vite/css.ts` owns explicit package resolution; and
 `vite/css-core.ts` only merges already-validated entries. It remains separate
-from the project-context `pandwind.interop/1` artifact because the two files
+from the project-context `yumcss.interop/1` artifact because the two files
 serve different consumers and failure policies.
 
 | Domain                 | Port boundary                                                                                                                                | Default implementation                                                                                                                                                                                                                                                                                                                |
@@ -409,13 +409,13 @@ serve different consumers and failure policies.
 | Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/run-migration-proof.ts`, `scripts/migration-proof-catalog.ts`, `scripts/verify-chakra-docs.ts`, `examples/migrations/chakra-ui-docs-migration/README.md`                                                                                                                                                                     |
 | Runtime specialization | usage-aware pruning, shared attachment registry/renderer, explicit runtime codegen, virtual modules, and size regression proof               | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `css/runtime-codegen.ts`, `codemod/src/runtime/`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                                                                                                                             |
 
-Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
+Generated-project metadata is a versioned artifact, `yumcss.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
 bridge generation refreshes the optional bridge section from the compiled
-design system. The `pandwind.interop/1` token section comes from the same token
+design system. The `yumcss.interop/1` token section comes from the same token
 module used by codegen and carries its source fingerprint and fidelity
 diagnostics. It is project metadata rather than an authored token file or
-compiled CSS. Pandwind does not import generated `bridge.ts` automatically;
+compiled CSS. YumCSS does not import generated `bridge.ts` automatically;
 only an explicit `twAdapter` selection adds it to an application's runtime
 graph. Migration tooling consumes that artifact when present and only falls
 back to parsing `types.d.ts`/`tw.ts` and their companion metadata for projects
@@ -423,7 +423,7 @@ generated before the artifact was introduced. The artifact is the
 project-context boundary; it must never
 contain assumptions about the example application.
 
-`pandwind.agents.json` points to this artifact in `generatedFrom` using paths
+`yumcss.agents.json` points to this artifact in `generatedFrom` using paths
 relative to the metadata directory, so the files remain portable when a
 project is moved or checked out on another machine.
 
@@ -434,19 +434,19 @@ pair-specific `XToY` implementation.
 ## Framework component adapters
 
 Component-family APIs follow the same port-and-adapter boundary as migration
-and backend APIs. `pandwind/stack` owns the renderer-neutral `StackProps`,
+and backend APIs. `yumcss/stack` owns the renderer-neutral `StackProps`,
 CSS declaration mapping, and explicit Tailwind-compatible class fast path.
-`pandwind/stack/react`, `pandwind/stack/solid`, `pandwind/stack/vue`, and
-`pandwind/stack/preact` each own their framework element creation, attribute
+`yumcss/stack/react`, `yumcss/stack/solid`, `yumcss/stack/vue`, and
+`yumcss/stack/preact` each own their framework element creation, attribute
 spelling, children/slot behavior, and prop forwarding. Each renderer also
 exposes `createStack(css)`, so configured class-name strategies and CSS
 compiler ownership are supplied rather than bypassed. The static fold keeps
 the same boundary: bare `stackFoldVite()` is Tailwind-only, while
 `stackFoldVite({ engine })` shares the configured engine with
-`pandwindCssVite` to emit sheet-backed rules for folded declarations.
+`yumcssExtractVite` to emit sheet-backed rules for folded declarations.
 
-The family namespace is intentional: `pandwind/stack/{framework}` identifies a
-renderer for the Stack component family without turning `pandwind/{framework}`
+The family namespace is intentional: `yumcss/stack/{framework}` identifies a
+renderer for the Stack component family without turning `yumcss/{framework}`
 into a catch-all framework API. Svelte and Astro need native component-file
 adapters and compiler integration; a JavaScript façade would not be an
 idiomatic or type-safe substitute.
@@ -464,7 +464,7 @@ queue and remain safe for unusually deep user configuration or generated CSS.
 Small bounded filesystem scripts and local semantic helpers may still use
 recursion when the recursive form is clearer and the input depth is controlled.
 The performance regression is covered by
-`packages/pandwind/tests/stack-traversal.bench.ts`: the explicit AST walk is
+`packages/yumcss/tests/stack-traversal.bench.ts`: the explicit AST walk is
 benchmarked against the former recursive shape on a representative tree, while
 the stack traversal tests exercise 2,000–12,000-level inputs.
 
@@ -514,7 +514,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a build-time construction façade over the existing
-`pandwind.style-program/1` value. It centralizes deterministic rule ordering,
+`yumcss.style-program/1` value. It centralizes deterministic rule ordering,
 value classification, dynamic normalization, program metadata, provenance,
 and residual accumulation, then delegates final normalization to the same
 semantic factory used by existing adapters. `StyleProgramBuilder.from()` can
@@ -544,11 +544,11 @@ canonical, lowering, adapter, and residual validation as a parsed program.
 normalizes frontend output, validates the rule/value shape, serializes a
 stable structural form, and computes a deterministic non-cryptographic
 fingerprint. `StyleProgramCore.encode()` can wrap the normalized value in a
-versioned `pandwind.style-program-artifact/1` envelope; `decode()` verifies the
+versioned `yumcss.style-program-artifact/1` envelope; `decode()` verifies the
 artifact schema, core version, and fingerprint before returning a program.
 Portable artifacts are intended for caches, proof reports, and explicit
 out-of-process tooling—not for the browser runtime. A plugin manifest carries
-the matching `pandwind.style-program-core-compatibility/1` requirement, and
+the matching `yumcss.style-program-core-compatibility/1` requirement, and
 the registry rejects a plugin whose range does not include the current core or
 whose declared capabilities drift from its implementation. This makes the
 “one reliable core, many frontends” boundary enforceable without adding a
@@ -592,7 +592,7 @@ the owning adapter. No project module is executed during this resolution.
 
 Long-running repository and proof scripts use an optional Effect 4 adapter at
 their composition boundary. `scripts/effect-tooling.ts` exposes ordinary
-Pandwind-owned task and filesystem ports while adapting them to Effect's
+YumCSS-owned task and filesystem ports while adapting them to Effect's
 official `FileSystem`, `Path`, and bounded `Effect.forEach` services. Reference
 preparation and adapter-reference proof batches preserve input order, bound
 parallel work, retain task ids on failure, and accept cancellation. Effect is a
@@ -627,7 +627,7 @@ residuals.
 
 The route catalog projects both modern adapters and the core nested dialects
 into one style-system registry. `panda/tw`, `panda/dss`, `panda/css`, and the
-corresponding `pandwind/*` dialects therefore use the same source/target route
+corresponding `yumcss/*` dialects therefore use the same source/target route
 ports as external ecosystems. The old `SwapIR` registry remains only as an
 internal compatibility projection for the fast flat CLI path; it is not a
 second rich migration architecture.
@@ -672,7 +672,7 @@ capabilities or manufacture a new representation.
 Targets that require a host use declare that requirement in the same policy.
 For example, MUI's `sx` carrier sets `requiresHostContext`; a static bare style
 value therefore selects the MUI adapter's portable-artifact representation and
-emits Pandwind's static `css.class(...)` carrier rather than inventing an
+emits YumCSS's static `css.class(...)` carrier rather than inventing an
 `sx()` API that MUI does not have. Dynamic bare values use the same portable
 carrier as an explicit runtime fallback; dynamic values with an unknown host
 still stop with the adapter-owned explanation that an `sx` prop must be
@@ -697,13 +697,13 @@ targets and component-oriented targets therefore use different typed host
 representations, even when both produce equivalent declarations in the
 semantic program.
 
-Pandwind's own target adapter can preserve a standalone styled subject without
+YumCSS's own target adapter can preserve a standalone styled subject without
 retaining the source runtime. When a static subject has no local host use, the
 target selects a component representation and emits a static `css.class(...)`
 carrier inside a host-native wrapper. React-family and Solid wrappers use JSX;
 Vue uses `defineComponent`/`h`, with generated imports kept inside the
 component's `<script setup>` block. A dynamic subject follows the same route
-but uses Pandwind's runtime variable carrier only for the dynamic expression.
+but uses YumCSS's runtime variable carrier only for the dynamic expression.
 
 StyleX is a class-oriented target with a React-specific host projection. When
 an intrinsic styled subject is used as `<Card />`, its static declaration is
@@ -934,9 +934,9 @@ dependency closure. Static styled declarations remove the source runtime and
 dynamic declarations use `css.vars`/runtime carriers with structured residual
 and dependency evidence. Contract fixtures assert both directions.
 
-The shared source boundary has two layers: `pandwind/source` owns language and
+The shared source boundary has two layers: `yumcss/source` owns language and
 framework scanning, runtime boundaries (`shared`, `client`, `server`), and
-parser selection; `pandwind/source/workspace` owns Node filesystem expansion,
+parser selection; `yumcss/source/workspace` owns Node filesystem expansion,
 reading, and document materialization. Codemod, analyzer, Panda discovery, and
 build tooling consume these services instead of maintaining separate script
 extension/glob policies. Vue SFC, Svelte, Astro, Solid, MDX, JSX dialects, and
@@ -960,7 +960,7 @@ modes for happy, edge, and malformed inputs; the CLI e2e suite additionally
 proves the real binary's argument, discovery, write, and extension boundary.
 A route is accepted only when it converts or preserves the source with a typed
 residual. Run the public-boundary proof with
-`pnpm --filter pandwind-codemod run test:e2e`; the normal coverage gate runs the
+`pnpm --filter yumcss-codemod run test:e2e`; the normal coverage gate runs the
 same route corpus in-process.
 
 The playground uses this same registry-backed runner in `safe` mode. Its Vue
@@ -1040,7 +1040,7 @@ design or runtime orchestration.
 The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
 claim, alongside pinned source references for every registered external
 adapter. External checkouts are pinned by Git commit in `reference-repos.md`,
-while Pandwind owns the lane runners and their JJ history. The runner routes
+while YumCSS owns the lane runners and their JJ history. The runner routes
 the same source adapter through independent target lanes. Each full docs lane
 must produce a buildable Next application with zero skipped call sites and
 zero residuals.
@@ -1050,7 +1050,7 @@ the route checker must find no failures across the 261 user-facing static HTML
 routes; and the browser check must compare representative geometry, computed
 styles, screenshots, and console errors at the same viewport. CSS accounting
 compares linked stylesheets plus inline SSR styles against the baseline, with
-the Pandwind runtime artifact reported separately. This keeps a migration from
+the YumCSS runtime artifact reported separately. This keeps a migration from
 being called complete merely because the codemod changed every source file.
 
 The source-reference report at
@@ -1078,19 +1078,19 @@ separately from an installed application promotion. Official ecosystem
 configuration is loaded through the adapter's `ProjectModuleLoader`; reference
 projects receive only explicit, pinned packages via `pnpm run references:deps`.
 This keeps project presets, CSS theme variables, and generated utilities in the
-official-loader path without vendoring or silently substituting Pandwind's
+official-loader path without vendoring or silently substituting YumCSS's
 fallback resolver.
 
-Knip intentionally ignores the `pandwind-codemod` dependency in the
+Knip intentionally ignores the `yumcss-codemod` dependency in the
 playground. The playground imports the browser-only public subpath
-`pandwind-codemod/swap/browser`; Knip cannot follow that workspace package
+`@yumcss/codemod/swap/browser`; Knip cannot follow that workspace package
 subpath through the source-package boundary, while the playground build and
 browser tests do. The codemod subpath is listed as a production entry in
 `knip.json`, so its exports remain owned and checked.
 
 The same boundary applies to three workspace dependencies that are intentionally
-kept in `knip.json`'s ignore list: `@pandwind/example-preset` is imported through
-the repository's `pandwind` condition and also resolved from generated/config
+kept in `knip.json`'s ignore list: `@yumcss/example-preset` is imported through
+the repository's `yumcss` condition and also resolved from generated/config
 strings; `prettier` is loaded through browser-only formatter subpaths; and
 `@hono/node-server` is used by the public Node Migration Preview transport entrypoint.
 Their package manifests and typechecks own those dependencies, while Knip cannot
@@ -1102,9 +1102,9 @@ target lanes over the same source adapter:
 
 ```sh
 nub scripts/run-migration-proof.ts run styled-components-docs runtime-css \
-	--output-root /tmp/pandwind-styled-runtime
+	--output-root /tmp/yumcss-styled-runtime
 nub scripts/run-migration-proof.ts run styled-components-docs design-css \
-	--output-root /tmp/pandwind-styled-design
+	--output-root /tmp/yumcss-styled-design
 ```
 
 The runner owns disposable materialization and lane accounting; the adapter
@@ -1116,11 +1116,11 @@ kept as a script and a pinned reference rather than as a vendored website.
 
 ## Token governance
 
-`packages/analyze/src/governance` owns the versioned token-governance ledger (`pandwind.analyze.governance/1`, `TOKEN_GOVERNANCE_REPORT_VERSION = 1`): one neutral report shared by the analyzer CLI, Inspector, the lint plugin, and the tokenization codemod. Nothing in the ledger touches the frozen runtime API. One service pass (`analyzeTokenGovernance`) assembles it from the effective token universe (`EffectiveTokenContextInputs`: authored preset groups, crawled CSS theme variables, interop-artifact variables, loader-failure diagnostics), positioned usage facts from `tw()`/`css()` call-site objects, exact raw-to-token suggestions, and reachability classification over explicit coverage boundaries (dynamic expressions, public exports, safelist, plugin output, generated CSS, unscanned files, unresolved imports, configuration failures). A zero-use claim requires proven reachability; unknown is always explicit.
+`packages/analyze/src/governance` owns the versioned token-governance ledger (`yumcss.analyze.governance/1`, `TOKEN_GOVERNANCE_REPORT_VERSION = 1`): one neutral report shared by the analyzer CLI, Inspector, the lint plugin, and the tokenization codemod. Nothing in the ledger touches the frozen runtime API. One service pass (`analyzeTokenGovernance`) assembles it from the effective token universe (`EffectiveTokenContextInputs`: authored preset groups, crawled CSS theme variables, interop-artifact variables, loader-failure diagnostics), positioned usage facts from `tw()`/`css()` call-site objects, exact raw-to-token suggestions, and reachability classification over explicit coverage boundaries (dynamic expressions, public exports, safelist, plugin output, generated CSS, unscanned files, unresolved imports, configuration failures). A zero-use claim requires proven reachability; unknown is always explicit.
 
 Policy is never guessed. `deriveProjectGovernanceContext` reads the loaded official preset's declared strict surface (`strict`, `properties`, `$strict: false`) into a `TokenPolicySnapshot` with a per-property token vocabulary and raw escape hatches; a missing, failed, or undeclared policy downgrades to report-only with a diagnostic instead of inventing strictness. Strictness states are verified token, allowed raw, strict violation, dynamic, and unknown-policy.
 
-Removal stays report-first. `buildGovernancePruneChangeset` classifies every unused candidate as safe, review-required, or not-removable with provenance-linked reasons, deterministically and deduplicated. Consumers decide what happens next: the Inspector governance tab renders summary, strict-policy panel, boundary chips, candidate and suggestion tables, and the prune preview; `pandwind analyze --governance` emits the versioned JSON document; `design-tokens-only` accepts the snapshot as a structural option so the lint plugin stays dependency-free; and the codemod tokenize lane rewrites only exact `(property, rawValue)` pairs from the report's suggestions — when suggestions are supplied, the heuristic fallback is disabled rather than merged.
+Removal stays report-first. `buildGovernancePruneChangeset` classifies every unused candidate as safe, review-required, or not-removable with provenance-linked reasons, deterministically and deduplicated. Consumers decide what happens next: the Inspector governance tab renders summary, strict-policy panel, boundary chips, candidate and suggestion tables, and the prune preview; `yumcss analyze --governance` emits the versioned JSON document; `design-tokens-only` accepts the snapshot as a structural option so the lint plugin stays dependency-free; and the codemod tokenize lane rewrites only exact `(property, rawValue)` pairs from the report's suggestions — when suggestions are supplied, the heuristic fallback is disabled rather than merged.
 
 Suggestion safety is exact-match only: a raw literal is replaceable when the target definition is statically valued and unscoped, the property category and token group are compatible, resolved values are exactly equal (hex case-folding is the one normalization), and exactly one candidate matches. Ambiguous matches are rejected with a diagnostic, never resolved by plausibility. Repository-scale cost is benchmarked in `packages/analyze/tests/governance.bench.ts` (2,000 definitions, 400 files, ~16k usage sites per pass).
 
@@ -1130,8 +1130,8 @@ and type changes, deprecation, metadata, and context changes; it treats path
 changes as remove-plus-add and never guesses renames. Exact governance IDs and
 their existing usages, suggestions, removal-safety reasons, public-export
 evidence, and dynamic/unknown coverage boundaries attach where the current
-governance report proves them. `pandwind analyze` requires explicit consumer
-roots and reads generated `pandwind.interop/1` snapshots without scanning the
+governance report proves them. `yumcss analyze` requires explicit consumer
+roots and reads generated `yumcss.interop/1` snapshots without scanning the
 repository or registry. Inspector shows release comparison within its existing
 Usage & cleanup view, alongside token validation/export fidelity.
 
@@ -1221,7 +1221,7 @@ Target emitters should preserve design-system vocabulary when that vocabulary
 is actually available. Official config loaders for Tailwind, UnoCSS, Chakra,
 Panda, Tokenami, MUI, and Mantine normalize discovered custom values into the versioned
 `AdapterTokenCatalog`. The target adapter owns the property mapping and native
-spelling: the Pandwind target can emit `$...` references, while object-oriented
+spelling: the YumCSS target can emit `$...` references, while object-oriented
 targets may emit their own token path or CSS-variable form. Class-oriented
 targets remain literal or utility-based unless their own catalog/policy proves
 a named utility is equivalent. Tailwind and UnoCSS now use this rule for
@@ -1247,7 +1247,7 @@ fallback.
 
 ## Virtual bundler migration boundary
 
-`pandwind-codemod/swap/unplugin` is a bundler composition root over the
+`@yumcss/codemod/swap/unplugin` is a bundler composition root over the
 existing adapter migration use case. It owns only host mechanics: eligibility,
 the per-module cache, virtual generated-file storage, invalidation, and
 residual reporting. `unplugin` projects this one implementation into Vite,
@@ -1258,7 +1258,7 @@ rewrites, and target emission to the same adapter registry used by the CLI.
 The plugin runs at `enforce: "pre"`. This is an intentional ordering contract:
 the transformed module becomes the input to the target ecosystem's official
 plugin, so Tailwind, StyleX, or another host remains responsible for its own
-final CSS/compiler semantics. A host composes both plugins; Pandwind does not
+final CSS/compiler semantics. A host composes both plugins; YumCSS does not
 import or emulate the target plugin.
 
 Virtual migration is an evaluation and progressive-adoption lane. It keeps
@@ -1283,17 +1283,17 @@ blocks map to the source span they replace.
 
 ## Lint-plugin boundary
 
-`@pandwind/lint-plugin` is a small source-analysis adapter for Oxlint. Its
-resolver owns Pandwind import identity, including aliases, namespace imports,
+`@yumcss/lint-plugin` is a small source-analysis adapter for Oxlint. Its
+resolver owns YumCSS import identity, including aliases, namespace imports,
 factory-created CSS/design instances, type-only imports, and function-parameter
 shadowing. The rules consume that resolver rather than matching names such as
 `cx` or `tw` in isolation, so an unrelated local helper is not treated as a
-Pandwind call.
+YumCSS call.
 
 Static-value checks use an iterative evaluator for literals, lexically visible
 `const` bindings, object/array composition, and one conditional branch. The explicit
 runtime carriers (`vars`, `props`, `group`, `input`, and `raw`) stay outside
-that check because they are intentional Pandwind runtime/escape-hatch APIs;
+that check because they are intentional YumCSS runtime/escape-hatch APIs;
 the compiler and linter therefore agree about where runtime values are valid.
 The design-token rule is inert without verified project policy supplied by the
 composition root. It never invents a theme from a built-in vocabulary.
@@ -1325,12 +1325,12 @@ lane (`runtime`, `build`, `integration`, or `tooling`), maturity, dependency
 requirements, external-contract status, and proof files. The `surface:check`
 script compares that inventory with every workspace `package.json`, verifies
 repository directory metadata, and rejects build-only dependencies in
-`pandwind`'s runtime dependency set.
+`yumcss`'s runtime dependency set.
 
 The stable runtime lane keeps `tw`, `css`, `cx`, presets, design contracts, and
 host types. Tailwind/Oxc/PostCSS/CAC/Unplugin are optional peers for the
 explicit codegen, scanner, and bundler lanes; they remain development
-dependencies for Pandwind's own build and test commands. The `_runtime/*`
+dependencies for YumCSS's own build and test commands. The `_runtime/*`
 entries are deliberately marked internal because the Vite runtime-pruner emits
 those exact imports into generated code. They are a generated artifact
 contract, not authoring APIs, and their evidence is the pruner test rather

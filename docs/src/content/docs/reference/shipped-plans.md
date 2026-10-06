@@ -1,6 +1,6 @@
 ---
 title: Shipped plans and evidence
-description: The user-facing record of completed Pandwind implementation waves and their proof boundaries.
+description: The user-facing record of completed YumCSS implementation waves and their proof boundaries.
 sidebar:
   order: 1
 ---
@@ -49,8 +49,8 @@ The static-first runtime boundary is explicit:
   inline custom properties;
 - theme and component scopes emit deterministic variable blocks;
 - route splitting and critical-CSS inlining are opt-in build policies;
-- `pandwind.agents.json` exposes generated project context to tooling; and
-- the erasable `pandwind/stack` helper provides a small renderer-neutral
+- `yumcss.agents.json` exposes generated project context to tooling; and
+- the erasable `yumcss/stack` helper provides a small renderer-neutral
   layout primitive with React, Solid, Vue, and Preact bindings; its default
   utility mapper is explicitly Tailwind-compatible, while `createStack(css)`
   routes every renderer through the supplied class-name strategy.
@@ -78,7 +78,7 @@ generated CSS. See [tw() dynamic values](/api/tw/), the
 
 The local codebase Migration Preview (053), token-governance ledger (054), non-CSS-in-JS
 source adapters (055), renderer-neutral Stack bindings (056), and dynamic
-lowering for every Pandwind API (057–058) are complete. Their focused tests,
+lowering for every YumCSS API (057–058) are complete. Their focused tests,
 typechecks, generated artifacts, and pinned-reference evidence are kept with
 the repository plans. Migration Preview also has a real Chromium host proof for CSS
 injection and computed-style evidence; static-only projects retain an explicit
@@ -110,7 +110,7 @@ pnpm run release:check
 ```
 
 The reference clones live under
-`${PANDWIND_REFERENCE_ROOT:-~/.references}`. Pandwind tracks URLs, commits,
+`${YUMCSS_REFERENCE_ROOT:-~/.references}`. YumCSS tracks URLs, commits,
 source paths, commands, and reports, not upstream source trees. Browser and
 SSR claims are promoted only when their corresponding dimension was actually
 executed; source-static evidence is intentionally not mislabeled as full
@@ -118,7 +118,7 @@ production proof. See [testing](/contributing/testing/) and
 [adoption](/reference/adoption/).
 
 The long-running reference workflows also have an optional Effect 4 tooling
-implementation. It adapts Pandwind-owned task and filesystem ports to the
+implementation. It adapts YumCSS-owned task and filesystem ports to the
 official Node services, providing bounded ordered batches, cancellation, and
 task-scoped failures without adding Effect to the shipped runtime or Vite hot
 path. This remains an internal tooling choice and can be replaced without
@@ -137,16 +137,16 @@ consumer exists.
 ### React Strict DOM support
 
 React Strict DOM has a target-owned style backend and
-`pandwind/react-strict-dom` surface. Web uses StyleX-compatible compiled maps;
+`yumcss/react-strict-dom` surface. Web uses StyleX-compatible compiled maps;
 native uses the React Native object policy. The codemod recognizes `css.create`,
 `html.*`, `style`, `css.keyframes`, and `css.defineVars` and preserves
 `compat.native`, compiler themes, and host/provider behavior as typed residuals.
-The package is not bundled into Pandwind; RSD remains responsible for its host
+The package is not bundled into YumCSS; RSD remains responsible for its host
 runtime and platform compiler. See [React Strict DOM integration](/interop/react-strict-dom/).
 
 ### Bidirectional codemods and Panda
 
-The swap pipeline supports Pandwind-to-Pandwind and outbound routes through a
+The swap pipeline supports YumCSS-to-YumCSS and outbound routes through a
 neutral IR, while Panda project migration is a staged pipeline for discovery,
 theme loading, scanning, recipe/pattern extraction, semantic conversion,
 module emission, rewrites, and validation. Panda recipes and patterns are
@@ -155,7 +155,7 @@ structured residual.
 
 Token conversion uses one normalized token set between source and target
 format adapters. Current formats include DTCG, Tailwind `@theme`, Panda,
-Pandwind presets, Style Dictionary, Figma Tokens, root CSS variables, and
+YumCSS presets, Style Dictionary, Figma Tokens, root CSS variables, and
 StyleX export.
 
 See [codemods](/tooling/codemod/), [adapter migrations](/interop/css-in-js-adapters/),
@@ -202,7 +202,7 @@ application SSR, and route-level browser claims.
 The final implementation wave closed the remaining package, compiler, and
 adoption boundaries without expanding the frozen authoring API:
 
-- Runtime code generation is opt-in through `pandwind-codemod runtime generate`.
+- Runtime code generation is opt-in through `yumcss-codemod runtime generate`.
   It shares the attachment registry and renderer with Vite pruning, emits
   deterministic typed modules, and supports freshness checks for non-Vite
   consumers.
@@ -211,9 +211,9 @@ adoption boundaries without expanding the frozen authoring API:
   can use the configured compiler strategy through `createStack(css)`; the
   bare helper remains the explicit Tailwind-compatible fast path.
 - The safe CSS factory requires a preset. Generated and adapter-owned code can
-  use the explicit `pandwind/unsafe/css` boundary, which keeps missing design
+  use the explicit `yumcss/unsafe/css` boundary, which keeps missing design
   system semantics visible instead of silently widening the canonical API.
-- Component libraries can publish a versioned `pandwind.lib` artifact with
+- Component libraries can publish a versioned `yumcss.lib` artifact with
   extracted rules, token usage, provenance, and compatibility fingerprints.
   Consumers register artifacts explicitly; malformed, stale, or incompatible
   artifacts fail closed, while unregistered libraries keep source extraction.

@@ -157,7 +157,6 @@ export function createMcpToolPorts(
 	return { ...DEFAULT_TOOL_PORTS, ...overrides };
 }
 
-
 const DEFAULT_VALIDATION_CHECKS: readonly McpValidationCheck[] = [
 	MCP_VALIDATION_CHECK.Contract,
 	MCP_VALIDATION_CHECK.CanonicalCss,

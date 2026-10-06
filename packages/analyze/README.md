@@ -1,6 +1,6 @@
-# pandwind-analyze
+# yumcss-analyze
 
-Build-time CSS usage, provenance, coverage, and budget analysis for pandwind
+Build-time CSS usage, provenance, coverage, and budget analysis for yumcss
 projects. The CLI emits human-readable reports and versioned JSON suitable
 for CI and editor tooling.
 
@@ -18,7 +18,7 @@ for CI and editor tooling.
 The shortest useful command is:
 
 ```sh
-pnpm exec pandwind-analyze src --tw src/tw.ts
+pnpm exec yumcss-analyze src --tw src/tw.ts
 ```
 
 Add --json for a machine-readable report, --css for generated CSS
@@ -27,23 +27,23 @@ the project and reports what it found; it does not rewrite your source files.
 
 ## Token release impact
 
-Compare a prior token document with the generated `pandwind.interop/1` token
+Compare a prior token document with the generated `yumcss.interop/1` token
 snapshot, then attach exact usage and coverage evidence from declared consumer
 roots:
 
 ```sh
-pnpm exec pandwind-analyze \
+pnpm exec yumcss-analyze \
   --root apps/store-a \
   --consumer-root apps/store-b,apps/store-c \
   --release-baseline releases/v1.tokens.json \
-  --release-current apps/store-a/src/pandwind.interop.json \
+  --release-current apps/store-a/src/yumcss.interop.json \
   --json
 ```
 
 The baseline defaults to DTCG; `--release-format` selects another registered
 token input adapter. The current artifact must be a validated `/1` snapshot
 with token data. With one consumer, `--release-current` defaults to that
-consumer's `src/pandwind.interop.json`; multiple consumers require an explicit
+consumer's `src/yumcss.interop.json`; multiple consumers require an explicit
 current artifact. The report lists path additions and removals, value, type,
 deprecation, metadata, group, and context changes, and joins exact token paths
 to existing governance usages, suggestions, removal-safety reasons, and
@@ -56,12 +56,12 @@ writes project files.
 Open a consumer project in a read-only migration workspace:
 
 ```sh
-pnpm exec pandwind-migration-preview /path/to/project --no-open
+pnpm exec yumcss-migration-preview /path/to/project --no-open
 ```
 
 The local browser UI lets you choose registered source and target adapters,
 inspect generated code and diagnostics, and try in-memory edits. It does not
-write to the project; use `pandwind-codemod migrate` when you are ready to
+write to the project; use `yumcss-codemod migrate` when you are ready to
 review a real diff.
 
 For a visual explanation of the reports, start with the
@@ -70,10 +70,10 @@ For a visual explanation of the reports, start with the
 ## Compiler Preview
 
 Run the project's Vite config and inspect the source modules after its real
-plugin transforms, including Pandwind's compile-time optimizations:
+plugin transforms, including YumCSS's compile-time optimizations:
 
 ```sh
-pnpm exec pandwind-compiler-preview /path/to/project
+pnpm exec yumcss-compiler-preview /path/to/project
 ```
 
 The browser UI compares each supported source file with Vite's transformed
@@ -83,13 +83,13 @@ folder. Override discovery with `--config` when you use a custom filename or
 need a different config; the path is relative to the input folder:
 
 ```sh
-pnpm exec pandwind-compiler-preview /path/to/project --config vite.preview.config.ts
+pnpm exec yumcss-compiler-preview /path/to/project --config vite.preview.config.ts
 ```
 
-To inspect Pandwind's real-world compiler fixture from the repository root:
+To inspect YumCSS's real-world compiler fixture from the repository root:
 
 ```sh
-pnpm run compiler-preview "$PWD/packages/pandwind/tests/fixtures/tsc"
+pnpm run compiler-preview "$PWD/packages/yumcss/tests/fixtures/tsc"
 ```
 
 Vite is resolved from the selected project first, and its config and plugin
@@ -99,17 +99,17 @@ Vite install. Vite config code executes as part of starting the preview.
 
 ## MCP tooling
 
-The existing `pandwind-analyze` CLI also exposes an MCP server over stdio using
+The existing `yumcss-analyze` CLI also exposes an MCP server over stdio using
 the official Model Context Protocol server SDK. It uses the registered adapter
 catalog, the shared source workspace, the migration contract, and the analyzer
 directly:
 
 ```sh
 # The server root is fixed at startup; tool paths are project-relative.
-pnpm exec pandwind-analyze mcp --root .
+pnpm exec yumcss-analyze mcp --root .
 
 # Also run supported package.json validation scripts in an isolated copy.
-pnpm exec pandwind-analyze mcp --root . --host-checks
+pnpm exec yumcss-analyze mcp --root . --host-checks
 ```
 
 The tools are:
@@ -126,7 +126,7 @@ The tools are:
 The server also exposes resources for the adapter/API matrix, the registry-
 expanded migration route proof catalog, project evidence and configuration, the
 latest migration, comparison, and residual reports, the generated
-`pandwind.interop.json`, and the latest StyleProgram snapshots.
+`yumcss.interop.json`, and the latest StyleProgram snapshots.
 Preview, comparison, inspection, analysis, and benchmarking never write files
 or execute project commands. Validation is read-only; project commands remain
 explicit host actions supplied through the typed validation port, so the MCP
@@ -139,4 +139,4 @@ port when they have richer framework or browser runners. Every structured
 result also contains `executionEvidence`, which labels the execution lane and
 reports verified, unavailable, or failed evidence. The same server
 registration can also be mounted in a Hono app through the
-`pandwind-analyze/mcp/http` subpath and the official Streamable HTTP handler.
+`@yumcss/analyze/mcp/http` subpath and the official Streamable HTTP handler.

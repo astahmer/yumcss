@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-pandwind keeps full-fidelity browser-global CSS in ordinary CSS files. Import
+yumcss keeps full-fidelity browser-global CSS in ordinary CSS files. Import
 those files through your application or package entrypoint and let the host
 bundler own their parsing, ordering, and emission:
 
@@ -29,7 +29,7 @@ For preset-owned, build-time globals that only need flat declarations, use the
 typed web section instead of an additional CSS import:
 
 ```ts
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 
 export const preset = define.preset(
 	{ config: {}, tokens: { colors: { "$brand-900": "#172554" } } },
@@ -50,7 +50,7 @@ export const preset = define.preset(
 ```
 
 The Vite/Unplugin build emits these rules in the generated stylesheet and
-`pandwind.lib/1` carries them for registered component-library artifacts.
+`yumcss.lib/1` carries them for registered component-library artifacts.
 `web.globals` accepts selector-to-flat-declaration rules only; keyframe names
 are explicit CSS identifiers and font-face descriptor values remain authored
 CSS values. The runtime stylesheet does not consume this section, so the
@@ -58,7 +58,7 @@ contract adds no browser runtime work.
 
 A component-local animation is a separate exception: `css.keyframes({ ... })`
 returns a deterministic animation name and lets the build emit the matching
-`@keyframes` rule into the Pandwind stylesheet, so the body never ships as a
+`@keyframes` rule into the YumCSS stylesheet, so the body never ships as a
 runtime call. See
 [`css.keyframes`](/api/css/#component-local-keyframes).
 
@@ -87,8 +87,8 @@ The component can still keep the changing value and its type in TypeScript.
 `css.props()` carries the current number as an inline custom property:
 
 ```tsx
-import { createCss } from "pandwind/css";
-import { examplePreset } from "@pandwind/example-preset";
+import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
 const styles = css.group({
@@ -114,7 +114,7 @@ or created dynamically, use
 `RuntimeSheet.registerSemanticRules([{ kind: "property", ... }])` instead. That advanced path is documented in the
 [`css()` at-rule section](/api/css/#at-rules-local-conditions-versus-global-css).
 
-The Pandwind lane remains responsible for typed, local atomic styles:
+The YumCSS lane remains responsible for typed, local atomic styles:
 
 ```tsx
 import { css } from "./design";
@@ -161,15 +161,15 @@ CSS entrypoint, then consume the variables from ordinary CSS:
 }
 ```
 
-The CSS file is the source of truth for the authored rule. Pandwind does not
+The CSS file is the source of truth for the authored rule. YumCSS does not
 scan arbitrary CSS and infer a JavaScript API from it. `analyze` and the
 inspector do, however, record explicit `.css` import edges so authored CSS is
 visible in tooling alongside extracted atomic call sites.
 
 ## External variant composition
 
-Pandwind does not ship a recipe or composition API. A CVA-style package can
-select already-generated class strings while Pandwind retains responsibility
+YumCSS does not ship a recipe or composition API. A CVA-style package can
+select already-generated class strings while YumCSS retains responsibility
 for typing and extraction:
 
 ```tsx
@@ -189,6 +189,6 @@ const button = cva(css.class({ $layout: { flow: "row", gap: "2" } }), {
 const className = cx(button({ size: "sm" }), css.class({ $text: { weight: "bold" } }));
 ```
 
-Keep the variant map statically authored so every Pandwind call can be
+Keep the variant map statically authored so every YumCSS call can be
 extracted. For values that are only known at runtime, use `css.vars()` rather
 than creating a new dynamic style shape.

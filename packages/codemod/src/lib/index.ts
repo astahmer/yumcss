@@ -1,9 +1,5 @@
 /** Publishable YumCSS design-system artifact tooling. */
-export {
-	buildYumCSSLib,
-	type BuildYumCSSLibOptions,
-	type BuildYumCSSLibResult,
-} from "./build.ts";
+export { buildYumCSSLib, type BuildYumCSSLibOptions, type BuildYumCSSLibResult } from "./build.ts";
 export {
 	LibCommand,
 	createLibCli,

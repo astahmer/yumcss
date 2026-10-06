@@ -6,11 +6,11 @@ The workspace now has executable regression gates:
 
 - `pnpm test:all` runs all workspace unit, integration, browser, native, TUI,
   and PTY suites serially;
-- `pnpm test:coverage` runs V8 coverage for Pandwind, codemod, and analyzer;
+- `pnpm test:coverage` runs V8 coverage for YumCSS, codemod, and analyzer;
 - package-local Vitest thresholds protect the measured baselines; and
 - `coverage/` reports are ignored as generated artifacts.
 
-The current baselines are 86.83% statements / 74.59% branches for Pandwind,
+The current baselines are 86.83% statements / 74.59% branches for YumCSS,
 76.82% / 64.51% for codemod, and 74.07% / 61.79% for analyzer. The enforced
 floors are intentionally a little below those measurements to detect
 regressions without making unrelated coverage noise a release blocker.
@@ -102,11 +102,11 @@ per-entry additions unnecessary (barrel equality asserted).
   every typed-mapping test that consumes the generated artifact; a direct
   test would duplicate fixtures. Revisit if bridge bugs appear.
 - Direct public type pins for stack/var-inline exports are covered by
-  `packages/pandwind/tests/public-typings.tst.ts`.
+  `packages/yumcss/tests/public-typings.tst.ts`.
 - Real-browser devtools verification: empirical checklist in research.md is a
   human task (needs a browser).
 
 The public stack, vars, and object-backend type surfaces are now pinned by the
-dedicated `*.tst.ts` files under `packages/pandwind/tests`. The remaining items
+dedicated `*.tst.ts` files under `packages/yumcss/tests`. The remaining items
 above are intentionally test-shape or environment follow-ups, not uncovered
 pivot behavior.

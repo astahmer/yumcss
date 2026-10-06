@@ -595,8 +595,7 @@ function rewriteYumCSSViteConfigs(
 		readonly expectedContent: string;
 	}[];
 } {
-	if (request.targetAdapter !== CodemodAdapterId.YumCSS)
-		return { enabled: false, fileChanges: [] };
+	if (request.targetAdapter !== CodemodAdapterId.YumCSS) return { enabled: false, fileChanges: [] };
 	const presetPath = resolve(request.root, outputDirectory, "preset");
 	let enabled = false;
 	const changes: {

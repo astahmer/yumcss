@@ -10,7 +10,7 @@ describe("reusable analyze workflow", () => {
 	test("is independent of the caller's YumCSS source tree", () => {
 		expect(workflow).toContain("yumcss-version:");
 		expect(workflow).toContain(
-			'pnpm dlx --package "yumcss-analyze@$YUMCSS_VERSION" yumcss-analyze',
+			'pnpm dlx --package "@yumcss/analyze@$YUMCSS_VERSION" yumcss-analyze',
 		);
 		expect(workflow).not.toContain("../../packages/analyze/src/cli.ts");
 		expect(workflow).not.toContain("nub .github/scripts/analyze-comment.mjs");

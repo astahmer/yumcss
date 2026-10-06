@@ -8,10 +8,11 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"yumcss": "workspace:*",
 		"@yumcss/analyze": "workspace:*",
+		"@yumcss/codemod": "workspace:*",
 		"react": "19.2.8",
-		"react-dom": "19.2.8"
+		"react-dom": "19.2.8",
+		"yumcss": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "26.4.1",

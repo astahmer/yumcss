@@ -3,8 +3,7 @@
  * boundary. Mantine provider/theme APIs remain separate residual territory;
  * this runner covers the static Box style-prop lane.
  */
-import {
-	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {

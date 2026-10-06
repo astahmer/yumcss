@@ -1,10 +1,10 @@
-# Pandwind agent skills
+# YumCSS agent skills
 
-This directory contains the repository's Codex skills for Pandwind work:
+This directory contains the repository's Codex skills for YumCSS work:
 
-- `pandwind` — typed styling, presets, codegen, and build integration.
-- `pandwind-codemod` — focused source migrations and codemod tooling.
-- `pandwind-migrate-repo` — repository-scale migration planning and proof.
+- `yumcss` — typed styling, presets, codegen, and build integration.
+- `yumcss-codemod` — focused source migrations and codemod tooling.
+- `yumcss-migrate-repo` — repository-scale migration planning and proof.
 
 Each skill is a distributable folder. `SKILL.md` contains the core instructions,
 `agents/openai.yaml` provides Codex UI metadata, and any `references/` directory
@@ -13,7 +13,7 @@ into the host's skills directory when installing it outside this repository.
 
 The skills are agent instructions, not runtime package files. They should not be
 added to an application's dependency graph or published as part of the
-`pandwind` JavaScript package.
+`yumcss` JavaScript package.
 
 When working from this repository, the paths in each skill's “Useful docs” list
 resolve to the checked-in source and documentation. The migration skill keeps

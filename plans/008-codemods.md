@@ -1,11 +1,11 @@
 # Plan 008 — Codemods & authoring-migration tooling
 
-Pandwind accepts plain Tailwind class strings, so migration is never
+YumCSS accepts plain Tailwind class strings, so migration is never
 _forced_ — codemods exist to upgrade DX (typing, folding, design-token
 autocomplete), not to fix breakage. Multiple target modes matter because
 different call sites deserve different APIs.
 
-## Codemod 1 — raw tailwind → pandwind (`pandwind-codemod migrate`)
+## Codemod 1 — raw tailwind → yumcss (`yumcss-codemod migrate`)
 
 Input: source files with `className="..."` / `className={...}` / clsx()
 calls containing literal Tailwind utilities.
@@ -26,7 +26,7 @@ Output modes (flag `--to=`):
 - `keep` — leave strings, only add imports + wrap in tw() where trivially
   beneficial (default conservative mode).
   Safety rails: dry-run + unified diff output by default; idempotent (running
-  twice = no-op); a comment marker `/* pandwind:migrate-skip */` escape hatch;
+  twice = no-op); a comment marker `/* yumcss:migrate-skip */` escape hatch;
   per-file summary of converted/skipped counts.
 
 ## Codemod 2 — `clsx`/`classnames`/`tailwind-merge` → `cx`

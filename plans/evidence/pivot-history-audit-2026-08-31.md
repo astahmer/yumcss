@@ -2,12 +2,12 @@
 
 ## Scope and anchors
 
-- Repository: `/Users/astahmer/dev/pandwind`
+- Repository: YumCSS source tree
 - Audited branch: `main` at `7a6cec646c755073db01006865e782bfe8bbd920`
 - JJ operation anchor before the audit checks: `6010af91a8ef`
-- Workspaces inspected: `default`, `pandwind-history-cleanup`,
-  `pandwind-playground-migration`, and the isolated recovery workspace
-  `pandwind-pivot-completion`
+- Workspaces inspected: `default`, `yumcss-history-cleanup`,
+  `yumcss-playground-migration`, and the isolated recovery workspace
+  `yumcss-pivot-completion`
 - All three workspace working-copy commits were empty. No sibling workspace
   contained uncommitted implementation work.
 
@@ -42,14 +42,14 @@ architecture/documentation.
 
 The Effect, Astryx, and PostHog workspace merges removed the checked-out
 StyleX documentation source tree. This is correct: external repositories must
-not be vendored into Pandwind. The current repository retains the pinned
+not be vendored into YumCSS. The current repository retains the pinned
 commit, migration reports, and `scripts/migrate-stylex-docs.ts`; the source is
 recreated by `pnpm references:prepare`.
 
 ### Intentionally removed generated or obsolete files
 
 - `.prettierignore` was replaced by the repository's Oxfmt/Oxlint policy.
-- `apps/playground/src/pandwind.interop.json` is generated output and is
+- `apps/playground/src/yumcss.interop.json` is generated output and is
   intentionally removed from source history after codegen runs.
 - `examples/migrations/shadcn-ui-docs-migration/README.md` and the StyleX example's
   `Dial.tsx` were later removed as superseded generated/example artifacts;

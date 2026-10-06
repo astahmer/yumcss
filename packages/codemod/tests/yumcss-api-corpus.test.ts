@@ -71,13 +71,10 @@ describe("YumCSS public API migration corpus", () => {
 			"tw(",
 			'import { css } from "./design";\nconst card = css({ backgroundColor: "#3182ce" });',
 		],
-	] as const)(
-		"routes a css declaration through the %s YumCSS API",
-		(target, expected, source) => {
-			const result = run(source, "css", target);
-			expect(result.converted).toBe(1);
-			expect(result.skippedByMarker).toBe(0);
-			expect(result.code).toContain(expected);
-		},
-	);
+	] as const)("routes a css declaration through the %s YumCSS API", (target, expected, source) => {
+		const result = run(source, "css", target);
+		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
+		expect(result.code).toContain(expected);
+	});
 });

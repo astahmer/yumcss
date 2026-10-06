@@ -172,9 +172,7 @@ describe("migration-preview codemod evaluator", () => {
 	});
 
 	test("returns a visible diagnostic when no target has been selected", async () => {
-		const root = mkdtempSync(
-			join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-empty-"),
-		);
+		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "yumcss-migration-preview-empty-"));
 		writeFileSync(join(root, "Card.tsx"), "export const Card = () => null;");
 		roots.push(root);
 		const workspace = createMigrationPreviewWorkspace({

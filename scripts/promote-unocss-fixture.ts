@@ -4,8 +4,7 @@
  * spacing utilities, a pseudo-condition, generated project support, and the
  * source/target build boundary.
  */
-import {
-	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
@@ -260,7 +259,10 @@ async function main(): Promise<void> {
 				fixture: { files: ["uno.config.ts", "src/App.tsx", "vite.config.ts"], isolated: true },
 				dependencies: {
 					installed: packageInstalled(sourceRoot, "unocss"),
-					targetPackage: normalizeInstalledTargetPackage(`file:${yumcssPackageRoot}`, repositoryRoot),
+					targetPackage: normalizeInstalledTargetPackage(
+						`file:${yumcssPackageRoot}`,
+						repositoryRoot,
+					),
 					targetNodeModule: packageInstalled(targetRoot, "yumcss"),
 				},
 				migration: {

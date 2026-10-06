@@ -6,7 +6,7 @@
 ```bash
 node packages/codemod/src/cli.ts swap --from=panda --to=css.class \
   '/Users/astahmer/dev/panda/website/{src,app,theme}/**/*.{ts,tsx}' \
-  --out=pandwind --report
+  --out=yumcss --report
 ```
 
 ## Conversion stats
@@ -46,19 +46,19 @@ The CLI now reports residuals by kind:
 | unrepresentable |    10 |
 
 Every residual is retained in the output and receives an actionable
-`// pandwind:migrate-skip (<reason>)` marker where the migration cannot safely
+`// yumcss:migrate-skip (<reason>)` marker where the migration cannot safely
 rewrite the construct. Remaining `@pandacss/*` imports in this scan belong to
 source theme/config or token-inspector code, not silently skipped style sites.
 
 ## Emitted output layout
 
 ```
-<pandwind>/css.ts               createDesignCss + createCx bootstrap
-<pandwind>/internal.ts          runtime shorthand canonicalization + DOM/style split
-<pandwind>/token.ts             token() shim with group-aware fallback
-<pandwind>/recipes/*.ts         tier-1 variant data + generated resolvers (+ index barrel)
-<pandwind>/patterns/*.ts        builtin pattern fns (same signatures as styled-system)
-<pandwind>/jsx/index.tsx        Stack/HStack/Box… wrappers over pattern modules
+<yumcss>/css.ts               createDesignCss + createCx bootstrap
+<yumcss>/internal.ts          runtime shorthand canonicalization + DOM/style split
+<yumcss>/token.ts             token() shim with group-aware fallback
+<yumcss>/recipes/*.ts         tier-1 variant data + generated resolvers (+ index barrel)
+<yumcss>/patterns/*.ts        builtin pattern fns (same signatures as styled-system)
+<yumcss>/jsx/index.tsx        Stack/HStack/Box… wrappers over pattern modules
 ```
 
 Call-site imports rewrite 1:1: `@/styled-system/{css,jsx,patterns,recipes,tokens}`

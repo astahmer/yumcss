@@ -6,7 +6,7 @@ steps 1–4 and 6 landed; canvas deferred). This is the design note for the
 
 ## Why
 
-pandwind's differentiator is the design layer: a typed, token-constrained
+yumcss's differentiator is the design layer: a typed, token-constrained
 vocabulary (~30 Figma-style props, `$frame`/`$layout`/`$text`) resolved
 against DTCG tokens. Until now everything downstream of it assumed the
 terminal artifact was **CSS class names plus a stylesheet** — which locked
@@ -52,12 +52,12 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
 
 ## Targets
 
-| Backend         | Export                  | Terminal artifact                       | Unit policy                                                             |
-| --------------- | ----------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
-| `css` (default) | `pandwind/css`          | class strings + generated stylesheet    | CSS units verbatim                                                      |
-| `react-native`  | `pandwind/react-native` | registered style objects (`style` prop) | automatic: px → unitless dp numbers, rem × 16                           |
-| `opentui`       | `pandwind/opentui`      | plain style objects (`style` prop)      | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
-| `canvas`        | —                       | draw-call style objects                 | deferred until a concrete consumer exists                               |
+| Backend         | Export                | Terminal artifact                       | Unit policy                                                             |
+| --------------- | --------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
+| `css` (default) | `yumcss/css`          | class strings + generated stylesheet    | CSS units verbatim                                                      |
+| `react-native`  | `yumcss/react-native` | registered style objects (`style` prop) | automatic: px → unitless dp numbers, rem × 16                           |
+| `opentui`       | `yumcss/opentui`      | plain style objects (`style` prop)      | declared-with-default: cells = round(px / cellSize), cellSize default 4 |
+| `canvas`        | —                     | draw-call style objects                 | deferred until a concrete consumer exists                               |
 
 Selection is per-module via subpath imports — a module graph should not mix
 targets, two css instances cannot fight over one registry, and existing web
@@ -66,8 +66,8 @@ apps change nothing (zero-churn: the subpaths are purely additive).
 ### React Native
 
 ```ts
-import { createDesignCss, createCx } from "pandwind/react-native";
-import { examplePreset } from "./pandwind.preset";
+import { createDesignCss, createCx } from "yumcss/react-native";
+import { examplePreset } from "./yumcss.preset";
 
 // Lengths become unitless dp numbers ("20px" -> 20, "0.5rem" -> 8).
 // Shorthand lists split per side / corner like CSS.
@@ -93,8 +93,8 @@ matching the eager conflict resolution the web `cx()` has always had.
 ### OpenTUI
 
 ```ts
-import { createDesignCss, createCx } from "pandwind/opentui";
-import { examplePreset } from "./pandwind.preset";
+import { createDesignCss, createCx } from "yumcss/opentui";
+import { examplePreset } from "./yumcss.preset";
 
 // Lengths quantize to terminal cells: round(px / cellSize), cellSize 4 by
 // default ("20px" -> 5 cells); override with { cellSize: 8 }. Hex colors
@@ -149,7 +149,7 @@ stylesheet handles them natively.
   structurally-typed objects and never import `react-native` or
   `@opentui/*`.
 - **Parity is tested**: cross-backend merge/token/condition-policy parity
-  lives in `packages/pandwind/tests/backends-parity.test.ts`; each backend's
+  lives in `packages/yumcss/tests/backends-parity.test.ts`; each backend's
   value policy is pinned in `tests/backends-react-native.test.ts`,
   `tests/backends-opentui.test.ts` and `tests/backends-object.test.ts`.
 - **E2E is real, per target** — each backend has a sandbox app that consumes

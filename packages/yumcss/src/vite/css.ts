@@ -461,7 +461,9 @@ export function yumcssExtractVite(input: CssViteInput, options: YumCSSExtractVit
 				...(nextOptions.debug === undefined ? {} : { debug: nextOptions.debug }),
 			});
 			if (!refreshed) {
-				throw new Error("yumcssExtractVite: the shared engine cannot refresh its preset during HMR");
+				throw new Error(
+					"yumcssExtractVite: the shared engine cannot refresh its preset during HMR",
+				);
 			}
 		}
 		activePreset = nextMetadata.preset;

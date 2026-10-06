@@ -371,8 +371,7 @@ function materializeTailwindTokens(
 function collectTailwindDynamicClassAttributes(source: string): readonly string[] {
 	const attributes = collectDynamicClassAttributes(source);
 	if (!/\bfrom\s*["']yumcss(?:["']|\/)/u.test(source)) return attributes;
-	const yumcssStyleCarrier =
-		/\b(?:tw|d?css)\s*(?:\(|\.(?:class|vars|props|group|input|raw)\s*\()/u;
+	const yumcssStyleCarrier = /\b(?:tw|d?css)\s*(?:\(|\.(?:class|vars|props|group|input|raw)\s*\()/u;
 	return attributes.filter((attribute) => !yumcssStyleCarrier.test(attribute));
 }
 

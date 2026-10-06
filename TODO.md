@@ -9,8 +9,8 @@
   the generated runtime (`pnpm test`).
 - Generated conflict map (per-property, variant-scoped, compose-aware) —
   tailwind-merge semantics without a hand-maintained config.
-- `pandwind-codemod tw scan` — oxc-based scanner emitting a Tailwind safelist.
-- `pandwindVite()` — statically inlines literal `tw()` calls before Tailwind's
+- `yumcss-codemod tw scan` — oxc-based scanner emitting a Tailwind safelist.
+- `yumcssVite()` — statically inlines literal `tw()` calls before Tailwind's
   scanner (runtime cost zero, tree-shakable), with the same conflict merge at
   compile time.
 
@@ -21,8 +21,8 @@
 - `createDesignCss(preset)` — the Figma-inspector surface: `$frame` /
   `$layout` / `$text` (~30 props), strict token typings ("wrong is a type
   error"), `$raw` escape hatch.
-- `pandwindCssVite()` — filesystem scanner resolving literal `css()` calls
-  into a generated stylesheet served as a virtual module (`pandwind:css`).
+- `yumcssExtractVite()` — filesystem scanner resolving literal `css()` calls
+  into a generated stylesheet served as a virtual module (`yumcss:css`).
 - `cx()` — last-wins merge across raw class strings, `tw()` output and css
   atoms via the generated conflict map + css atom registry (variant-scoped,
   compose-aware). Unknown classes are kept verbatim.
@@ -58,7 +58,7 @@
 - **Split overloaded utilities** — semantic sub-keys (`textColor`, `textSize`,
   `textAlign`, `textWrap`, `textOverflow`) are generated at codegen time and
   documented in the README.
-- **DTCG design-token integration for `tw()`** — `pandwind-codemod tw generate --tokens`
+- **DTCG design-token integration for `tw()`** — `yumcss-codemod tw generate --tokens`
   bridges tokens into `@theme` and the generated types.
 - **Compile-time `cx()`** — the vite inliner folds literal `cx()` calls,
   differentially proven byte-identical to the runtime.
@@ -81,7 +81,7 @@
   published performance claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
-  already makes literal calls visible, and `pandwind-codemod tw scan` covers the rest.
+  already makes literal calls visible, and `yumcss-codemod tw scan` covers the rest.
 - **Publish to npm/JSR/pkg.pr.new** once the API and proof boundary settle; the
   repository already has pack, smoke, changeset, and provenance checks.
 
@@ -91,11 +91,11 @@
   styles at runtime is exactly the perf and caching cost we're avoiding.
 - **No panda-style PostCSS pipeline or mini runtime.** Tailwind compiles once,
   statically; `tw()` output is plain class strings. `css()` output is
-  extracted at build time by `pandwindCssVite`.
+  extracted at build time by `yumcssExtractVite`.
 - **No built-in recipe/slot API, no config files.** Panda's recipe/slot API and
   config-driven pipeline are exactly the surface we don't want to repeat. A
   minimalist API you can hold in your head; external CVA-style packages can
-  select the class strings Pandwind already produces.
+  select the class strings YumCSS already produces.
 - **No hand-maintained tailwind-merge config.** Conflict rules are generated
   from the real engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API.** The design surface is ~30 Figma-inspector props;

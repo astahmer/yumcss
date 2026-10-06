@@ -36,10 +36,10 @@ the same operation — the table says exactly what each call does:
 | `@stylexjs/stylex` 0.19.0 | `stylex.props()` on a babel-compiled object (the compile step is build-time) |      7,830,000 | 1.75M–9.53M |
 | `tailwind-merge` 3.6.0    | `twMerge()` of two precomputed class strings                                 |      2,620,000 |  845K–2.89M |
 | `@emotion/css` 11.13.5    | `css(styles)` — hash + cache lookup + class name                             |        472,000 |   220K–497K |
-| pandwind `cx()`           | `cx(stringA, stringB)` — tokenize, resolve atoms + conflict map, last-wins   |        448,000 |   149K–510K |
+| yumcss `cx()`             | `cx(stringA, stringB)` — tokenize, resolve atoms + conflict map, last-wins   |        448,000 |   149K–510K |
 | `@pandacss/core` 1.12.0   | generated `css(styles)` — runtime system walk                                |        429,000 |   180K–450K |
-| pandwind `css()`          | `css(styles)` — flatten, hash, property-priority merge                       |        197,000 |   153K–202K |
-| pandwind `tw()`           | `tw(styles)` — walk object, compose utilities, conflict-resolve              |         80,000 |     23K–95K |
+| yumcss `css()`            | `css(styles)` — flatten, hash, property-priority merge                       |        197,000 |   153K–202K |
+| yumcss `tw()`             | `tw(styles)` — walk object, compose utilities, conflict-resolve              |         80,000 |     23K–95K |
 
 > The `cx()` row above predates the v3 whole-input cache (2026-08-23) and was
 > also taken under heavy background load — it is a floor, not the current
@@ -54,9 +54,9 @@ the load caveat above applies.
 ## Reading the table honestly
 
 - **stylex is not comparable directly.** Its `create()` — the analog of
-  pandwind's `css()`/`tw()` compile — is compiled away by babel. What runs in
+  yumcss's `css()`/`tw()` compile — is compiled away by babel. What runs in
   the browser is `props()`, which iterates a precompiled object and joins
-  class names. pandwind's equivalent work happens in `css()`/`tw()` at call
+  class names. yumcss's equivalent work happens in `css()`/`tw()` at call
   time, or is hoisted to build time by the vite plugins,
   which then makes the remaining runtime cost zero for literal calls.
 - **twMerge vs `cx()`: shape-dependent, and `cx()` wins where it matters
@@ -67,12 +67,12 @@ the load caveat above applies.
   tailwind-merge** (see the v3 section), while doing strictly more work:
   resolving css() atoms through the registry and merging across engines.
   Both engines memoize repeated identical inputs the same way.
-- **pandwind `css()`/`tw()` trade per-call speed for a much smaller shipped
+- **yumcss `css()`/`tw()` trade per-call speed for a much smaller shipped
   runtime** ([canonical size reference](docs/src/content/docs/reference/size.md)) — and for literal calls the vite plugins
   hoist the entire cost to build time, making the per-call number irrelevant
   in real apps.
 - Every value here is **one call, cold-ish**: no memoization of the input
-  object across iterations. Emotion and panda hash every call; pandwind does
+  object across iterations. Emotion and panda hash every call; yumcss does
   the same. In real apps the vite inliner removes the per-call cost of
   literal `tw()`/`css()` calls entirely, so these numbers are the worst case.
 
@@ -91,7 +91,7 @@ atoms resolve live against a growing registry) and a hit with a changed
 registry size re-computes. Arrays/objects always take the merge path.
 Opacity-modifier regexes on the parse hot path were replaced by manual scans.
 
-Committed harness (`packages/pandwind/cx-bench.mts`, quiet machine,
+Committed harness (`packages/yumcss/cx-bench.mts`, quiet machine,
 median-of-15):
 
 | shape                              | before v3 |                                  after v3 |
@@ -104,10 +104,10 @@ median-of-15):
 Same-process **interleaved** comparison against real `tailwind-merge` 3.6.0
 (median of 5 rotated rounds, identical shapes, outputs verified equivalent):
 
-| shape     | pandwind `cx()` | `tailwind-merge` | ratio |
-| --------- | --------------: | ---------------: | ----: |
-| short 4+3 |       5,477,384 |        7,557,572 |  0.72 |
-| long 13+9 |       2,283,256 |        2,203,928 |  1.04 |
+| shape     | yumcss `cx()` | `tailwind-merge` | ratio |
+| --------- | ------------: | ---------------: | ----: |
+| short 4+3 |     5,477,384 |        7,557,572 |  0.72 |
+| long 13+9 |     2,283,256 |        2,203,928 |  1.04 |
 
 So warm `cx()` matches or beats tailwind-merge exactly where class strings
 grow — while additionally resolving css() atoms and merging across engines.
@@ -115,7 +115,7 @@ The cold path is allocation/Map-growth bound and applies only to the
 first-render vocabulary of an app; steady-state rendering lives in the warm
 regime. Size cost of the cache: cx entry +413 min / +185 gz bytes vs v2
 (intentional, inside the raised budgets in
-`packages/pandwind/tests/runtime-budget.json`).
+`packages/yumcss/tests/runtime-budget.json`).
 
 ## Historical runtime hot-path pass — 2026-09-01
 
@@ -159,7 +159,7 @@ The CSS fallback grew by about 406 minified bytes versus the previous
 snapshot. That is an intentional trade: the measured representative CSS
 object path improved by about 12%, while literal calls continue to be erased
 by the compiler and the reviewed hard budgets remain explicit in
-`packages/pandwind/tests/runtime-budget.json`.
+`packages/yumcss/tests/runtime-budget.json`.
 
 The earlier runtime-sheet cache remains part of the same pass:
 
@@ -194,9 +194,9 @@ and LRU performance work.
 ## `createRuntimeCss()` versus Emotion — 2026-09-10
 
 The comparator figures below use `@emotion/css` 11.13.5 numbers from the
-reference run supplied for this comparison. Pandwind was remeasured after
+reference run supplied for this comparison. YumCSS was remeasured after
 the runtime compiler changes in Node v24.19.0 on the same macOS arm64
-machine. Pandwind used
+machine. YumCSS used
 `createRuntimeCss(examplePreset, { sheet: createRuntimeSheet({ autoMount: false }) })`,
 which is the lazy/SSR mode: registrations update the in-memory sheet, and the
 complete CSS string is requested once after the timed calls. Emotion was run
@@ -210,11 +210,11 @@ incremental ordering. Each row warmed up first and then used five timed
 samples; the fresh-rule case created a fresh runtime/sheet per sample so
 new-rule registration remained part of the measured work:
 
-| case                                                 |       pandwind |  `@emotion/css` | reading                                                     |
-| ---------------------------------------------------- | -------------: | --------------: | ----------------------------------------------------------- |
-| repeated seven-property `runtimeCss.class()`         | ~3.32M ops/sec |  ~1.10M ops/sec | Pandwind is about 3× faster for this repeated call shape.   |
-| fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec |  ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules.   |
-| repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec | ~3.02M ops/sec* | Pandwind is about 1.1× faster for this stable carrier path. |
+| case                                                 |         yumcss |  `@emotion/css` | reading                                                   |
+| ---------------------------------------------------- | -------------: | --------------: | --------------------------------------------------------- |
+| repeated seven-property `runtimeCss.class()`         | ~3.32M ops/sec |  ~1.10M ops/sec | YumCSS is about 3× faster for this repeated call shape.   |
+| fresh unique one-property `runtimeCss.class()` rules | ~0.29M ops/sec |  ~0.61M ops/sec | Emotion is about 2.1× faster while registering new rules. |
+| repeated one-property `runtimeCss.vars()`            | ~3.41M ops/sec | ~3.02M ops/sec* | YumCSS is about 1.1× faster for this stable carrier path. |
 
 The repo-owned `createRuntimeCss()` size fixture is **20,907 bytes minified /
 8,423 gzip** with a minimal preset; the ordinary `createUnsafeCss()` entry is
@@ -222,7 +222,7 @@ The repo-owned `createRuntimeCss()` size fixture is **20,907 bytes minified /
 its own token and condition data, so that application-specific payload is not
 part of this library baseline. The direct class projection and variable
 registration fast paths remain covered by separate reviewed budgets in
-`packages/pandwind/tests/runtime-size.test.ts`.
+`packages/yumcss/tests/runtime-size.test.ts`.
 
 Repeated class and stable-variable calls no longer lose the comparison: the
 common paths avoid rebuilding intermediate declaration objects and avoid
@@ -231,12 +231,12 @@ because each call must resolve, serialize, and register a new rule; that is a
 different optimization target from the hot repeated-call path.
 
 `*` The `vars()` row is a semantic comparison rather than an identical
-operation: Emotion's call creates or looks up a CSS class, while Pandwind's
+operation: Emotion's call creates or looks up a CSS class, while YumCSS's
 `vars()` deliberately avoids a class per value and emits an inline custom
 property. On a separate changing-value run (50,000 calls cycling through
-60,000 HSL values), Pandwind measured ~2.17M ops/sec versus Emotion at
+60,000 HSL values), YumCSS measured ~2.17M ops/sec versus Emotion at
 ~0.44M; that is the case where var-inline avoids one new class and rule per
-value. The table measures Pandwind's lazy no-DOM sheet; mounted browser mode
+value. The table measures YumCSS's lazy no-DOM sheet; mounted browser mode
 uses CSSOM insertion for new rules and should be benchmarked separately for a
 specific host.
 
@@ -249,8 +249,8 @@ valid, but they pay the target library's runtime resolution cost and grow the
 sheet by design.
 
 The package-level runtime throughput record lives in
-[`packages/pandwind/tests/snapshots/runtime-benchmark.json.snap`](./packages/pandwind/tests/snapshots/runtime-benchmark.json.snap)
-and is exercised by `packages/pandwind/tests/runtime-benchmark.test.ts`. It
+[`packages/yumcss/tests/snapshots/runtime-benchmark.json.snap`](./packages/yumcss/tests/snapshots/runtime-benchmark.json.snap)
+and is exercised by `packages/yumcss/tests/runtime-benchmark.test.ts`. It
 records named `css.flat`, `css.nested`, `css.merge`, `css.compose`,
 `css.props`, `runtime.css`, `runtime.sheet`, `tw`, `cx.maps`, `cx.plain`, and
 `cx.nested` median/p10/p90 measurements. `css.compose` compiles three authored
@@ -267,7 +267,7 @@ assertions for output correctness. Refresh it deliberately after a meaningful
 runtime change with:
 
 ```sh
-cd packages/pandwind
+cd packages/yumcss
 pnpm run test:benchmarks -u
 ```
 
@@ -277,12 +277,12 @@ called by this fast package test.
 ## `cn`-inspired consecutive argument cache — 2026-09-02
 
 The official [`cn` implementation](https://github.com/shadcn-ui/cn) uses
-compiled conflict tables, fused token parsing, and whole-input caching. Pandwind
+compiled conflict tables, fused token parsing, and whole-input caching. YumCSS
 already had the first two and a bounded whole-input cache, so the useful
 additional lesson was narrower: a configured `cx(a, b)` call should not rebuild
 the `a\0b` cache key when the exact pair is rendered again immediately.
 
-Pandwind now keeps one generation-aware two-argument slot per `createCx()`
+YumCSS now keeps one generation-aware two-argument slot per `createCx()`
 instance. It is deliberately limited to primitive string pairs; arrays, style
 objects, `cx.vars()`, and non-consecutive reuse keep the existing merge/cache
 path. The atom-registry generation guard ensures that a growing CSS atom
@@ -304,7 +304,7 @@ allocation-bound first vocabulary pass. The samples are intentionally reported
 as ranges because sub-millisecond local measurements are noisy.
 
 This is a targeted optimization, not a copy of `cn`'s public API. Project
-specialization remains the next larger lesson: generated Pandwind metadata can
+specialization remains the next larger lesson: generated YumCSS metadata can
 prune unused conflict tables when a compiler build has a trustworthy usage
 graph. That should be implemented only with a separate retained-size and
 missed-candidate proof.
@@ -371,7 +371,7 @@ npm init -y
 npm i @stylexjs/stylex@0.19.0 @stylexjs/babel-plugin tailwind-merge@3.6.0 \
   @emotion/css@11.13.5 @pandacss/core@1.12.0 esbuild @babel/core
 npm i -D @pandacss/dev@1.12.0   # then generate styled-system/ via @pandacss/node codegen
-# entries/*.ts per row, bundled with esbuild (alias pandwind/* -> workspace src),
+# entries/*.ts per row, bundled with esbuild (alias yumcss/* -> workspace src),
 # timed with node:perf_hooks: interleaved rotated-order rounds, batched clock
 # checks (~200–400 ops between samples), best-of-passes median reported
 ```
@@ -382,17 +382,17 @@ Measurement notes from the 2026-08-22 rig:
   or timer overhead dominates fast ops (halves stylex/twMerge);
 - `stylex.create()` is compiled ahead of time with `@stylexjs/babel-plugin`
   (`dev: false`) so only `props()` runs at benchmark time;
-- pandwind's generated conflict map is extracted once from
+- yumcss's generated conflict map is extracted once from
   `examples/example/src/tw.ts` into JSON before bundling so the bench bundle has
   no parser dependency;
 - measure load average before trusting absolute numbers — this rig is
   single-machine evidence, not CI-grade.
 
-For pandwind itself, `packages/pandwind/tests/runtime-size.test.ts` is the
-repo-owned size gate, `packages/pandwind/cx-bench.mts` is the repo-owned
-cx microbench (`nub ../../packages/pandwind/cx-bench.mts` from
+For yumcss itself, `packages/yumcss/tests/runtime-size.test.ts` is the
+repo-owned size gate, `packages/yumcss/cx-bench.mts` is the repo-owned
+cx microbench (`nub ../../packages/yumcss/cx-bench.mts` from
 `examples/example`, so the generated config in `examples/example/src/tw.ts`
-resolves), and the benchmark entries import the published `pandwind/*`
+resolves), and the benchmark entries import the published `yumcss/*`
 subpaths plus the generated config in `examples/example/src/tw.ts`. The only
 source-addressed imports in the perf-history harness are intentional: each
 run loads the exact historical worktree revision being measured.

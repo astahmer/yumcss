@@ -1,17 +1,17 @@
 ---
 title: Chakra UI adapter
-description: Verified Chakra UI styling forms and their Pandwind migration behavior.
+description: Verified Chakra UI styling forms and their YumCSS migration behavior.
 ---
 
 # Chakra UI adapter
 
-This page records the Chakra UI APIs that Pandwind treats as migration inputs
+This page records the Chakra UI APIs that YumCSS treats as migration inputs
 or outputs. The list is based on Chakra's official v3 documentation, not on
 names guessed from package exports.
 
 ## Verified user-facing forms
 
-| Form                               | Example                                                             | Pandwind behavior                                                                                                                            |
+| Form                               | Example                                                             | YumCSS behavior                                                                                                                              |
 | ---------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Style props                        | `<Box bg="red.200" p="4" />`                                        | Extracts the props into the semantic style program.                                                                                          |
 | `css` prop                         | `<Box css={{ "& svg": { color: "red.500" } }} />`                   | Extracts nested style objects and conditions.                                                                                                |
@@ -38,7 +38,7 @@ compound-variant, and component behavior.
 the [theming overview](https://chakra-ui.com/docs/theming/overview) describes
 it as converting Chakra style objects into CSS style objects that can be
 passed to another styling library. Since its result is an object, a migration
-must not emit it as `className={...}`. Pandwind uses `css={...}` on a Chakra
+must not emit it as `className={...}`. YumCSS uses `css={...}` on a Chakra
 host, or `chakra.<intrinsic>` when the source host is a native JSX element.
 
 ## Themes and custom systems
@@ -46,7 +46,7 @@ host, or `chakra.<intrinsic>` when the source host is a native JSX element.
 Chakra's [customization guide](https://chakra-ui.com/docs/theming/customization/overview)
 defines custom systems with `defineConfig` and `createSystem(defaultConfig,
 config)`, then supplies the result through `ChakraProvider value={system}`.
-Pandwind's project loader reads an existing project system/config when it can,
+YumCSS's project loader reads an existing project system/config when it can,
 and uses that context for token normalization. A missing or unevaluable
 configuration is reported as a configuration residual; the adapter does not
 silently replace a project's custom theme with a default system.

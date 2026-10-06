@@ -12,21 +12,21 @@ for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
 evidence, not a published benchmark suite — numbers vary with hardware and
 versions. See
-[BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md) in the
+[BENCH.md](https://github.com/astahmer/yumcss/blob/main/BENCH.md) in the
 repo for the complete methodology and caveats.
 
 The short, main-API comparison is in
-[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md).
+[`PERF-SUMMARY.md`](https://github.com/astahmer/yumcss/blob/main/PERF-SUMMARY.md).
 The detailed snapshot-derived typecheck, runtime, and bundle-size report is in
-[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md). Both keep
+[`PERF.md`](https://github.com/astahmer/yumcss/blob/main/PERF.md). Both keep
 rankings per workload and metric instead of inventing one composite score.
 
 The external [CSS-in-JS Bench](https://github.com/jantimon/css-in-js-bench)
 comparison runs the shared 400-tile product-grid workload through server
 rendering, payload, browser mount, hydration, and interaction measurements.
 Its normalized source snapshot is
-[`benchmarks/css-in-js-bench/snapshot.json`](https://github.com/astahmer/pandwind/blob/main/benchmarks/css-in-js-bench/snapshot.json).
-The Pandwind lane measures the Vite `tw()` literal-folding path; its benchmark-specific
+[`benchmarks/css-in-js-bench/snapshot.json`](https://github.com/astahmer/yumcss/blob/main/benchmarks/css-in-js-bench/snapshot.json).
+The YumCSS lane measures the Vite `tw()` literal-folding path; its benchmark-specific
 atom stylesheet adapter uses the shared CSS extraction core.
 The 2026-09-24 WPD refresh passed 196/196 cells across five lanes; DOM and pixel
 parity passed across 19 techs and 13 cases. The build-time product-grid lane
@@ -34,14 +34,14 @@ ranks #18/18 in gzip payload (43,339 B: 21,221 B JS, 7,781 B CSS, 14,337 B
 HTML), #10/18 in SSR throughput, #14/18 in Chrome mount, #16/18 in Chrome
 hydration, and #8/19 in cold client build. Interaction remains unranked because
 the frame-time medians are too close to support a meaningful order.
-CSS-in-JS Arena now includes a six-page Pandwind lane. Its refreshed geometry and
-screenshot gates passed (18/18 routes and 72/72 screenshots). Pandwind ranks
+CSS-in-JS Arena now includes a six-page YumCSS lane. Its refreshed geometry and
+screenshot gates passed (18/18 routes and 72/72 screenshots). YumCSS ranks
 first for raw CSS, mean SSR HTML, class-attribute bytes, cold and warm production
 builds, dev startup, and shared-edit paint; third for compressed CSS; and second
 for component-edit paint. Client JavaScript and full first load rank fourth.
 The current ranked summary and normalized Arena snapshot are in
-[`PERF-SUMMARY.md`](https://github.com/astahmer/pandwind/blob/main/PERF-SUMMARY.md)
-and [`benchmarks/css-in-js-arena/snapshot.json`](https://github.com/astahmer/pandwind/blob/main/benchmarks/css-in-js-arena/snapshot.json).
+[`PERF-SUMMARY.md`](https://github.com/astahmer/yumcss/blob/main/PERF-SUMMARY.md)
+and [`benchmarks/css-in-js-arena/snapshot.json`](https://github.com/astahmer/yumcss/blob/main/benchmarks/css-in-js-arena/snapshot.json).
 
 Run focused regression measurements when changing the compiler, runtime, or
 bundler paths they cover. Refresh the complete local matrix before releases
@@ -59,17 +59,17 @@ logical style corpus:
 | `@stylexjs/stylex` 0.19.0 | `stylex.props()` on a babel-compiled object (the compile step is build-time) |      7,830,000 |
 | `tailwind-merge` 3.6.0    | `twMerge()` of two precomputed class strings                                 |      2,620,000 |
 | `@emotion/css` 11.13.5    | `css(styles)` — hash + cache lookup + class name                             |        472,000 |
-| pandwind `cx()`           | tokenize, resolve atoms + conflict map, last-wins                            |        448,000 |
+| yumcss `cx()`             | tokenize, resolve atoms + conflict map, last-wins                            |        448,000 |
 | `@pandacss/core` 1.12.0   | generated `css(styles)` — runtime system walk                                |        429,000 |
-| pandwind `css()`          | flatten, hash, property-priority merge                                       |        197,000 |
-| pandwind `tw()`           | walk object, compose utilities, conflict-resolve                             |         80,000 |
+| yumcss `css()`            | flatten, hash, property-priority merge                                       |        197,000 |
+| yumcss `tw()`             | walk object, compose utilities, conflict-resolve                             |         80,000 |
 
 Reading it honestly:
 
-- stylex's compile is hoisted to babel; pandwind's equivalent work happens at
+- stylex's compile is hoisted to babel; yumcss's equivalent work happens at
   call time — or is hoisted to build time by the vite plugins, making the
   remaining runtime cost zero for literal calls.
-- pandwind `css()`/`tw()` trade per-call speed for a much smaller shipped
+- yumcss `css()`/`tw()` trade per-call speed for a much smaller shipped
   runtime ([size](/reference/size/)).
 - The CSS projections are peers, not a winner and loser: use `css(a, b)` when
   a mergeable declaration map is useful, or `css.class(a, b)` when the host
@@ -83,7 +83,7 @@ Reading it honestly:
 
 v3 added a whole-input result cache to `createCx`, keyed on pure-string
 argument lists, with an atom-registry guard tailwind-merge does not need.
-Committed harness (`packages/pandwind/cx-bench.mts`, quiet machine,
+Committed harness (`packages/yumcss/cx-bench.mts`, quiet machine,
 median-of-15):
 
 | shape                         | before v3 |  after v3 |
@@ -95,10 +95,10 @@ median-of-15):
 Interleaved against real `tailwind-merge` 3.6.0 (outputs verified
 equivalent):
 
-| shape     | pandwind `cx()` | `tailwind-merge` | ratio |
-| --------- | --------------: | ---------------: | ----: |
-| short 4+3 |       5,477,384 |        7,557,572 |  0.72 |
-| long 13+9 |       2,283,256 |        2,203,928 |  1.04 |
+| shape     | yumcss `cx()` | `tailwind-merge` | ratio |
+| --------- | ------------: | ---------------: | ----: |
+| short 4+3 |     5,477,384 |        7,557,572 |  0.72 |
+| long 13+9 |     2,283,256 |        2,203,928 |  1.04 |
 
 Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 — while additionally resolving css() atoms and merging across engines.
@@ -157,7 +157,7 @@ example `dss+cx` bundle is **54.07 KB min / 18.88 KB gzip**. These rows are
 lower than the previous 55.96 KB / 11.54 KB conflict-only and 80.68 KB /
 20.29 KB `dss+cx` bundles because the generated catalog is packed, decoded
 lazily, and shared between the optional `tw.runtime.ts` and `cx` paths. Native
-Pandwind-only `cx()` does not pay for that catalog. For larger apps,
+YumCSS-only `cx()` does not pay for that catalog. For larger apps,
 `tw generate --conflicts bg,p,text` narrows the catalog further; this is safe
 only when every arbitrary runtime class that must merge belongs to a selected
 prefix. The root `SIZE.md` is only a pointer and no longer duplicates these
@@ -166,7 +166,7 @@ numbers.
 ## Public runtime API throughput snapshot
 
 The package also owns a structured runtime snapshot at
-`packages/pandwind/tests/snapshots/runtime-api-benchmark.json.snap`. It
+`packages/yumcss/tests/snapshots/runtime-api-benchmark.json.snap`. It
 measures every first-class authoring lane and its important projections:
 preset-bound, generated, and unsafe `css`; `dss`; runtime CSS and runtime
 design CSS; `cx`; configured and root `tw`; Stack; React Native; OpenTUI;
@@ -178,7 +178,7 @@ and p10/p90 throughput. Rows are evidence for their own operation, not a
 single universal score.
 
 The generated ranking is included in
-[`PERF.md`](https://github.com/astahmer/pandwind/blob/main/PERF.md), and the
+[`PERF.md`](https://github.com/astahmer/yumcss/blob/main/PERF.md), and the
 dedicated hot-path regression harness remains separate because it uses a
 different micro-input set and slowdown tolerance. The broad public matrix uses
 a 25% of baseline floor because very short local operations are noisy; the
@@ -187,7 +187,7 @@ snapshot remains the reviewable source for smaller changes.
 Refresh the runtime record with:
 
 ```sh
-pnpm --filter pandwind run test:benchmarks -- -u
+pnpm --filter yumcss run test:benchmarks -- -u
 pnpm run bench:summary
 ```
 
@@ -231,7 +231,7 @@ costs apply to dynamic or unsupported calls only.
 
 ## Opt-in generated runtime selections
 
-The `pandwind-codemod runtime generate` command lets non-Vite consumers choose
+The `yumcss-codemod runtime generate` command lets non-Vite consumers choose
 the `createUnsafeCss` attachments they actually use. The current generated-module
 record is:
 
@@ -247,16 +247,16 @@ The `class,vars` module therefore removes **2,274 minified bytes / 821 gzip
 bytes** from the generated all-method module. This is a bundle-size saving;
 the callable core and selected attachment implementations are unchanged, so
 the optimization does not add runtime dispatch or dynamic loading. The exact
-record is part of the Pandwind runtime-size snapshot.
+record is part of the YumCSS runtime-size snapshot.
 
 ## Re-running
 
-The repo-owned evidence is split by cost center: `packages/pandwind/tests/runtime-size.test.ts`
+The repo-owned evidence is split by cost center: `packages/yumcss/tests/runtime-size.test.ts`
 is the runtime byte/gzip gate; the committed CSS snapshots and Vite/Rollup
 browser fixtures cover generated stylesheet behavior and integration; and
-`packages/pandwind/cx-bench.mts` plus its smoke test cover composition
+`packages/yumcss/cx-bench.mts` plus its smoke test cover composition
 throughput. The competitor rig lives outside the repo; rebuild instructions are in
-[BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md#re-running).
+[BENCH.md](https://github.com/astahmer/yumcss/blob/main/BENCH.md#re-running).
 
 ## Repository-scale tooling benchmark — 2026-09-02
 
@@ -306,32 +306,32 @@ signal: the changed file is invalidated while unchanged files remain cache
 hits. Codemod has no such stateful watcher boundary, so its incremental value
 is a full migration run.
 
-## Pandwind API typecheck snapshot
+## YumCSS API typecheck snapshot
 
 The package also owns a focused API regression snapshot at
-`packages/pandwind/tests/snapshots/tsc.json.snap`. Unlike the ecosystem
-comparison, this matrix isolates Pandwind's public API shapes: default,
+`packages/yumcss/tests/snapshots/tsc.json.snap`. Unlike the ecosystem
+comparison, this matrix isolates YumCSS's public API shapes: default,
 generated, custom, and unsafe CSS; a complete anonymized product theme (both
 construction and downstream usage); dynamic `css` projections; `dss` and
 runtime design CSS; `cx`; configured and root `tw`; preset builders; Stack;
 class-name strategies; platform backends; tooling contracts; and one combined
 app-style fixture. Every row is measured in three fresh TypeScript processes
 and records the compiler program size, symbols, types, instantiations, memory,
-check time, and total time. It runs as part of the normal Pandwind package test
+check time, and total time. It runs as part of the normal YumCSS package test
 and can be refreshed deliberately. Instantiations, memory, and check time are
 the regression gates; total process time is retained for context because fresh
 process startup is noisy:
 
 ```sh
-pnpm --filter pandwind run test:tsc
-pnpm --filter pandwind run test:tsc -- -u
+pnpm --filter yumcss run test:tsc
+pnpm --filter yumcss run test:tsc -- -u
 ```
 
 ## Styling ecosystem typecheck benchmark
 
 The standalone
-[styling TypeScript benchmark](https://github.com/astahmer/pandwind/tree/main/benchmarks/styling-tsc)
-compares realistic consumer typecheck cost across Pandwind and a broad set of
+[styling TypeScript benchmark](https://github.com/astahmer/yumcss/tree/main/benchmarks/styling-tsc)
+compares realistic consumer typecheck cost across YumCSS and a broad set of
 type-dependent styling APIs. It includes Panda CSS, StyleX, Vanilla Extract
 (core, recipes, and Sprinkles), Emotion, styled-components, Goober, Linaria,
 Compiled, Griffel, Stitches, JSS, React-JSS, Fela, Aphrodite, Style9, Treat,
@@ -346,7 +346,7 @@ The first matrix has two workload sizes:
 - <code>stress</code>: 180 repeated component-style uses and a 128-entry token
   catalog.
 
-Pandwind's fixture covers the callable css API, class and props projections,
+YumCSS's fixture covers the callable css API, class and props projections,
 variables, groups and inputs, class composition, tokens, semantic tokens, color
 palettes, conditions, and strict property typing. The comparison fixtures use
 each library's native object, template, styled-component, variant, generated,
@@ -362,9 +362,9 @@ pnpm run bench:tsc:styling -- --update
 ```
 
 The committed
-[JSON snapshot](https://github.com/astahmer/pandwind/blob/main/benchmarks/styling-tsc/snapshots/tsc.json)
-and [Markdown report](https://github.com/astahmer/pandwind/blob/main/benchmarks/styling-tsc/snapshots/tsc.md)
-are the reviewable evidence. Pandwind rows are regression gates with
+[JSON snapshot](https://github.com/astahmer/yumcss/blob/main/benchmarks/styling-tsc/snapshots/tsc.json)
+and [Markdown report](https://github.com/astahmer/yumcss/blob/main/benchmarks/styling-tsc/snapshots/tsc.md)
+are the reviewable evidence. YumCSS rows are regression gates with
 noise-tolerant thresholds; competitor rows are descriptive because generated
 declaration graphs and dependency sets belong to their pinned releases. These
 are typecheck measurements, not universal library or runtime performance

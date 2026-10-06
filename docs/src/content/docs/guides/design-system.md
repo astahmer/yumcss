@@ -1,11 +1,11 @@
 ---
 title: Build a design system
-description: Create a typed token, theme, condition, and component contract with pandwind.
+description: Create a typed token, theme, condition, and component contract with yumcss.
 sidebar:
   order: 3
 ---
 
-A Pandwind design system has one source of truth: tokens and semantic rules
+A YumCSS design system has one source of truth: tokens and semantic rules
 are defined once, then consumed directly by `css()` and design `css()`, and
 optionally by `tw()` through a generated Tailwind bridge. Keep the vocabulary
 small enough to teach and strict enough to prevent accidental values.
@@ -30,14 +30,14 @@ src/
 Export the preset from a stable module. Applications, component packages,
 Vite, codegen, and codemods should all consume that same module.
 
-The generated `bridge.ts` is not imported automatically by Pandwind. It stays
+The generated `bridge.ts` is not imported automatically by YumCSS. It stays
 build-time/migration metadata unless the application explicitly selects its
 `twAdapter` for Tailwind class output.
 
 The generated `tw.ts` entry is intentionally small. `tw.runtime.ts` is an
 optional conflict catalog and is not imported by the entry; `tw.build.ts` is
 read by Vite and codemod tooling and is never a runtime import. Plain `cx()`
-also works without the catalog. With `pandwindVite()`, static calls are folded
+also works without the catalog. With `yumcssVite()`, static calls are folded
 to class strings before bundling, so the entry and both metadata companions are
 tree-shaken away. Import the conflict catalog only when arbitrary runtime
 Tailwind strings need exact last-wins merging.
@@ -46,7 +46,7 @@ Tailwind strings need exact last-wins merging.
 
 ```ts
 // src/design-system/tokens.ts
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 
 export const tokens = define.tokens({
 	colors: {
@@ -84,10 +84,10 @@ underlying hex or pixel value in component code.
 
 ```ts
 // src/design-system/preset.ts
-import { define, type PandwindProperties } from "pandwind/preset";
+import { define, type YumCSSProperties } from "yumcss/preset";
 import { tokens } from "./tokens";
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 
 const theme = define.theme({
 	config: cssConfig,
@@ -124,8 +124,8 @@ the raw-value escape options.
 ```json
 {
 	"scripts": {
-		"tw:generate": "pandwind-codemod tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
-		"tw:scan": "pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
+		"tw:generate": "yumcss-codemod tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
+		"tw:scan": "yumcss-codemod tw scan ./src/tw.ts ./src ./src/yumcss.safelist.css"
 	}
 }
 ```
@@ -146,7 +146,7 @@ Put light/dark behavior in conditions and semantic tokens rather than
 duplicating component styles:
 
 ```ts
-import { define } from "pandwind/preset";
+import { define } from "yumcss/preset";
 
 const semanticConditions = define.conditions({
 	base: "",
@@ -226,7 +226,7 @@ const themedTokens = {
 	},
 };
 
-const componentCssConfig: PandwindProperties = {};
+const componentCssConfig: YumCSSProperties = {};
 
 export const componentPreset = define.preset(
 	{ config: componentCssConfig, tokens: themedTokens },
@@ -248,7 +248,7 @@ export const componentPreset = define.preset(
 
 ```tsx
 // src/components/EmptyState.tsx
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 import { componentPreset } from "./preset";
 
 const css = createCss(componentPreset);
@@ -283,7 +283,7 @@ point, but it is an optional pattern—not the component-token layer itself.
 At CI and package boundaries:
 
 - run codegen and fail on a dirty generated diff;
-- run `pandwind-codemod tw scan` so dynamic candidates are known;
+- run `yumcss-codemod tw scan` so dynamic candidates are known;
 - lint raw escapes and unresolved tokens;
 - run browser-state and SSR/hydration fixtures for theme changes;
 - measure CSS output and bundle size; and

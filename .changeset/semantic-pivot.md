@@ -1,6 +1,6 @@
 ---
-"pandwind-codemod": minor
-"pandwind": patch
+"@yumcss/codemod": minor
+"yumcss": patch
 ---
 
 Complete the CSS-in-JS pivot foundations with shared source scanning, explicit

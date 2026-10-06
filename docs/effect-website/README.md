@@ -1,14 +1,14 @@
 # Effect website migration corpus
 
-This is a reproducible acceptance corpus for Pandwind’s static-first
+This is a reproducible acceptance corpus for YumCSS’s static-first
 migration APIs. The upstream repository is deliberately not copied into JJ:
-it is an external, read-only reference. Pandwind records its immutable commit
+it is an external, read-only reference. YumCSS records its immutable commit
 in [`reference-repos.md`](../../reference-repos.md), and the runner verifies
 the reference HEAD before reporting results.
 
 ## Lanes
 
-| Lane                | Pandwind API | Proof                              |
+| Lane                | YumCSS API   | Proof                              |
 | ------------------- | ------------ | ---------------------------------- |
 | Tailwind-compatible | `tw({...})`  | [`tw.md`](./tw.md)                 |
 | Static CSS          | `css({...})` | [`css.md`](./css.md)               |
@@ -52,14 +52,14 @@ After building the baseline and three lanes, run:
 
 ```sh
 node scripts/verify-effect-docs.mjs \
-  /tmp/pandwind-effect-baseline/apps/web/dist/client \
-  /tmp/pandwind-effect-tw/apps/web/dist/client \
-  /tmp/pandwind-effect-css/apps/web/dist/client \
-  /tmp/pandwind-effect-design/apps/web/dist/client \
-  /tmp/pandwind-effect-parity.json
+  /tmp/yumcss-effect-baseline/apps/web/dist/client \
+  /tmp/yumcss-effect-tw/apps/web/dist/client \
+  /tmp/yumcss-effect-css/apps/web/dist/client \
+  /tmp/yumcss-effect-design/apps/web/dist/client \
+  /tmp/yumcss-effect-parity.json
 ```
 
 The committed verifier is the source of truth for the pinned source revision,
 exact route-set, per-file linked CSS hashes, per-route inline CSS lengths, SSR,
-browser, hydration, and screenshot gates; `/tmp/pandwind-effect-parity.json`
+browser, hydration, and screenshot gates; `/tmp/yumcss-effect-parity.json`
 is a regenerable local artifact and is not committed.

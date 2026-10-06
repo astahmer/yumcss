@@ -236,26 +236,23 @@ export const yumcssUnpluginCss = createUnplugin((options: YumCSSUnpluginCssOptio
 				};
 			};
 		};
-		compilerWithFactory.hooks?.normalModuleFactory?.tap(
-			"yumcss:webpack-virtual-css",
-			(factory) => {
-				const normalModuleFactory = factory as {
-					hooks?: {
-						beforeResolve?: {
-							tap(name: string, fn: (data: { request?: string }) => void): void;
-						};
+		compilerWithFactory.hooks?.normalModuleFactory?.tap("yumcss:webpack-virtual-css", (factory) => {
+			const normalModuleFactory = factory as {
+				hooks?: {
+					beforeResolve?: {
+						tap(name: string, fn: (data: { request?: string }) => void): void;
 					};
 				};
-				normalModuleFactory.hooks?.beforeResolve?.tap("yumcss:webpack-virtual-css", (data) => {
-					if (!isVirtualSource(data.request)) return;
-					const target = virtualPathFor(data.request!);
-					if (target === undefined) return;
-					state.__vfs?.writeModule(target, "");
-					state.__vfsModules?.add(target);
-					data.request = target;
-				});
-			},
-		);
+			};
+			normalModuleFactory.hooks?.beforeResolve?.tap("yumcss:webpack-virtual-css", (data) => {
+				if (!isVirtualSource(data.request)) return;
+				const target = virtualPathFor(data.request!);
+				if (target === undefined) return;
+				state.__vfs?.writeModule(target, "");
+				state.__vfsModules?.add(target);
+				data.request = target;
+			});
+		});
 		const resolverPlugin = {
 			apply(resolver: unknown) {
 				const webpackResolver = resolver as {

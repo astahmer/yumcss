@@ -2,7 +2,7 @@
 
 This corpus uses the read-only PostHog.com checkout pinned in
 [`reference-repos.md`](../../reference-repos.md). The external Git checkout is
-not edited or added as a JJ workspace. Pandwind versions the migration runner,
+not edited or added as a JJ workspace. YumCSS versions the migration runner,
 generated support files, and proof reports instead.
 
 PostHog.com is a Gatsby 4 application using Tailwind 3.4. The first lane is a
@@ -28,14 +28,14 @@ Materialize a disposable Gatsby application with:
 
 ```sh
 nub scripts/run-migration-proof.ts run posthog-docs tw \
-	--output-root /tmp/pandwind-posthog-docs-tw
+	--output-root /tmp/yumcss-posthog-docs-tw
 ```
 
 Materialize the untouched baseline with the same pinned checkout:
 
 ```sh
 nub scripts/run-migration-proof.ts run posthog-docs baseline \
-	--output-root /tmp/pandwind-posthog-docs-baseline
+	--output-root /tmp/yumcss-posthog-docs-baseline
 ```
 
 After serving the baseline and each built lane, run the exhaustive proof:
@@ -43,7 +43,7 @@ After serving the baseline and each built lane, run the exhaustive proof:
 ```sh
 nub scripts/verify-posthog-docs.mjs \
   http://127.0.0.1:4351 \
-  /tmp/pandwind-posthog-docs-baseline/public \
+  /tmp/yumcss-posthog-docs-baseline/public \
   http://127.0.0.1:4352 \
   http://127.0.0.1:4353 \
   http://127.0.0.1:4354 \
@@ -62,8 +62,8 @@ replaces remote images with a stable 1×1 fixture so external CDN responses do
 not affect the comparison. Raw and significant pixel deltas are both retained
 in the JSON report.
 
-The materialized app copies the pinned source, injects the generated Pandwind
-modules, adds the Pandwind dependency, and writes a generated token vocabulary
+The materialized app copies the pinned source, injects the generated YumCSS
+modules, adds the YumCSS dependency, and writes a generated token vocabulary
 module so the compiler sees the original static utility candidates without
 inflating the source stylesheet. The source checkout remains untouched.
 
@@ -76,10 +76,10 @@ migration failures. Residuals are allowed only when they preserve the original
 utility verbatim and are listed in the report; they are not silent losses.
 
 The `css.class` and `design-css` lanes are separate JJ revisions layered after
-the `tw` lane. Each lane is static first; runtime Pandwind is a fallback only for semantics that
+the `tw` lane. Each lane is static first; runtime YumCSS is a fallback only for semantics that
 cannot be represented by a static adapter.
 
 The external checkout is deliberately not versioned in JJ. Its exact Git
 commit is pinned in `reference-repos.md`; the migration runner, support
-modules, tests, and proof tooling are the versioned Pandwind artifact. This is
+modules, tests, and proof tooling are the versioned YumCSS artifact. This is
 the same policy used for the other migration corpora.

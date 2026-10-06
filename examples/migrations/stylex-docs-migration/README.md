@@ -3,7 +3,7 @@
 This fixture is a reproducible migration of the StyleX documentation app at
 commit `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4`. The upstream checkout is
 downloaded by `pnpm run references:prepare` into
-`${PANDWIND_REFERENCE_ROOT:-~/.references}/stylex`; Pandwind versions only
+`${YUMCSS_REFERENCE_ROOT:-~/.references}/stylex`; YumCSS versions only
 the migration runner and proof reports.
 
 The migration is deliberately expressed as lanes over the same
@@ -52,6 +52,6 @@ The copied docs app includes intentionally displayed playground examples and
 the development-only StyleX HMR probe. Those are source content/runtime
 fixtures rather than migration call sites; the migration gate does not
 silently rewrite them as executable styling code. The playground's host
-application is migrated to Pandwind; its embedded editor remains a
+application is migrated to YumCSS; its embedded editor remains a
 StyleX-compatible sandbox so the documented interactive compiler experience
 continues to work while users edit StyleX examples.

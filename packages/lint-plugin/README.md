@@ -1,4 +1,4 @@
-# @pandwind/lint-plugin
+# @yumcss/lint-plugin
 
 Use this when you want CI or editor diagnostics for style code that should be
 folded at build time. It catches common static-extraction mistakes and reads
@@ -10,29 +10,29 @@ Start with warnings during adoption:
 {
 	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
 	"rules": {
-		"pandwind-extraction/no-spreads": "warn",
-		"pandwind-extraction/no-dynamic-values": "warn",
-		"pandwind-extraction/no-dynamic-carrier-fallback": "error"
+		"yumcss-extraction/no-spreads": "warn",
+		"yumcss-extraction/no-dynamic-values": "warn",
+		"yumcss-extraction/no-dynamic-carrier-fallback": "error"
 	}
 }
 ```
 
 Read the rule table below when you are ready to make specific boundaries
 errors. The plugin is intentionally conservative: dynamic values that use a
-documented Pandwind escape hatch stay valid.
+documented YumCSS escape hatch stay valid.
 
-Oxlint JavaScript plugin for Pandwind's static-extraction discipline. It
-recognizes the real Pandwind package boundaries, including aliased and
+Oxlint JavaScript plugin for YumCSS's static-extraction discipline. It
+recognizes the real YumCSS package boundaries, including aliased and
 namespace imports:
 
-- `pandwind`: named `cx` and `tw`
-- `pandwind/css`: preset-bound `createCss(...)` instances
-- `pandwind/unsafe/css`: `createUnsafeCss()` instances
-- `pandwind/design`: `createDesignCss()` instances
+- `yumcss`: named `cx` and `tw`
+- `yumcss/css`: preset-bound `createCss(...)` instances
+- `yumcss/unsafe/css`: `createUnsafeCss()` instances
+- `yumcss/design`: `createDesignCss()` instances
 - local CSS/design facades whose source basename is `css` or `design`
 
 It does not identify unrelated local functions named `cx`, `tw`, or `css`.
-Direct Pandwind APIs resolve from their package source. Local facades use the
+Direct YumCSS APIs resolve from their package source. Local facades use the
 same `css` and `design` basename convention as the Vite plugin.
 
 For application-local modules that re-export a preset-bound `createCss`
@@ -44,7 +44,7 @@ from its source-resolved preset.
 ```json
 {
 	"settings": {
-		"pandwind-extraction": {
+		"yumcss-extraction": {
 			"cssModules": [{ "source": "../app/css", "exports": ["css"] }]
 		}
 	}
@@ -53,9 +53,9 @@ from its source-resolved preset.
 
 `prefer-typed-css-values` follows local and package imports from the linted
 file to each `createCss(preset)` binding, then derives property-specific token
-names with Pandwind's shared preset vocabulary logic. It needs no
+names with YumCSS's shared preset vocabulary logic. It needs no
 `tokenVocabulary` setting. The resolver statically reads preset modules and
-uses Pandwind's actual `define.*` builders; it never executes project code or
+uses YumCSS's actual `define.*` builders; it never executes project code or
 framework configuration. Dynamic preset expressions stay unresolved.
 
 ## Rules
@@ -66,11 +66,11 @@ framework configuration. Dynamic preset expressions stay unresolved.
 | `no-dynamic-values`           | Uses the compiler evaluators to find values that stay on the runtime path. | —                                     |
 | `no-multiple-conditionals`    | Finds `cx()` calls with multiple compiler-foldable conditional arguments.  | —                                     |
 | `no-redundant-cx`             | Finds one static string passed through `cx()` unchanged.                   | —                                     |
-| `no-dollar-raw`               | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                                     |
+| `no-dollar-raw`               | Finds `$raw` escape hatches in YumCSS style lanes.                         | —                                     |
 | `prefer-typed-css-values`     | Finds CSS values and statically resolved preset tokens inside `$raw`.      | Safe: unwraps static supported values |
 | `no-arbitrary-values`         | Finds arbitrary class values such as `w-[13px]`.                           | —                                     |
 | `design-tokens-only`          | Checks design values against an explicit project policy.                   | —                                     |
-| `migration-skip-reason`       | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                                     |
+| `migration-skip-reason`       | Requires every `yumcss:migrate-skip` marker to explain its residual.       | —                                     |
 | `no-stale-migration-skip`     | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker                   |
 | `require-migration-residual`  | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker                      |
 | `no-conflicting-style-props`  | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                                     |
@@ -108,7 +108,7 @@ rule changes `.className` extraction into a full props spread only when there
 is no sibling `style` prop or unknown prop spread that could change precedence.
 
 `prefer-typed-css-values` recognizes CSS-wide keywords, numeric values, the
-property-specific keywords from Pandwind's CSS value types, and exact tokens
+property-specific keywords from YumCSS's CSS value types, and exact tokens
 from the preset bound to each `createCss(...)` instance. It applies only to
 preset-bound CSS instances. The fixer unwraps a whole `$raw`
 object or moves a group of supported properties when it can preserve their
@@ -129,10 +129,10 @@ plugin setting above:
 ```json
 {
 	"rules": {
-		"pandwind-extraction/prefer-typed-css-values": [
+		"yumcss-extraction/prefer-typed-css-values": [
 			"error",
 			{
-				"cssModules": [{ "source": "../pandwind/css", "exports": ["css"] }]
+				"cssModules": [{ "source": "../yumcss/css", "exports": ["css"] }]
 			}
 		]
 	}
@@ -161,7 +161,7 @@ guess a project's theme from a hardcoded list of scale words:
 ```json
 {
 	"rules": {
-		"pandwind-extraction/design-tokens-only": [
+		"yumcss-extraction/design-tokens-only": [
 			"error",
 			{ "allowedPrefixes": ["$"], "allowedValues": ["center", "space-4"] }
 		]
@@ -174,7 +174,7 @@ unknown failure. They must name the preserved behavior, and a marker becomes
 an error when it is left on a call that is now fully static:
 
 ```ts
-// pandwind:migrate-skip (residual: runtime theme lookup)
+// yumcss:migrate-skip (residual: runtime theme lookup)
 tw(theme.colors.brand);
 ```
 
@@ -185,7 +185,7 @@ improvement and offers a safe fixer that removes only the obsolete comment.
 The other rules are report-only because their fixes require token/config
 knowledge or could alter style behavior. `no-conflicting-style-props` is
 report-only because
-deleting an explicit host prop would change behavior; the Pandwind codemod must
+deleting an explicit host prop would change behavior; the YumCSS codemod must
 merge those values through the target host semantics. All rules are
 deliberately conservative when source ranges are not available.
 `no-raw-ast-identities` keeps parser node discriminants such as
@@ -196,35 +196,35 @@ remain ordinary strings.
 The token rule reads the linted module's static import graph and statically
 resolvable package modules. It does not execute project code or framework
 configuration; dynamic presets remain unresolved, so those calls use only
-Pandwind's CSS value types.
+YumCSS's CSS value types.
 
 ## Wiring
 
-Build Pandwind and then the TypeScript source before running Oxlint. The rules
-reuse Pandwind's published carrier analyzer, Tw literal evaluator, and `cx()`
+Build YumCSS and then the TypeScript source before running Oxlint. The rules
+reuse YumCSS's published carrier analyzer, Tw literal evaluator, and `cx()`
 partial-fold analysis, so the workspace build order matters. Lint tests run
 the same static, dynamic, and conditional inputs through the compiler inliners
 and the corresponding rules. Installed consumers receive the compiler
-analysis through the `pandwind` runtime dependency. The generated JavaScript
+analysis through the `yumcss` runtime dependency. The generated JavaScript
 file is the runtime plugin entry because Oxlint loads JavaScript plugins:
 
 ```json
 {
 	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
 	"rules": {
-		"pandwind-extraction/no-spreads": "warn",
-		"pandwind-extraction/no-dynamic-values": "warn",
-		"pandwind-extraction/no-multiple-conditionals": "warn",
-		"pandwind-extraction/no-dollar-raw": "error",
-		"pandwind-extraction/prefer-typed-css-values": "error",
-		"pandwind-extraction/no-arbitrary-values": "error",
-		"pandwind-extraction/migration-skip-reason": "error",
-		"pandwind-extraction/no-stale-migration-skip": "error",
-		"pandwind-extraction/require-migration-residual": "error",
-		"pandwind-extraction/no-conflicting-style-props": "error",
-		"pandwind-extraction/no-dynamic-carrier-fallback": "error",
-		"pandwind-extraction/no-dynamic-keyframes": "error",
-		"pandwind-extraction/no-raw-ast-identities": "error"
+		"yumcss-extraction/no-spreads": "warn",
+		"yumcss-extraction/no-dynamic-values": "warn",
+		"yumcss-extraction/no-multiple-conditionals": "warn",
+		"yumcss-extraction/no-dollar-raw": "error",
+		"yumcss-extraction/prefer-typed-css-values": "error",
+		"yumcss-extraction/no-arbitrary-values": "error",
+		"yumcss-extraction/migration-skip-reason": "error",
+		"yumcss-extraction/no-stale-migration-skip": "error",
+		"yumcss-extraction/require-migration-residual": "error",
+		"yumcss-extraction/no-conflicting-style-props": "error",
+		"yumcss-extraction/no-dynamic-carrier-fallback": "error",
+		"yumcss-extraction/no-dynamic-keyframes": "error",
+		"yumcss-extraction/no-raw-ast-identities": "error"
 	}
 }
 ```

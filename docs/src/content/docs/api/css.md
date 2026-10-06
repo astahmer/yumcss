@@ -7,7 +7,7 @@ sidebar:
 
 > **Primary styling lane — when to use this:** you want typed CSS objects,
 > atomic extraction, design tokens, and priority merging. This is the default
-> starting point for new Pandwind code. Use [tw()](/api/tw/) when Tailwind
+> starting point for new YumCSS code. Use [tw()](/api/tw/) when Tailwind
 > already owns your stylesheet or you specifically want its utility ecosystem;
 > use [design css()](/api/design-css/) for the ~30-prop Figma vocabulary on top
 > of this same engine.
@@ -18,11 +18,11 @@ atomic declaration map, while `css.class(...)` returns the joined class string
 for a host that wants one `className`. Choose the return shape that fits the
 boundary. Use `cx(...)` only when the inputs may be strings, compiled maps,
 variable carriers, or values from more than one styling system.
-The safe `pandwind/css` entrypoint requires a preset. For unbound or
+The safe `yumcss/css` entrypoint requires a preset. For unbound or
 runtime-discovered properties, opt into the explicit escape hatch instead:
 
 ```ts
-import { createUnsafeCss } from "pandwind/unsafe/css";
+import { createUnsafeCss } from "yumcss/unsafe/css";
 
 const unsafeCss = createUnsafeCss();
 const style = unsafeCss({ color: runtimeColor });
@@ -37,7 +37,7 @@ code should normally use `createCss(preset)`.
 For a very large preset, generate a concrete type facade with:
 
 ```sh
-pnpm exec pandwind-codemod css generate
+pnpm exec yumcss-codemod css generate
 ```
 
 Then import the generated `css` value in application code:
@@ -49,7 +49,7 @@ const card = css.class({ backgroundColor: "$brand-500", padding: 4 });
 ```
 
 The generated module calls `createGeneratedCss(preset)` from
-`pandwind/css/generated`, so it keeps the same
+`yumcss/css/generated`, so it keeps the same
 runtime behavior and all projections as `createCss(preset)`. It only replaces
 the preset-derived TypeScript computation with concrete generated unions.
 The generated facade includes `firstThatWorks` and `keyframes` in its type
@@ -61,15 +61,15 @@ Use this opt-in path when typecheck measurements show that a large catalog is
 worth generating; ordinary projects should keep using `createCss(preset)`.
 
 ```ts
-import { createCss } from "pandwind/css";
-import { define, type PandwindProperties } from "pandwind/preset";
+import { createCss } from "yumcss/css";
+import { define, type YumCSSProperties } from "yumcss/preset";
 
 const tokens = define.tokens({
 	colors: { "$brand-500": "#2563eb" },
 	spacing: { 4: "1rem" },
 });
 
-const cssConfig: PandwindProperties = {};
+const cssConfig: YumCSSProperties = {};
 
 const preset = define.preset(
 	{ config: cssConfig, tokens },
@@ -94,7 +94,7 @@ Use a preset-bound factory when runtime values still need preset token
 resolution:
 
 ```ts
-import { createCss } from "pandwind/css";
+import { createCss } from "yumcss/css";
 
 const css = createCss(preset);
 const output = css.vars({ color: "$brand-500", customProperty: runtimeValue });
@@ -109,7 +109,7 @@ only known at runtime. Neither CSS projection is generally preferred.
 Use `firstThatWorks()` when one CSS property needs an ordered fallback chain:
 
 ```ts
-import { createCss, firstThatWorks } from "pandwind/css";
+import { createCss, firstThatWorks } from "yumcss/css";
 
 const css = createCss(preset);
 const cardClass = css.class({
@@ -117,7 +117,7 @@ const cardClass = css.class({
 });
 ```
 
-The first value is the preferred value. Pandwind emits the declarations in
+The first value is the preferred value. YumCSS emits the declarations in
 reverse order under one atomic class, so later supported declarations win:
 
 ```css
@@ -145,11 +145,11 @@ across components.
 The native `createCss(preset)` engine emits CSS declarations and does not parse
 Tailwind utility strings. A class such as
 `group-hover/item:text-blue-500` only works when Tailwind owns the stylesheet;
-do not pass it to native `css()` and expect Pandwind to compile it.
+do not pass it to native `css()` and expect YumCSS to compile it.
 
 For a stable relationship that is not worth naming as a preset condition, use
 an ordinary static selector in the style object. The selector is still typed,
-hashed, and extracted by Pandwind:
+hashed, and extracted by YumCSS:
 
 ```ts
 const itemLabel = css.class({
@@ -189,18 +189,18 @@ cross a host boundary. `cx()` is for a genuinely mixed or unknown class input.
 ### Host stylesheet precedence
 
 Generated CSS keeps ordinary selectors by default. If a host runtime injects
-one-class rules that must not override Pandwind, opt into the StyleX-like
+one-class rules that must not override YumCSS, opt into the StyleX-like
 specificity strategy:
 
 ```ts
 const css = createCss(preset, { cascade: "specificity" });
 
 // vite.config.ts
-pandwindCssVite(css, { cascade: "specificity" });
+yumcssExtractVite(css, { cascade: "specificity" });
 ```
 
 This adds `:not(#\\#)` priority markers to generated selectors. The markers
-raise Pandwind's specificity by priority band, while class names and `cx()`
+raise YumCSS's specificity by priority band, while class names and `cx()`
 semantics stay unchanged. The strategy is intentionally opt-in because it
 makes generated selectors stronger; a host rule with equal or higher
 specificity, or `!important`, can still win.
@@ -209,7 +209,7 @@ For an application that coordinates all of its CSS with native cascade layers,
 use the Panda-style layer strategy:
 
 ```css
-@layer reset, base, pandwind, app;
+@layer reset, base, yumcss, app;
 ```
 
 ```ts
@@ -218,11 +218,11 @@ const css = createCss(preset, {
 });
 
 // vite.config.ts
-pandwindCssVite(css);
+yumcssExtractVite(css);
 ```
 
-`cascade: "layers"` remains the shorthand for Pandwind's default
-`@layer pandwind`. The structured form selects another layer name, such as
+`cascade: "layers"` remains the shorthand for YumCSS's default
+`@layer yumcss`. The structured form selects another layer name, such as
 `@layer app.utilities`. Declare that layer order before the generated rules are
 imported and place host layers around it as needed. Native layers are not an
 override for ordinary unlayered host declarations: unlayered normal CSS has
@@ -294,7 +294,7 @@ accepts raw class strings, compiled maps, variable carriers, arrays and falsey
 values, so it must inspect class and atom metadata. Use it when that uncertainty
 is real.
 
-`xcss` is only a component-prop convention, not a special Pandwind runtime
+`xcss` is only a component-prop convention, not a special YumCSS runtime
 option. Rename it to match the host component's vocabulary if another name is
 clearer.
 
@@ -346,9 +346,9 @@ back from the most
 specific condition to the base custom property, so transitions and other
 browser CSS can consume the same property normally.
 
-### Isolating multiple Pandwind instances
+### Isolating multiple YumCSS instances
 
-Dynamic carriers use a small Pandwind-owned namespace. The default is `pw`:
+Dynamic carriers use a small YumCSS-owned namespace. The default is `pw`:
 
 ```ts
 const css = createCss(preset, { namespace: "checkout" });
@@ -358,26 +358,26 @@ const output = css.vars({ color: runtimeColor });
 // output.style: { "--checkout-c-color": runtimeColor }
 ```
 
-Use this when multiple independently configured Pandwind instances share a
+Use this when multiple independently configured YumCSS instances share a
 document, such as a microfrontend host. Keep the value a CSS identifier
 fragment (`checkout`, `billing-v2`, and similar). The option only controls
-Pandwind-owned dynamic carriers; hashed atomic classes and names returned by a
+YumCSS-owned dynamic carriers; hashed atomic classes and names returned by a
 custom `ClassNameStrategy` remain under their existing contracts.
 
 When using static extraction, pass the same namespace to
-`pandwindCssVite` (or `pandwindUnpluginCss`) so its var rules and critical
+`yumcssExtractVite` (or `yumcssUnpluginCss`) so its var rules and critical
 markers match the factory:
 
 ```ts
 const css = createCss(preset, { namespace: "checkout" });
 
 // vite.config.ts
-pandwindCssVite(css, { namespace: "checkout" });
+yumcssExtractVite(css, { namespace: "checkout" });
 ```
 
 ### At-rules: local conditions versus global CSS
 
-Pandwind has deliberately different local, preset-web, authored-CSS, and
+YumCSS has deliberately different local, preset-web, authored-CSS, and
 runtime semantic lanes. Use a typed style condition when the rule belongs to
 an element; use `preset.web`, authored CSS, or the explicit runtime sheet when
 it changes the stylesheet itself:
@@ -386,7 +386,7 @@ it changes the stylesheet itself:
 | --------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Viewport, container, or feature conditions on a component | `@media`, `@container`, or `@supports` in a style object  | The condition is emitted around the component's extracted atomic rule.                                                                                                     |
 | Browser-global registration and definitions               | `preset.web`, `cssVariables`, or authored CSS             | `preset.web` emits flat preset-owned selectors, named keyframes, and font faces; `cssVariables` emits values and `@property` descriptors; the host still owns broader CSS. |
-| A component-local animation body                          | `css.keyframes({ ... })`                                  | The build emits a deterministic `@keyframes` rule into the Pandwind stylesheet and returns the animation name; see below.                                                  |
+| A component-local animation body                          | `css.keyframes({ ... })`                                  | The build emits a deterministic `@keyframes` rule into the YumCSS stylesheet and returns the animation name; see below.                                                    |
 | A rule is created at runtime or collected during SSR      | `createRuntimeCss()` plus `sheet.registerSemanticRules()` | The runtime sheet serializes an explicit semantic rule and can mount, snapshot, or hydrate it.                                                                             |
 
 For example, `@container` is a normal typed condition on a local class:
@@ -414,7 +414,7 @@ created by a runtime or SSR integration, the runtime semantic-rule path is
 explicit:
 
 ```ts
-import { createRuntimeCss } from "pandwind/css/runtime";
+import { createRuntimeCss } from "yumcss/css/runtime";
 
 const css = createRuntimeCss(preset);
 
@@ -436,7 +436,7 @@ For a normal application, keep the registration in an authored CSS entry and
 use a typed `css.group()`/`css.input()` style for the changing value. See
 [Authored CSS on the web](/reference/authored-css/) for that split and the
 complete support boundary. `analyze` and the inspector record explicit CSS
-imports, but do not scan arbitrary CSS and infer a Pandwind API from them.
+imports, but do not scan arbitrary CSS and infer a YumCSS API from them.
 
 #### Component-local keyframes
 
@@ -475,7 +475,7 @@ explicitly named keyframes, and typed font-face descriptors. Keep resets,
 CSS in the authored CSS lane above. The preset web section is build-only and
 does not add runtime stylesheet work.
 
-Pandwind does not provide a recipe API. If you need variant selection, use an
+YumCSS does not provide a recipe API. If you need variant selection, use an
 external CVA-style package with the class strings returned by `css()` and
 `cx()`; keep the variant map statically authored for extraction. See the
 [authored CSS guide](/reference/authored-css/#external-variant-composition).
@@ -483,7 +483,7 @@ external CVA-style package with the class strings returned by `css()` and
 `css.raw()` is the opposite trade: it skips atom compilation entirely and
 returns the style object as-is. Use it for targets whose components take
 inline `style` objects instead of classes (React Native, opentui), or when
-you explicitly want a call to stay invisible to `pandwindCssVite`. You lose
+you explicitly want a call to stay invisible to `yumcssExtractVite`. You lose
 dedup/extraction but keep preset token resolution and typing.
 
 ### `createCss(preset)` versus `createRuntimeCss()`
@@ -491,7 +491,7 @@ dedup/extraction but keep preset token resolution and typing.
 Use `createCss(preset)` by default. It owns the typed style compiler and returns
 classes, declaration maps, and inline variable props, but it does not create a
 style element or mutate a stylesheet. In a built web application,
-`pandwindCssVite(css)` or the equivalent unplugin extracts the structural
+`yumcssExtractVite(css)` or the equivalent unplugin extracts the structural
 CSS. This includes the value-independent rules for `css.vars()` and
 `css.input()` groups, while the changing values remain in the returned inline
 custom properties.
@@ -512,7 +512,7 @@ const props = css.props(button.button({ background: runtimeColor }));
 <button {...props} />;
 ```
 
-`createRuntimeCss(preset)` from `pandwind/css/runtime` exposes the same
+`createRuntimeCss(preset)` from `yumcss/css/runtime` exposes the same
 `CssFn` methods and adds a `RuntimeSheet`. It is an explicit runtime CSS
 fallback, not a smaller or different style API: calls register their atomic
 and variable rules in that sheet, which can auto-mount in a browser or be
@@ -523,7 +523,7 @@ the runtime bundle, so a normal Vite application should use `createCss` with
 `css.vars()` / `css.input()` instead.
 
 ```ts
-import { createRuntimeCss } from "pandwind/css/runtime";
+import { createRuntimeCss } from "yumcss/css/runtime";
 
 const runtimeCss = createRuntimeCss(preset);
 const className = runtimeCss.class({ color: getColorAtRuntime() });
@@ -535,7 +535,7 @@ or `createUnsafeCss()` still returns the correct class and inline variable data,
 but a browser has no CSS rule to apply. This is why `createRuntimeCss()` exists;
 it is not required for dynamic values when the build extractor is present.
 
-## Static extraction (`pandwindCssVite`)
+## Static extraction (`yumcssExtractVite`)
 
 The classes produced by `css()` and `css.class()` are hashed deterministically;
 the stylesheet is generated from the _same_ literal calls at build time, so
@@ -543,15 +543,15 @@ nothing is accumulated at runtime:
 
 ```ts
 // vite.config.ts
-import { pandwindCssVite } from "pandwind/vite";
+import { yumcssExtractVite } from "yumcss/vite";
 import { css } from "./src/styles";
 
-plugins: [pandwindCssVite(css)];
+plugins: [yumcssExtractVite(css)];
 ```
 
 ```ts
 // main.tsx — the generated CSS is served as a virtual module
-import "pandwind:css";
+import "yumcss:css";
 ```
 
 The plugin scans source files (like Tailwind's own scanner) for literal

@@ -1,9 +1,9 @@
 ---
-title: pandwind
+title: yumcss
 description: Typed CSS objects for application styles, design systems, and Tailwind integrations.
 template: splash
 hero:
-  title: pandwind
+  title: yumcss
   tagline: Write styles with autocomplete, keep the CSS tools you already use, and move known work to build time.
   actions:
     - text: Quick start
@@ -14,22 +14,22 @@ hero:
       icon: external
 ---
 
-Pandwind is for teams who want typed style objects without throwing away CSS,
+YumCSS is for teams who want typed style objects without throwing away CSS,
 their design-system conventions, or an existing Tailwind workflow. For new
-Pandwind code, start with `createCss`; add the other lanes only when they solve
+YumCSS code, start with `createCss`; add the other lanes only when they solve
 a real problem.
 
 ## Primary path: css()
 
 ### Typed CSS objects for new code
 
-Use [`css()`](/api/css/) as the default Pandwind API. It authors ordinary CSS
+Use [`css()`](/api/css/) as the default YumCSS API. It authors ordinary CSS
 properties as typed objects and extracts static calls into atomic CSS without
 making Tailwind the stylesheet engine.
 
 ```ts
-import { createCss } from "pandwind/css";
-import { defaultPreset } from "pandwind/preset/default";
+import { createCss } from "yumcss/css";
+import { defaultPreset } from "yumcss/preset/default";
 
 const css = createCss(defaultPreset);
 const card = css.class({ display: "flex", flexDirection: "column", gap: "4", padding: "6" });
@@ -47,7 +47,7 @@ like design intent: `$frame`, `$layout`, `$text`, semantic tokens, and explicit
 states.
 
 ```ts
-import { createDesignCss } from "pandwind/design";
+import { createDesignCss } from "yumcss/design";
 import { preset } from "./preset";
 
 const dss = createDesignCss(preset);
@@ -62,7 +62,7 @@ const button = dss.class({
 
 Use [`tw()`](/api/tw/) to replace fragile class strings with an object whose
 keys and values come from your actual Tailwind project. This is the Tailwind
-compatibility lane: Tailwind remains the stylesheet engine, while Pandwind
+compatibility lane: Tailwind remains the stylesheet engine, while YumCSS
 provides generated types, conflict handling, and build-time folding.
 
 ```tsx
@@ -89,7 +89,7 @@ the [`ClassNameStrategy` adapter](/interop/tailwind-adapter/) instead.
 
 ### I need to combine existing classes
 
-Use [`cx()`](/api/cx/) when a component receives Pandwind classes alongside
+Use [`cx()`](/api/cx/) when a component receives YumCSS classes alongside
 ordinary classes or styles from another library. It is a composition helper,
 not a separate authoring path.
 
@@ -100,7 +100,7 @@ residuals, and check the route's canonicality and project-proof tier before
 changing the source tree. The [API matrix](/interop/official-api-matrix/)
 separates audited output from project-level proof.
 
-## What Pandwind does for you
+## What YumCSS does for you
 
 - **Types come from your project.** Tailwind utilities, preset tokens, and
   conditions are not copied into a second hand-maintained list.
@@ -121,7 +121,7 @@ separates audited output from project-level proof.
   component contracts.
 - [Tooling workflows](/tooling/workflows/) — learn by
   seeing the output.
-- [Why pandwind exists](/why-pandwind/) — the trade-offs and deliberate limits.
+- [Why yumcss exists](/why-yumcss/) — the trade-offs and deliberate limits.
 
 The API and reference sections are intentionally more detailed. Use them when
 you already know which decision you are making; you should not need to read

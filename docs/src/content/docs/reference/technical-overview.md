@@ -1,6 +1,6 @@
 ---
 title: Technical overview
-description: How pandwind's APIs, compilers, adapters, scanners, backends, and validation pipelines fit together.
+description: How yumcss's APIs, compilers, adapters, scanners, backends, and validation pipelines fit together.
 sidebar:
   order: 3
 ---
@@ -36,16 +36,16 @@ silently changing the result.
 
 ## API and artifact matrix
 
-| Entry point                | Input                                                | Primary execution                          | Output                             | Best for                             |
-| -------------------------- | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | ------------------------------------ |
-| `css()`                    | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms        |
-| `createDesignCss()`        | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language |
-| `tw()`                     | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Existing Tailwind utility projects   |
-| `cx()`                     | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes         |
-| `pandwindVite()`           | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination               |
-| `pandwindCssVite()`        | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                |
-| `pandwind-codemod migrate` | Source ecosystem                                     | Adapter + semantic IR + target lowering    | Rewritten source and report        | Migration between style systems      |
-| `pandwind-analyze`         | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control      |
+| Entry point              | Input                                                | Primary execution                          | Output                             | Best for                             |
+| ------------------------ | ---------------------------------------------------- | ------------------------------------------ | ---------------------------------- | ------------------------------------ |
+| `css()`                  | CSS/property object                                  | Atomic declaration lowering                | Class/declaration map              | CSS-in-JS and extracted atoms        |
+| `createDesignCss()`      | `$frame`/`$layout`/`$text` object                    | Design vocabulary resolution, then `css()` | Class/declaration map              | A constrained design-system language |
+| `tw()`                   | Typed utility object                                 | Static fold, Tailwind scan                 | Class string                       | Existing Tailwind utility projects   |
+| `cx()`                   | Strings, arrays, conditional values, foldable styles | Conflict-aware merge                       | Class string                       | Composition across all lanes         |
+| `yumcssVite()`           | Source modules                                       | Scan, fold `tw`/`cx`, optional CSS folding | Transformed modules                | Build-time elimination               |
+| `yumcssExtractVite()`    | Source modules plus preset                           | Scan, extract, canonicalize, serve         | Virtual CSS sheet                  | Atomic CSS extraction                |
+| `yumcss-codemod migrate` | Source ecosystem                                     | Adapter + semantic IR + target lowering    | Rewritten source and report        | Migration between style systems      |
+| `yumcss-analyze`         | Source/generated artifacts                           | Shared scan/classify/inspect               | Coverage, residual, budget reports | Adoption and regression control      |
 
 ## The runtime lanes
 
@@ -60,7 +60,7 @@ createCss(preset)
   → return css(), .class(), .vars(), .props(), .group(), .input()
 ```
 
-`css()` is the default CSS-in-JS lane. `pandwindCssVite()` scans the same
+`css()` is the default CSS-in-JS lane. `yumcssExtractVite()` scans the same
 source shape and emits the static portion into a deduplicated stylesheet.
 `css.vars()` carries dynamic values as inline custom properties plus a stable
 class, so value changes do not create unbounded rules.
@@ -86,8 +86,8 @@ explicit metadata import.
 The generated runtime is produced by the codegen pipeline, not hand-written by
 the application. Use this compatibility lane when Tailwind already owns the
 stylesheet or its ecosystem is the reason for the integration. Literal calls
-can be folded by `pandwindVite()`. Dynamic values stay on the runtime path and
-must be discoverable by `pandwind-codemod tw scan` or a safelist.
+can be folded by `yumcssVite()`. Dynamic values stay on the runtime path and
+must be discoverable by `yumcss-codemod tw scan` or a safelist.
 
 ### Design `css()`
 
@@ -144,12 +144,12 @@ dynamic value
 
 ### Vite and unplugin
 
-The principal Vite composition root is `pandwindVite()`:
+The principal Vite composition root is `yumcssVite()`:
 
 ```text
-pandwindVite(options)
+yumcssVite(options)
   └─ createInlineTwPluginCore
-      ├─ createPandwindEngineContext
+      ├─ createYumCSSEngineContext
       │   └─ createLiteralStyleCompiler
       ├─ createCssSourceService
       ├─ createCrossModuleConstResolver
@@ -162,7 +162,7 @@ pandwindVite(options)
       └─ invalidate on module changes
 ```
 
-`pandwindCssVite()` uses the same source service but routes literal CSS calls
+`yumcssExtractVite()` uses the same source service but routes literal CSS calls
 through extraction and a virtual stylesheet. The scanner is language-aware and
 the service is shared with unplugin and analyzer consumers.
 
@@ -178,7 +178,7 @@ generateDesignSystem(input)
   → write types, runtime, theme, and interop artifacts
 ```
 
-The generated `pandwind.interop.json` is the project-context boundary consumed
+The generated `yumcss.interop.json` is the project-context boundary consumed
 by codemods and analysis. It avoids guessing from a collection of generated
 files and keeps utility, variant, conflict, token, and theme facts together.
 
@@ -225,7 +225,7 @@ StyleAdapterPlugin
 ```
 
 Built-in adapters are composed in one catalog; third-party plugins can supply
-the same contract through discovery. A Panda-to-Pandwind migration can choose
+the same contract through discovery. A Panda-to-YumCSS migration can choose
 the `tw`, `dss`, or `css` target dialect without changing the Panda source
 adapter.
 
@@ -310,7 +310,7 @@ lossiness contracts. Unsupported semantics are diagnostics, not silent drops.
 Measured core-package coverage from the current gate:
 
 ```text
-pandwind         statements 86.83%  █████████████████  branches 74.59%  ███████████████
+yumcss         statements 86.83%  █████████████████  branches 74.59%  ███████████████
 codemod          statements 76.82%  ███████████████   branches 64.51%  █████████████
 analyze          statements 74.07%  ██████████████    branches 61.79%  ████████████
 ```
@@ -318,7 +318,7 @@ analyze          statements 74.07%  ██████████████  
 These are regression floors, not a claim that every environment-only branch
 is covered by a unit test. Run `pnpm run test:all` for the complete suite and
 `pnpm run test:coverage` for the enforced package thresholds. See [Testing
-pandwind](/contributing/testing/).
+yumcss](/contributing/testing/).
 
 ## Where to change the system
 

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Pandwind should be a genuine pivot library: for every registered source and
+YumCSS should be a genuine pivot library: for every registered source and
 target adapter, migration must work in either direction through one semantic
 boundary. A route such as `X → Y` must not be a bespoke converter, and `Y → X`
 must not be a second special case. Both routes use the same source adapter,
@@ -73,15 +73,15 @@ source or target. The current repository has two intentionally different
 execution paths:
 
 - the versioned `StyleAdapterRegistry`, containing the modern ecosystem
-  adapters plus the modern `panda` and `pandwind` endpoints; and
+  adapters plus the modern `panda` and `yumcss` endpoints; and
 - the flat `SwapIR` registry, containing the `tw`, `css`, `design`, and
-  `dss` source dialects plus the Panda, Tailwind, StyleX, and Pandwind target
+  `dss` source dialects plus the Panda, Tailwind, StyleX, and YumCSS target
   lanes.
 
 The modern route catalog projects the core nested dialects into the same
 ordered `StyleSystemRegistry`: `panda/tw|dss|css` and
-`pandwind/tw|dss|css` are registered beside the modern short `panda` and
-`pandwind` adapters. The flat path remains a separate cheap `SwapIR`
+`yumcss/tw|dss|css` are registered beside the modern short `panda` and
+`yumcss` adapters. The flat path remains a separate cheap `SwapIR`
 compatibility projection; it is not a second semantic route registry. Callers
 that need rich conversion use the unified style-system route registry, while
 the flat CLI path keeps its low-cost parser/emitter.
@@ -90,7 +90,7 @@ the flat CLI path keeps its low-cost parser/emitter.
 
 The current versioned registry and route matrix exercise all 32 registered
 modern adapters and retain the flat `SwapIR` fast path. The route catalog also
-exposes the flat Panda/Pandwind dialects through the same style-system
+exposes the flat Panda/YumCSS dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
@@ -154,7 +154,7 @@ bound host from the representation needed by a standalone component export.
 The runner detects actual JSX/template use before applying a host rewrite, and
 target adapters receive the selected typed representation. This prevents
 component factories from being assigned to `className`, preserves native
-component targets for unused declarations, and keeps Pandwind's runtime
+component targets for unused declarations, and keeps YumCSS's runtime
 component carrier limited to function-valued cases.
 
 Host conversion is executable rather than descriptive metadata. Target
@@ -172,7 +172,7 @@ addition to the lowering plan. `static` means no runtime carrier was needed;
 `target-native` means the target's own map, component, or style-prop contract
 was used; `host-runtime` means a validated runtime or host binding remains;
 `portable-artifact` is a target-owned static fallback that preserves a
-portable Pandwind class artifact when the target has no legal native carrier;
+portable YumCSS class artifact when the target has no legal native carrier;
 MUI is the first implementation; and
 `residual` means the original source was preserved with an actionable reason.
 This makes a capability report inspectable rather than a boolean gate and lets
@@ -184,13 +184,13 @@ blocked by an explicit framework residual. This is the required shape for
 future non-class targets; adding a target means implementing its projection
 and host-framework contract, not adding a central adapter branch.
 
-MUI also demonstrates a target-owned style-prop projection. A Pandwind class
+MUI also demonstrates a target-owned style-prop projection. A YumCSS class
 binding used by a React host is emitted as an object and rewritten from
 `className={binding}` to `sx={binding}`. Intrinsic DOM hosts are first wrapped
 as `Box component="..."`, because `sx` is not a native DOM prop; known MUI
 components receive `sx` directly, while static unknown custom components use
 the portable fallback and dynamic ones remain residuals. Hostless dynamic
-values use the same portable Pandwind carrier as an explicit runtime fallback.
+values use the same portable YumCSS carrier as an explicit runtime fallback.
 The target policy owns that rewrite; the runner only negotiates the typed
 representation and applies the returned edit. Static bare unused
 bindings use MUI's portable-artifact fallback because MUI has no standalone
@@ -257,7 +257,7 @@ import when it owns that conversion, and leaves unknown tags, existing style
 props, dynamic declarations, and other DOM behavior as source-preserving
 `host-framework` residuals.
 
-Standalone static styled subjects now use Pandwind's component representation
+Standalone static styled subjects now use YumCSS's component representation
 when no local host use is present. React-family and Solid output keeps the
 static `css.class(...)` carrier inside a JSX wrapper, while Vue emits a
 `defineComponent`/`h` wrapper with imports placed inside `<script setup>`. This
@@ -294,7 +294,7 @@ carrier contract, so Tailwind, UnoCSS, and extra class adapters receive the
 same behavior without target branches in the migration runner.
 
 Panda and Tokenami now advertise this carrier as well. Their object-style
-class emitters accept the static `var(--pandwind-dynamic-*)` declaration, so a
+class emitters accept the static `var(--yumcss-dynamic-*)` declaration, so a
 styled-components or Emotion subject with a scalar theme expression can move
 to either target without a capability skip. The host wrapper evaluates the
 original expression while the target stylesheet remains statically
@@ -324,7 +324,7 @@ matrix:
 - The CLI e2e suite passes 131 tests. Its large route matrix runs through the
   migration use case with in-memory files; one focused test retains the real
   CLI boundary for argument parsing, discovery, writes, and extension changes.
-  The suite is invoked with `pnpm --filter pandwind-codemod run test:e2e`.
+  The suite is invoked with `pnpm --filter yumcss-codemod run test:e2e`.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
   both Vitest and `pnpm pivot:proof`; the proof command reports the same 6,144
   route cases as the test suite.
@@ -393,10 +393,10 @@ Next-yak now makes the equivalent target-native choice for scalar dynamic
 styled subjects and preserves `${expression}` in emitted runtime templates;
 function-valued callbacks remain an explicit boundary.
 Mantine uses its actual host `style` prop for dynamic JSX programs and falls
-back to the portable Pandwind artifact for standalone programs rather than
+back to the portable YumCSS artifact for standalone programs rather than
 emitting an unsupported standalone style factory.
 Tailwind now owns that projection for React/Preact named class bindings: the
-lowering emits a `var(--pandwind-dynamic-...)` utility and the adapter's host
+lowering emits a `var(--yumcss-dynamic-...)` utility and the adapter's host
 rewrite binds the original expression inline. Existing style props and
 non-JSX hosts remain explicit residuals. UnoCSS uses the same shared class-host
 port and retains the same fail-closed behavior for unsupported host shapes.
@@ -476,7 +476,7 @@ a static or target-native representation first. A remaining skip therefore
 means that negotiation found no proven carrier for the actual program and
 exposes the exact missing host/configuration input.
 
-In particular, a bare Pandwind style binding cannot be rewritten to MUI's
+In particular, a bare YumCSS style binding cannot be rewritten to MUI's
 `sx` prop without knowing its host component. Inventing a component or
 changing a class-valued binding into an object would change the program's
 contract. The completion work therefore has two obligations: discover host
@@ -513,7 +513,7 @@ promotion dimension.
 - Make capability and representation IDs typed and registry-owned.
 - Add substitution tests proving that a fake source/target/lowering/host can be
   registered without editing the orchestrator.
-- Promote Panda, Tailwind, and the core Pandwind dialects from the flat
+- Promote Panda, Tailwind, and the core YumCSS dialects from the flat
   `SwapIR` registry into this same adapter registry. Keep `SwapIR` behind a
   source/target compatibility projection so the fast path remains cheap.
 - Derive CLI, playground, conformance, and differential route lists from the
@@ -582,7 +582,7 @@ count alone is not proof.
 - Pin one or two real repositories per supported source ecosystem by commit.
 - Keep repositories out of the product tree; provide a deterministic materialize
   and migration script with commit hashes and dependency lock information.
-- Run every supported Pandwind target API against each corpus where the source
+- Run every supported YumCSS target API against each corpus where the source
   semantics make that route meaningful.
 - Require build, typecheck, lint, browser, SSR, hydration, applicable streaming,
   canonical CSS, bundle-size, and residual checks.

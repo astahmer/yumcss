@@ -35,7 +35,7 @@ typed context/runtime assertions.
 
 | Source adapter    | Directional routes | Round trips | Primary API | Family APIs | Status   |
 | ----------------- | -----------------: | ----------: | ----------- | ----------- | -------- |
-| pandwind          |                 30 |          30 | checked     | checked     | complete |
+| yumcss            |                 30 |          30 | checked     | checked     | complete |
 | panda             |                 30 |          30 | checked     | checked     | complete |
 | stylex            |                 30 |          30 | checked     | checked     | complete |
 | emotion           |                 30 |          30 | checked     | checked     | complete |
@@ -76,7 +76,7 @@ API switch.
 
 The API review covered these concrete forms and secondary families:
 
-- Pandwind: `css.class`, `css.vars`, and named `css.group` maps.
+- YumCSS: `css.class`, `css.vars`, and named `css.group` maps.
 - Panda: generated `css`, `cva`, `sva`, `styled`, global styles, token helpers,
   and recipe configuration.
 - StyleX: `stylex.create`, `keyframes`, `defineVars`, `props`, and theme APIs.
@@ -143,7 +143,7 @@ The API review covered these concrete forms and secondary families:
   exercising the target adapter.** Fixed. `expectActionableRoundTrip` rejects a
   reverse no-op after a fully target-native conversion. The only accepted
   unchanged paths are explicit source-preserving residuals or a verified
-  portable Pandwind artifact.
+  portable YumCSS artifact.
 - **AUDIT-005 — there was no durable per-scenario review ledger.** Fixed by this
   file. The inventory, coverage boundary, accepted residual classes, fixes, and
   verification commands are recorded here so later iterations can resume from
@@ -159,7 +159,7 @@ The API review covered these concrete forms and secondary families:
   with the narrow arbitrary-property resolver, so configured arbitrary
   candidates remain valid without replacing official evidence.
 - **AUDIT-008 — portable target artifacts needed an explicit round-trip policy.**
-  Fixed. A valid unchanged Pandwind portable artifact is accepted; an unchanged
+  Fixed. A valid unchanged YumCSS portable artifact is accepted; an unchanged
   result after a target-native conversion is still rejected.
 - **AUDIT-009 — configured UnoCSS could emit duplicate declarations.** Fixed.
   The CSS resolver now deduplicates exact property/value/condition triples when
@@ -180,9 +180,9 @@ The API review covered these concrete forms and secondary families:
   at the generator boundary. Adapters without literal source-token assertions
   no longer leave a tab-only line in generated route files; `git diff --check`
   is clean.
-- **AUDIT-014 — Pandwind recipe carriers had no native reverse route.** Fixed.
-  The Pandwind adapter now recognizes `createRecipe(css, definition)` and
-  `createSlotRecipe(css, definition)` from `pandwind/recipe`, and Panda emits
+- **AUDIT-014 — YumCSS recipe carriers had no native reverse route.** Fixed.
+  The YumCSS adapter now recognizes `createRecipe(css, definition)` and
+  `createSlotRecipe(css, definition)` from `yumcss/recipe`, and Panda emits
   those carriers as documented `cva(...)` and `sva(...)` definitions. Shared
   recipe rendering keeps the base, variants, slots, and compound variants
   intact. Direct and Panda round-trip fixtures assert the imports and target
@@ -220,9 +220,9 @@ source and expose the available context or residual evidence:
   they remain typed configuration/capability residuals rather than being
   expanded by a partial parser;
 - authored global selectors and descendant selectors stay in the authored CSS
-  boundary because Pandwind's general `css()`/`css.class()` API does not own
+  boundary because YumCSS's general `css()`/`css.class()` API does not own
   browser-global side effects;
-- portable Pandwind artifacts are accepted only under the explicit artifact
+- portable YumCSS artifacts are accepted only under the explicit artifact
   round-trip policy.
 
 These are not snapshot exceptions. The generated tests assert the residual kind,

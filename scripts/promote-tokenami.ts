@@ -3,8 +3,7 @@
  * The source uses Tokenami's published css.compose runtime and generated sheet;
  * the target is the normal YumCSS atomic carrier.
  */
-import {
-	normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {

@@ -400,8 +400,7 @@ const createApiResolver = (
 			isYumCSSSource || !includeUnconfiguredStyleFacades
 				? undefined
 				: conventionalStyleModuleFactory(source);
-		if (!isYumCSSSource && configuredCssExports === undefined && localFactory === undefined)
-			return;
+		if (!isYumCSSSource && configuredCssExports === undefined && localFactory === undefined) return;
 		for (const specifier of node.specifiers ?? []) {
 			if (specifier.importKind === IMPORT_KIND.type) continue;
 			if (specifier.type === NodeKind.ImportNamespaceSpecifier) {

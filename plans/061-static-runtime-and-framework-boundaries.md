@@ -12,7 +12,7 @@ for the current scope.
 
 ## Goal
 
-Make every styling construct in Pandwind choose an explicit, testable execution
+Make every styling construct in YumCSS choose an explicit, testable execution
 lane: build-time static output, runtime output, authored CSS, or host/framework
 integration. The user should get an actionable diagnostic when a construct
 cannot use the selected lane, and a migration should preserve source semantics

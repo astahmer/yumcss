@@ -8,16 +8,16 @@ The compact typecheck and bundle-size ranking is in
 [`PERF.md`](PERF.md); it is regenerated from the committed snapshots.
 
 The exact machine-generated baseline is
-[`runtime-size.json.snap`](packages/pandwind/tests/snapshots/runtime-size.json.snap);
+[`runtime-size.json.snap`](packages/yumcss/tests/snapshots/runtime-size.json.snap);
 the enforced ceilings are in
-[`runtime-budget.json`](packages/pandwind/tests/runtime-budget.json), and the
+[`runtime-budget.json`](packages/yumcss/tests/runtime-budget.json), and the
 measurement logic is
-[`runtime-size.test.ts`](packages/pandwind/tests/runtime-size.test.ts).
+[`runtime-size.test.ts`](packages/yumcss/tests/runtime-size.test.ts).
 
 Run the gate from the repository root:
 
 ```sh
-pnpm --filter pandwind run test:size
+pnpm --filter yumcss run test:size
 ```
 
 For per-call throughput, methodology, and historical benchmark evidence, see

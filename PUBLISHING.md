@@ -22,10 +22,10 @@ Automation in place:
       `scripts/release/smoke-pack.mjs` packs each package, asserts every
       published exports/bin target exists in the tarball, then dynamically
       imports every shipped module (catches deep-relative imports into sibling
-      packages). The `pandwind` export condition is development-only; normal
+      packages). The `yumcss` export condition is development-only; normal
       consumers resolve built `dist` files.
 - [x] Publish order enforced in one script: `scripts/release/publish-all.sh`
-      (pandwind → lint-plugin → codemod → analyze) after re-running smokes.
+      (yumcss → lint-plugin → codemod → analyze) after re-running smokes.
 - [x] Workflow: `.github/workflows/release.yml` — changesets action opens a
       "Version Packages" PR on main; tagging `v*` runs typecheck+tests,
       publishes with provenance, creates the GitHub release from CHANGELOG.
@@ -38,7 +38,7 @@ Automation in place:
 # 2. merge the "Version Packages" PR that changesets opened
 # 3. tag and push — CI does the rest:
 git tag v0.1.0 && git push origin v0.1.0
-# 4. verify: npm view pandwind / npm view pandwind-codemod
+# 4. verify: npm view yumcss / npm view @yumcss/codemod
 ```
 
 Subsequent releases: open PRs with changesets, merge the auto-updated Version
@@ -55,7 +55,7 @@ Packages PR, tag the new version. Nothing else.
 
 ## 3. Upstream 8bitcn migration PR
 
-- Same recipe (/tmp/pandwind-8bit-dogfood, branch `pandwind-migration`,
+- Same recipe (/tmp/yumcss-8bit-dogfood, branch `yumcss-migration`,
   182 files / 1650 call sites, ±0.18% bytes).
 
 ## 4. Devtools empirical checklist

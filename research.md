@@ -1,4 +1,4 @@
-# Research: Atomic CSS Devtools & utility-CSS browser inspection (vs. building custom devtools for pandwind)
+# Research: Atomic CSS Devtools & utility-CSS browser inspection (vs. building custom devtools for yumcss)
 
 **IMPORTANT — verification caveat:** This brief was produced WITHOUT live web access
 (no `web_search` tool available this run), from training-data knowledge only, per
@@ -10,8 +10,8 @@ rather than guessed — they must come from the empirical checklist below.
 
 ## Summary
 
-No browser extension — including Atomic CSS Devtools — can reliably give pandwind what its
-custom tooling already provides, because the two things pandwind cares about most
+No browser extension — including Atomic CSS Devtools — can reliably give yumcss what its
+custom tooling already provides, because the two things yumcss cares about most
 (source-file origin mapping and build-level coverage/budget reports) are fundamentally
 build-time data that a generic extension cannot reconstruct from shipped CSS alone [HIGH,
 as a structural argument]. For in-browser inspection of _computed_ styles, matched rules,
@@ -38,7 +38,7 @@ full extension.**
 2. **Generic vs library-instrumented** — structurally, any extension that works by
    scanning `document.styleSheets` and matching class attributes works GENERICALLY on any
    class-name-based atomic CSS (Tailwind, UnoCSS, Panda, StyleX compiled output,
-   pandwind's hashed `css()` output alike): the CSSOM is library-agnostic [HIGH as a
+   yumcss's hashed `css()` output alike): the CSSOM is library-agnostic [HIGH as a
    mechanism]. Extensions that instead pattern-match _readable_ utility names (parse
    `hover:bg-gray-50` into structured props) only work for convention-named frameworks
    and degrade silently on hashed names [HIGH as a mechanism; MED on which mode this
@@ -65,7 +65,7 @@ full extension.**
    the Styles pane [MED–HIGH]. Readable class names mean even name-parsing extensions
    work. Verdict: nothing an extension adds here is decisive.
 
-4. **Arbitrary hashed/named atomic class names (pandwind `css()` mode)** — a
+4. **Arbitrary hashed/named atomic class names (yumcss `css()` mode)** — a
    stylesheet-matching extension CAN still show which declaration each hashed class maps
    to (it reads the rule from the CSSOM, not the name) [HIGH as mechanism]. What it CANNOT
    do without extra metadata: tell you the class came from `css({ bg: "red.500" })` in
@@ -76,9 +76,9 @@ full extension.**
    FILE produced a rule unless the stylesheet carries `/*# sourceMappingURL=... */` (and
    the browser surfaces the mapped original file; Chromium's Styles-pane support for CSS
    source maps has been inconsistent across versions [MED]) or the extension understands
-   a bespoke convention — e.g. pandwind's proposed origin-manifest comment. A custom
+   a bespoke convention — e.g. yumcss's proposed origin-manifest comment. A custom
    comment format will simply be ignored by every off-the-shelf extension [HIGH]. This is
-   the single clearest gap between what pandwind already has (build-time origin manifest +
+   the single clearest gap between what yumcss already has (build-time origin manifest +
    analyze CLI) and anything purchasable/installable today.
 
 6. **Maintenance / activity / install base / browser coverage** — NOT ANSWERED. No
@@ -87,7 +87,7 @@ full extension.**
    repo existence + commit/recency, Firefox port or lack thereof. All obtainable in <10
    minutes via the checklist.
 
-## Coverage verdict for pandwind
+## Coverage verdict for yumcss
 
 Covered by existing options (no need to build):
 
@@ -96,7 +96,7 @@ Covered by existing options (no need to build):
 - Media queries / conditions / layers → built-in DevTools (layer badges, @media display).
 - Plain-Tailwind-mode debugging → fully covered by built-ins.
 
-NOT covered by any generic extension (pandwind-specific gaps):
+NOT covered by any generic extension (yumcss-specific gaps):
 
 - Source-file origin per rule in-browser (needs our manifest consumed by custom code).
 - Fold-coverage / CSS-budget / missing-css reporting surfaced while browsing (that's
@@ -110,7 +110,7 @@ NOT covered by any generic extension (pandwind-specific gaps):
    users, version, permissions requested, developer/link to repo. Search GitHub for the
    repo; check commits/issues recency. (This answers Q4 definitively.)
 2. Install in Chrome; also check firefox.addons for a Firefox port.
-3. Build any pandwind demo app twice: (a) `tw()` adapter mode (readable Tailwind classes),
+3. Build any yumcss demo app twice: (a) `tw()` adapter mode (readable Tailwind classes),
    (b) hashed `css()` mode. Serve the production-ish build (not just dev).
 4. In DevTools with the extension active, select elements using: single utilities,
    variants (`sm:` / `hover:`), arbitrary values, and hashed `css()` classes. Record:
@@ -121,7 +121,7 @@ NOT covered by any generic extension (pandwind-specific gaps):
 5. Repeat the same selections with ONLY built-in DevTools (extension disabled) and note
    what the extension actually added. If the delta is small → strong signal not to build.
 6. Optional 30-min spike if origin-in-browser matters: add
-   `/*# sourceMappingURL=pandwind.css.map */` emission with a source map whose sources are
+   `/*# sourceMappingURL=yumcss.css.map */` emission with a source map whose sources are
    the originating `.tsx` files, open in Chromium, see whether the Styles pane surfaces
    original files. If yes, origin mapping is achievable with ZERO custom extension work.
 7. Decision gate: only if steps 4–6 show a real ergonomic hole worth closing AND the

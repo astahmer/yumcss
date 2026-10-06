@@ -1,13 +1,13 @@
 # Chakra UI docs migration corpus
 
 This corpus uses the read-only Chakra UI checkout pinned in
-`/Users/astahmer/dev/pandwind/reference-repos.md`. The external Git checkout is
-the source of truth; Pandwind versions the lane runner and proof reports in JJ.
+[`reference-repos.md`](../../../reference-repos.md). The external Git checkout is
+the source of truth; YumCSS versions the lane runner and proof reports in JJ.
 
 The same Chakra source adapter is routed through two target dialects:
 
 - `css-class`: Chakra style props become `css.class(...)` calls backed by a
-  Pandwind runtime sheet.
+  YumCSS runtime sheet.
 - `design-css`: the same declarations become `dss.class(...)` calls backed by
   `createRuntimeDesignCss(...)`.
 
@@ -15,9 +15,9 @@ Run a lane and optionally materialize a buildable disposable worktree:
 
 ```sh
 nub scripts/run-migration-proof.ts run chakra-docs css-class \
-	--output-root /tmp/pandwind-chakra-css
+	--output-root /tmp/yumcss-chakra-css
 nub scripts/run-migration-proof.ts run chakra-docs design-css \
-	--output-root /tmp/pandwind-chakra-dss
+	--output-root /tmp/yumcss-chakra-dss
 ```
 
 The runner scans the full `apps/www` source tree, preserves non-style Chakra
@@ -38,18 +38,18 @@ nub scripts/verify-chakra-docs.ts \
   http://127.0.0.1:4340 \
   http://127.0.0.1:4349 \
   http://127.0.0.1:4350 \
-  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/chakra-ui/apps/www/.next/server/app"
+  "${YUMCSS_REFERENCE_ROOT:-$HOME/.references}/chakra-ui/apps/www/.next/server/app"
 ```
 
 It enumerates the baseline's statically emitted HTML routes, removes routes
 that the baseline itself serves as non-200 (currently two stale upstream blog
 artifacts), checks HTTP/status parity across all 263 discovered routes, and
 checks application-error markers, linked stylesheet bytes, inline SSR styles,
-and Pandwind runtime styles across the 261 baseline-200 routes for both lanes.
+and YumCSS runtime styles across the 261 baseline-200 routes for both lanes.
 The Next build log is the
 complementary proof for all 277 generated routes, including dynamic and API
 entries.
 
 The reference repository is intentionally not a JJ workspace. Its exact Git
-commit is pinned in the reference index, while every Pandwind lane and its
+commit is pinned in the reference index, while every YumCSS lane and its
 evidence are JJ revisions.

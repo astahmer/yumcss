@@ -18,8 +18,8 @@ residuals.
 
 ```sh
 nub scripts/run-migration-proof.ts run effect-docs css \
-	--output-root /tmp/pandwind-effect-css
-cd /tmp/pandwind-effect-css
+	--output-root /tmp/yumcss-effect-css
+cd /tmp/yumcss-effect-css
 pnpm install --no-frozen-lockfile
 pnpm exec vp run build
 ```

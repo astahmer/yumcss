@@ -1,4 +1,4 @@
-# Pandwind adapter SDK
+# YumCSS adapter SDK
 
 The adapter SDK is the integration boundary for moving style programs between
 CSS-in-JS systems. A package can provide one `StyleAdapter`, a
@@ -8,7 +8,7 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/1`. An adapter owns five
+The current protocol is `yumcss.style-adapter/1`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
@@ -40,10 +40,10 @@ than leaving source runtime calls beside converted style declarations.
 ## Plugin shape
 
 ```ts
-import type { StyleAdapterPlugin } from "pandwind-codemod/swap";
+import type { StyleAdapterPlugin } from "@yumcss/codemod/swap";
 
 export default {
-	schema: "pandwind.style-adapter-plugin/1",
+	schema: "yumcss.style-adapter-plugin/1",
 	id: "acme-css-in-js",
 	version: "1.0.0",
 	manifest: createStyleAdapterManifest("acme-css-in-js", "1.0.0", [adapter]),
@@ -55,14 +55,14 @@ The package may advertise the same entry points in `package.json`:
 
 ```json
 {
-	"pandwind": {
+	"yumcss": {
 		"plugin": "./dist/plugin.js",
 		"manifest": "./dist/manifest.json"
 	}
 }
 ```
 
-The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
+The manifest is `yumcss.style-adapter-manifest/1` and records each adapter's
 ID, implementation version, contract version, capabilities, and dependencies.
 Its `coreVersion` field must exactly match the StyleProgram core version. The
 registry checks that value and the adapter declarations before registration.
@@ -94,7 +94,7 @@ silently flattened into a supposedly complete semantic configuration.
 Discovery is deliberately explicit. The host decides how package names are
 resolved, which makes the same registry safe for CLIs, bundlers, tests, and
 browser tooling. For a project package manifest, `discoverPackages()` first
-selects dependencies whose own package metadata contains the `pandwind`
+selects dependencies whose own package metadata contains the `yumcss`
 manifest field, then loads only those advertised plugins:
 
 ```ts
@@ -140,7 +140,7 @@ into low-level object literals, use `StyleProgramBuilder` from the `swap`
 surface:
 
 ```ts
-import { StyleProgramBuilder } from "pandwind-codemod/swap";
+import { StyleProgramBuilder } from "@yumcss/codemod/swap";
 
 const program = StyleProgramBuilder.create({ source })
 	.style({
@@ -151,7 +151,7 @@ const program = StyleProgramBuilder.create({ source })
 ```
 
 The builder is a construction façade over the existing
-`pandwind.style-program/1` schema. It owns rule ordering, value classification,
+`yumcss.style-program/1` schema. It owns rule ordering, value classification,
 dynamic normalization, metadata, provenance, and residual accumulation; it
 does not own target emission. Keep target syntax in the adapter's `emit`
 implementation, and keep simple literal paths on `SwapIR`.

@@ -1,13 +1,13 @@
 ---
 title: Official CSS-in-JS API matrix
-description: The documented authoring forms covered by Pandwind's adapter proofs.
+description: The documented authoring forms covered by YumCSS's adapter proofs.
 sidebar:
   order: 3
 ---
 
 # Official CSS-in-JS API matrix
 
-Pandwind treats an ecosystem's public authoring forms as evidence, not as a
+YumCSS treats an ecosystem's public authoring forms as evidence, not as a
 guessable list of package exports. This page is the compact reference for the
 forms used by the adapter contract tests.
 
@@ -22,7 +22,7 @@ Each row links to the ecosystem's official documentation or maintained project
 repository. The corresponding snapshot case uses the real syntax from that
 source. A form is one of:
 
-- **static** — converted into Pandwind's static semantic carrier;
+- **static** — converted into YumCSS's static semantic carrier;
 - **native** — preserved through a target-owned component, map, or rule API;
 - **residual** — recognized but intentionally source-preserved because
   flattening it would change semantics;
@@ -83,7 +83,7 @@ and source-preserving residuals separately.
 
 These source families use the same adapter contract but are not treated as
 CSS-in-JS. Their natural target may be authored CSS, a generated stylesheet,
-or a Pandwind class map depending on the source semantics.
+or a YumCSS class map depending on the source semantics.
 
 | Adapter                                                          | Official authoring families                                                          | Proof interpretation                                                                                                                                                                                                                                                 |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -104,8 +104,8 @@ with typed residual evidence; it is not a completed migration.
 Route maturity remains separate: 22 routes are experimental and 1,002 are
 research. Passing a fixture does not promote a route or prove an arbitrary
 project build, SSR, hydration, or browser behavior. Read the
-[full audit](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-audit.md)
-and [route ledger](https://github.com/astahmer/pandwind/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
+[full audit](https://github.com/astahmer/yumcss/blob/main/plans/evidence/codemod-canonicality-audit.md)
+and [route ledger](https://github.com/astahmer/yumcss/blob/main/plans/evidence/codemod-canonicality-route-ledger.json)
 before treating a route as supported.
 
 ## What the snapshots guarantee

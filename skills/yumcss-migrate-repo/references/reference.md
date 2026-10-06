@@ -5,19 +5,19 @@
 Start by choosing the target that matches the code you want to own after the
 migration:
 
-- `pandwind-tw` (also accepted as `tw`) keeps utility classes and generates a
+- `yumcss-tw` (also accepted as `tw`) keeps utility classes and generates a
   typed `tw()` binding.
-- `pandwind-css` (also accepted as `css.class`) emits Pandwind atomic CSS
+- `yumcss-css` (also accepted as `css.class`) emits YumCSS atomic CSS
   declarations and is the normal target for CSS-in-JS or style-object systems.
-- `pandwind-dss` (also accepted as `dss`) targets Pandwind design-system style
+- `yumcss-dss` (also accepted as `dss`) targets YumCSS design-system style
   objects with `$frame`, `$layout`, and `$text` vocabulary.
 - A project-specific route, such as Panda project migration, can emit a
   complete target folder with `--out`.
 
 Do not generate Tailwind artifacts merely because a repository is being moved to
-Pandwind. `tw.ts`, `types.d.ts`, and the Tailwind bridge are needed for the
+YumCSS. `tw.ts`, `types.d.ts`, and the Tailwind bridge are needed for the
 utility-class lane or for a migration route that explicitly consumes generated
-Pandwind metadata. Native `css()` and design `css()` work starts with the typed
+YumCSS metadata. Native `css()` and design `css()` work starts with the typed
 preset/theme contract instead.
 
 ## Preserve the source
@@ -43,12 +43,12 @@ For a Tailwind or metadata-dependent route, run the project-owned generation
 script or the published binary:
 
 ```sh
-pnpm exec pandwind-codemod tw generate ./src/tailwind.css ./src --bridge
+pnpm exec yumcss-codemod tw generate ./src/tailwind.css ./src --bridge
 ```
 
 This can produce `types.d.ts`, `tw.ts`, `bridge.ts`,
-`pandwind.interop.json`, `pandwind-theme.css`, `pandwind.agents.json`, and the
-`pandwind.generated.json` freshness manifest, depending on the flags and input.
+`yumcss.interop.json`, `yumcss-theme.css`, `yumcss.agents.json`, and the
+`yumcss.generated.json` freshness manifest, depending on the flags and input.
 They are generated outputs. If the route needs them from a different directory,
 pass that directory with `--meta=<dir>`.
 
@@ -56,7 +56,7 @@ Run the scanner only for the Tailwind utility lane, especially when dynamic
 class candidates are present:
 
 ```sh
-pnpm exec pandwind-codemod tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css
+pnpm exec yumcss-codemod tw scan ./src/tw.ts ./src ./src/yumcss.safelist.css
 ```
 
 The consuming package may wrap these commands. In this repository,
@@ -68,22 +68,22 @@ The consuming package may wrap these commands. In this repository,
 Use a dry preview for an external source:
 
 ```sh
-pnpm exec pandwind-codemod migrate \
-	--from=styled-components --to=pandwind-css \
+pnpm exec yumcss-codemod migrate \
+	--from=styled-components --to=yumcss-css \
 	--dry-run --diff --report \
 	'src/**/*.{js,jsx,ts,tsx}'
 ```
 
 Use the same shape for Panda, StyleX, Emotion, vanilla-extract, and other
 registered source adapters. The source adapter owns configuration loading and
-source semantics; the target adapter owns Pandwind emission. Do not add a
+source semantics; the target adapter owns YumCSS emission. Do not add a
 source-specific branch to the shared runner.
 
 For a project route that owns generated modules, use its output directory:
 
 ```sh
-pnpm exec pandwind-codemod migrate \
-	--from=panda --to=pandwind-css --out=pandwind \
+pnpm exec yumcss-codemod migrate \
+	--from=panda --to=yumcss-css --out=yumcss \
 	--dry-run --diff --report \
 	'src/**/*.{ts,tsx}'
 ```
