@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -10,6 +11,9 @@ ORANGE = "#f59e42"
 APP_ICON_SIZE = 512
 APP_ICON_RADIUS = 115
 PEEK_FRAME = (31, 21, 276, 205)  # peek.svg content bounds (incl. fur stroke) + 3px padding
+FAVICON_SIZE = 32
+FAVICON_RADIUS = 7
+FAVICON_CROP = (62, 18, 214, 205)  # Face and paw tips of peek.svg; the sides of the paws fall outside the tile.
 
 peek = (yums / "svg" / "peek.svg").read_text()
 peek_layers = peek[peek.index("</title>") + len("</title>"):peek.rindex("</svg>")]
@@ -41,10 +45,20 @@ def app_icon(radius: float) -> str:
 full_bleed = brand / ".app-icon-full-bleed.svg"
 full_bleed.write_text(app_icon(0))
 
+crop_x, crop_y, crop_width, crop_height = FAVICON_CROP
+favicon_mascot_height = FAVICON_SIZE * crop_height / crop_width
+(brand / "favicon.svg").write_text(
+    f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {FAVICON_SIZE} {FAVICON_SIZE}" '
+    f'width="{FAVICON_SIZE}" height="{FAVICON_SIZE}">\n  <title>YumCSS favicon</title>\n'
+    f'  <rect id="tile" width="{FAVICON_SIZE}" height="{FAVICON_SIZE}" rx="{FAVICON_RADIUS}" fill="{ORANGE}"/>\n'
+    f'  <svg id="yums" y="{FAVICON_SIZE - favicon_mascot_height:.2f}" width="{FAVICON_SIZE}" '
+    f'height="{favicon_mascot_height:.2f}" viewBox="{crop_x} {crop_y} {crop_width} {crop_height}">{peek_layers}</svg>\n</svg>\n'
+)
+
 renders = [
-    ("favicon-16.svg", 16, "favicon-16.png"),
-    ("favicon-32.svg", 32, "favicon-32.png"),
-    ("favicon-32.svg", 48, "favicon-48.png"),
+    ("favicon.svg", 16, "favicon-16.png"),
+    ("favicon.svg", 32, "favicon-32.png"),
+    ("favicon.svg", 48, "favicon-48.png"),
     (full_bleed.name, 180, "apple-touch-icon.png"),
     ("app-icon.svg", 192, "icon-192.png"),
     ("app-icon.svg", 512, "icon-512.png"),
@@ -52,6 +66,10 @@ renders = [
 for source, size, output in renders:
     subprocess.run([rsvg, "-w", str(size), "-h", str(size), str(brand / source), "-o", str(brand / output)], check=True)
 full_bleed.unlink()
+
+site_public = yums.parent / "public"
+for name in ("favicon.svg", "favicon-16.png", "favicon-32.png", "apple-touch-icon.png"):
+    shutil.copyfile(brand / name, site_public / name)
 
 template = (Path(__file__).parent / "brand-preview-template.html").read_text()
 (brand / "preview.html").write_text(template)
