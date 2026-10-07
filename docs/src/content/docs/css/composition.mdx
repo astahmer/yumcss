@@ -5,6 +5,10 @@ sidebar:
   order: 4
 ---
 
+import PlaygroundLink from "../../../components/PlaygroundLink.astro";
+import Screenshot from "../../../components/Screenshot.astro";
+import variantsShot from "../../../assets/screenshots/playground-variants.png";
+
 Keep styles as objects until they reach the element. YumCSS can then choose the
 last declaration for each property and condition before producing a class
 string. No class-name parsing or `cx()` is needed.
@@ -115,6 +119,13 @@ export const Button = (props: ButtonProps) => (
 Compound variants are plain conditional inputs, such as
 `props.tone === "ghost" && button.size.sm`. There is no recipe runtime or
 class-string merger to ship for this pattern.
+
+<PlaygroundLink path="/variants" label="Try variants with style maps" />
+
+<Screenshot
+	src={variantsShot}
+	alt="Playground variants example using css() maps and css.props(), with size and tone controls and a rendered button."
+/>
 
 ## When inputs might be dynamic
 

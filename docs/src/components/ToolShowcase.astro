@@ -5,11 +5,13 @@ import inspector from "../assets/screenshots/inspector-tokens.png";
 import build from "../assets/screenshots/inspector-build.png";
 import migration from "../assets/screenshots/playground-migrate.png";
 import compiler from "../assets/screenshots/compiler-preview.png";
+import devtools from "../assets/screenshots/devtools-tokens.png";
 import preview from "../assets/screenshots/migration-preview.png";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const tools = [
+	{ title: "Vite DevTools", text: "Browser styles, project tokens, and migration evidence in the Vite dock.", image: devtools, href: "/tools/devtools/" },
 	{ title: "Playground", text: "Every API, every class-name strategy, live in the browser.", image: playground, href: "/tools/playground/" },
 	{ title: "Inspector", text: "Your token catalog, usage, dead tokens, and relationships.", image: inspector, href: "/tools/inspector/" },
 	{ title: "Build report", text: "What folded at build time, what ships, and what it costs.", image: build, href: "/tools/inspector/#build-report" },

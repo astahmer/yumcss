@@ -1,9 +1,12 @@
 ---
 title: DevTools panel
-description: A YumCSS panel inside Vite DevTools that explains, for a clicked element, which source produced which CSS.
+description: A YumCSS panel inside Vite DevTools that explains, for a clicked element, inspect browser styles, tokens, and available compiler evidence.
 sidebar:
   order: 5
 ---
+
+import Screenshot from "../../../components/Screenshot.astro";
+import devtoolsTokens from "../../../assets/screenshots/devtools-tokens.png";
 
 `@yumcss/devtools` adds a **YumCSS** panel to the
 [Vite DevTools](https://github.com/vitejs/devtools) dock in your running
@@ -25,16 +28,42 @@ export default defineConfig({
 });
 ```
 
+## Open it in a running app
+
+Start Vite, authorize its DevTools dock with the local code or magic link printed
+in the terminal, then choose **YumCSS**. Use **Inspect styles** to pick an element;
+return to YumCSS and refresh to see the browser's class and computed-style sample.
+Open the panel through the dock: its iframe inherits the host's RPC connection.
+
+<Screenshot
+	src={devtoolsTokens}
+	alt="YumCSS Tokens panel open in the Vite DevTools dock over a running example app, showing variables read from the project's interop artifact."
+	caption="The real Vite dock: token values stay next to the running app."
+/>
+
 ## Panels
 
-| Panel           | Use it to…                                                                             |
-| --------------- | -------------------------------------------------------------------------------------- |
-| **Inspector**   | Click **Inspect styles**, pick an element, and see its classes, rules, and source call |
-| **Style graph** | Follow source → style program edges, and expand the raw IR when needed                 |
-| **Tokens**      | See resolved token variables and theme evidence                                        |
-| **Migration**   | Preview a migration route for the current file (never writes)                          |
-| **Diagnostics** | Review scanner warnings and residual counts                                            |
-| **Performance** | Check source size, transform timings, and HMR events                                   |
+| Panel           | Use it to…                                                                                          |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| **Inspector**   | Pick an element and inspect its classes, attributes, computed styles, and available program matches |
+| **Style graph** | Follow source → style program edges, and expand the raw IR when needed                              |
+| **Tokens**      | See resolved token variables and theme evidence                                                     |
+| **Migration**   | Select project files and a route, then preview output and residuals (never writes)                  |
+| **Diagnostics** | Review scanner warnings and residual counts                                                         |
+| **Performance** | Check source size, transform timings, and HMR events                                                |
 
 Options: `yumcssDevtools({ enabled, inspect })`. Set `inspect: false` to hide
 the element picker.
+
+## Where the evidence comes from
+
+Tokens come from the project's generated `yumcss.interop.json`. Source scans and
+transform timings come from the Vite session. Style graphs and element-to-source
+matches need recorded `StyleProgram` evidence; the panel does not reverse-engineer
+complete source provenance from arbitrary class names. A migration preview can
+populate program evidence. Empty panels say what is missing.
+
+The YumCSS panel never applies a migration. Its Diagnostics panel reports scanner
+and migration evidence; [Oxlint](/tools/lint/) is a separate editor/CI integration.
+The Vite DevTools host can expose other tools with broader capabilities; the
+read-only claim here describes the YumCSS panel.

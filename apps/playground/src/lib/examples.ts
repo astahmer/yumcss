@@ -996,7 +996,7 @@ import { define } from "yumcss/preset";
 import { brandTokens } from "./brand.ts";
 
 const brand = define.preset(
-	{ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors } },
+	{ config: {} as Record<string, never>, tokens: { colors: brandTokens.colors, spacing: brandTokens.spacing, radii: brandTokens.radii } },
 	{ strict: true, conditions: { _hover: "&:hover" }, properties: { $all: true } },
 );
 
@@ -1030,6 +1030,8 @@ export default <Button active={true} />`,
 
 export const brandTokens = define.tokens({
 	colors: { "$brand-500": "#4c51bf", "$brand-600": "#3730a3" },
+	spacing: { 4: "1rem" },
+	radii: { lg: "8px" },
 });`,
 					},
 				],
@@ -1038,14 +1040,14 @@ export const brandTokens = define.tokens({
 	},
 	{
 		path: "/variants",
-		title: "Variants with cx()",
-		blurb: "external variant maps over statically generated classes",
+		title: "Variants with style maps",
+		blurb: "typed variant maps composed without a class-string merger",
 		group: "core",
-		note: "YumCSS does not ship a recipe API: each css.class() call stays statically authored, while cx() composes the selected class strings at runtime. This is the extractable CVA-style pattern.",
+		note: "Static css() calls retain declaration maps. css.props() composes the selected variants and an optional xcss override at the element boundary. No recipe runtime or cx() is needed.",
 		preview: makePreview(
 			"button",
 			"Variant button",
-			"Choose a size and tone to see cx() compose the corresponding generated classes.",
+			"Choose a size and tone to compose their compiled style maps.",
 			undefined,
 			[
 				makeSelectControl(
@@ -1062,7 +1064,7 @@ export const brandTokens = define.tokens({
 					"Tone",
 					"brand",
 					["brand", "danger"],
-					"Selects one generated background class before cx() composes the final string.",
+					"Selects one background map before css.props() composes the host props.",
 				),
 			],
 		),
@@ -1070,31 +1072,30 @@ export const brandTokens = define.tokens({
 			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "yumcss/css";
-import { createCx } from "yumcss/cx";
 import { examplePreset } from "@yumcss/example-preset";
 
 const css = createCss(examplePreset);
-const cx = createCx({ css });
 
 const variants = {
-	base: css.class({ borderRadius: "lg" }),
+	base: css({ borderRadius: "lg" }),
 	size: {
-		sm: css.class({ padding: 8 }),
-		lg: css.class({ padding: 16 }),
+		sm: css({ padding: 8 }),
+		lg: css({ padding: 16 }),
 	},
 	tone: {
-		brand: css.class({ backgroundColor: "$blue-500" }),
-		danger: css.class({ backgroundColor: "$red-500" }),
+		brand: css({ backgroundColor: "$blue-500" }),
+		danger: css({ backgroundColor: "$red-500" }),
 	},
-} as const;
+};
 
 type ButtonProps = {
 	size: keyof typeof variants.size;
 	tone: keyof typeof variants.tone;
+	xcss?: ReturnType<typeof css>;
 };
 
 const Button = (props: ButtonProps) => (
-	<button className={cx(variants.base, variants.size[props.size], variants.tone[props.tone])}>
+	<button {...css.props(variants.base, variants.size[props.size], variants.tone[props.tone], props.xcss)}>
 		{props.tone === "danger" ? "Danger button" : "Brand button"}
 	</button>
 );
