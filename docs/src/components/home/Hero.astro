@@ -79,11 +79,12 @@ const atomicCss = [
 				<div class="editor__panel-bar">
 					<span class="editor__status editor__status--bad"><b>●</b> 1 problem</span>
 					<span class="editor__status editor__status--good"><b>✓</b> Built · 6 atomic rules</span>
-					<button class="editor__toggle" type="button" aria-pressed="false" data-hero-toggle>
+					<button class="editor__toggle" type="button" aria-pressed="false" data-hero-toggle data-requires-js>
 						<span class="editor__toggle--bad">Use a token instead</span>
 						<span class="editor__toggle--good">Show the type error</span>
 					</button>
 				</div>
+				<p class="editor__pending" data-requires-js>Use a token to see the compiled output.</p>
 				<div class="editor__output">
 					<p class="editor__classname"><span class="a">className</span>=<span class="s">"{className}"</span></p>
 					<pre class="editor__css"><code>{atomicCss.map(([selector, property, value]) => <span class="ln"><span class="sel">{selector}</span>{"{"}<span class="p">{property}</span>:{value}{"}"}</span>)}</code></pre>
@@ -337,6 +338,7 @@ const atomicCss = [
 	}
 
 	.editor__panel {
+		position: relative;
 		border-top: 1px solid var(--ink-line);
 		background: var(--ink-sunken);
 		border-radius: 0 0 16px 16px;
@@ -396,9 +398,23 @@ const atomicCss = [
 		font-size: clamp(0.7rem, 1.25vw, 0.78rem);
 		transition: opacity 300ms;
 	}
+	/* Until the style type-checks, the output keeps its space but is replaced by a hint. */
 	[data-state="error"] .editor__output {
-		opacity: 0.32;
-		filter: grayscale(1);
+		visibility: hidden;
+	}
+	.editor__pending {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 40%;
+		display: none;
+		margin: 0;
+		text-align: center;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	[data-state="error"] .editor__pending {
+		display: block;
 	}
 	.editor__classname {
 		margin: 0 0 0.6rem;
@@ -461,6 +477,9 @@ const atomicCss = [
 		.hero__peek,
 		[data-state="fixed"] .swap__good {
 			animation: none;
+		}
+		.editor__hover {
+			transition: none;
 		}
 	}
 </style>

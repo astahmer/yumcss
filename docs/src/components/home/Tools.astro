@@ -165,11 +165,14 @@ const tools = [
 	.tools__tabs {
 		display: flex;
 		flex: 1;
-		justify-content: flex-end;
 		gap: 0.25rem;
 		min-width: 0;
 		overflow-x: auto;
 		scrollbar-width: none;
+	}
+	/* An auto margin (not justify-content: flex-end) keeps overflowing tabs scrollable from the first one. */
+	.tools__tab:first-child {
+		margin-left: auto;
 	}
 	.tools__tab {
 		flex: none;
@@ -269,7 +272,9 @@ const tools = [
 		}
 		.tools__tabs {
 			order: -1;
-			justify-content: flex-start;
+		}
+		.tools__tab:first-child {
+			margin-left: 0;
 		}
 		.tools__tab {
 			padding: 0.45rem 0.85rem;

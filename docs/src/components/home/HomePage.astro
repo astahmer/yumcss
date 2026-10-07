@@ -16,6 +16,21 @@ import Tools from "./Tools.astro";
 	<Closing />
 </div>
 
+<noscript>
+	<style>
+		.yum-home [role="tabpanel"][hidden] {
+			display: block;
+		}
+		.yum-home [role="tablist"],
+		.yum-home [data-requires-js] {
+			display: none;
+		}
+		.yum-home [data-state="error"] .editor__output {
+			visibility: visible;
+		}
+	</style>
+</noscript>
+
 <style is:global>
 	.yum-home {
 		/* Page: follows the docs theme. */
@@ -63,7 +78,7 @@ import Tools from "./Tools.astro";
 		--home-heading: var(--yum-charcoal);
 		--home-text: rgb(31 31 31 / 0.88);
 		--home-muted: rgb(31 31 31 / 0.72);
-		--home-faint: rgb(31 31 31 / 0.55);
+		--home-faint: rgb(31 31 31 / 0.64);
 		--home-line: rgb(31 31 31 / 0.1);
 		--home-line-strong: rgb(31 31 31 / 0.16);
 		--home-surface-sunken: #f6ead9;
@@ -125,5 +140,10 @@ import Tools from "./Tools.astro";
 	.yum-home :focus-visible {
 		outline: 2px solid var(--home-accent-display);
 		outline-offset: 3px;
+	}
+	/* Tabs live in horizontal scrollers, which would clip an outer ring. */
+	.yum-home [role="tab"]:focus-visible {
+		outline-offset: -2px;
+		border-radius: 8px;
 	}
 </style>
