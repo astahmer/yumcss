@@ -1,4 +1,3 @@
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -54,7 +53,5 @@ for source, size, output in renders:
     subprocess.run([rsvg, "-w", str(size), "-h", str(size), str(brand / source), "-o", str(brand / output)], check=True)
 full_bleed.unlink()
 
-monochrome = (brand / "mark-monochrome.svg").read_text()
-inline_monochrome = re.sub(r"<title>.*?</title>\s*", "", monochrome).strip()
 template = (Path(__file__).parent / "brand-preview-template.html").read_text()
-(brand / "preview.html").write_text(template.replace("__MONO__", inline_monochrome))
+(brand / "preview.html").write_text(template)

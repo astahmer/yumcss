@@ -34,10 +34,6 @@ The favicons are always on the orange tile. There is no cream variant. A transpa
 | Cream | `#FEF7ED` | Light surfaces |
 | Charcoal | `#1F1F1F` | Dark surfaces |
 
-## Experimental
-
-`mark-monochrome.svg` is a one-color mark that uses `currentColor`. It is **not** part of the canonical identity: it loses too much of what makes Yums recognizable. Keep it only for reference, and make no variants from it. Revisit it only if the website needs a one-color mark.
-
 ## Using Yums on the website
 
 Mascot poses are standalone SVGs. Build every surrounding UI element in HTML/CSS and never bake it into the artwork: code windows, cards, backgrounds, type, buttons and loaders. Compositions this setup supports:
