@@ -8,6 +8,7 @@ import {
 } from "../src/rpc.ts";
 import type { DevtoolsEvidenceSnapshot } from "../src/evidence/store.ts";
 import { PANELS, PANEL_ID, type PanelId } from "./panels/index.tsx";
+import logoMark from "../../../docs/yums/brand/logo-mark.svg";
 import "./style.css";
 
 type DevtoolsRpcClient = Awaited<ReturnType<typeof getDevToolsRpcClient>>;
@@ -43,6 +44,8 @@ function App() {
 	const [activePanel, setActivePanel] = useState<PanelId>(PANEL_ID.Inspector);
 	const [snapshot, setSnapshot] = useState<DevtoolsEvidenceSnapshot>();
 	const [migration, setMigration] = useState<DevtoolsMigrationPreview>();
+	const [migrationPending, setMigrationPending] = useState(false);
+	const [migrationError, setMigrationError] = useState<string>();
 	const [catalog, setCatalog] = useState<readonly CatalogEntry[]>([]);
 	const [errorMessage, setErrorMessage] = useState<string>();
 	const rpc = useRef<DevtoolsRpcClient | undefined>(undefined);
@@ -65,8 +68,9 @@ function App() {
 	const previewMigration = useCallback(async (form: FormData): Promise<void> => {
 		if (rpc.current === undefined) return;
 		const input: DevtoolsMigrationInput = {
+			// Commas separate globs, except inside brace sets like `*.{ts,tsx}`.
 			files: String(form.get("files") ?? "")
-				.split(",")
+				.split(/,(?![^{]*\})/u)
 				.map((file) => file.trim())
 				.filter(Boolean),
 			from: String(form.get("from") ?? ""),
@@ -74,19 +78,42 @@ function App() {
 			mode: String(form.get("mode") ?? "safe") as "safe" | "partial",
 		};
 		try {
-			setErrorMessage(undefined);
+			setMigrationError(undefined);
+			setMigrationPending(true);
 			setMigration(await rpc.current.call(DEVTOOLS_RPC.PreviewMigration, input));
 			setSnapshot(await rpc.current.call(DEVTOOLS_RPC.GetSnapshot));
 		} catch (error) {
-			setErrorMessage(error instanceof Error ? error.message : String(error));
+			setMigrationError(error instanceof Error ? error.message : String(error));
+		} finally {
+			setMigrationPending(false);
 		}
 	}, []);
 
 	useEffect(() => {
 		void refresh();
 		const interval = window.setInterval(() => void refresh(), 3000);
-		return () => window.clearInterval(interval);
+		// The dock hides this iframe while the Inspect styles picker runs; catch up as soon as it is shown again.
+		const onVisible = () => {
+			if (document.visibilityState === "visible") void refresh();
+		};
+		document.addEventListener("visibilitychange", onVisible);
+		window.addEventListener("focus", onVisible);
+		return () => {
+			window.clearInterval(interval);
+			document.removeEventListener("visibilitychange", onVisible);
+			window.removeEventListener("focus", onVisible);
+		};
 	}, [refresh]);
+
+	// A fresh pick from the Inspect styles action should land on the Inspector, whatever panel was open.
+	const lastSelectedAt = useRef(snapshot?.selected?.selectedAt);
+	useEffect(() => {
+		const selectedAt = snapshot?.selected?.selectedAt;
+		if (selectedAt === undefined || selectedAt === lastSelectedAt.current) return;
+		if (lastSelectedAt.current !== undefined || Date.now() - selectedAt < 10_000)
+			setActivePanel(PANEL_ID.Inspector);
+		lastSelectedAt.current = selectedAt;
+	}, [snapshot?.selected?.selectedAt]);
 
 	const panel = PANELS.find((entry) => entry.id === activePanel) ?? PANELS[0]!;
 
@@ -94,9 +121,11 @@ function App() {
 		<div className="app-shell">
 			<header className="topbar">
 				<div className="brand">
-					<span className="brand-mark">✳</span>
+					<img className="brand-mark" src={logoMark} alt="" />
 					<div>
-						<strong>YUMCSS</strong>
+						<strong>
+							Yum<b>CSS</b>
+						</strong>
 						<small>DEVTOOLS</small>
 					</div>
 				</div>
@@ -155,6 +184,8 @@ function App() {
 								snapshot,
 								context: {
 									migration,
+									migrationPending,
+									migrationError,
 									catalog,
 									onPreviewMigration: (form) => void previewMigration(form),
 								},

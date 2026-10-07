@@ -31,8 +31,9 @@ export default defineConfig({
 ## Open it in a running app
 
 Start Vite, authorize its DevTools dock with the local code or magic link printed
-in the terminal, then choose **YumCSS**. Use **Inspect styles** to pick an element;
-return to YumCSS and refresh to see the browser's class and computed-style sample.
+in the terminal, then choose **YumCSS**. Use **Inspect styles** and click an element:
+the YumCSS panel opens on the Inspector with the element's classes, the stylesheet rules each class
+produces, and its computed styles. Press <kbd>Escape</kbd> to cancel a pick.
 Open the panel through the dock: its iframe inherits the host's RPC connection.
 
 <Screenshot
@@ -43,14 +44,14 @@ Open the panel through the dock: its iframe inherits the host's RPC connection.
 
 ## Panels
 
-| Panel           | Use it to…                                                                                          |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| **Inspector**   | Pick an element and inspect its classes, attributes, computed styles, and available program matches |
-| **Style graph** | Follow source → style program edges, and expand the raw IR when needed                              |
-| **Tokens**      | See resolved token variables and theme evidence                                                     |
-| **Migration**   | Select project files and a route, then preview output and residuals (never writes)                  |
-| **Diagnostics** | Review scanner warnings and residual counts                                                         |
-| **Performance** | Check source size, transform timings, and HMR events                                                |
+| Panel           | Use it to…                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| **Inspector**   | Pick an element and see its classes, the CSS rules each class produces, and its computed styles |
+| **Style graph** | Follow source → style program edges, and expand the raw IR when needed                          |
+| **Tokens**      | See resolved token variables and theme evidence                                                 |
+| **Migration**   | Select project files and a route, then preview output and residuals (never writes)              |
+| **Diagnostics** | Review scanner warnings and residual counts                                                     |
+| **Performance** | Check source size, transform timings, and HMR events                                            |
 
 Options: `yumcssDevtools({ enabled, inspect })`. Set `inspect: false` to hide
 the element picker.

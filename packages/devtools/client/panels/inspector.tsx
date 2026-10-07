@@ -5,6 +5,9 @@ export interface InspectorPanelProps {
 	readonly data: PanelSnapshot;
 }
 
+const PICK_HINT =
+	"Choose Inspect styles (the cursor icon in the Vite DevTools dock), then click an element in your app. Press Escape to cancel.";
+
 export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 	const selected = data.selected;
 	const selection = selected ? (
@@ -15,12 +18,12 @@ export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 					<code>{selected.tagName ?? "unknown"}</code>
 				</div>
 				<div>
-					<span className="field-label">className</span>
-					<code>{selected.className ?? "—"}</code>
+					<span className="field-label">Classes</span>
+					<strong>{selected.classNames.length}</strong>
 				</div>
 				<div>
-					<span className="field-label">Files</span>
-					<strong>{selected.matchedFiles.length}</strong>
+					<span className="field-label">CSS rules</span>
+					<strong>{selected.classRules.length}</strong>
 				</div>
 				<div>
 					<span className="field-label">Programs</span>
@@ -33,19 +36,62 @@ export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 						.{name}
 					</span>
 				))}
-				{Object.entries(selected.attributes).map(([key, value]) => (
-					<span className="chip" key={`attribute-${key}`}>
-						<b>{key}</b> {value}
-					</span>
-				))}
+				{Object.entries(selected.attributes)
+					.filter(([key]) => key !== "class")
+					.map(([key, value]) => (
+						<span className="chip" key={`attribute-${key}`}>
+							<b>{key}</b> {value}
+						</span>
+					))}
 			</div>
 		</>
 	) : (
-		<EmptyState
-			title="Nothing selected"
-			detail="Open the Inspect styles action in Vite DevTools, then click an element in the running app."
-		/>
+		<EmptyState title="Nothing selected" detail={PICK_HINT} />
 	);
+
+	const rules =
+		selected && selected.classRules.length > 0 ? (
+			<div className="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Class</th>
+							<th>Condition</th>
+							<th>Declarations</th>
+						</tr>
+					</thead>
+					<tbody>
+						{selected.classRules.map((rule, index) => (
+							<tr key={`${rule.className}-${index}`}>
+								<td>
+									<code>.{rule.className}</code>
+								</td>
+								<td>
+									{[
+										...rule.conditions,
+										rule.selector.replace(`.${CSS.escape(rule.className)}`, "").trim(),
+									]
+										.filter(Boolean)
+										.join(" ") || <span className="muted">always</span>}
+								</td>
+								<td>
+									<code>{rule.declarations}</code>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		) : (
+			<EmptyState
+				title={selected ? "No stylesheet rules for these classes" : "No element yet"}
+				detail={
+					selected
+						? "None of the element's classes appear in a readable stylesheet on this page."
+						: "Each class of the picked element is listed with the rules it produces, including media queries and states."
+				}
+			/>
+		);
 
 	const computed =
 		selected && Object.keys(selected.computedStyles).length > 0 ? (
@@ -72,7 +118,7 @@ export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 		) : (
 			<EmptyState
 				title="No computed style sample"
-				detail="The host action captures the selected element's relevant computed properties."
+				detail="The picker captures the selected element's relevant computed properties."
 			/>
 		);
 
@@ -96,6 +142,9 @@ export function InspectorPanel({ data }: InspectorPanelProps): ReactNode {
 		<>
 			<Card title="Element inspector" eyebrow="LIVE SELECTION" className="hero-card">
 				{selection}
+			</Card>
+			<Card title="Classes → CSS rules" eyebrow="STYLESHEET EVIDENCE" className="wide-card">
+				{rules}
 			</Card>
 			<Card title="Computed style sample" eyebrow="BROWSER EVIDENCE" className="wide-card">
 				{computed}

@@ -175,21 +175,21 @@ function recordMigration(store: DevtoolsEvidenceStore, preview: DevtoolsMigratio
 }
 
 function elementSelection(input: DevtoolsElementInput, store: DevtoolsEvidenceStore): void {
-	const snapshot = store.snapshot();
 	const className = input.className?.trim();
-	const matchedFiles = snapshot.transforms
-		.filter((record) => className === undefined || record.file.includes(className))
-		.map((record) => record.file);
-	const matchedPrograms = snapshot.stylePrograms
-		.filter((record) => className === undefined || record.label?.includes(className) === true)
+	const classNames = input.classNames ?? [];
+	const matchedPrograms = store
+		.snapshot()
+		.stylePrograms.filter(
+			(record) => record.label !== undefined && classNames.includes(record.label),
+		)
 		.map((record) => record.id);
 	store.select({
 		...(input.tagName === undefined ? {} : { tagName: input.tagName }),
 		...(className === undefined ? {} : { className }),
-		classNames: input.classNames ?? [],
+		classNames,
 		attributes: input.attributes ?? {},
 		computedStyles: input.computedStyles ?? {},
-		matchedFiles,
+		classRules: input.classRules ?? [],
 		matchedPrograms,
 	});
 }

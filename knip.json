@@ -284,7 +284,10 @@
 		"tailwindcss",
 		"oxc-parser",
 		"@oxc-parser/binding-wasm32-wasi",
-		"playwright-core"
+		"playwright-core",
+		"@fontsource-variable/bricolage-grotesque",
+		"@fontsource-variable/inter",
+		"@fontsource-variable/jetbrains-mono"
 	],
 	"ignoreBinaries": ["rg", "jj"],
 	"ignore": [

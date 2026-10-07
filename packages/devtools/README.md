@@ -32,7 +32,9 @@ The plugin is serve-only. It records source transforms, scanner diagnostics, gen
 
 The dock contains six surfaces:
 
-- **Inspector**: use the `Inspect styles` host action and click an element in the running app.
+- **Inspector**: use the `Inspect styles` host action and click an element in the running app. The
+  YumCSS panel opens with its classes, the stylesheet rules each class produces, and computed styles.
+  Press Escape to cancel a pick.
 - **Style graph**: see source-to-program edges and expand the raw IR when needed.
 - **Tokens**: inspect resolved variables from `yumcss.interop.json`.
 - **Migration**: preview registered routes through the existing `yumcss-codemod` service; previews never write files.

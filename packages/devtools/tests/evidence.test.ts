@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createDevtoolsEvidenceStore } from "../src/evidence/store.ts";
 
 describe("devtools evidence store", () => {
@@ -28,25 +28,34 @@ describe("devtools evidence store", () => {
 		expect(snapshot.diagnostics[0]).toMatchObject({ severity: "warning" });
 	});
 
-	it("replaces the current element selection", () => {
+	it("replaces the current element selection with a newer pick", () => {
+		vi.useFakeTimers();
 		const store = createDevtoolsEvidenceStore("/project");
-		store.select({
-			tagName: "button",
+		const pick = (tagName: string) => ({
+			tagName,
 			className: "pw-card",
 			classNames: ["pw-card"],
-			attributes: { type: "button" },
+			attributes: {},
 			computedStyles: { color: "red" },
-			matchedFiles: ["src/Card.tsx"],
-			matchedPrograms: ["card"],
+			classRules: [
+				{
+					className: "pw-card",
+					selector: ".pw-card:hover",
+					conditions: ["@media (min-width: 768px)"],
+					declarations: "color: red;",
+				},
+			],
+			matchedPrograms: [],
 		});
-		expect(store.snapshot().selected).toEqual({
-			tagName: "button",
-			className: "pw-card",
-			classNames: ["pw-card"],
-			attributes: { type: "button" },
-			computedStyles: { color: "red" },
-			matchedFiles: ["src/Card.tsx"],
-			matchedPrograms: ["card"],
+		vi.setSystemTime(1_000);
+		store.select(pick("button"));
+		vi.setSystemTime(2_000);
+		store.select(pick("article"));
+		expect(store.snapshot().selected).toMatchObject({
+			tagName: "article",
+			selectedAt: 2_000,
+			classRules: pick("article").classRules,
 		});
+		vi.useRealTimers();
 	});
 });

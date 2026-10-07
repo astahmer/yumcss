@@ -10,6 +10,8 @@ export interface MigrationCatalogEntry {
 export interface MigrationPanelProps {
 	readonly data: PanelSnapshot;
 	readonly migration: DevtoolsMigrationPreview | undefined;
+	readonly pending: boolean;
+	readonly error: string | undefined;
 	readonly catalog: readonly MigrationCatalogEntry[];
 	readonly onPreview: (form: FormData) => void;
 }
@@ -17,6 +19,8 @@ export interface MigrationPanelProps {
 export function MigrationPanel({
 	data,
 	migration,
+	pending,
+	error,
 	catalog,
 	onPreview,
 }: MigrationPanelProps): ReactNode {
@@ -69,12 +73,24 @@ export function MigrationPanel({
 						<option value="partial">partial</option>
 					</select>
 				</label>
-				<button type="submit" className="primary-button">
-					Preview migration <span>↗</span>
+				<button type="submit" className="primary-button" disabled={pending}>
+					{pending ? (
+						"Previewing…"
+					) : (
+						<>
+							Preview migration <span>↗</span>
+						</>
+					)}
 				</button>
 			</form>
 
-			{last ? (
+			{pending ? (
+				<div className="loading">
+					Running the codemod on the matched files <span className="loader" />
+				</div>
+			) : error !== undefined ? (
+				<EmptyState title="Preview failed" detail={error} />
+			) : last ? (
 				<div className="migration-result">
 					<div className="metric-strip">
 						<div>

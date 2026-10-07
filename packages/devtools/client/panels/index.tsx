@@ -21,6 +21,8 @@ export type PanelId = (typeof PANEL_ID)[keyof typeof PANEL_ID];
 
 interface DevtoolsPanelContext {
 	readonly migration?: DevtoolsMigrationPreview;
+	readonly migrationPending: boolean;
+	readonly migrationError?: string;
 	readonly catalog: readonly MigrationCatalogEntry[];
 	readonly onPreviewMigration: (form: FormData) => void;
 }
@@ -69,6 +71,8 @@ export const PANELS: readonly DevtoolsPanelDefinition[] = [
 			<MigrationPanel
 				data={snapshot}
 				migration={context.migration}
+				pending={context.migrationPending}
+				error={context.migrationError}
 				catalog={context.catalog}
 				onPreview={context.onPreviewMigration}
 			/>

@@ -1,5 +1,7 @@
-import "@vitejs/devtools-kit";
-import type { DevtoolsEvidenceSnapshot } from "./evidence/store.ts";
+// A type reference, not an import: the browser-side inspect action loads this module, where a bare
+// package import would not resolve. The augmentation below only needs the types.
+/// <reference types="@vitejs/devtools-kit" />
+import type { DevtoolsClassRule, DevtoolsEvidenceSnapshot } from "./evidence/store.ts";
 
 export const DEVTOOLS_RPC = {
 	GetSnapshot: "yumcss-devtools:get-snapshot",
@@ -21,6 +23,7 @@ export interface DevtoolsElementInput {
 	readonly classNames?: readonly string[];
 	readonly attributes?: Readonly<Record<string, string>>;
 	readonly computedStyles?: Readonly<Record<string, string>>;
+	readonly classRules?: readonly DevtoolsClassRule[];
 }
 
 export interface DevtoolsCatalogEntry {

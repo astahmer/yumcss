@@ -87,14 +87,24 @@ export interface DevtoolsEvidenceSnapshot {
 	readonly selected?: DevtoolsSelection;
 }
 
+/** A CSS rule from the page's stylesheets that targets one of the selected element's classes. */
+export interface DevtoolsClassRule {
+	readonly className: string;
+	readonly selector: string;
+	/** Enclosing at-rules, outermost first, e.g. `@media (min-width: 768px)`. */
+	readonly conditions: readonly string[];
+	readonly declarations: string;
+}
+
 export interface DevtoolsSelection {
 	readonly tagName?: string;
 	readonly className?: string;
 	readonly classNames: readonly string[];
 	readonly attributes: Readonly<Record<string, string>>;
 	readonly computedStyles: Readonly<Record<string, string>>;
-	readonly matchedFiles: readonly string[];
+	readonly classRules: readonly DevtoolsClassRule[];
 	readonly matchedPrograms: readonly string[];
+	readonly selectedAt: number;
 }
 
 export interface StyleArtifactEventPort {
@@ -111,7 +121,7 @@ export interface DevtoolsEvidenceStore extends StyleArtifactEventPort, RuntimeSt
 	recordTransform(file: string, bytes: number, durationMs: number): void;
 	recordScan(record: Omit<DevtoolsScanRecord, "updatedAt">): void;
 	recordMigration(record: Omit<DevtoolsMigrationRecord, "updatedAt">): void;
-	select(selection: DevtoolsSelection): void;
+	select(selection: Omit<DevtoolsSelection, "selectedAt">): void;
 	snapshot(): DevtoolsEvidenceSnapshot;
 }
 
@@ -159,7 +169,7 @@ export function createDevtoolsEvidenceStore(root: string): DevtoolsEvidenceStore
 			if (runtime.length > 200) runtime.splice(0, runtime.length - 200);
 		},
 		select(value) {
-			selected = value;
+			selected = { ...value, selectedAt: Date.now() };
 		},
 		snapshot() {
 			return {
