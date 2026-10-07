@@ -1,6 +1,7 @@
 {
 	"name": "@yumcss/lint-plugin",
 	"version": "0.0.1",
+	"description": "Oxlint diagnostics for YumCSS style code that should be folded at build time.",
 	"keywords": [
 		"atomic-css",
 		"lint-plugin",
@@ -29,6 +30,7 @@
 	},
 	"scripts": {
 		"build": "pnpm exec tsdown",
+		"prepack": "pnpm run build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
 	},
@@ -44,6 +46,6 @@
 		"vitest": "5.0.0"
 	},
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	}
 }

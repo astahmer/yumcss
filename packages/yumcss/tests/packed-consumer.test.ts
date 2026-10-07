@@ -18,10 +18,14 @@ const packageRoot = resolve(import.meta.dirname, "..");
 const workspacePackageNodeModules = resolve(packageRoot, "node_modules");
 
 function packInto(workdir: string): string {
-	const output = execFileSync("pnpm", ["pack", "--json", "--pack-destination", workdir], {
-		cwd: packageRoot,
-		encoding: "utf8",
-	});
+	const output = execFileSync(
+		"pnpm",
+		["pack", "--ignore-scripts", "--json", "--pack-destination", workdir],
+		{
+			cwd: packageRoot,
+			encoding: "utf8",
+		},
+	);
 	const parsed = JSON.parse(output) as Array<{ filename?: string }> | { filename?: string };
 	const filename = Array.isArray(parsed) ? parsed[0]?.filename : parsed.filename;
 	if (filename === undefined) throw new Error("pnpm pack produced no tarball");

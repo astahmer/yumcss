@@ -1,6 +1,7 @@
 {
 	"name": "@yumcss/codemod",
 	"version": "0.1.0",
+	"description": "Reviewable YumCSS migration and code generation for Tailwind, Panda CSS, and CSS-in-JS projects.",
 	"keywords": [
 		"codemod",
 		"css",
@@ -178,6 +179,7 @@
 	},
 	"scripts": {
 		"build": "pnpm exec tsdown",
+		"prepack": "pnpm run build",
 		"cli": "node dist/cli.js",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
@@ -215,6 +217,6 @@
 		"vitest": "5.0.0"
 	},
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	}
 }

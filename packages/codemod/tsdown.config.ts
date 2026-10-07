@@ -31,6 +31,8 @@ export default defineConfig({
 		"src/swap/unplugin.ts",
 		"src/swap/vite.ts",
 		"src/swap/browser.ts",
+		"src/lib/index.ts",
+		"src/lib/cli.ts",
 	],
 	deps: { neverBundle: true, dts: { neverBundle: true } },
 	dts: true,

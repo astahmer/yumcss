@@ -28,6 +28,8 @@ for (const directory of packages) {
 		failures.push(`${manifest.name}: publishConfig.access must be public`);
 	if (manifest.publishConfig?.provenance !== true)
 		failures.push(`${manifest.name}: provenance must be enabled`);
+	if (manifest.scripts?.prepack !== "pnpm run build")
+		failures.push(`${manifest.name}: prepack must build the package with pnpm run build`);
 }
 
 if (failures.length > 0) {

@@ -29,7 +29,7 @@ import {
 	symlinkSync,
 	writeFileSync,
 } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 function parsePackageTargets(value) {
@@ -54,6 +54,13 @@ function parsePackageEntry(value) {
 	return typeof target === "string" ? target : undefined;
 }
 
+function extractTrailingJson(output) {
+	const lines = output.split("\n");
+	const start = lines.findIndex((line) => line === "{" || line === "[");
+	if (start === -1) return output.trim();
+	return lines.slice(start).join("\n").trim();
+}
+
 async function main() {
 	const pkgDir = resolve(process.argv[2] ?? ".");
 	const manifest = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
@@ -66,11 +73,13 @@ async function main() {
 
 	try {
 		// 1-2. pack + extract (npm tarballs wrap in `package/` — strip it)
+		// `prepack` builds the package, so pnpm's lifecycle reporter writes to
+		// stdout before the JSON payload; take the JSON object from its tail.
 		const packOut = execFileSync("pnpm", ["pack", "--json", "--pack-destination", workdir], {
 			cwd: pkgDir,
 			encoding: "utf8",
 		});
-		const parsed = JSON.parse(packOut);
+		const parsed = JSON.parse(extractTrailingJson(packOut));
 		const entry = Array.isArray(parsed) ? parsed[0] : parsed;
 		if (entry?.filename === undefined) throw new Error("pnpm pack produced no tarball");
 		const tarballPath = resolve(entry.filename);
@@ -89,12 +98,13 @@ async function main() {
 			broken.push("package.json: depends on private @yumcss/example-preset");
 		}
 		// Resolve optional peer imports (for example React Native's React host)
-		// against the workspace installation while smoke-testing the tarball.
+		// against the package's installed dependencies while smoke-testing the tarball.
 		// The link is outside the tarball and is never part of the published files.
 		const workspaceNodeModules = [
+			resolve(pkgDir, "node_modules"),
 			resolve(pkgDir, "../../node_modules"),
 			resolve(pkgDir, "../../examples/example/node_modules"),
-		].find((candidate) => statMaybe(join(candidate, "react")));
+		].find(statMaybe);
 		if (statMaybe(workspaceNodeModules)) {
 			symlinkSync(workspaceNodeModules, join(extracted, "node_modules"), "dir");
 		}
@@ -146,6 +156,7 @@ async function main() {
 				if (dirEntry.name === "node_modules") continue;
 				const path = join(dir, dirEntry.name);
 				if (dirEntry.isDirectory()) {
+					if (statMaybe(join(path, "index.html"))) continue;
 					await walkModules(path);
 				} else if (/\.(js|mjs)$/.test(dirEntry.name)) {
 					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
@@ -169,6 +180,7 @@ async function main() {
 			}
 		};
 		await walkModules(extracted);
+		verifyPublicExports({ shipped, extracted, workdir, broken });
 
 		if (broken.length > 0) {
 			console.error(`smoke-pack(${manifest.name}): ${broken.length} module(s) fail to import:`);
@@ -176,17 +188,117 @@ async function main() {
 			process.exitCode = 1;
 			return;
 		}
+		if (pkgDir === resolve(import.meta.dirname, "../../packages/yumcss")) {
+			cleanYumcssConsumerSmoke({ manifest, tarballPath, workdir });
+		}
 		if (manifest.name === "@yumcss/analyze") {
 			cleanConsumerSmoke({ manifest, packageDirectory: pkgDir, tarballPath, workdir });
 		}
 
 		const fileCount = countFiles(extracted);
 		console.log(
-			`smoke-pack(${manifest.name}): OK — ${fileCount} files shipped, all export targets resolve, all library modules import`,
+			`smoke-pack(${manifest.name}): OK — ${fileCount} files shipped, public exports resolve, library modules import`,
 		);
 	} finally {
 		rmSync(smokeRoot, { recursive: true, force: true });
 	}
+}
+
+function verifyPublicExports({ shipped, extracted, workdir, broken }) {
+	const consumerDirectory = join(workdir, "public-export-consumer");
+	const packageLink = join(consumerDirectory, "node_modules", ...shipped.name.split("/"));
+	mkdirSync(dirname(packageLink), { recursive: true });
+	symlinkSync(extracted, packageLink, "dir");
+	const verifier = join(consumerDirectory, "verify-exports.mjs");
+	const code = [
+		`const packageName = ${JSON.stringify(shipped.name)};`,
+		`const subpaths = ${JSON.stringify(Object.keys(shipped.exports ?? {}))};`,
+		"for (const subpath of subpaths) {",
+		'\tconst specifier = subpath === "." ? packageName : packageName + "/" + subpath.slice(2);',
+		"\tconst resolved = import.meta.resolve(specifier);",
+		"\tif (/\\.(?:c|m)?js$/.test(new URL(resolved).pathname)) await import(specifier);",
+		"}",
+	].join("\n");
+	writeFileSync(verifier, `${code}\n`);
+	try {
+		execFileSync(process.execPath, [verifier], { cwd: consumerDirectory, stdio: "ignore" });
+	} catch (error) {
+		const message = error?.stderr?.toString().split("\n")[0] ?? error?.message ?? "unknown";
+		broken.push(`public export import: ${message}`);
+	}
+}
+
+function cleanYumcssConsumerSmoke({ manifest, tarballPath, workdir }) {
+	const consumerDirectory = join(workdir, "yumcss-consumer");
+	const repoRoot = resolve(import.meta.dirname, "../..");
+	mkdirSync(consumerDirectory, { recursive: true });
+	const consumerManifest = {
+		name: "yumcss-clean-consumer-smoke",
+		private: true,
+		type: "module",
+		dependencies: {
+			[manifest.name]: `file:${relative(consumerDirectory, tarballPath).replaceAll("\\", "/")}`,
+		},
+	};
+	writeFileSync(
+		join(consumerDirectory, "package.json"),
+		`${JSON.stringify(consumerManifest, null, 2)}\n`,
+	);
+	execFileSync(
+		"npm",
+		["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"],
+		{ cwd: consumerDirectory, stdio: "ignore" },
+	);
+
+	const cssSpecifier = `${manifest.name}/css`;
+	const presetSpecifier = `${manifest.name}/preset/default`;
+	writeFileSync(
+		join(consumerDirectory, "consumer.mjs"),
+		[
+			`import { createCss } from ${JSON.stringify(cssSpecifier)};`,
+			`import { defaultPreset } from ${JSON.stringify(presetSpecifier)};`,
+			"const css = createCss(defaultPreset);",
+			'const className = css.class({ backgroundColor: "white", color: "black", padding: 4, borderRadius: "lg" });',
+			'if (typeof className !== "string" || className.length === 0) throw new Error("css.class() did not return a class name");',
+		].join("\n"),
+	);
+	execFileSync(process.execPath, [join(consumerDirectory, "consumer.mjs")], {
+		cwd: consumerDirectory,
+	});
+
+	writeFileSync(
+		join(consumerDirectory, "consumer.ts"),
+		[
+			`import { createCss } from ${JSON.stringify(cssSpecifier)};`,
+			`import { defaultPreset } from ${JSON.stringify(presetSpecifier)};`,
+			"const css = createCss(defaultPreset);",
+			'const className: string = css.class({ backgroundColor: "white", color: "black", padding: 4, borderRadius: "lg" });',
+			"void className;",
+		].join("\n"),
+	);
+	writeFileSync(
+		join(consumerDirectory, "tsconfig.json"),
+		`${JSON.stringify(
+			{
+				compilerOptions: {
+					module: "NodeNext",
+					moduleResolution: "NodeNext",
+					target: "ES2022",
+					strict: true,
+					skipLibCheck: true,
+					noEmit: true,
+				},
+				include: ["consumer.ts"],
+			},
+			null,
+			2,
+		)}\n`,
+	);
+	execFileSync("pnpm", ["exec", "tsc", "--project", join(consumerDirectory, "tsconfig.json")], {
+		cwd: repoRoot,
+		stdio: "ignore",
+	});
+	console.log("smoke-pack(yumcss): clean npm consumer runtime and declaration checks OK");
 }
 
 function statMaybe(path) {
@@ -226,7 +338,7 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 			cwd: directory,
 			encoding: "utf8",
 		});
-		const packResult = JSON.parse(packOutput);
+		const packResult = JSON.parse(extractTrailingJson(packOutput));
 		const packEntry = Array.isArray(packResult) ? packResult[0] : packResult;
 		if (packEntry?.filename === undefined)
 			throw new Error(`pnpm pack produced no tarball for ${name}`);
@@ -264,7 +376,7 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 		},
 	);
 	const importCheck = [
-		'import { DEFAULT_GOVERNANCE_PRESET } from "yumcss-analyze";',
+		'import { DEFAULT_GOVERNANCE_PRESET } from "@yumcss/analyze";',
 		'import { loadOfficialPresetModule } from "@yumcss/analyze/governance";',
 		'await import("yumcss/cx");',
 		'await import("@yumcss/codemod/swap");',
@@ -279,7 +391,7 @@ function cleanConsumerSmoke({ manifest, packageDirectory, tarballPath, workdir }
 		[join(consumerDirectory, "node_modules/@yumcss/analyze/dist/cli.js"), "--help"],
 		{ cwd: consumerDirectory, stdio: "ignore" },
 	);
-	console.log("smoke-pack(yumcss-analyze): clean consumer install and default preset load OK");
+	console.log("smoke-pack(@yumcss/analyze): clean consumer install and default preset load OK");
 }
 
 await main();

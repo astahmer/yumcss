@@ -1,6 +1,7 @@
 {
 	"name": "@yumcss/analyze",
 	"version": "0.1.0",
+	"description": "Build-time CSS usage, provenance, coverage, and budget analysis for YumCSS projects.",
 	"keywords": [
 		"analysis",
 		"coverage",
@@ -85,6 +86,7 @@
 		"build:ui": "pnpm exec vite build",
 		"build:compiler-preview-ui": "pnpm exec vite build --config vite.compiler-preview.config.ts",
 		"build": "pnpm exec tsdown && pnpm run build:ui && pnpm run build:compiler-preview-ui",
+		"prepack": "pnpm run build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
@@ -117,6 +119,6 @@
 		"vitest": "5.0.0"
 	},
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	}
 }

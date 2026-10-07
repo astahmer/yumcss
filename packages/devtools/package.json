@@ -49,6 +49,7 @@
 	},
 	"scripts": {
 		"build": "pnpm exec tsdown && pnpm exec vite build",
+		"prepack": "pnpm run build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts"
 	},
@@ -78,6 +79,6 @@
 		"vite": ">=8.0.0"
 	},
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	}
 }

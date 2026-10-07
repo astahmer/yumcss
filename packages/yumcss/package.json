@@ -1,6 +1,15 @@
 {
 	"name": "yumcss",
 	"version": "0.1.0",
+	"description": "Typed style objects with build-time CSS extraction for TypeScript projects.",
+	"keywords": [
+		"css",
+		"typescript",
+		"design-system",
+		"tailwindcss",
+		"vite",
+		"atomic-css"
+	],
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -418,6 +427,7 @@
 	},
 	"scripts": {
 		"build": "pnpm exec tsdown",
+		"prepack": "pnpm run build",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/runtime-api-benchmark.test.ts --exclude tests/tsc-performance.test.ts --exclude tests/cx-bench-smoke.test.ts --exclude tests/stack-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts tests/runtime-api-benchmark.test.ts tests/cx-bench-smoke.test.ts tests/stack-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts",
 		"test:coverage": "vitest run --coverage",
@@ -502,6 +512,6 @@
 		}
 	},
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	}
 }

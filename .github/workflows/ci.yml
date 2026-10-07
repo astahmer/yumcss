@@ -56,6 +56,9 @@ jobs:
       - name: Format check (oxfmt)
         run: pnpm run format
 
+      - name: Release manifest preflight
+        run: pnpm run release:check
+
       - name: Generated artifact freshness
         run: pnpm run generated:check
 

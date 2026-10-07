@@ -57,6 +57,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: pnpm install --frozen-lockfile
+      - name: build publishable packages
+        run: pnpm --filter yumcss --filter @yumcss/codemod --filter @yumcss/analyze --filter @yumcss/devtools --filter @yumcss/lint-plugin run build
       - name: typecheck + tests
         run: |
           pnpm run typecheck

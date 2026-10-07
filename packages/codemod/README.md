@@ -31,7 +31,7 @@ The small `tw.ts` entry does not import the optional `tw.runtime.ts` conflict
 catalog; plain generated `tw()` and `cx()` usage therefore do not pull it into
 the browser bundle. Import the catalog explicitly only when arbitrary runtime
 Tailwind strings need exact conflict merging. The build-only artifact is never
-imported by runtime bindings. The main [migration guide](../../docs/src/content/docs/migrate/overview.mdx)
+imported by runtime bindings. The main [migration guide](https://github.com/astahmer/yumcss/blob/main/docs/src/content/docs/migrate/overview.mdx)
 explains how to choose a route and handle dynamic behavior.
 
 ## What the tool promises
@@ -141,7 +141,7 @@ Example budget file:
 }
 ```
 
-Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
+Adapter authors should read [ADAPTER_SDK.md](https://github.com/astahmer/yumcss/blob/main/packages/codemod/ADAPTER_SDK.md) for the plugin
 shape, schema versioning, capability declarations, and differential corpus
 requirements.
 
@@ -420,7 +420,7 @@ pnpm exec yumcss-codemod migrate --from=panda --to=yumcss-css '<site>/{src,app,t
   target project must have the `yumcss` package installed before typechecking.
   Existing generated modules are preserved on reruns; add `--force` to regenerate them.
 
-Migration proof: [baseline report](../../plans/024-baseline-report.md) and
-[installed website proof](../../plans/evidence/panda-website-proof.md). The
+Migration proof: [baseline report](https://github.com/astahmer/yumcss/blob/main/plans/024-baseline-report.md) and
+[installed website proof](https://github.com/astahmer/yumcss/blob/main/plans/evidence/panda-website-proof.md). The
 baseline run converted 146/154 CSS sites and 86/86 factory elements with zero
 silent drops.
