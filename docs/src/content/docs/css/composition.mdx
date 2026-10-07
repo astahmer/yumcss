@@ -1,139 +1,168 @@
 ---
 title: Composition & variants
-description: Merge styles with last-wins semantics using cx(), build variant maps, and accept className overrides safely.
+description: Compose typed objects and compiled style maps, build variants, and accept xcss overrides without a class-string merger.
 sidebar:
   order: 4
 ---
 
-import PlaygroundLink from "../../../components/PlaygroundLink.astro";
-import Screenshot from "../../../components/Screenshot.astro";
-import variantsShot from "../../../assets/screenshots/playground-variants.png";
+Keep styles as objects until they reach the element. YumCSS can then choose the
+last declaration for each property and condition before producing a class
+string. No class-name parsing or `cx()` is needed.
 
-Atomic CSS has a classic problem: `class="p-4 p-6"` doesn't mean "the last one
-wins". The winner is whichever rule comes later in the stylesheet. YumCSS
-solves this by merging **before** the class string is built.
+## Authored objects: css(x, y, z)
 
-## Within css(): arguments merge
-
-Every `css` call takes several style objects and resolves conflicts per
-property and per condition. The last value wins:
+`css()` accepts several preset-checked style objects. Later declarations win;
+conditions merge independently:
 
 ```ts
-css.class({ color: "$slate-700", padding: 16 }, { color: "$blue-600" });
-// → color from the second object, padding from the first
+const base = { padding: 4, color: "$slate-700" } as const;
+const active = { color: "$blue-600", _hover: { color: "$blue-700" } } as const;
+
+const styles = css(base, isActive && active, props.styles);
 ```
 
-## Across calls: `cx()`
+Here `props.styles` has type `AtomicStyleProps<typeof css>`. `false`, `null`,
+and `undefined` arguments are skipped. Use `css.class(x, y, z)` when you want
+the final class string immediately.
 
-Once styles have become class strings (passed through props, mixed with a
-third-party class, …) you merge them with `cx()`. Create it once, next to
-your `css` instance:
+## Compiled maps: css.props(x, y, z)
 
-```ts title="src/cx.ts"
-import { createCx } from "yumcss/cx";
-import { css } from "./css";
-
-export const cx = createCx({ css });
-```
-
-`cx()` knows which property each YumCSS class sets, so the last one wins:
-
-```ts
-cx(css.class({ color: "$red-500" }), css.class({ color: "$blue-500" }));
-// → only the blue color class
-```
-
-It accepts strings, `css()` maps, `css.vars()` results, nested arrays, and
-`false` / `null` / `undefined`. Classes it doesn't recognize are kept in order
-and deduplicated, so you can pass any class through it.
-
-:::tip[Tailwind classes too]
-Pass the conflict data generated for your Tailwind theme and `cx()` also
-merges Tailwind utilities. It gives the same result as tailwind-merge, which
-a parity test checks. See [cx() with Tailwind](/tailwind/tw/#merging-with-cx).
-:::
-
-## Variants without a recipe API
-
-YumCSS has no `cva`/`recipe` function, and it doesn't need one. A variant is a
-map of classes generated at build time, and a component picks entries from it:
+A `css()` call returns a **compiled declaration map**: keys identify declarations
+and values are their classes. Keep that map when another component will compose
+it. Use `ReturnType<typeof css>` for a component's compiled-style prop:
 
 ```tsx
 import { css } from "./css";
-import { cx } from "./cx";
+
+const base = css({ display: "flex", padding: 4 });
+
+type BoxProps = {
+	xcss?: ReturnType<typeof css>;
+	children?: React.ReactNode;
+};
+
+export const Box = (props: BoxProps) => (
+	<div {...css.props(base, props.xcss)}>{props.children}</div>
+);
+
+<Box xcss={css({ padding: 6, _hover: { backgroundColor: "$slate-100" } })} />;
+```
+
+`xcss` is a prop convention, not a special API. Any compiled map can cross this
+boundary. Put the override last so it wins per declaration, including conditions.
+The inputs should share a preset and class-name strategy.
+
+**Pass compiled maps to `css.props()`, not back into `css()`.** `css()` compiles
+CSS values; `css.props()` composes the already compiled classes and returns
+`{ className, style }` for the host element.
+
+## Variants without a recipe API
+
+Variants are ordinary maps of `css()` results. Their keys provide the prop types,
+and selecting a variant is a property lookup:
+
+```tsx
+import { css } from "./css";
 
 const button = {
-	base: css.class({
+	base: css({
 		display: "inline-flex",
 		alignItems: "center",
 		borderRadius: "md",
 		fontWeight: "medium",
 	}),
 	size: {
-		sm: css.class({ paddingInline: 8, height: 32 }),
-		md: css.class({ paddingInline: 16, height: 40 }),
+		sm: css({ paddingInline: 2, height: 8 }),
+		md: css({ paddingInline: 4, height: 10 }),
 	},
 	tone: {
-		primary: css.class({
+		primary: css({
 			backgroundColor: "$blue-600",
 			color: "$white",
 			_hover: { backgroundColor: "$blue-700" },
 		}),
-		ghost: css.class({
+		ghost: css({
 			backgroundColor: "transparent",
 			color: "$slate-900",
 			_hover: { backgroundColor: "$slate-100" },
 		}),
 	},
-} as const;
+};
 
 type ButtonProps = {
 	size?: keyof typeof button.size;
 	tone?: keyof typeof button.tone;
-	className?: string;
+	xcss?: ReturnType<typeof css>;
 	children?: React.ReactNode;
 };
 
 export const Button = (props: ButtonProps) => (
 	<button
-		className={cx(
+		{...css.props(
 			button.base,
 			button.size[props.size ?? "md"],
 			button.tone[props.tone ?? "primary"],
-			props.className,
+			props.xcss,
 		)}
 	>
 		{props.children}
 	</button>
 );
+
+<Button xcss={css({ borderRadius: "full" })}>Rounded</Button>;
 ```
 
-Why this works well:
+Compound variants are plain conditional inputs, such as
+`props.tone === "ghost" && button.size.sm`. There is no recipe runtime or
+class-string merger to ship for this pattern.
 
-- **Every variant is compiled at build time.** Picking one at runtime is a
-  property lookup.
-- **Prop types come from the map.** Add a size, and `size` accepts it.
-- **`props.className` goes last**, so a caller's override wins over the
-  component's defaults, property by property.
+## When inputs might be dynamic
 
-Compound variants are plain code (`props.tone === "ghost" && props.size === "sm" ? … : …`),
-and the build handles those branches like any other known set. If your team
-prefers `cva`, it works fine on top of `css.class()`.
-
-<PlaygroundLink path="/variants" label="Variants with cx() scenario" />
-
-<Screenshot
-	src={variantsShot}
-	alt="Playground showing a button variant map built with css.class and cx, with size and tone controls."
-/>
-
-## Overriding a component from outside
-
-Accept a `className` (or a typed `styles` object, see
-[style props](/css/overview/#types-for-style-props)) and pass it **last** to
-`cx()`. Callers can then change anything without `!important` or specificity
-tricks:
+`css.props()` also carries inline custom properties from `css.vars()` and
+parameterized groups. If a component accepts static maps **or** dynamic carriers,
+derive its input type from the projection:
 
 ```tsx
-<Button className={css.class({ borderRadius: "full" })}>Rounded</Button>
+type PanelProps = {
+	xcss?: Parameters<typeof css.props>[number];
+};
+
+const panel = css({ display: "flex" });
+const Panel = (props: PanelProps) => <section {...css.props(panel, props.xcss)} />;
+
+<Panel xcss={css.vars({ opacity: runtimeOpacity })} />;
 ```
+
+Spread the whole result: using only `className` would lose the inline `style`.
+This broader input type also permits arrays and strings. Plain strings are
+appended; `css.props()` does not resolve conflicts inside them. Prefer a compiled
+map for overrides. See [dynamic styles](/css/dynamic-styles/).
+
+## What the build removes
+
+The extractor replaces provably static `css()` calls with declaration maps and
+`css.class()` calls with strings. It can also fold resolvable composition and
+`cx()` calls. Runtime prop values and selections can still need a small merge;
+"static CSS" does not mean every surrounding JavaScript expression disappears.
+See [extraction](/css/extraction/) for the supported analysis boundaries.
+
+## Use cx() for class-string conflicts
+
+Reach for `cx()` only when you must merge already flattened classes, such as an
+existing `className` prop or Tailwind utilities. Once declarations become one
+string, a merger must recover their property metadata:
+
+```ts
+import { createCx } from "yumcss/cx";
+import { css } from "./css";
+
+const cx = createCx({ css });
+cx(css.class({ color: "$red-500" }), externalClassName);
+```
+
+It accepts strings, compiled maps, variable carriers, nested arrays, and falsy
+inputs. Recognized YumCSS atoms merge last-wins. Unknown classes are kept and
+deduplicated; their CSS conflicts cannot be inferred. Tailwind merging requires
+the generated conflict data; see [cx() with Tailwind](/tailwind/tw/#merging-with-cx).
+
+For your own component APIs, retain maps and use `css.props()` first.

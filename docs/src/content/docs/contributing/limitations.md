@@ -1,167 +1,74 @@
 ---
-title: Current limitations and criticism
-description: A candid review of YumCSS's current strengths, weaknesses, and product risks.
-sidebar:
-  order: 6
+title: Limits & trade-offs
+description: What needs planning when adopting YumCSS, and what a migration codemod can and cannot prove.
 ---
 
-_Review snapshot: 2026-09-22._
+For a new web component, the main path is small: a typed preset, `css()`, and a
+build plugin. Most of the long compatibility matrix concerns **migration tools**,
+not restrictions on writing a component with YumCSS. The core still has real
+boundaries worth understanding.
 
-The blunt answer: YumCSS is technically ambitious, but currently tries to be
-too many products at once. The core idea is useful; the weakest parts are
-adoption simplicity, real-world proof, and scope discipline.
+## Everyday authoring
 
-## The criticism people will make
+| Boundary                                                                                                                  | What to do                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The extractor needs statically discoverable declarations. It cannot generate arbitrary runtime CSS from an unknown value. | Use `css.vars()` or parameterized groups for changing values. Spread `css.props()` so inline variables reach the element.                             |
+| `createCss()` returns classes; it does not inject CSS.                                                                    | Import the extracted stylesheet. Use the explicit runtime-sheet integration when your host genuinely needs runtime rule registration.                 |
+| Typed values depend on the preset. A property can still be deliberately open or escape through `$raw`.                    | Keep token bindings strict. Review and lint explicit escapes instead of treating TypeScript as a complete design review.                              |
+| Compiled-map composition and class-string merging have different contracts.                                               | Use `css.props()` for maps and carriers; use `cx()` only for recognized class-string conflicts. Unknown classes retain ordinary CSS cascade behavior. |
+| Complex global CSS is not all expressible as component style objects.                                                     | Keep authored CSS for document rules, font definitions, layers, and selectors outside the preset/extractor's supported syntax.                        |
 
-- "Why use YumCSS instead of Tailwind, Panda, StyleX, or vanilla-extract?"
-  YumCSS's primary path is typed `css()` objects with build-time atomic CSS;
-  `tw()` supports projects keeping Tailwind, while migration and other tools
-  support teams evaluating a move. The repository still combines many adapters,
-  non-web backends, the Inspector, DevTools, Playground, and MCP, so the product
-  can look broader than the first-use path.
-- "This is not actually zero-runtime CSS." Dynamic `tw()` values require
-  safelisting or runtime handling. Dynamic `css()` values use `css.vars()`.
-  Globals, fonts, layers, and complex selectors use authored CSS or explicit
-  runtime rules; narrow preset-owned flat globals, font faces, and named
-  keyframes have a build-time lane (the third `define.preset(theme, options, web)` argument), while
-  component-local keyframes use `css.keyframes`. The limitations are documented in
-  `docs/src/content/docs/reference/limitations.md` and the CSS scorecard.
-- "The setup is too dependent on generated files." A normal Tailwind lane
-  generates `tw.ts`, `tw.runtime.ts`, `tw.build.ts`, `types.d.ts`, and theme
-  artifacts; the large conflict catalog is optional at runtime, and `bridge.ts`
-  is only a runtime dependency when the project explicitly selects its
-  `twAdapter`. Stale or missing generated output can break the editor or build.
-  `generated:check` catches drift for the checked-in example and Playground, and
-  `yumcss-codemod tw verify` gives consumer projects a copyable freshness,
-  ownership, and raw/gzip budget check. Generated project files remain a real
-  adoption cost.
-- "The core package is too large conceptually." The repository currently
-  exposes 107 exported paths across five packages, including experimental
-  integrations and tooling. The runtime package no longer hard-depends on
-  Tailwind's loader, Oxc, PostCSS, Unplugin, or CAC, but the product still
-  asks users to understand more lanes than a focused styling library would.
-- "The official-library compatibility is brittle." Tailwind integration
-  currently relies on `@tailwindcss/node`'s `__unstable__loadDesignSystem`
-  API. That is the correct source of truth today, but it is also a compatibility
-  risk when Tailwind changes internals.
-- "The codemod matrix looks broader than the actual guarantee." The checked-in
-  real-repository report contains 35 reports, with 25 passed proof dimensions,
-  246 pending dimensions, and 10 pipeline-unpaired references. The adapter
-  reference proof has 29 small probes, 139 converted sites, 10 residuals, and
-  26 fully valid migrations. That is useful evidence, but it is not proof that
-  arbitrary production applications migrate cleanly.
-- "A migration that runs is not necessarily a migration that finishes."
-  Component defaults, slots, theme callbacks, runtime interpolation, framework
-  behavior, recipes, plugins, SSR, and hydration frequently require residuals
-  or manual work. The adapter system is honest about this, but users may still
-  interpret the large adapter catalog as broad automatic conversion support.
-- "The framework story is incomplete." Vite and generic Unplugin support are
-  strong directions, but framework-native AST and runtime semantics remain
-  host-owned. React/Next, Vue, Solid, server components, component libraries,
-  and SSR behavior are not universally preserved by a generic style adapter.
-- "The Playground is a teaching tool, not production proof." Its fast lane
-  evaluates code in a browser sandbox with shims and deliberately excludes
-  project module loading and Tailwind's Node engine. It now also has a separate
-  real package/Vite fixture lane for typecheck, client build, and SSR-build
-  evidence. A fixture pass still does not prove browser hydration or an
-  arbitrary consumer project.
-- There are now 19 bounded installed-project proofs for web routes into
-  YumCSS, covering the Tailwind, Panda, styled-components, UnoCSS, Vanilla
-  Extract, Stitches, MUI, Mantine, Tokenami, JSS, Fela, Aphrodite, Compiled,
-  Style9, Next-yak, Linaria, Treat, Solid Styled, and Vue Styled lanes. The
-  registry-owned gate runs the real migration, installed dependencies,
-  typechecks, host builds, SSR, hydration, browser-state comparisons, and CSS
-  accounting for every route. That raises confidence in the covered lanes, but
-  bounded pinned projects do not establish broad production route coverage.
-- Goober and Emotion also have installed SSR/browser fixture reports in the
-  evidence matrix. They remain separate adapter fixtures because their reports
-  do not prove the route gate's full canonical-CSS, typecheck, build, and
-  dependency dimensions; counting them as full project routes would overstate
-  the evidence.
-- Those proofs are checked by one registry-owned gate. The read-only
-  `pivot:proof:installed:routes` command validates every checked-in report, and
-  `pivot:proof:installed:routes:run` reruns all 19 project lanes in CI. A
-  missing, stale, residual-bearing, or incomplete report fails the gate rather
-  than being treated as route coverage.
-- "The MCP surface is ahead of the underlying proof."
-  `validate_migration` exposes typecheck, build, SSR, hydration, browser, and
-  bundle-size checks. The default MCP server does not execute project commands,
-  but the local CLI's explicit `--host-checks` mode supplies a read-only Node
-  host that overlays a temporary project and runs recognized package scripts.
-  Framework-specific browser, SSR, and richer build runners still require an
-  injected host port. Every result now carries an execution-evidence label, so
-  in-process adapter output is visibly separate from fixture or host proof.
-  `benchmark_project` measures an explicitly labeled warm or cold in-process
-  migration profile, memory, source/artifact sizes, and reproducibility inputs;
-  it is still not a real project build benchmark unless a host port supplies
-  that proof.
+Static calls can be inlined completely. Runtime choices can retain selection or
+merge code; changing values need an inline-variable carrier. "Zero runtime for
+static styles" is a statement about the extracted path, not every expression in
+an application. See [extraction](/css/extraction/) and
+[dynamic styles](/css/dynamic-styles/).
 
-## Things that are still weak today
+## Integrating with an existing project
 
-- The generated-artifact gate covers the checked-in example and Playground;
-  arbitrary consumer projects still need to add `yumcss-codemod tw verify` to
-  their own build validation.
-- Reference repositories are intentionally unavailable on machines that have
-  not prepared them. The corpus tests report that state explicitly now, but a
-  green local run still does not mean the external corpus ran.
-- The repository's own coverage baseline is moderate rather than exceptional:
-  codemod reports roughly 76% statements and 64% branches; analyze reports
-  roughly 74% statements and 61% branches.
-- The architecture is cleaner than it used to be, but it is still large for a
-  `0.1.0` product: about 129 YumCSS source files, 149 codemod source files,
-  dozens of registries and contracts, and many ecosystem adapters. The
-  abstraction cost is real.
+- **Compatible output still needs an engine.** Tailwind and Panda strategies rely
+  on those engines and matching project metadata. StyleX naming still uses the
+  YumCSS stylesheet. Choosing a class-name strategy does not reproduce every
+  host library's component, theme, or runtime behavior.
+- **Generated files need freshness checks.** The Tailwind lane derives types,
+  utility metadata, and optional bridge/conflict data from your configuration.
+  Add `yumcss-codemod tw verify` to CI. Tailwind's official design-system loader
+  currently uses an unstable upstream API, so version changes need validation.
+- **Package and framework boundaries need setup.** Published component libraries
+  need a library artifact or their own CSS delivery. SSR, hydration, framework
+  plugins, and non-web hosts have their own integration contracts.
+- **Non-web backends are experimental.** React Native and OpenTUI have bounded
+  host evidence, not a promise that every CSS selector or web behavior translates.
 
-## Maturity and proof
+These are library and integration trade-offs, even if you never run a codemod.
 
-The repository now records route proof in one catalog and exposes the same
-boundary through the evidence report, MCP, and browser tooling. These labels
-describe evidence, not a promise that every construct in a route is lossless.
+## Codemods are a starting point, not a one-shot guarantee
 
-| Surface                                     | Maturity     | Evidence currently available                                                                                                                                                                  | Still required before a stronger claim                                               |
-| ------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `tw()` / `css()` / `cx()` runtime contracts | stable       | package tests, type tests, pack/import smoke, generated artifact checks                                                                                                                       | consumer-project coverage and host-specific behavior                                 |
-| Codegen and Vite integration                | experimental | focused runtime/Vite tests and fresh checked-in example artifacts                                                                                                                             | repeated proof in dependency-installed consumer projects                             |
-| Cataloged codemod routes                    | experimental | adapter contracts, source probes, route-level dimensions, explicit residuals                                                                                                                  | installed project typecheck, build, browser, SSR/hydration, and size proof           |
-| Tailwind -> YumCSS bounded fixture          | experimental | installed CLI, generated preset, two-source-module migration, typecheck, build, SSR, hydration, browser pixels                                                                                | more utilities, themes, plugins, frameworks, and larger projects                     |
-| styled-components -> YumCSS bounded fixture | experimental | installed CLI, generated Vite integration, typecheck, build, SSR, hydration, browser pixels                                                                                                   | themes, component composition, dynamic props, and multi-file projects                |
-| Panda -> YumCSS bounded fixture             | experimental | installed CLI, official generated-system config, shorthand/token lowering, typecheck, build, SSR, hydration, browser pixels                                                                   | recipes, plugins, themes, frameworks, and multi-file projects                        |
-| UnoCSS -> YumCSS bounded fixture            | experimental | installed CLI, official UnoCSS generator, custom token lowering, virtual stylesheet/Vite rewrite, typecheck, build, SSR, hydration, browser pixels                                            | shortcuts, transformers, variants, frameworks, and multi-file projects               |
-| Playground                                  | experimental | browser sandbox evaluation, StyleProgram extraction, runtime-sheet CSS inspection, and a real package/Vite fixture with TypeScript, client build, SSR build, Chromium, and hydration evidence | broader framework fixtures                                                           |
-| MCP and analyzer                            | experimental | typed tool/resource contracts, per-result execution evidence, an opt-in isolated Node package-script host, reproducible in-process benchmark profiles, and Migration Preview evidence         | richer framework/browser hosts and durable project evidence                          |
-| React Native/OpenTUI backends               | experimental | backend contract/type coverage plus bounded real hosts: react-native-web Chromium toggle assertions and OpenTUI headless/PTY assertions                                                       | real external consumers, native-device/platform proof, and broader backend semantics |
-| React Strict DOM and other non-web backends | research     | contract, typing, and adapter coverage                                                                                                                                                        | real consumers and backend-specific runtime proof                                    |
+A listed source adapter means the tool understands a route. It does not mean
+that every application using that library converts automatically.
 
-The catalog has 19 named installed-project route policies plus three explicit
-unavailable reverse-direction policies, and it generates an unavailable research
-policy for every additional route the adapter registry can resolve. All named
-routes remain experimental: passing the bounded proof gate means the documented
-lane is exercised, not that every theme API, framework host, dynamic expression,
-or plugin semantics are complete.
+**Usually straightforward:** statically known declarations, supported token
+references, conditions, and documented carriers with available configuration.
 
-## The most questionable scope
+**Often needs review:** recipes, component defaults and slots, theme callbacks,
+plugin transforms, runtime interpolation, framework behavior, and cross-file
+composition. The adapter preserves unsupported or ambiguous source and reports
+an explicit **residual** instead of guessing.
 
-- The design CSS lane, React Native/React Strict DOM/OpenTUI backends, MCP, DevTools,
-  Playground, and 30-plus adapters all make sense individually, but together
-  they dilute the main product.
-- The non-web backends are especially hard to justify until there are real
-  consumers. CSS conditions and selectors do not transfer naturally to React
-  Native or OpenTUI, so they expand contracts and tests without strengthening
-  the main web use case.
-- The adapter catalog is more useful as a migration research platform than as a
-  dependable production migration product today.
-- `benchmark_project` is currently low-signal and should either become a real
-  host benchmark port or be removed from the headline feature set.
+Use a dry run, migrate one feature, then check types, build output, browser
+states, and SSR/hydration where applicable. Passing a fixture or playground
+example proves that bounded input; it does not prove your entire project.
+The [migration guide](/migrate/overview/) gives the workflow.
 
-## What should be kept
+## Reading the deeper evidence
 
-The semantic IR, fail-closed residuals, official-loader boundary, generated
-project metadata, `tw()`/`css()` static extraction, `css.vars()` runtime escape
-hatch, and shared adapter registry are all defensible. Those solve real
-problems.
+The tooling labels routes and their proof dimensions separately. Source-level
+conversion, an installed build, and a browser comparison answer different
+questions. Experimental routes can have strong evidence for particular cases
+while retaining gaps elsewhere.
 
-The strongest version of YumCSS would narrow its promise to: **typed,
-project-aware Tailwind/YumCSS authoring plus reliable migration between the
-top few ecosystems, with real build/browser/SSR proof.** Everything else should
-be separately packaged, explicitly experimental, or deferred until a real
-consumer requires it.
+- [API matrix](/contributing/api-matrix/): what converts and what remains native.
+- [Implementation status](/contributing/implementation-status/): shipped surfaces
+  and their evidence boundaries.
+- [Adapter contract](/contributing/adapter-contract/): capabilities, residuals, and
+  validation contracts.

@@ -6,8 +6,8 @@ description: Structure a design-system package and a component package, write va
 import { Aside, FileTree, Steps } from "@astrojs/starlight/components";
 import PlaygroundLink from "../../../components/PlaygroundLink.astro";
 
-A YumCSS component library is ordinary TypeScript: components call
-`css.class()`, and a build step turns those calls into strings and a
+A YumCSS component library is ordinary TypeScript: components retain
+`css()` maps and compose them with `css.props()`, and a build step turns those calls into strings and a
 stylesheet. This guide covers the decisions that matter once styles cross a
 package boundary.
 
@@ -22,7 +22,6 @@ Split the **design system** (tokens and rules) from the **components**
   - design-system/ `@acme/design-system`
     - src/preset.ts tokens, conditions, properties
     - src/css.ts `export const css = createCss(preset)`
-    - src/cx.ts `export const cx = createCx({ css })`
   - ui/ `@acme/ui`
     - src/button.tsx
     - src/card.tsx
@@ -32,8 +31,8 @@ Split the **design system** (tokens and rules) from the **components**
 
 </FileTree>
 
-Expose `css` and `cx` as subpaths (`@acme/design-system/css`,
-`@acme/design-system/cx`). The extractor recognizes css instances by the
+Expose `css` as a subpath (`@acme/design-system/css`). Add a `cx` subpath only
+when existing class-string inputs require a conflict-aware merger. The extractor recognizes css instances by the
 import's last segment (`css` or `design` by default), so these imports are
 picked up without configuration.
 
@@ -43,63 +42,41 @@ app is the same rule.
 
 ## Components
 
-Write variants as maps of `css.class()` calls, and merge with `cx()` so the
-caller's `className` wins. The full pattern is in
+Write variants as maps of `css()` calls, and compose with `css.props()` so the
+caller's `xcss` wins. The full pattern is in
 [composition & variants](/css/composition/#variants-without-a-recipe-api):
 
 ```tsx title="packages/ui/src/button.tsx"
 import { css } from "@acme/design-system/css";
-import { cx } from "@acme/design-system/cx";
 
 const button = {
-	base: css.class({
-		display: "inline-flex",
-		alignItems: "center",
-		gap: "sm",
-		borderRadius: "md",
-		fontWeight: "medium",
-	}),
+	base: css({ display: "inline-flex", alignItems: "center", borderRadius: "md" }),
 	size: {
-		sm: css.class({ paddingInline: "sm", fontSize: "sm" }),
-		md: css.class({ paddingInline: "md", fontSize: "md" }),
+		sm: css({ paddingInline: 2, fontSize: "sm" }),
+		md: css({ paddingInline: 4, fontSize: "base" }),
 	},
-	tone: {
-		primary: css.class({
-			backgroundColor: "accent",
-			color: "onAccent",
-			_hover: { backgroundColor: "accentHover" },
-		}),
-		ghost: css.class({
-			backgroundColor: "transparent",
-			color: "text",
-			_hover: { backgroundColor: "subtle" },
-		}),
-	},
-} as const;
-
-export type ButtonProps = React.ComponentProps<"button"> & {
-	size?: keyof typeof button.size;
-	tone?: keyof typeof button.tone;
 };
 
-export const Button = ({ size = "md", tone = "primary", className, ...props }: ButtonProps) => (
-	<button {...props} className={cx(button.base, button.size[size], button.tone[tone], className)} />
+export type ButtonProps = Omit<React.ComponentProps<"button">, "className" | "style"> & {
+	size?: keyof typeof button.size;
+	xcss?: ReturnType<typeof css>;
+};
+
+export const Button = ({ size = "md", xcss, ...props }: ButtonProps) => (
+	<button {...props} {...css.props(button.base, button.size[size], xcss)} />
 );
 ```
 
-Guidelines:
+This example uses `tailwindPreset`; a custom preset supplies your own scales.
 
-- **Export the variant keys as types** (`keyof typeof button.tone`), so adding
-  a variant updates the props.
-- **Put `className` last in `cx()`.** Overrides then win property by property,
-  with no specificity fights.
-- **Use semantic tokens** (`accent`, `text`), never raw palette colors, so
-  apps can re-theme without forking components.
-- **Keep styles static.** For values that come from props, use
-  [`css.vars()`](/css/dynamic-styles/), so the library ships no runtime CSS
-  injection.
-
-<PlaygroundLink path="/variants" label="Variants with cx() scenario" />
+- **Types come from the maps.** Adding a variant updates the allowed prop values.
+- **Put `xcss` last.** Compiled-map overrides win per property and condition.
+- **Use semantic tokens** in your own preset, so apps can re-theme components.
+- **Keep declarations static.** Runtime values travel through
+  [`css.vars()`](/css/dynamic-styles/) and `css.props()`, without runtime injection.
+- **Preserve native props deliberately.** The example exposes `xcss` instead of native `className` and `style`;
+  use the broader `css.props()` input type for variable carriers, or explicitly
+  compose native class/style props when your component promises to support them.
 
 ## Component tokens
 
@@ -164,9 +141,9 @@ export const card = css.class({
 	borderColor: "card.border",
 	color: "card.fg",
 	borderStyle: "solid",
-	borderWidth: 1,
+	borderWidth: "1px",
 	borderRadius: "lg",
-	padding: 24,
+	padding: "24px",
 });
 ```
 

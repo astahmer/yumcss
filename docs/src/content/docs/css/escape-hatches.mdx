@@ -64,7 +64,9 @@ css.class({
 });
 ```
 
-Use it for one-offs. If a value keeps coming back, make it a token. The
+Untyped CSS is an explicit exception, not the default authoring model. Search
+for `$raw` and `createUnsafeCss` to find departures from your design system;
+`no-dollar-raw` can enforce a stricter team policy. Use it for one-offs. If a value keeps coming back, make it a token. The
 [`prefer-typed-css-values` lint rule](/tools/lint/) rewrites `$raw` values that
 already match a token or a typed value.
 
@@ -89,11 +91,12 @@ const looseCss = createUnsafeCss();
 looseCss.class({ anyProperty: "any value" });
 ```
 
-Same API, no vocabulary, no checks. It exists so migrated code can compile
+Same projections, without a preset-derived property or token vocabulary.
+Runtime CSS serialization still validates values such as numeric lengths. It exists so migrated code can compile
 before it's typed. The [migration tools](/migrate/overview/) output it when
-the source has no matching tokens. It produces the **same class names** as a
-typed instance for the same input, so you can type a file at a time without
-duplicating any CSS.
+the source has no matching tokens. Move it to a typed instance as you adopt tokens. Rebuild after switching:
+preset resolution and naming strategies can change the emitted classes and
+variables.
 
 ## Runtime CSS-in-JS
 

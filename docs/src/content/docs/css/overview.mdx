@@ -57,14 +57,15 @@ yours, [write your own preset](/design-system/presets/).
 
 ## The three ways to call it
 
-| Call                   | Returns                            | Use it for                                                                            |
-| ---------------------- | ---------------------------------- | ------------------------------------------------------------------------------------- |
-| `css.class(...styles)` | `string` — space-separated classes | `className` / `class` props. This is the call you'll use most.                        |
-| `css(...styles)`       | `Record<key, className>`           | Style maps you want to merge later with [`cx()`](/css/composition/) or `css.props()`. |
-| `css.props(...inputs)` | `{ className, style }`             | Spreading onto an element: mixes compiled styles, runtime vars, and plain classes.    |
+| Call                   | Returns                            | Use it for                                                                         |
+| ---------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `css.class(...styles)` | `string` — space-separated classes | `className` / `class` props when no later map composition is needed.               |
+| `css(...styles)`       | `Record<key, className>`           | Reusable style maps composed with `css.props()`.                                   |
+| `css.props(...inputs)` | `{ className, style }`             | Spreading onto an element: mixes compiled styles, runtime vars, and plain classes. |
 
-All three accept several style objects. They are **deep-merged, and the last
-one wins** for each property, condition included:
+`css()` and `css.class()` accept authored style objects. They are **deep-merged,
+and the last one wins** for each property, condition included. `css.props()`
+accepts compiled maps and variable carriers instead:
 
 ```ts
 const base = { padding: 16, color: "$slate-700", _hover: { color: "$slate-900" } } as const;
@@ -74,8 +75,8 @@ css.class(base, isActive ? active : {});
 // isActive → color and :hover color come from `active`, padding from `base`
 ```
 
-Pass `{}` for "no extra styles". The typed API doesn't accept `false` or
-`undefined` arguments.
+Pass `false`, `null`, or `undefined` for "no extra styles". These arguments
+are skipped.
 
 ## Values: tokens first
 
@@ -106,7 +107,9 @@ Unitless properties (`opacity`, `zIndex`, `flexGrow`, `lineHeight`,
 
 ### When you need a value outside the scale
 
-You have three escape hatches. Pick the narrowest one:
+The goal is preset-checked CSS, including component overrides. Untyped CSS is
+an explicit exception: `$raw` and `createUnsafeCss` make deviations searchable
+in review and linting. Pick the narrowest escape hatch:
 
 1. **`$raw`**: one-off values inside a typed call. They aren't checked, but you
    can see them in review.
@@ -219,8 +222,8 @@ And the `className` in the bundle is a plain string:
 
 </Tabs>
 
-Literal calls are replaced by their class string, so the shipped JavaScript
-holds only strings. Two components that use `display: flex` share one rule,
+Static `css.class()` calls become strings; static `css()` calls become compiled
+declaration maps. Resolvable composition and `cx()` calls can also be inlined. Two components that use `display: flex` share one rule,
 so the stylesheet grows with the number of distinct declarations, not with
 the number of components. More in [how extraction works](/css/extraction/).
 
@@ -250,5 +253,5 @@ export const Box = (props: BoxProps) => (
 
 - [Conditions & selectors](/css/conditions/): responsive, states, nesting, container queries.
 - [Dynamic styles](/css/dynamic-styles/): values you only know at runtime.
-- [Composition](/css/composition/): `cx()`, variants, `css.props()`.
+- [Composition](/css/composition/): compiled maps, `xcss` overrides, variants, and `css.props()`.
 - [Build a design system](/design-system/presets/): replace the starter preset with your own tokens.

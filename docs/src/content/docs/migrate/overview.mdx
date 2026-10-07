@@ -12,6 +12,22 @@ import Screenshot from "../../../components/Screenshot.astro";
 import migrateShot from "../../../assets/screenshots/playground-migrate.png";
 import previewShot from "../../../assets/screenshots/migration-preview.png";
 
+## Start alongside your existing stack
+
+You may not need a full migration. Keep existing components and introduce a typed
+`css()` instance for new work. [Class-name strategies](/reference/class-name-strategies/)
+can emit Tailwind utilities or Panda-compatible classes while their existing
+engines generate CSS. The StyleX naming adapter emits StyleX-compatible names,
+but YumCSS still owns that stylesheet: it does not replace StyleX's compiler or
+promise compatibility with every StyleX runtime contract.
+
+Matching names alone is not a migration proof. Keep the strategy's preset,
+conditions, and target engine configuration aligned. Start with
+[Tailwind classes from css()](/tailwind/tailwind-classes/) for the complete
+Tailwind setup, or use the codemod when you want to change authored source.
+
+## When you want to change the source
+
 YumCSS migrations go through a **source adapter** (which understands your
 current library), a shared semantic model, and a **target adapter** (which
 writes idiomatic YumCSS). The codemod converts what it can prove and keeps the
@@ -122,8 +138,8 @@ vocabulary.
    StyleX, and DTCG token files convert directly with
    [`yumcss-codemod tokens`](/design-system/design-tokens/).
 2. **Replace `createUnsafeCss()`** with your typed `css` instance, one file at
-   a time. Class names are identical for identical input, so mixing both
-   doesn't duplicate CSS.
+   a time. Rebuild after switching: token bindings and naming strategies can change
+   emitted classes and variables.
 3. **Let TypeScript list the leftovers**: every raw value that isn't a token
    becomes a type error you can fix or move to `$raw`.
 

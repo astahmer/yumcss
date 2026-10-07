@@ -79,8 +79,8 @@ export function TypedComponentsApp() {
 
 			<Stack
 				direction={{ base: "column", md: "row" }}
-				gap={{ base: 4, md: 8 }}
-				padding={4}
+				gap={{ base: "4px", md: "8px" }}
+				padding="4px"
 				align={{ base: "stretch", md: "center" }}
 				className="mt-4 rounded-lg border border-gray-200 bg-gray-50"
 			>

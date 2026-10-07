@@ -31,18 +31,41 @@ pnpm add -D oxlint @yumcss/lint-plugin
 Start with warnings while you adopt YumCSS, then turn the boundaries you care
 about into errors.
 
+## See a diagnostic
+
+With `yumcss-extraction/no-dollar-raw` enabled, this actual Oxlint input:
+
+```ts title="example.ts"
+import { css } from "./css";
+
+export const card = css({ $raw: { color: "#ff0088" } });
+```
+
+produces:
+
+```text
+example.ts:3:27: warning yumcss-extraction(no-dollar-raw):
+yumcss: $raw in css() escapes the design system — model the value as a token or extend the preset
+```
+
+Run `pnpm exec oxlint src` in CI. For editor diagnostics, use the Oxlint editor
+integration with the same configuration. TypeScript checks the preset contract;
+these rules make explicit escapes and extraction boundaries visible in review.
+A warning about runtime values does not mean every dynamic style is broken:
+`css.vars()` and a configured runtime sheet have explicit runtime contracts.
+
 ## Rules
 
 ### Build-time extraction
 
-| Rule                          | Flags                                                             | Auto-fix |
-| ----------------------------- | ----------------------------------------------------------------- | -------- |
-| `no-dynamic-values`           | Values that stay on the runtime path (no CSS will exist for them) |          |
-| `no-spreads`                  | Spread arguments the compiler can't fold                          |          |
-| `no-dynamic-carrier-fallback` | Dynamic JSX style carriers that can't be lowered at build time    |          |
-| `no-dynamic-keyframes`        | `css.keyframes()` bodies that aren't static                       |          |
-| `no-multiple-conditionals`    | `cx()` calls with several foldable conditionals                   |          |
-| `no-redundant-cx`             | A single static class string passed through `cx()`                |          |
+| Rule                          | Flags                                                                                     | Auto-fix |
+| ----------------------------- | ----------------------------------------------------------------------------------------- | -------- |
+| `no-dynamic-values`           | Values that stay on the runtime path (the extractor cannot prove their CSS ahead of time) |          |
+| `no-spreads`                  | Spread arguments the compiler can't fold                                                  |          |
+| `no-dynamic-carrier-fallback` | Dynamic JSX style carriers that can't be lowered at build time                            |          |
+| `no-dynamic-keyframes`        | `css.keyframes()` bodies that aren't static                                               |          |
+| `no-multiple-conditionals`    | `cx()` calls with several foldable conditionals                                           |          |
+| `no-redundant-cx`             | A single static class string passed through `cx()`                                        |          |
 
 ### Values and tokens
 

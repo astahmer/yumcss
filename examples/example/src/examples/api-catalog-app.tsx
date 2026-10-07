@@ -278,7 +278,7 @@ export function ApiCatalogApp() {
 					call={`const style = untypedCss.raw({ border: "1px solid #e5e7eb" })`}
 					detail="an explicit inline-style escape hatch for hosts that need plain objects"
 				>
-					<div style={rawStyle}>This panel receives the raw style object directly.</div>
+					<div style={{ ...rawStyle }}>This panel receives the raw style object directly.</div>
 				</ApiCard>
 
 				<ApiCard
@@ -305,7 +305,7 @@ export function ApiCatalogApp() {
 					<div className={tw({ flex: "col", gap: "2", textSize: "sm" })}>
 						<strong>Preset-bound in this page:</strong>
 						<code>{`css({ color: "$blue-600", padding: 8 })`}</code>
-						<div style={relaxedStyle}>
+						<div style={{ ...relaxedStyle }}>
 							<strong>strict: false</strong> allows values such as <code>rebeccapurple</code> and
 							<code>10px</code> while keeping the preset's conditions.
 						</div>
