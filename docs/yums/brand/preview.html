@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>YumCSS Brand Assets</title>
+		<link rel="icon" href="favicon-32.svg" type="image/svg+xml" />
+		<style>
+			:root {
+				--page: #f4f1ed;
+				--text: #241f1c;
+				--muted: #7a716b;
+				--panel: #ffffff;
+				--border: #e4ded8;
+				--orange: #f59e42;
+				--coral: #ef4444;
+				--cream: #fef7ed;
+				--charcoal: #1f1f1f;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--page);
+				color: var(--text);
+				font:
+					14px/1.5 system-ui,
+					sans-serif;
+			}
+			main {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 24px 16px 64px;
+				display: grid;
+				gap: 28px;
+			}
+			h1 {
+				margin: 0;
+				font-size: 20px;
+			}
+			h2 {
+				margin: 0 0 12px;
+				font-size: 13px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+			section {
+				background: var(--panel);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+			}
+			.row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px;
+				align-items: flex-end;
+			}
+			figure {
+				margin: 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 8px;
+			}
+			figcaption {
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.swatch {
+				display: grid;
+				place-items: center;
+				width: 200px;
+				height: 160px;
+				border-radius: 10px;
+				border: 1px solid var(--border);
+			}
+			.swatch img {
+				width: 160px;
+			}
+			.checker {
+				background: conic-gradient(#d9d9d9 25%, #fff 0 50%, #d9d9d9 0 75%, #fff 0) 0 0 / 16px 16px;
+			}
+			.cream {
+				background: var(--cream);
+			}
+			.dark {
+				background: var(--charcoal);
+			}
+			.orange {
+				background: var(--orange);
+			}
+			.coral {
+				background: var(--coral);
+			}
+			.pixelated {
+				image-rendering: pixelated;
+			}
+			.tabbar {
+				display: flex;
+				gap: 8px;
+				padding: 10px 12px;
+				border-radius: 10px;
+			}
+			.tab {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 6px 12px;
+				border-radius: 8px;
+				font-size: 12px;
+			}
+			.tabbar.light {
+				background: #dee1e6;
+			}
+			.tabbar.light .tab {
+				background: #fff;
+				color: #202124;
+			}
+			.tabbar.dark {
+				background: #202124;
+			}
+			.tabbar.dark .tab {
+				background: #35363a;
+				color: #e8eaed;
+			}
+			.mono {
+				display: grid;
+				place-items: center;
+				width: 200px;
+				height: 160px;
+				border-radius: 10px;
+			}
+			.mono svg {
+				width: 96px;
+				height: 96px;
+			}
+			.mono.light {
+				background: var(--cream);
+				color: #1a1513;
+			}
+			.mono.dark-bg {
+				background: var(--charcoal);
+				color: var(--cream);
+			}
+			.lockup {
+				display: inline-flex;
+				align-items: center;
+				gap: 12px;
+				padding: 16px 24px;
+				border-radius: 10px;
+			}
+			.lockup img {
+				height: 48px;
+			}
+			.lockup span {
+				font:
+					800 32px/1 system-ui,
+					sans-serif;
+				letter-spacing: -0.02em;
+			}
+			.lockup b {
+				color: var(--orange);
+				font-weight: inherit;
+			}
+			.lockup.on-dark {
+				background: var(--charcoal);
+				color: #fff;
+			}
+			.lockup.on-light {
+				background: var(--cream);
+				color: var(--text);
+			}
+			.note {
+				margin: 12px 0 0;
+				color: var(--muted);
+				font-size: 12px;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>YumCSS brand assets — review</h1>
+
+			<section>
+				<h2>Primary mark · logo-mark.svg</h2>
+				<div class="row">
+					<figure>
+						<div class="swatch checker"><img src="logo-mark.svg" alt="Yums logo mark" /></div>
+						<figcaption>Transparent</figcaption>
+					</figure>
+					<figure>
+						<div class="swatch cream"><img src="logo-mark.svg" alt="" /></div>
+						<figcaption>Cream #FEF7ED</figcaption>
+					</figure>
+					<figure>
+						<div class="swatch dark"><img src="logo-mark.svg" alt="" /></div>
+						<figcaption>Dark #1F1F1F</figcaption>
+					</figure>
+					<figure>
+						<div class="swatch orange"><img src="logo-mark.svg" alt="" /></div>
+						<figcaption>Orange #F59E42</figcaption>
+					</figure>
+					<figure>
+						<div class="swatch coral"><img src="logo-mark.svg" alt="" /></div>
+						<figcaption>Coral #EF4444</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section>
+				<h2>App icon · app-icon.svg</h2>
+				<div class="row">
+					<figure>
+						<img src="app-icon.svg" width="512" height="512" alt="YumCSS app icon" />
+						<figcaption>512px</figcaption>
+					</figure>
+					<figure>
+						<img src="app-icon.svg" width="128" height="128" alt="" />
+						<figcaption>128px</figcaption>
+					</figure>
+					<figure>
+						<img src="app-icon.svg" width="64" height="64" alt="" />
+						<figcaption>64px</figcaption>
+					</figure>
+					<figure>
+						<img src="app-icon.svg" width="32" height="32" alt="" />
+						<figcaption>32px</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section>
+				<h2>Favicon · actual size</h2>
+				<div class="row">
+					<div class="tabbar light">
+						<div class="tab"><img src="favicon-16.svg" width="16" height="16" alt="" />YumCSS — Docs</div>
+						<div class="tab"><img src="favicon-32.svg" width="32" height="32" alt="" />32px variant</div>
+					</div>
+					<div class="tabbar dark">
+						<div class="tab"><img src="favicon-16.svg" width="16" height="16" alt="" />YumCSS — Docs</div>
+						<div class="tab"><img src="favicon-32.svg" width="32" height="32" alt="" />32px variant</div>
+					</div>
+				</div>
+				<h2 style="margin-top: 20px">Favicon · enlarged for inspection (rendered PNG pixels)</h2>
+				<div class="row">
+					<figure>
+						<img src="favicon-16.png" width="16" height="16" alt="" />
+						<figcaption>16 actual</figcaption>
+					</figure>
+					<figure>
+						<img class="pixelated" src="favicon-16.png" width="128" height="128" alt="favicon 16 enlarged" />
+						<figcaption>favicon-16 · 8×</figcaption>
+					</figure>
+					<figure>
+						<img src="favicon-32.png" width="32" height="32" alt="" />
+						<figcaption>32 actual</figcaption>
+					</figure>
+					<figure>
+						<img class="pixelated" src="favicon-32.png" width="128" height="128" alt="favicon 32 enlarged" />
+						<figcaption>favicon-32 · 4×</figcaption>
+					</figure>
+					<figure>
+						<img src="favicon-48.png" width="48" height="48" alt="" />
+						<figcaption>48 actual</figcaption>
+					</figure>
+					<figure>
+						<img class="pixelated" src="favicon-48.png" width="144" height="144" alt="favicon 48 enlarged" />
+						<figcaption>favicon-48 · 3×</figcaption>
+					</figure>
+				</div>
+				<h2 style="margin-top: 20px">Raster exports</h2>
+				<div class="row">
+					<figure>
+						<img src="apple-touch-icon.png" width="180" height="180" alt="" />
+						<figcaption>apple-touch-icon 180 (full bleed, iOS rounds it)</figcaption>
+					</figure>
+					<figure>
+						<img src="icon-192.png" width="192" height="192" alt="" />
+						<figcaption>icon-192</figcaption>
+					</figure>
+					<figure>
+						<img src="icon-512.png" width="256" height="256" alt="" />
+						<figcaption>icon-512 (shown at 256)</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section>
+				<h2>Experimental — not canonical · mark-monochrome.svg (currentColor)</h2>
+				<div class="row">
+					<figure>
+						<div class="mono light"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <path fill="currentColor" fill-rule="evenodd" d="M10 50c-4-4-5-10-5-16 0-7 2-12 4-15L10 5l12 9.5c4-1 16-1 20 0L54 5l1 14c2 3 4 8 4 15 0 6-1 12-5 16-6 6-14 8-22 8s-16-2-22-8z
+    M32 18.5c-2 7-5 12-7 17.5-4 2-7 6-7 11 0 5 6 9 14 9s14-4 14-9c0-5-3-9-7-11-2-5.5-5-10.5-7-17.5z
+    M14.4 33.5a5.6 5.6 0 1 0 11.2 0a5.6 5.6 0 1 0-11.2 0z M38.4 33.5a5.6 5.6 0 1 0 11.2 0a5.6 5.6 0 1 0-11.2 0z
+    M17 34a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0-7.2 0z M39.8 34a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0-7.2 0z
+    M28.8 43h6.4L32 46.8z"/>
+</svg></div>
+						<figcaption>On light</figcaption>
+					</figure>
+					<figure>
+						<div class="mono dark-bg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <path fill="currentColor" fill-rule="evenodd" d="M10 50c-4-4-5-10-5-16 0-7 2-12 4-15L10 5l12 9.5c4-1 16-1 20 0L54 5l1 14c2 3 4 8 4 15 0 6-1 12-5 16-6 6-14 8-22 8s-16-2-22-8z
+    M32 18.5c-2 7-5 12-7 17.5-4 2-7 6-7 11 0 5 6 9 14 9s14-4 14-9c0-5-3-9-7-11-2-5.5-5-10.5-7-17.5z
+    M14.4 33.5a5.6 5.6 0 1 0 11.2 0a5.6 5.6 0 1 0-11.2 0z M38.4 33.5a5.6 5.6 0 1 0 11.2 0a5.6 5.6 0 1 0-11.2 0z
+    M17 34a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0-7.2 0z M39.8 34a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0-7.2 0z
+    M28.8 43h6.4L32 46.8z"/>
+</svg></div>
+						<figcaption>On dark</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section>
+				<h2>Mark + text example (not a final wordmark)</h2>
+				<div class="row">
+					<div class="lockup on-dark">
+						<img src="logo-mark.svg" alt="" /><span>Yum<b>CSS</b></span>
+					</div>
+					<div class="lockup on-light">
+						<img src="logo-mark.svg" alt="" /><span>Yum<b>CSS</b></span>
+					</div>
+				</div>
+				<p class="note">System font placeholder only — the wordmark is not designed yet.</p>
+			</section>
+		</main>
+	</body>
+</html>

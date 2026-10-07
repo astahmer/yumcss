@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Yums Preview</title>
+		<style>
+			:root {
+				--page: #f6f4f1;
+				--text: #2a2522;
+				--muted: #7a716b;
+				--panel: #ffffff;
+				--border: #e4ded8;
+				--accent: #f59e42;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--page: #171413;
+					--text: #f1ece7;
+					--muted: #a39890;
+					--panel: #221e1c;
+					--border: #3a3330;
+				}
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--page);
+				color: var(--text);
+				font:
+					14px/1.4 system-ui,
+					sans-serif;
+			}
+			header {
+				position: sticky;
+				top: 0;
+				z-index: 1;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px 24px;
+				align-items: center;
+				padding: 12px 16px;
+				background: var(--panel);
+				border-bottom: 1px solid var(--border);
+			}
+			h1 {
+				margin: 0;
+				font-size: 16px;
+			}
+			.group {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+				color: var(--muted);
+			}
+			button {
+				font: inherit;
+				color: var(--text);
+				background: transparent;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				padding: 4px 10px;
+				cursor: pointer;
+			}
+			button[aria-pressed='true'] {
+				border-color: var(--accent);
+				background: color-mix(in srgb, var(--accent) 18%, transparent);
+			}
+			input[type='range'] {
+				width: 160px;
+			}
+			main {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(calc(var(--size) + 24px), 1fr));
+				gap: 16px;
+				padding: 16px;
+			}
+			figure {
+				margin: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+			}
+			.tile {
+				display: grid;
+				place-items: center;
+				height: calc(var(--size) + 24px);
+				padding: 12px;
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				overflow: hidden;
+			}
+			.tile img {
+				max-width: 100%;
+				max-height: var(--size);
+			}
+			figcaption {
+				color: var(--muted);
+				font-size: 12px;
+				text-align: center;
+			}
+			body[data-bg='checker'] .tile {
+				background-color: #fff;
+				background-image: conic-gradient(#d9d9d9 25%, transparent 0 50%, #d9d9d9 0 75%, transparent 0);
+				background-size: 16px 16px;
+			}
+			body[data-bg='white'] .tile {
+				background: #ffffff;
+			}
+			body[data-bg='dark'] .tile {
+				background: #1f1f1f;
+			}
+			body[data-bg='orange'] .tile {
+				background: #f59e42;
+			}
+		</style>
+	</head>
+	<body data-bg="checker">
+		<header>
+			<h1>Yums</h1>
+			<div class="group" role="group" aria-label="Background">
+				Background
+				<button data-bg="checker" aria-pressed="true">Checker</button>
+				<button data-bg="white" aria-pressed="false">White</button>
+				<button data-bg="dark" aria-pressed="false">Dark</button>
+				<button data-bg="orange" aria-pressed="false">Orange</button>
+			</div>
+			<label class="group"
+				>Size <input id="size" type="range" min="16" max="480" value="200" /> <span id="size-value">200px</span></label
+			>
+		</header>
+		<main id="grid"></main>
+		<script>
+			const sources = __SVG_SOURCES__;
+			const grid = document.getElementById('grid');
+			grid.innerHTML = Object.entries(sources)
+				.map(
+					([pose, source]) =>
+						`<figure><div class="tile"><img src="${source}" alt="${pose}"></div><figcaption>${pose}</figcaption></figure>`,
+				)
+				.join('');
+
+			const sizeInput = document.getElementById('size');
+			const sizeValue = document.getElementById('size-value');
+			const applySize = () => {
+				document.body.style.setProperty('--size', `${sizeInput.value}px`);
+				sizeValue.textContent = `${sizeInput.value}px`;
+			};
+			sizeInput.addEventListener('input', applySize);
+			applySize();
+
+			document.querySelectorAll('button[data-bg]').forEach((button) => {
+				button.addEventListener('click', () => {
+					document.body.dataset.bg = button.dataset.bg;
+					document
+						.querySelectorAll('button[data-bg]')
+						.forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+				});
+			});
+		</script>
+	</body>
+</html>

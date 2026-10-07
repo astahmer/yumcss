@@ -1,0 +1,211 @@
+{
+  "blep": {
+    "spot_swap": {
+      "search": [
+        162,
+        178,
+        14,
+        13
+      ],
+      "axis": [
+        146.7,
+        157,
+        8
+      ]
+    }
+  },
+  "bread": {
+    "spot_swap": {
+      "search": [
+        219,
+        193,
+        16,
+        10
+      ],
+      "axis": [
+        205,
+        182.5,
+        0
+      ],
+      "complete_hidden": true
+    }
+  },
+  "butt": {},
+  "chill": {
+    "spot_swap": {
+      "search": [
+        264,
+        175,
+        15,
+        12
+      ],
+      "axis": [
+        246,
+        169,
+        0
+      ],
+      "complete_hidden": true,
+      "in_front": [
+        [
+          221,
+          188
+        ]
+      ],
+      "shift": [
+        -2,
+        2
+      ]
+    }
+  },
+  "curious": {},
+  "hide": {},
+  "loaf": {
+    "spot_swap": {
+      "search": [
+        223,
+        200,
+        15,
+        12
+      ],
+      "axis": [
+        209.2,
+        190,
+        0
+      ],
+      "complete_hidden": true
+    }
+  },
+  "look-side": {},
+  "look-up": {},
+  "peek": {
+    "spot_swap": {
+      "search": [
+        188,
+        207,
+        20,
+        15
+      ],
+      "axis": [
+        168.5,
+        200,
+        0
+      ]
+    }
+  },
+  "play": {},
+  "pounce": {
+    "spot_swap": {
+      "search": [
+        259,
+        251,
+        13,
+        12
+      ],
+      "axis": [
+        259,
+        241,
+        0
+      ],
+      "mirror": false,
+      "shift": [
+        -9,
+        5
+      ],
+      "keep_top_edge": 2,
+      "restore_mouth": false,
+      "complete_hidden": true
+    }
+  },
+  "side-lay": {
+    "spot_swap": {
+      "search": [
+        261,
+        171,
+        14,
+        12
+      ],
+      "axis": [
+        252.5,
+        160,
+        0
+      ],
+      "complete_hidden": true,
+      "shift": [
+        -4,
+        4
+      ]
+    }
+  },
+  "sleepy": {},
+  "stretch": {
+    "spot_swap": {
+      "search": [
+        297,
+        249,
+        11,
+        10
+      ],
+      "axis": [
+        285.8,
+        235.8,
+        0
+      ],
+      "complete_hidden": true,
+      "in_front_outline": [
+        [
+          240,
+          241
+        ],
+        [
+          252,
+          242
+        ],
+        [
+          262,
+          243
+        ],
+        [
+          272,
+          244
+        ],
+        [
+          282,
+          245
+        ],
+        [
+          287,
+          247
+        ],
+        [
+          290,
+          268
+        ],
+        [
+          240,
+          268
+        ]
+      ],
+      "shift": [
+        0,
+        1
+      ]
+    }
+  },
+  "upside-down": {},
+  "yawn": {
+    "spot_swap": {
+      "search": [
+        174,
+        150,
+        13,
+        12
+      ],
+      "axis": [
+        161,
+        146,
+        0
+      ],
+      "complete_hidden": true
+    }
+  }
+}
