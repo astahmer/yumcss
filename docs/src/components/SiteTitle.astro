@@ -1,0 +1,35 @@
+---
+import logoMark from "../../yums/brand/logo-mark.svg";
+
+const { siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="site-title" translate="no">
+	<img src={logoMark.src} width={logoMark.width} height={logoMark.height} alt="" />
+	<span class="site-title__name">Yum<span class="site-title__css">CSS</span></span>
+</a>
+
+<style>
+	.site-title {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		min-width: 0;
+		color: var(--sl-color-white);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	img {
+		height: 1.9rem;
+		width: auto;
+	}
+	.site-title__name {
+		font-family: var(--yum-font-display);
+		font-size: 1.3rem;
+		font-weight: 750;
+		letter-spacing: -0.03em;
+	}
+	.site-title__css {
+		color: var(--yum-orange-text);
+	}
+</style>

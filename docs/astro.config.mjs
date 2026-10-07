@@ -13,8 +13,19 @@ export default defineConfig({
 			title: "YumCSS",
 			description:
 				"Typed styles checked against your design system, compiled to plain class strings and atomic CSS at build time.",
-			logo: { src: "./src/assets/logo.svg" },
 			favicon: "favicon.svg",
+			head: [
+				{
+					tag: "link",
+					attrs: { rel: "icon", href: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+				},
+				{
+					tag: "link",
+					attrs: { rel: "icon", href: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+				},
+				{ tag: "link", attrs: { rel: "apple-touch-icon", href: "/apple-touch-icon.png" } },
+			],
+			components: { SiteTitle: "./src/components/SiteTitle.astro" },
 			social: [
 				{ icon: "github", label: "YumCSS on GitHub", href: "https://github.com/astahmer/yumcss" },
 			],
