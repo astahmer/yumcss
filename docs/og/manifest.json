@@ -1,0 +1,174 @@
+{
+	"home.png": {
+		"input": "c0dc9d6b107f13750da51e9c07416ef0b0b4baf76bbecfc415d859dadba6e472",
+		"png": "3ab8b73e214e86c283c9beb5be4b025b52c10652141b953669d40496a35fd61a"
+	},
+	"home-light.png": {
+		"input": "d03085f48257544ccd3569c55fa5d1779c93cd0b7668ceb1782a22d4b8f9f992",
+		"png": "85558e1e00f694a02844e52cc0cf653d8d30057ae496f0249f69ffaccec9b604"
+	},
+	"docs/components/component-library.png": {
+		"input": "a200564247a0034ba2333764d2081e9315dedfbf22ec1942d46f7b12f58f75db",
+		"png": "27d40bb197f372f528da9c0676b849a87b5818631f7eacccd8cf3b10e0f738a0"
+	},
+	"docs/contributing/adapter-contract.png": {
+		"input": "37c697b5387357c5540d16761acfe7c99794b5f0cd877a8cca4cd63e6b4ad192",
+		"png": "9139f52762d7c15d2ebf483b16b6ac5997dbaa9364092d26f4771fd8c9afb720"
+	},
+	"docs/contributing/api-matrix.png": {
+		"input": "31ef8366823e2577307f45d2e0104be242b51bf95fe5aa22b85967f672611b0b",
+		"png": "9332c5d1d79d4088ad07892cc8212972a7e226f65ca2106f64c8ce52b370759d"
+	},
+	"docs/contributing/architecture.png": {
+		"input": "ee541d993b558f37f800b584333aa53600412bf0cc80b9724ff7fd09eddb010a",
+		"png": "562cf6aa5da4ef64609f6e4b0fa0b2f3c530485514b96139f6fe587cb1cd38ea"
+	},
+	"docs/contributing/benchmarks.png": {
+		"input": "32d8fe76077e74a57a0f97f36df331d363935162aa827d602fad1585037db72e",
+		"png": "199d999eabe1b3694011c076a2d61c21308e306cc1fdbd4b043eadab1bfd3da4"
+	},
+	"docs/contributing/implementation-status.png": {
+		"input": "52072e886416e982ffc3903bc54994f492413687b6d4be78b8bd575729ccc8fe",
+		"png": "ea82bb8f4f7801f7421a6e415e48aff4269fe351c4611ea4ef40b2109c79d2d7"
+	},
+	"docs/contributing/limitations.png": {
+		"input": "88c3f6fe442abf1eb9509ae6164f844ff1c07d478d2d2e5cc4e57d4eccf97664",
+		"png": "4c177e6a8b8b8391a826f83621a592c9c5f44dafa8411485c0b999307bf94753"
+	},
+	"docs/contributing/size.png": {
+		"input": "ee9113330e8f813476d0405ea03dcba9be40fc0b0b5afd7f95959c9f20d04070",
+		"png": "d9cc6ba06a15e2148d90d83f401f4c3b73c8c2ba2c0755fa9f8334c9cd4577e7"
+	},
+	"docs/contributing/testing.png": {
+		"input": "07b2abce8692f6abf078f311fd7db37257e37d2410e09babbb562f0ff0c8ec41",
+		"png": "306c2af80adf38672f95f86288e7edc77ffad285db5116f9af96da1d2b6ea8b9"
+	},
+	"docs/css/composition.png": {
+		"input": "e4c4aac798437025f0e95f1e7b1441a295c59733974ab1ca93e459588767fd1b",
+		"png": "f7dad102faacc1758576d6e5fcedd78a4655f27ed7fdd9ab9575ea914a501cdc"
+	},
+	"docs/css/conditions.png": {
+		"input": "913c83f5b3529d4f995264e6f79c4a4923a3aa2f75f01b23efdc13172b981ffb",
+		"png": "be5cb341177a4cc27c9b42c6229cfc718493ab35632d62f99748c4bc23cf85c1"
+	},
+	"docs/css/dynamic-styles.png": {
+		"input": "618becd24c8c88196c474dbb758815366b6bef78e63d30a6f66869f2472f511f",
+		"png": "f612b4877e9595942762f2af184217799b7d3a502169c5230bd600f5e17b69b0"
+	},
+	"docs/css/escape-hatches.png": {
+		"input": "ff3cfe757a3fa2469b66fb2c505810e8e6d32dcb845ec0176623f13ea5369ddd",
+		"png": "e5cdec4fe63d6594100dd48221f92e6d78b4d152f53672427d718d64e2a3cf4b"
+	},
+	"docs/css/extraction.png": {
+		"input": "2ff4ec519b608ca5ad14b3ce21ccde8821d9890ab33256d7d2cd247e434eb47f",
+		"png": "741a9de10a68f08c61b50f60d9134d042486ed641605b34e683f0db946a8c72e"
+	},
+	"docs/css/overview.png": {
+		"input": "b72b7807d6f6c02b6c266133630c983efe2aed527ea25aad023fd6674c534fb1",
+		"png": "9c367df150029e201a290a109bb8388108e7e09285f3e662ee0a6fc97973d88f"
+	},
+	"docs/design-system/built-in-presets.png": {
+		"input": "8d51aeb7fc05ef5163510fce0f1887ea6e922de7d5b17aaadccb9b76e4159a4d",
+		"png": "722ad934657b6751568e8acf8773c2318142c3085411d31d7c610911ffa11b12"
+	},
+	"docs/design-system/design-css.png": {
+		"input": "c68ce37e543a54f390901e0bc648ef2b2446ca07fe77982958bf7cf0ac073b2c",
+		"png": "26ddf6c5339cdcca1808acf56d64725d7c45070f2318679017d60438c1e2f2c9"
+	},
+	"docs/design-system/design-tokens.png": {
+		"input": "dce2313994c77420c696dbe291cfb7ee82b83d349246c71ba26e924909465fc0",
+		"png": "ed23d1054e66e7c8fb015f3079b07b44381b2e5dc74741817b802c9d6606120c"
+	},
+	"docs/design-system/presets.png": {
+		"input": "71f0c2f0946518b538684704ba4238beca17e357a159ef8a3d81660099dd0fe2",
+		"png": "b73c643649c2f59a8e8a0a09f975f6dfbc4cd130525871fbe98520d3b8719e42"
+	},
+	"docs/design-system/themes.png": {
+		"input": "9fd85fbd0820ac63f737696b53bc5668ea388022265ac2dc09f06c52cc2850e8",
+		"png": "85937824a79a1e25bf982a713f0e3b0a298f039f680a6d16d07756c3040b766e"
+	},
+	"docs/guides/bundlers.png": {
+		"input": "fca20d34a5efb53c1b550d817886f121e06e9158bcae0220331773f948d7c879",
+		"png": "43932f519ac84f614fd7e12889717886eda262cc96e41cf747ce638c4b4b3360"
+	},
+	"docs/guides/platforms.png": {
+		"input": "b5b3653669d059bb99b6077f1017b22e8850cadccd1025be8c1926d33050476d",
+		"png": "4bab1300165f978f344b51007515fa16e3421577ad7d15fc17ff0c97d236bf80"
+	},
+	"docs/guides/ssr.png": {
+		"input": "5771ecb704b6c6b4f929541a79f3d89c225f42a2784d768a71725cadc1a1b4e0",
+		"png": "6ac1d0ac545bbe9f5da515f7e647eb3f8cf425dc7f63ba16e84885f86e34e1f3"
+	},
+	"docs/migrate/overview.png": {
+		"input": "855c86b1a2a421c35704199bfa358cabba658a666fa50fd1a8f46e4ca155da3e",
+		"png": "d4ca50fc2c5a54f114b7f5c853f9de03d2b665aa08f5142f2d6ea1ffc2ba7ce7"
+	},
+	"docs/reference/api.png": {
+		"input": "d6646865c18b50d8c339deed7de002d245632903517aa433b52978f9e2fdae54",
+		"png": "3e26ebf3300a4706f2d5a6b6177b68e87fcdb440d860e610bac14eb7cb01779f"
+	},
+	"docs/reference/class-name-strategies.png": {
+		"input": "0862fed155fd1e10ea567c5ac231487e11ba73af3b5c4db51d35a827b4d14a4d",
+		"png": "863646727b4b6471e805cfc9594f5d4b6749fa45f77dba57ea7c6f078db80543"
+	},
+	"docs/reference/cli.png": {
+		"input": "bc4a4612875505fab24750e2fb78f644812baa96bcb6425599a5fd261237ed9e",
+		"png": "b51f35e622380e2108453e2108c59ffadab68c58b2a811daaaf8f5feed0910ed"
+	},
+	"docs/reference/vite.png": {
+		"input": "134f4e0f6e3ad4b80ad5f1562c1762fc78682a123b4aba827da5ee4c73c18893",
+		"png": "f637e345f09a80154e6d57412f12e6b9a31fdfe83a65595080925fd3b19aef75"
+	},
+	"docs/start/quick-start.png": {
+		"input": "89b11580acf8bc2bbbd3783679955c3406a979414f409ab13fc25ee5e510569c",
+		"png": "3100ba5bfcc2ad50f521c6d4cfd4d01ac98753e049af116ae537317c52e65102"
+	},
+	"docs/start/why.png": {
+		"input": "985a1d4bd37ab158bdaad6ac35a200d3d7f92022841c4da7286e9fdce7c49d45",
+		"png": "76e2976201b5806dd7bc40cc0275834f808aed70be955f2c4f64f1654b9306a7"
+	},
+	"docs/tailwind/migrating-class-strings.png": {
+		"input": "41302bbfe7201e614adf1817cc3023124d8d22605cc01c287a8580d8c860213f",
+		"png": "4dfd2b587016e057aeee2ac3647b98c7497766f6d1b29fba96f69fd7bfae977a"
+	},
+	"docs/tailwind/overview.png": {
+		"input": "791c77da71fbe9f9bdb80dfd9b8fcf9c93af8ba278a537c5f59dbeae4a85978b",
+		"png": "afc1d5b407ab84cb5f68841874466d042d9288001b8774469ce5823c66f801ac"
+	},
+	"docs/tailwind/tailwind-classes.png": {
+		"input": "6be3ef0d7f5ab879387ec455a5c6a15ed5eb183a4c15fd6dc9f013aa0a7865c6",
+		"png": "d0f598fbc181bc3ee276c2ef6a236f2ea889bce310c5286d821f9bd2f1ced17d"
+	},
+	"docs/tailwind/tw.png": {
+		"input": "68326a87b33f4fca558bbf424286b3c2e00538f57653c62205e4a7e0a5c38bb9",
+		"png": "2fa246af1641eaedc8360039839470db956b7a80fab23c115936644a66707884"
+	},
+	"docs/tools/analyzer.png": {
+		"input": "1f80369a5e16300fbe7872d09076724f0f1155c195e3673e9af86ccf8a283ad5",
+		"png": "9c5caa8c0c031e0f2f8179ed3089a22c72f3bb1d9fed66753ec2c7e8e84419ea"
+	},
+	"docs/tools/devtools.png": {
+		"input": "97335474c21e9278023912dabbb6f186022f6440385c4ae29a2696d67d9c0e4f",
+		"png": "85be45cc332359de6eed841301de8012fe426584a5c8d4b82413b6c5e9669a6f"
+	},
+	"docs/tools/inspector.png": {
+		"input": "d13f18fd3ba8d95988fc587d809bd1c7362ccf3c785d7969485a2d7fc9422ffe",
+		"png": "1b0107131b5df86e14a0eb88238f9dde63cac55d103dc7dea25cc6c31476c5e8"
+	},
+	"docs/tools/lint.png": {
+		"input": "57c1ea0753ae5f15e8382ce5222f725a579e26403b2238eabd638d12757ed179",
+		"png": "3e4fd590b4fd842443f0e2345db8a7370047214a81994cf9fad3f42d216435a8"
+	},
+	"docs/tools/mcp.png": {
+		"input": "03f8c872e1a5074561116da2f3e34ed94fbbdd10fd770e743bc66dc64afbe5fe",
+		"png": "91842c22b8d30b4323d0be05652bcf35eece2f5c5c2febb0fd60798877507b91"
+	},
+	"docs/tools/migration-preview.png": {
+		"input": "845baa1331e7723795222c545a6e68d52813df66049b802fbdb47044947305d2",
+		"png": "2011cffbf316ebf5617bd466b4e483c8c66ceac875c48adeca9e65875b03f202"
+	},
+	"docs/tools/playground.png": {
+		"input": "d3e2f1d43975ccb989acd86f1f2782eb3dab9cdbc1b00f41884b1bbcd8d7a864",
+		"png": "a89fb2623791f2b6035fe01e78c1e6cadcc63778b9f9f538ff2e2378078a6691"
+	}
+}

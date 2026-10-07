@@ -8,7 +8,9 @@
 		"check": "astro check",
 		"typecheck": "astro check",
 		"preview": "astro preview",
-		"screenshots": "node scripts/capture-screenshots.mjs"
+		"screenshots": "node scripts/capture-screenshots.mjs",
+		"og": "node og/generate.mjs",
+		"og:check": "node og/check.mjs"
 	},
 	"dependencies": {
 		"@astrojs/starlight": "0.42.0",

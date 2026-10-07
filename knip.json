@@ -249,7 +249,7 @@
 			]
 		},
 		"docs": {
-			"entry": ["astro.config.mjs", "src/content.config.ts!"],
+			"entry": ["astro.config.mjs", "src/content.config.ts!", "src/route-data.ts!"],
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
 		},
 		"apps/inspector": {

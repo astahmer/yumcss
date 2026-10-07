@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>YumCSS OG Preview</title>
+		<style>
+			:root {
+				--page: #ecebe8;
+				--text: #1f1f1f;
+				--muted: #676767;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				padding: 32px 16px 64px;
+				background: var(--page);
+				color: var(--text);
+				font:
+					14px/1.45 system-ui,
+					sans-serif;
+			}
+			main {
+				max-width: 1260px;
+				margin: 0 auto;
+				display: grid;
+				gap: 40px;
+			}
+			h1 {
+				margin: 0;
+				font-size: 22px;
+			}
+			h2 {
+				margin: 0 0 14px;
+				font-size: 13px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+			.full img {
+				display: block;
+				width: 1200px;
+				max-width: 100%;
+				height: auto;
+				outline: 1px solid rgb(0 0 0 / 0.12);
+			}
+			.feeds {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 24px;
+				align-items: flex-start;
+			}
+			.feed figcaption {
+				margin-bottom: 8px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+			/* Approximate embed widths as each client renders 1200×630 cards in a desktop feed. */
+			.x {
+				width: 506px;
+				border: 1px solid #cfd9de;
+				border-radius: 16px;
+				overflow: hidden;
+				background: #fff;
+			}
+			.x img,
+			.linkedin img,
+			.discord img,
+			.slack img {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+			.x p {
+				margin: 0;
+				padding: 6px 12px 10px;
+				color: #536471;
+				font-size: 13px;
+			}
+			.linkedin {
+				width: 552px;
+				background: #fff;
+				border: 1px solid #e0dfdc;
+			}
+			.linkedin p {
+				margin: 0;
+				padding: 8px 12px;
+				font-weight: 600;
+			}
+			.slack {
+				width: 360px;
+				padding-left: 12px;
+				border-left: 4px solid #dddddd;
+			}
+			.slack strong {
+				display: block;
+				margin-bottom: 6px;
+				color: #1264a3;
+			}
+			.slack img {
+				border-radius: 8px;
+			}
+			.discord {
+				width: 432px;
+				padding: 16px;
+				border-left: 4px solid #f59e42;
+				border-radius: 4px;
+				background: #2b2d31;
+				color: #dbdee1;
+			}
+			.discord strong {
+				display: block;
+				margin-bottom: 4px;
+				color: #00a8fc;
+			}
+			.discord span {
+				display: block;
+				margin-bottom: 12px;
+				font-size: 13px;
+			}
+			.discord img {
+				border-radius: 4px;
+			}
+			.docs {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+				gap: 16px;
+			}
+			.docs img {
+				display: block;
+				width: 100%;
+				height: auto;
+				border-radius: 6px;
+			}
+			.docs figcaption {
+				margin-top: 4px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+		</style>
+	</head>
+	<body>
+		<main id="preview">
+			<h1>YumCSS Open Graph cards</h1>
+		</main>
+		<script>
+			const cards = [
+				"../public/og/home.png",
+				"../public/og/home-light.png",
+				"../public/og/docs/components/component-library.png",
+				"../public/og/docs/contributing/adapter-contract.png",
+				"../public/og/docs/contributing/api-matrix.png",
+				"../public/og/docs/contributing/architecture.png",
+				"../public/og/docs/contributing/benchmarks.png",
+				"../public/og/docs/contributing/implementation-status.png",
+				"../public/og/docs/contributing/limitations.png",
+				"../public/og/docs/contributing/size.png",
+				"../public/og/docs/contributing/testing.png",
+				"../public/og/docs/css/composition.png",
+				"../public/og/docs/css/conditions.png",
+				"../public/og/docs/css/dynamic-styles.png",
+				"../public/og/docs/css/escape-hatches.png",
+				"../public/og/docs/css/extraction.png",
+				"../public/og/docs/css/overview.png",
+				"../public/og/docs/design-system/built-in-presets.png",
+				"../public/og/docs/design-system/design-css.png",
+				"../public/og/docs/design-system/design-tokens.png",
+				"../public/og/docs/design-system/presets.png",
+				"../public/og/docs/design-system/themes.png",
+				"../public/og/docs/guides/bundlers.png",
+				"../public/og/docs/guides/platforms.png",
+				"../public/og/docs/guides/ssr.png",
+				"../public/og/docs/migrate/overview.png",
+				"../public/og/docs/reference/api.png",
+				"../public/og/docs/reference/class-name-strategies.png",
+				"../public/og/docs/reference/cli.png",
+				"../public/og/docs/reference/vite.png",
+				"../public/og/docs/start/quick-start.png",
+				"../public/og/docs/start/why.png",
+				"../public/og/docs/tailwind/migrating-class-strings.png",
+				"../public/og/docs/tailwind/overview.png",
+				"../public/og/docs/tailwind/tailwind-classes.png",
+				"../public/og/docs/tailwind/tw.png",
+				"../public/og/docs/tools/analyzer.png",
+				"../public/og/docs/tools/devtools.png",
+				"../public/og/docs/tools/inspector.png",
+				"../public/og/docs/tools/lint.png",
+				"../public/og/docs/tools/mcp.png",
+				"../public/og/docs/tools/migration-preview.png",
+				"../public/og/docs/tools/playground.png",
+			];
+			const main = document.getElementById("preview");
+			const homes = cards.filter((card) => !card.includes("/docs/"));
+			const docs = cards.filter((card) => card.includes("/docs/"));
+			const title = "YumCSS";
+			const description =
+				"Typed styles checked against your design system, compiled to plain class strings and atomic CSS at build time.";
+
+			for (const card of homes) {
+				const name = card.split("/").pop();
+				main.insertAdjacentHTML(
+					"beforeend",
+					`<section>
+						<h2>${name} · full size 1200×630</h2>
+						<div class="full"><img src="${card}" alt=""></div>
+						<h2 style="margin-top:20px">${name} · in social feeds</h2>
+						<div class="feeds">
+							<figure class="feed"><figcaption>X / Twitter (summary_large_image)</figcaption><div class="x"><img src="${card}" alt=""><p>yumcss-docs.astahmer.workers.dev</p></div></figure>
+							<figure class="feed"><figcaption>LinkedIn</figcaption><div class="linkedin"><img src="${card}" alt=""><p>${title}</p></div></figure>
+							<figure class="feed"><figcaption>Slack unfurl</figcaption><div class="slack"><strong>${title}</strong><img src="${card}" alt=""></div></figure>
+							<figure class="feed"><figcaption>Discord embed</figcaption><div class="discord"><strong>${title}</strong><span>${description}</span><img src="${card}" alt=""></div></figure>
+						</div>
+					</section>`,
+				);
+			}
+
+			main.insertAdjacentHTML(
+				"beforeend",
+				`<section><h2>Documentation pages · ${docs.length} cards, generated from title, sidebar section and description</h2><div class="docs">${docs
+					.map(
+						(card) =>
+							`<figure style="margin:0"><img src="${card}" alt="" loading="lazy"><figcaption>${card.split("/docs/")[1]}</figcaption></figure>`,
+					)
+					.join("")}</div></section>`,
+			);
+		</script>
+	</body>
+</html>

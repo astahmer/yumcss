@@ -59,6 +59,9 @@ jobs:
       - name: Generated artifact freshness
         run: pnpm run generated:check
 
+      - name: Open Graph card freshness
+        run: pnpm --filter yumcss-docs run og:check
+
       - name: Production ownership and pivot gates
         run: >-
           pnpm run surface:check &&
