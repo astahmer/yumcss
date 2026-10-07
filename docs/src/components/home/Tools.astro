@@ -1,0 +1,298 @@
+---
+import { Image } from "astro:assets";
+import pounce from "../../../yums/svg/pounce.svg";
+import compiler from "../../assets/screenshots/compiler-preview.png";
+import devtools from "../../assets/screenshots/devtools-tokens.png";
+import build from "../../assets/screenshots/inspector-build.png";
+import inspector from "../../assets/screenshots/inspector-tokens.png";
+import preview from "../../assets/screenshots/migration-preview.png";
+import playground from "../../assets/screenshots/playground-dss.png";
+import migration from "../../assets/screenshots/playground-migrate.png";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// crop = [x, y, width] as fractions of the screenshot: the region of real UI shown in the 16:9 stage.
+const tools = [
+	{ id: "inspector", title: "Inspector", text: "Your token catalog, usage, dead tokens, and relationships.", image: inspector, crop: [0.04, 0.02, 0.86], href: "/tools/inspector/" },
+	{ id: "build", title: "Build report", text: "What folded at build time, what ships, and what it costs.", image: build, crop: [0.045, 0.02, 0.9], href: "/tools/inspector/#build-report" },
+	{ id: "playground", title: "Playground", text: "Every API, every class-name strategy, live in the browser.", image: playground, crop: [0, 0.03, 0.75], href: "/tools/playground/" },
+	{ id: "devtools", title: "Vite DevTools", text: "Browser styles, project tokens, and migration evidence in the Vite dock.", image: devtools, crop: [0.02, 0.15, 0.8], href: "/tools/devtools/" },
+	{ id: "migration", title: "Migration lab", text: "Real adapters from 30+ styling libraries, with residual reports.", image: migration, crop: [0, 0.02, 0.7], href: "/migrate/overview/" },
+	{ id: "preview", title: "Migration Preview", text: "Try a migration on your own repo. Read-only, never writes.", image: preview, crop: [0, 0, 0.82], href: "/tools/migration-preview/" },
+	{ id: "compiler", title: "Compiler Preview", text: "Each file before and after your real Vite pipeline.", image: compiler, crop: [0.09, 0.02, 0.82], href: "/tools/migration-preview/#compiler-preview" },
+];
+---
+
+<section class="tools" aria-labelledby="tools-title" data-tools>
+	<header class="tools__header">
+		<h2 id="tools-title">Tools that show their work</h2>
+		<p>See what YumCSS checked, compiled, and shipped: in the browser, in your Vite dock, and on your own repo.</p>
+	</header>
+
+	<div class="tools__stage">
+		<div class="tools__ledge">
+			<img class="tools__pounce" src={pounce.src} width={pounce.width} height={pounce.height} alt="" />
+			<div class="tools__tabs" role="tablist" aria-label="Tools">
+				{
+					tools.map((tool, index) => (
+						<button
+							class="tools__tab"
+							type="button"
+							role="tab"
+							id={`tool-tab-${tool.id}`}
+							aria-controls={`tool-panel-${tool.id}`}
+							aria-selected={index === 0 ? "true" : "false"}
+							tabindex={index === 0 ? 0 : -1}
+						>
+							{tool.title}
+						</button>
+					))
+				}
+			</div>
+		</div>
+
+		<div class="tools__panel-frame">
+			{
+				tools.map((tool, index) => (
+					<figure
+						class="tools__panel"
+						role="tabpanel"
+						id={`tool-panel-${tool.id}`}
+						aria-labelledby={`tool-tab-${tool.id}`}
+						hidden={index !== 0}
+					>
+						<div
+							class="tools__shot"
+							style={`--crop-x: ${tool.crop[0]}; --crop-y: ${tool.crop[1]}; --crop-w: ${tool.crop[2]}; --shot-ratio: ${tool.image.height / tool.image.width};`}
+						>
+							<Image
+								src={tool.image}
+								alt={`${tool.title} screenshot`}
+								widths={[1440, tool.image.width]}
+								sizes="(min-width: 64rem) 1700px, 160vw"
+								loading={index === 0 ? "eager" : "lazy"}
+							/>
+						</div>
+						<figcaption>
+							<div>
+								<strong>{tool.title}</strong>
+								<span>{tool.text}</span>
+							</div>
+							<a href={`${base}${tool.href}`}>
+								{tool.title} docs <span aria-hidden="true">→</span>
+							</a>
+						</figcaption>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	for (const root of document.querySelectorAll<HTMLElement>("[data-tools]")) {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+		const select = (next: HTMLButtonElement) => {
+			for (const tab of tabs) {
+				const selected = tab === next;
+				tab.setAttribute("aria-selected", String(selected));
+				tab.tabIndex = selected ? 0 : -1;
+				root.querySelector<HTMLElement>(`#${tab.getAttribute("aria-controls")}`)!.hidden = !selected;
+			}
+		};
+		for (const [index, tab] of tabs.entries()) {
+			tab.addEventListener("click", () => select(tab));
+			tab.addEventListener("keydown", (event) => {
+				const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+				if (step === 0) return;
+				event.preventDefault();
+				const next = tabs[(index + step + tabs.length) % tabs.length]!;
+				select(next);
+				next.focus();
+			});
+		}
+	}
+</script>
+
+<style>
+	.tools {
+		padding-block: clamp(3.5rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem);
+	}
+	.tools__header {
+		max-width: 40rem;
+	}
+	h2 {
+		margin: 0;
+		font-family: var(--yum-font-display);
+		font-size: clamp(2rem, 4.4vw, 3.3rem);
+		font-weight: 760;
+		line-height: 1.02;
+		letter-spacing: -0.04em;
+		color: var(--home-heading);
+	}
+	.tools__header p {
+		margin: 1rem 0 0;
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: var(--home-muted);
+	}
+
+	.tools__stage {
+		/* pounce.svg is 367×317 with an 8.5% transparent bottom margin. */
+		--pounce-width: clamp(7.5rem, 15vw, 11.5rem);
+		--pounce-visible-height: calc(var(--pounce-width) * 317 / 367 * 0.915);
+		--paw-overlap: 0.55rem;
+		margin-top: 1.5rem;
+	}
+	.tools__ledge {
+		display: flex;
+		align-items: flex-end;
+		gap: 1.5rem;
+		min-height: calc(var(--pounce-visible-height) - var(--paw-overlap));
+	}
+	.tools__pounce {
+		flex: none;
+		position: relative;
+		z-index: 1;
+		width: var(--pounce-width);
+		height: auto;
+		margin-left: clamp(0.5rem, 3%, 2.5rem);
+		margin-bottom: calc(-1 * var(--paw-overlap));
+		/* Drop the transparent bottom margin so the paws land on the panel edge. */
+		translate: 0 8.5%;
+		pointer-events: none;
+	}
+	.tools__tabs {
+		display: flex;
+		flex: 1;
+		justify-content: flex-end;
+		gap: 0.25rem;
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+	.tools__tab {
+		flex: none;
+		padding: 0.6rem 0.9rem 0.7rem;
+		border: 0;
+		border-bottom: 2px solid transparent;
+		background: transparent;
+		color: var(--home-muted);
+		font: inherit;
+		font-family: var(--yum-font-display);
+		font-size: 0.98rem;
+		font-weight: 650;
+		cursor: pointer;
+		transition:
+			color 150ms,
+			border-color 150ms;
+	}
+	.tools__tab:hover {
+		color: var(--home-heading);
+	}
+	.tools__tab[aria-selected="true"] {
+		color: var(--home-accent-text);
+		border-bottom-color: var(--yum-orange);
+	}
+
+	.tools__panel-frame {
+		overflow: hidden;
+		border: 1px solid var(--ink-line-strong);
+		border-radius: 18px;
+		background: var(--ink-sunken);
+		box-shadow: var(--home-shadow);
+	}
+	.tools__panel {
+		margin: 0;
+	}
+	.tools__panel:not([hidden]) {
+		animation: tool-in 260ms ease-out;
+	}
+	@keyframes tool-in {
+		from {
+			opacity: 0;
+		}
+	}
+	.tools__shot {
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+	}
+	.tools__shot :global(img) {
+		display: block;
+		width: calc(100% / var(--crop-w));
+		max-width: none;
+		height: auto;
+		margin-left: calc(-100% * var(--crop-x) / var(--crop-w));
+		/* Vertical margins resolve against width, hence the screenshot ratio. */
+		margin-top: calc(-100% * var(--crop-y) / var(--crop-w) * var(--shot-ratio));
+	}
+	.tools__panel figcaption {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem 2rem;
+		padding: 1rem 1.25rem;
+		border-top: 1px solid var(--ink-line);
+		background: var(--ink-surface);
+	}
+	.tools__panel figcaption div {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.25rem 0.75rem;
+	}
+	.tools__panel figcaption strong {
+		font-family: var(--yum-font-display);
+		font-size: 1.05rem;
+		color: var(--ink-text);
+	}
+	.tools__panel figcaption span {
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.tools__panel figcaption a {
+		font-weight: 650;
+		color: var(--yum-orange);
+		text-decoration: none;
+	}
+	.tools__panel figcaption a:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	@media (max-width: 52rem) {
+		.tools__ledge {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 1rem;
+		}
+		.tools__tabs {
+			order: -1;
+			justify-content: flex-start;
+		}
+		.tools__tab {
+			padding: 0.45rem 0.85rem;
+			border: 1px solid var(--home-line-strong);
+			border-radius: 999px;
+		}
+		.tools__tab[aria-selected="true"] {
+			border-color: var(--yum-orange);
+		}
+		/* Narrow screens zoom further into the same region so the real UI stays legible. */
+		.tools__shot {
+			--crop-w-zoomed: calc(var(--crop-w) * 0.62);
+			aspect-ratio: 4 / 3;
+		}
+		.tools__shot :global(img) {
+			width: calc(100% / var(--crop-w-zoomed));
+			margin-left: calc(-100% * var(--crop-x) / var(--crop-w-zoomed));
+			margin-top: calc(-100% * var(--crop-y) / var(--crop-w-zoomed) * var(--shot-ratio));
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.tools__panel:not([hidden]) {
+			animation: none;
+		}
+	}
+</style>

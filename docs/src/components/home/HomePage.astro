@@ -1,0 +1,129 @@
+---
+import Closing from "./Closing.astro";
+import Facts from "./Facts.astro";
+import Hero from "./Hero.astro";
+import Outputs from "./Outputs.astro";
+import Paths from "./Paths.astro";
+import Tools from "./Tools.astro";
+---
+
+<div class="yum-home not-content">
+	<Hero />
+	<Facts />
+	<Outputs />
+	<Paths />
+	<Tools />
+	<Closing />
+</div>
+
+<style is:global>
+	.yum-home {
+		/* Page: follows the docs theme. */
+		--home-heading: var(--yum-cream);
+		--home-text: rgb(254 247 237 / 0.9);
+		--home-muted: rgb(254 247 237 / 0.72);
+		--home-faint: rgb(254 247 237 / 0.52);
+		--home-line: rgb(254 247 237 / 0.09);
+		--home-line-strong: rgb(254 247 237 / 0.15);
+		--home-surface-sunken: #1a1918;
+		--home-accent-text: var(--yum-orange);
+		--home-accent-display: var(--yum-orange);
+		--home-hover: rgb(254 247 237 / 0.035);
+		--home-shadow: 0 40px 80px -48px rgb(0 0 0 / 0.9);
+
+		/* Band: the inverted section ("Pick your output"). */
+		--band-bg: var(--yum-cream);
+		--band-heading: var(--yum-charcoal);
+		--band-text: rgb(31 31 31 / 0.8);
+		--band-muted: rgb(31 31 31 / 0.66);
+		--band-accent: #a34c06;
+		--band-chip: rgb(31 31 31 / 0.07);
+		--band-card: var(--yum-charcoal);
+		--band-card-border: transparent;
+
+		/* Ink: product surfaces (editor, switcher, screenshots) stay dark in both themes. */
+		--ink-surface: #262422;
+		--ink-sunken: #1a1918;
+		--ink-text: rgb(254 247 237 / 0.9);
+		--ink-muted: rgb(254 247 237 / 0.72);
+		--ink-faint: rgb(254 247 237 / 0.5);
+		--ink-line: rgb(254 247 237 / 0.09);
+		--ink-line-strong: rgb(254 247 237 / 0.15);
+
+		--code-keyword: #ef8f7d;
+		--code-function: #f3d6a6;
+		--code-string: #c9d1a0;
+		--code-tag: #ef8f7d;
+		--code-property: rgb(254 247 237 / 0.8);
+
+		color: var(--home-text);
+	}
+
+	:root[data-theme="light"] .yum-home {
+		--home-heading: var(--yum-charcoal);
+		--home-text: rgb(31 31 31 / 0.88);
+		--home-muted: rgb(31 31 31 / 0.72);
+		--home-faint: rgb(31 31 31 / 0.55);
+		--home-line: rgb(31 31 31 / 0.1);
+		--home-line-strong: rgb(31 31 31 / 0.16);
+		--home-surface-sunken: #f6ead9;
+		--home-accent-text: #a8520a;
+		--home-accent-display: #d4680a;
+		--home-hover: rgb(31 31 31 / 0.035);
+		--home-shadow: 0 36px 70px -44px rgb(31 31 31 / 0.55);
+
+		--band-bg: var(--yum-charcoal);
+		--band-heading: var(--yum-cream);
+		--band-text: rgb(254 247 237 / 0.88);
+		--band-muted: rgb(254 247 237 / 0.7);
+		--band-accent: var(--yum-orange);
+		--band-chip: rgb(254 247 237 / 0.09);
+		--band-card: #2b2826;
+		--band-card-border: rgb(254 247 237 / 0.1);
+	}
+
+	.yum-home .home-kicker {
+		margin: 0;
+		font-family: var(--sl-font-mono);
+		font-size: 0.78rem;
+		font-weight: 500;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--home-accent-text);
+	}
+	.yum-home .home-kicker--band {
+		color: var(--band-accent);
+	}
+
+	.yum-home .home-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.75rem 1.25rem;
+		border: 1px solid var(--home-line-strong);
+		border-radius: 12px;
+		color: var(--home-heading);
+		font-weight: 650;
+		text-decoration: none;
+		transition:
+			background-color 160ms,
+			border-color 160ms;
+	}
+	.yum-home .home-button:hover {
+		border-color: var(--home-faint);
+		background: var(--home-hover);
+	}
+	.yum-home .home-button--primary {
+		border-color: transparent;
+		background: var(--yum-orange);
+		color: var(--yum-charcoal);
+	}
+	.yum-home .home-button--primary:hover {
+		border-color: transparent;
+		background: #f7b05f;
+	}
+	.yum-home :focus-visible {
+		outline: 2px solid var(--home-accent-display);
+		outline-offset: 3px;
+	}
+</style>

@@ -1,0 +1,77 @@
+---
+const facts = [
+	{
+		title: "Tokens are types",
+		text: "<code>color: \"#2563eb\"</code> is a type error when your preset says colors are tokens. Typos, off-palette values, and unknown breakpoints never reach review.",
+	},
+	{
+		title: "Zero runtime for static styles",
+		text: "Literal calls compile to strings. Variants from unions and ternaries are generated ahead of time. Truly dynamic values use inline CSS variables.",
+	},
+	{
+		title: "One atomic stylesheet",
+		text: "Each declaration becomes one shared rule, so CSS grows with your design system, not with your component count. Split it per route if you need to.",
+	},
+];
+---
+
+<section class="facts" aria-labelledby="facts-title">
+	<h2 id="facts-title" class="home-kicker">Why teams pick YumCSS</h2>
+	<div class="facts__grid">
+		{
+			facts.map((fact) => (
+				<div class="fact">
+					<h3>{fact.title}</h3>
+					<p set:html={fact.text} />
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.facts {
+		padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(3.5rem, 6vw, 5rem);
+	}
+	.facts__grid {
+		display: grid;
+		gap: 2rem;
+		margin-top: 1.75rem;
+	}
+	@media (min-width: 52rem) {
+		.facts__grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0;
+		}
+		.fact {
+			padding-inline: 2rem;
+			border-left: 1px solid var(--home-line);
+		}
+		.fact:first-child {
+			padding-left: 0;
+			border-left: 0;
+		}
+	}
+	h3 {
+		margin: 0;
+		font-family: var(--yum-font-display);
+		font-size: 1.3rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--home-heading);
+	}
+	p {
+		margin: 0.6rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: var(--home-muted);
+	}
+	p :global(code) {
+		padding: 0.1em 0.35em;
+		border-radius: 5px;
+		background: var(--home-line);
+		font-family: var(--sl-font-mono);
+		font-size: 0.84em;
+		color: var(--home-heading);
+	}
+</style>

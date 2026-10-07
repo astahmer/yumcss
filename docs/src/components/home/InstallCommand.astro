@@ -1,0 +1,57 @@
+---
+const command = "pnpm add yumcss";
+---
+
+<div class="install">
+	<code><span class="install__prompt" aria-hidden="true">$</span> {command}</code>
+	<button class="install__copy" type="button" data-copy={command} aria-label="Copy install command">Copy</button>
+</div>
+
+<script>
+	for (const button of document.querySelectorAll<HTMLButtonElement>(".install__copy")) {
+		button.addEventListener("click", async () => {
+			await navigator.clipboard.writeText(button.dataset.copy ?? "");
+			button.textContent = "Copied";
+			window.setTimeout(() => (button.textContent = "Copy"), 1600);
+		});
+	}
+</script>
+
+<style>
+	.install {
+		display: inline-flex;
+		align-items: center;
+		gap: 1.25rem;
+		margin-top: 1.5rem;
+		padding: 0.45rem 0.45rem 0.45rem 1rem;
+		border: 1px solid var(--home-line-strong);
+		border-radius: 12px;
+		background: var(--home-surface-sunken);
+	}
+	code {
+		font-family: var(--sl-font-mono);
+		font-size: 0.88rem;
+		color: var(--home-heading);
+		background: none;
+		border: 0;
+		padding: 0;
+	}
+	.install__prompt {
+		color: var(--home-accent-text);
+		user-select: none;
+	}
+	.install__copy {
+		padding: 0.35rem 0.75rem;
+		border: 0;
+		border-radius: 8px;
+		background: var(--home-line);
+		color: var(--home-text);
+		font: inherit;
+		font-size: 0.78rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	.install__copy:hover {
+		background: var(--home-line-strong);
+	}
+</style>

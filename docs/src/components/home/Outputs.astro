@@ -1,0 +1,368 @@
+---
+import curious from "../../../yums/svg/curious.svg";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// Real class names from the playground's adapters (apps/playground/src/lib/class-name-adapters.ts)
+// and its example preset, for the css.class() call shown in the card.
+const strategies = [
+	{
+		id: "atomic",
+		label: "YumCSS atomic",
+		className: "1f29p40 14edf0f d660fb 1qg7yvw 16zvvsi 5ekf4e",
+		setup: "createCss(preset)",
+		owner: "YumCSS",
+	},
+	{
+		id: "named",
+		label: "Named atoms",
+		className:
+			"pw-display-flex pw-borderRadius-xl pw-backgroundColor-$white pw-color-$gray-900 pw-_hover__backgroundColor-$gray-50 pw-borderRadius__md-2xl",
+		setup: 'createNamedAtomsStrategy() · "yumcss/css/named"',
+		owner: "YumCSS",
+	},
+	{
+		id: "tailwind",
+		label: "Tailwind",
+		className: "flex rounded-xl bg-white text-gray-900 hover:bg-gray-50 md:rounded-2xl",
+		setup: 'createTwAdapter() · "yumcss/tw"',
+		owner: "Tailwind",
+	},
+	{
+		id: "stylex",
+		label: "StyleX",
+		className: "x78zum5 x1fnads4 x18a6pyx x1k0sdcu xmjdvcd x1n602vg",
+		setup: 'createStyleXAdapter() · "yumcss/css/stylex"',
+		owner: "YumCSS",
+	},
+	{
+		id: "panda",
+		label: "Panda",
+		className:
+			"display-flex border-radius-xl background-color-$white color-$gray-900 hover:background-color-$gray-50 md:border-radius-2xl",
+		setup: 'createPandaAdapter() · "yumcss/css/panda"',
+		owner: "Panda",
+	},
+];
+---
+
+<section class="outputs" aria-labelledby="outputs-title" data-outputs>
+	<div class="outputs__inner">
+		<div class="outputs__copy">
+			<p class="home-kicker home-kicker--band">Pick your output</p>
+			<h2 id="outputs-title">One <code>css()</code> call. Any class-name output.</h2>
+			<p>
+				The same <code>css()</code> call can emit YumCSS atoms, Tailwind utilities, StyleX or Panda class
+				names. Keep your existing stack while adopting typed objects.
+			</p>
+			<p class="outputs__note">
+				Tailwind/Panda modes use their CSS engines; StyleX naming uses YumCSS’s sheet.
+			</p>
+			<a class="outputs__link" href={`${base}/reference/class-name-strategies/`}>Class-name strategies →</a>
+		</div>
+
+		<div class="switcher">
+			<pre class="switcher__source"><code><span class="f">css</span>.<span class="f">class</span>({"{"}
+  <span class="p">display</span>: <span class="s">"flex"</span>,
+  <span class="p">borderRadius</span>: <span class="s">"xl"</span>,
+  <span class="p">backgroundColor</span>: <span class="tok">"$white"</span>,
+  <span class="p">color</span>: <span class="tok">"$gray-900"</span>,
+  <span class="p">_hover</span>: {"{"} <span class="p">backgroundColor</span>: <span class="tok">"$gray-50"</span> {"}"},
+  <span class="p">md</span>: {"{"} <span class="p">borderRadius</span>: <span class="s">"2xl"</span> {"}"},
+{"}"})</code></pre>
+
+			<div class="switcher__tabs" role="tablist" aria-label="Class-name strategy">
+				{
+					strategies.map((strategy, index) => (
+						<button
+							class="switcher__tab"
+							type="button"
+							role="tab"
+							id={`strategy-tab-${strategy.id}`}
+							aria-controls={`strategy-panel-${strategy.id}`}
+							aria-selected={index === 0 ? "true" : "false"}
+							tabindex={index === 0 ? 0 : -1}
+						>
+							{strategy.label}
+						</button>
+					))
+				}
+			</div>
+
+			{
+				strategies.map((strategy, index) => (
+					<div
+						class="switcher__result"
+						role="tabpanel"
+						id={`strategy-panel-${strategy.id}`}
+						aria-labelledby={`strategy-tab-${strategy.id}`}
+						hidden={index !== 0}
+					>
+						<p class="switcher__label">className</p>
+						<p class="switcher__classname">
+							{strategy.className.split(" ").map((name) => (
+								<span>{name}</span>
+							))}
+						</p>
+						<dl class="switcher__meta">
+							<div>
+								<dt>Strategy</dt>
+								<dd>
+									<code>{strategy.setup}</code>
+								</dd>
+							</div>
+							<div>
+								<dt>CSS owned by</dt>
+								<dd>{strategy.owner}</dd>
+							</div>
+						</dl>
+					</div>
+				))
+			}
+		</div>
+
+		<img class="outputs__curious" src={curious.src} width={curious.width} height={curious.height} alt="" />
+	</div>
+</section>
+
+<script>
+	for (const root of document.querySelectorAll<HTMLElement>("[data-outputs]")) {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+		const select = (next: HTMLButtonElement) => {
+			for (const tab of tabs) {
+				const selected = tab === next;
+				tab.setAttribute("aria-selected", String(selected));
+				tab.tabIndex = selected ? 0 : -1;
+				root.querySelector<HTMLElement>(`#${tab.getAttribute("aria-controls")}`)!.hidden = !selected;
+			}
+		};
+		for (const [index, tab] of tabs.entries()) {
+			tab.addEventListener("click", () => select(tab));
+			tab.addEventListener("keydown", (event) => {
+				const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+				if (step === 0) return;
+				const next = tabs[(index + step + tabs.length) % tabs.length]!;
+				select(next);
+				next.focus();
+			});
+		}
+	}
+</script>
+
+<style>
+	.outputs {
+		--band-pad: clamp(3.75rem, 8vw, 6rem);
+		width: 100vw;
+		margin-inline: calc(50% - 50vw);
+		padding-block: var(--band-pad);
+		background: var(--band-bg);
+		color: var(--band-text);
+	}
+	.outputs__inner {
+		display: grid;
+		gap: 3rem;
+		align-items: center;
+		max-width: 76rem;
+		margin-inline: auto;
+		padding-inline: var(--sl-content-pad-x, 1.5rem);
+	}
+	@media (min-width: 60rem) {
+		.outputs__inner {
+			grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+			grid-template-rows: auto 1fr;
+			column-gap: 4.5rem;
+			row-gap: 0;
+		}
+		.switcher {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+		}
+	}
+	h2 {
+		margin: 0.9rem 0 0;
+		font-family: var(--yum-font-display);
+		font-size: clamp(2rem, 4.2vw, 3.1rem);
+		font-weight: 760;
+		line-height: 1.02;
+		letter-spacing: -0.04em;
+		color: var(--band-heading);
+		text-wrap: balance;
+	}
+	h2 code {
+		font-family: var(--sl-font-mono);
+		font-size: 0.86em;
+		font-weight: 600;
+		letter-spacing: -0.04em;
+		color: var(--band-accent);
+		background: none;
+		border: 0;
+		padding: 0;
+	}
+	.outputs__copy > p:not(.home-kicker) {
+		max-width: 30rem;
+		margin: 1.2rem 0 0;
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: var(--band-text);
+	}
+	.outputs__copy > p code {
+		font-family: var(--sl-font-mono);
+		font-size: 0.88em;
+		color: var(--band-heading);
+		background: var(--band-chip);
+		border: 0;
+		padding: 0.08em 0.3em;
+		border-radius: 5px;
+	}
+	.outputs__copy > .outputs__note {
+		font-size: 0.92rem;
+		color: var(--band-muted);
+	}
+	.outputs__link {
+		display: inline-block;
+		margin-top: 1.4rem;
+		font-weight: 650;
+		color: var(--band-accent);
+		text-decoration: none;
+	}
+	.outputs__link:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	/* Curious sits on the band's bottom edge, watching the output switch. */
+	.outputs__curious {
+		align-self: end;
+		justify-self: end;
+		width: clamp(6.5rem, 12vw, 10rem);
+		height: auto;
+		margin-bottom: calc(-1 * var(--band-pad));
+		/* curious.svg has an 8.1% transparent bottom margin. */
+		translate: 0 8.1%;
+	}
+	@media (max-width: 59.99rem) {
+		.outputs__inner {
+			row-gap: 1.5rem;
+		}
+		.outputs__curious {
+			justify-self: start;
+			margin-left: 1rem;
+		}
+	}
+
+	.switcher {
+		min-width: 0;
+		border-radius: 18px;
+		background: var(--band-card);
+		border: 1px solid var(--band-card-border);
+		color: var(--ink-text);
+		box-shadow: 0 30px 60px -36px rgb(0 0 0 / 0.55);
+		overflow: hidden;
+	}
+	.switcher__source {
+		margin: 0;
+		padding: 1.25rem 1.4rem;
+		overflow-x: auto;
+		background: none;
+		border: 0;
+		border-bottom: 1px solid var(--ink-line);
+		font-family: var(--sl-font-mono);
+		font-size: clamp(0.74rem, 1.3vw, 0.84rem);
+		line-height: 1.7;
+		color: var(--ink-text);
+	}
+	.switcher__tabs {
+		display: flex;
+		gap: 0.25rem;
+		padding: 0.6rem;
+		overflow-x: auto;
+		border-bottom: 1px solid var(--ink-line);
+		scrollbar-width: none;
+	}
+	.switcher__tab {
+		flex: none;
+		padding: 0.45rem 0.8rem;
+		border: 0;
+		border-radius: 8px;
+		background: transparent;
+		color: var(--ink-muted);
+		font: inherit;
+		font-size: 0.84rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition:
+			color 150ms,
+			background-color 150ms;
+	}
+	.switcher__tab:hover {
+		color: var(--ink-text);
+	}
+	.switcher__tab[aria-selected="true"] {
+		background: rgb(245 158 66 / 0.14);
+		color: var(--yum-orange);
+	}
+	.switcher__result {
+		padding: 1.2rem 1.4rem 1.4rem;
+	}
+	.switcher__label {
+		margin: 0;
+		font-size: 0.72rem;
+		font-weight: 650;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-faint);
+	}
+	.switcher__classname {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin: 0.6rem 0 0;
+		min-height: 4.6rem;
+		align-content: flex-start;
+		font-family: var(--sl-font-mono);
+		font-size: 0.8rem;
+	}
+	.switcher__classname span {
+		padding: 0.2rem 0.45rem;
+		border-radius: 6px;
+		background: var(--ink-line);
+		color: var(--ink-text);
+		word-break: break-all;
+	}
+	.switcher__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 2rem;
+		margin: 1.2rem 0 0;
+		padding-top: 1rem;
+		border-top: 1px solid var(--ink-line);
+		font-size: 0.82rem;
+	}
+	.switcher__meta dt {
+		color: var(--ink-faint);
+	}
+	.switcher__meta dd {
+		margin: 0.15rem 0 0;
+		color: var(--ink-text);
+	}
+	.switcher__meta code {
+		font-family: var(--sl-font-mono);
+		font-size: 0.78rem;
+		background: none;
+		border: 0;
+		padding: 0;
+		color: var(--ink-text);
+	}
+
+	.f {
+		color: var(--code-function);
+	}
+	.s {
+		color: var(--code-string);
+	}
+	.p {
+		color: var(--code-property);
+	}
+	.tok {
+		color: var(--yum-orange);
+	}
+</style>

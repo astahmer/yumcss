@@ -33,6 +33,12 @@
 	--yum-radius: 14px;
 	--yum-code-bg: hsl(24, 12%, 8.5%);
 
+	--yum-charcoal: #1f1f1f;
+	--yum-orange: #f59e42;
+	--yum-coral: #ef4444;
+	--yum-cream: #fef7ed;
+	--yum-orange-text: var(--yum-orange);
+
 	--sl-content-width: 48rem;
 	--sl-sidebar-width: 17rem;
 	--sl-line-height: 1.7;
@@ -64,6 +70,22 @@
 	--yum-surface-raised: hsl(0, 0%, 100%);
 	--yum-glow: hsl(var(--sl-hue-accent), 90%, 55% / 0.12);
 	--yum-code-bg: hsl(36, 40%, 98%);
+	--yum-orange-text: hsl(28, 82%, 36%);
+}
+
+/* Homepage page background: brand charcoal in dark, brand cream in light. */
+:root:not([data-theme="light"]):has(.yum-home) {
+	--sl-color-black: var(--yum-charcoal);
+	--sl-color-bg-nav: rgb(31 31 31 / 0.82);
+	--sl-color-hairline: rgb(254 247 237 / 0.07);
+	--sl-color-hairline-light: rgb(254 247 237 / 0.1);
+}
+
+:root[data-theme="light"]:has(.yum-home) {
+	--sl-color-black: var(--yum-cream);
+	--sl-color-bg-nav: rgb(254 247 237 / 0.86);
+	--sl-color-hairline: rgb(31 31 31 / 0.08);
+	--sl-color-hairline-light: rgb(31 31 31 / 0.12);
 }
 
 html,
@@ -72,18 +94,17 @@ body {
 }
 
 /* Splash pages with a custom hero: no title band, wider canvas */
-.content-panel:has(+ .content-panel .hero) {
+.content-panel:has(+ .content-panel .yum-home) {
 	display: none;
 }
 
-.content-panel:has(.hero) {
+.content-panel:has(.yum-home) {
 	padding-top: 0;
 	border-top: none;
 }
 
-.content-panel:has(.hero) .sl-container,
-.content-panel:has(.hero) ~ .content-panel .sl-container {
-	max-width: 72rem;
+.content-panel:has(.yum-home) .sl-container {
+	max-width: 76rem;
 }
 
 /* Header: translucent, hairline-only, no heavy band */
@@ -125,7 +146,7 @@ nav.sidebar a[aria-current="page"]:hover {
 }
 
 /* Typography */
-.sl-markdown-content :is(h1, h2, h3, h4),
+.sl-markdown-content :is(h1, h2, h3, h4):not(:where(.not-content *)),
 h1#_top {
 	font-family: var(--yum-font-display);
 	letter-spacing: -0.025em;
@@ -137,13 +158,13 @@ h1#_top {
 	line-height: 1.05;
 }
 
-.sl-markdown-content h2 {
+.sl-markdown-content h2:not(:where(.not-content *)) {
 	margin-top: 2.6em;
 	padding-top: 0.4em;
 	font-size: 1.75rem;
 }
 
-.sl-markdown-content h3 {
+.sl-markdown-content h3:not(:where(.not-content *)) {
 	font-size: 1.3rem;
 }
 
@@ -158,7 +179,7 @@ h1#_top {
 	text-decoration-color: currentColor;
 }
 
-.sl-markdown-content :not(pre) > code {
+.sl-markdown-content :not(pre) > code:not(:where(.not-content *)) {
 	border-radius: 6px;
 	padding: 0.12em 0.38em;
 	border: 1px solid var(--sl-color-hairline-light);
