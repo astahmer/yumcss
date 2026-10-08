@@ -4,10 +4,11 @@
  * spacing utilities, a pseudo-condition, generated project support, and the
  * source/target build boundary.
  */
-import { normalizeInstalledTargetPackage, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
+	normalizeInstalledTargetPackage,
 	browserProof,
 	generatedCss,
 	packageInstalled,

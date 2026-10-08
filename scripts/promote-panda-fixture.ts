@@ -5,17 +5,12 @@
  * source/target build boundary, SSR, hydration, and browser base/hover
  * behavior.
  */
-import {
-	normalizeInstalledTargetPackage,
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId, runAdapterMigrationAsync } from "@yumcss/codemod/swap";
 import { z } from "zod";
 import {
+	normalizeInstalledTargetPackage,
 	browserProof,
 	generatedCss,
 	packageInstalled,

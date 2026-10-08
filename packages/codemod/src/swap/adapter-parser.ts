@@ -666,13 +666,15 @@ function parseCalls(
 	const templateRanges = patterns.flatMap((pattern) => {
 		if (pattern.form !== CodemodCallPatternFormTag.Template) return [];
 		if (pattern.sourceGuard !== undefined && !pattern.sourceGuard(source, context)) return [];
-		return regexesFor(pattern).flatMap(matchesFor).flatMap(({ match }) => {
-			const start = match.index ?? 0;
-			if (mask?.isExcluded(start)) return [];
-			const firstTick = source.indexOf("`", start);
-			const lastTick = findTemplateLiteralEnd(source, firstTick);
-			return firstTick < 0 || lastTick === undefined ? [] : [{ start, end: lastTick + 1 }];
-		});
+		return regexesFor(pattern)
+			.flatMap(matchesFor)
+			.flatMap(({ match }) => {
+				const start = match.index ?? 0;
+				if (mask?.isExcluded(start)) return [];
+				const firstTick = source.indexOf("`", start);
+				const lastTick = findTemplateLiteralEnd(source, firstTick);
+				return firstTick < 0 || lastTick === undefined ? [] : [{ start, end: lastTick + 1 }];
+			});
 	});
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
@@ -855,7 +857,8 @@ function parseCalls(
 					if (
 						isInsideHostRange(start) ||
 						templateRanges.some((range) => start > range.start && start < range.end)
-					) continue;
+					)
+						continue;
 					if (source.slice(start, firstTick).includes("=>")) {
 						residuals.push({
 							kind: StyleProgramResidualKindTag.Capability,

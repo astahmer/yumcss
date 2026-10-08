@@ -4,16 +4,11 @@
  * object, a pseudo-condition, the generated YumCSS Vite integration, SSR,
  * hydration, and browser base/hover behavior.
  */
-import {
-	normalizeInstalledTargetPackage,
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
+	normalizeInstalledTargetPackage,
 	allFiles,
 	browserProof,
 	generatedCss,

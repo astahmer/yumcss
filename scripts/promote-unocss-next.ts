@@ -1,4 +1,4 @@
-import { normalizeInstalledTargetPackage, execFileSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import {
 	cpSync,
 	existsSync,
@@ -12,7 +12,13 @@ import {
 } from "node:fs";
 import { join, resolve, sep } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
-import { packageInstalled, run, runCaptured, writeJson } from "./installed-proof.ts";
+import {
+	normalizeInstalledTargetPackage,
+	packageInstalled,
+	run,
+	runCaptured,
+	writeJson,
+} from "./installed-proof.ts";
 import { proveNextInstallation, type NextInstalledProof } from "./next-proof.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import { ensureReferenceWorkspace } from "./ensure-reference-workspace.ts";

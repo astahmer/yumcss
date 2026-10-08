@@ -1,13 +1,8 @@
-import {
-	normalizeInstalledTargetPackage,
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CodemodAdapterId } from "@yumcss/codemod/swap";
 import {
+	normalizeInstalledTargetPackage,
 	browserProof,
 	packageInstalled,
 	parseInstalledProofMigration,
