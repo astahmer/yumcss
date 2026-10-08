@@ -1,0 +1,14 @@
+COMMAND: node /tmp/pandwind-cli-write-repro.mjs
+EXIT: 0
+{"from":"emotion","to":"treat","mode":"safe","routeProof":{"id":"unclassified:emotion->treat","from":"emotion","to":"treat","maturity":"research","execution":"unavailable","requiredDimensions":["canonical-css","typecheck","build","browser-states","ssr-hydration","dependencies","css-size"],"referenceIds":[],"note":"The route is registered, but no route-specific installed-project proof is available; inspect the adapter result as research evidence and treat host validation as required."},"projectGeneratedFiles":[],"files":[{"file":"consumer.ts","outputFile":"consumer.treat.ts","generatedFiles":[],"from":"emotion","converted":1,"skipped":0,"residuals":0,"canonical":{"checked":true,"equal":true,"sourceBytes":13,"targetBytes":13,"differences":[]},"residualDetails":[],"routeProof":{"id":"unclassified:emotion->treat","from":"emotion","to":"treat","maturity":"research","execution":"unavailable","requiredDimensions":["canonical-css","typecheck","build","browser-states","ssr-hydration","dependencies","css-size"],"referenceIds":[],"note":"The route is registered, but no route-specific installed-project proof is available; inspect the adapter result as research evidence and treat host validation as required."}},{"file":"styles.ts","outputFile":"styles.treat.ts","generatedFiles":[],"from":"emotion","converted":1,"skipped":0,"residuals":0,"canonical":{"checked":true,"equal":true,"sourceBytes":12,"targetBytes":12,"differences":[]},"residualDetails":[],"routeProof":{"id":"unclassified:emotion->treat","from":"emotion","to":"treat","maturity":"research","execution":"unavailable","requiredDimensions":["canonical-css","typecheck","build","browser-states","ssr-hydration","dependencies","css-size"],"referenceIds":[],"note":"The route is registered, but no route-specific installed-project proof is available; inspect the adapter result as research evidence and treat host validation as required."}}]}
+
+ROOT /tmp/yumcss-cli-audit-zYvtdC
+consumer.treat.ts import { style } from "treat";
+import {card} from "./styles";  export const second=style({ "color": "blue" }); export {card};
+
+consumer.ts import {card} from "./styles.treat"; import {css} from "@emotion/css"; export const second=css({color:"blue"}); export {card};
+
+package.json {"type":"module"}
+styles.treat.ts import { style } from "treat";
+ export const card=style({ "color": "red" });
+

@@ -1,0 +1,13 @@
+COMMAND: node --conditions=yumcss /tmp/yumcss-compiler-review.mjs
+EXIT: 0
+TW/CX full plugin shadowing: import {tw} from "./tw"; import {cx} from "./cx"; export const a=(tw)=>"p-4"; export const b=(cx)=>"hello";
+CSS full plugin shadowing: import "yumcss:css";
+import {css} from "./design"; export const f=(css)=>"1nmpgqu";
+CSS full plugin mutation: import "yumcss:css";
+import {css} from "./design"; const styles={color:"red"}; styles.color="blue"; export const x="1nmpgqu";
+Runtime expected blue: 120twt2 incorrect red: 1nmpgqu
+TW full plugin TDZ: import {tw} from "./tw"; const x="bg-red"; const SHADE="red";
+Nested selector lists (incorrect OR, expected AND cross-product): .\31 5xi2t0:hover, .\31 5xi2t0[data-a],.\31 5xi2t0:focus, .\31 5xi2t0[data-b]{color:red}
+Literal & inside attribute: .p8vr8j[data-text="A&B"]{color:red}
+Incorrect literal ampersand substitution: .\31 11gevu > [data-text="A.\31 11gevuB"]{color:red}
+Different generated TW modules wrong shared config: import {tw as a} from "./a/tw"; import {tw as b} from "./b/tw"; export const first="p-small"; export const second="p-small";

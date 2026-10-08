@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { createCx } from "yumcss/cx";
+import { createRuntimeCss, createRuntimeSheet } from "yumcss/css/runtime";
+import { defaultPreset } from "yumcss/preset/default";
+import { define } from "yumcss/preset";
+const problems = [];
+const check = (name, run) => { try { run(); console.log("PASS", name); } catch (error) { problems.push(name); console.log("CONFIRMED BUG", name, error.message); } };
+const cx = createCx({ conflicts: { bg: { "*": ["background-color"] } } });
+check("important utility lost", () => assert.equal(cx("bg-red! bg-blue"), "bg-red! bg-blue"));
+check("multi-variant conflict ignored", () => assert.equal(cx("hover:focus:bg-red hover:focus:bg-blue"), "hover:focus:bg-blue"));
+check("namespace rule replaced", () => {
+ const sheet = createRuntimeSheet({ autoMount: false });
+ const first = createRuntimeCss(defaultPreset, { sheet, namespace: "first" });
+ const second = createRuntimeCss(defaultPreset, { sheet, namespace: "second" });
+ first.vars({ color: "red" }); second.vars({ color: "blue" });
+ assert.ok(sheet.css().includes(".first-color"), sheet.css());
+});
+check("preset token prelude erased", () => {
+ const sheet = createRuntimeSheet({ autoMount: false });
+ const make = (name, value) => define.preset({ config: {}, tokens: { colors: { [name]: value } } }, { strict: true, conditions: {}, properties: { color: { $tokens: "colors", $strict: false } } });
+ createRuntimeCss(make("$a", "red"), { sheet }).class({ color: "$a" });
+ createRuntimeCss(make("$b", "blue"), { sheet }).class({ color: "$b" });
+ assert.ok(sheet.css().includes(": red"), sheet.css());
+});
+console.log("Confirmed", problems.length, "issues");

@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import {analyzeTokenGovernance,buildGovernancePruneChangeset} from '@yumcss/analyze/governance';
+const content='import {css} from "./design"; const color=active ? "$brand" : "blue"; css({color:color});';
+const report=analyzeTokenGovernance({root:'/tmp',files:[{file:'Card.tsx',content}],tokenContext:{tokenGroups:{colors:{brand:'red'}}}});
+const changeset=buildGovernancePruneChangeset(report);
+console.log(JSON.stringify({content,summary:report.summary,unused:report.unusedCandidates,changeset},null,2));
+assert.equal(report.unusedCandidates[0].safety,'safe-to-remove');assert.equal(changeset.count,1);assert.equal(report.summary.boundaries['dynamic-expression'],1);

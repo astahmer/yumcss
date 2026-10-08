@@ -1,0 +1,21 @@
+COMMAND: node --conditions=yumcss /tmp/yumcss-adversarial-runtime/runtime.mjs
+EXIT: 0
+CONFIRMED BUG important utility lost Expected values to be strictly equal:
++ actual - expected
+
++ 'bg-blue'
+- 'bg-red! bg-blue'
+      ^
+
+CONFIRMED BUG multi-variant conflict ignored Expected values to be strictly equal:
++ actual - expected
+
++ 'hover:focus:bg-red hover:focus:bg-blue'
+- 'hover:focus:bg-blue'
+                  ^
+
+CONFIRMED BUG namespace rule replaced .second-color{color: var(--second-c-color)}
+CONFIRMED BUG preset token prelude erased :root {--\31 727p6r: blue;}
+.\31 4zct68{color:var(--\31 cwcx15)}
+.\31 5r5yp6{color:var(--\31 727p6r)}
+Confirmed 4 issues

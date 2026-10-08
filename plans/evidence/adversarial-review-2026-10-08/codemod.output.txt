@@ -1,0 +1,24 @@
+COMMAND: nub --conditions=yumcss /tmp/pandwind-codemod-audit-repro.ts
+EXIT: 0
+STANDALONE {"code":"import { forwardRef as __yumcssStandaloneForwardRef } from \"react\";\nimport type { ComponentRef as __yumcssStandaloneComponentRef, ComponentPropsWithoutRef as __yumcssStandaloneComponentProps } from \"react\";\n const __yumcssStandaloneClass = \"[color:red]\";\nconst __yumcssStandaloneComponent = __yumcssStandaloneForwardRef<__yumcssStandaloneComponentRef<\"div\">, __yumcssStandaloneComponentProps<\"div\">>((props, ref) => <div {...props} ref={ref} className={[__yumcssStandaloneClass, props.className].filter(Boolean).join(\" \")} />;\nexport default __yumcssStandaloneComponent;","converted":1,"residuals":[],"parseErrors":[{"severity":"Error","message":"Expected `,` or `)` but found `;`","labels":[{"message":"`,` or `)` expected","start":525,"end":526},{"message":"Opened here","start":399,"end":400}],"helpMessage":null,"codeframe":"\n  x Expected `,` or `)` but found `;`\n   ,-[Card.tsx:4:271]\n 3 |  const __yumcssStandaloneClass = \"[color:red]\";\n 4 | const __yumcssStandaloneComponent = __yumcssStandaloneForwardRef<__yumcssStandaloneComponentRef<\"div\">, __yumcssStandaloneComponentProps<\"div\">>((props, ref) => <div {...props} ref={ref} className={[__yumcssStandaloneClass, props.className].filter(Boolean).join(\" \")} />;\n   :                                                                                                                                                 |                                                                                                                             |\n   :                                                                                                                                                 |                                                                                                                             `-- `,` or `)` expected\n   :                                                                                                                                                 `-- Opened here\n 5 | export default __yumcssStandaloneComponent;\n   `----\n"}]}
+DYNAMIC_DEDUP {"code":"import {css} from \"./design.ts\";\nconst pwStyle1 = css.class({color:color});\n// yumcss:migrate-skip (lowering-residual: non-literal object)\nexport const first=(color)=>pwStyle1;\n// yumcss:migrate-skip (lowering-residual: non-literal object)\nexport const second=(color)=>pwStyle1;","converted":0,"skipped":2}
+COLLISION_DEDUP import {tw} from "yumcss";
+const pwStyle1 = tw({color:"red"});
+const pwStyle1="occupied";const a=pwStyle1;const b=pwStyle1;
+UNDERSCORES {"code":" export const cls=\"[font-family:my_font] [--custom:my_token]\";","converted":1,"residuals":[],"validation":[{"valid":true,"lossiness":"lossless","canonicalSource":"&{--custom:my_token;fontFamily:my_font}","canonicalTarget":"&{--custom:my_token;fontFamily:my_font}","differences":[],"residuals":[]}],"officialCss":[".\\[font-family\\:my_font\\] {\n  font-family: my font;\n}\n",".\\[--custom\\:my_token\\] {\n  --custom: my token;\n}\n"]}
+TARGET_IMPORT_COLLISION {"code":"import { style } from \"@vanilla-extract/css\";\n const style={display:\"block\"}; export const cls=style({ color: \"red\" });","converted":1,"residuals":[],"parseErrors":[]}
+TARGET_IMPORT_COLLISION_NODE_CHECK 1 [stdin]:2
+ const style={display:"block"}; export const cls=style({ color: "red" });
+       ^
+
+SyntaxError: Identifier 'style' has already been declared
+    at checkSyntax (node:internal/main/check_syntax:72:5)
+    at node:internal/main/check_syntax:45:5
+    at Socket.<anonymous> (node:internal/process/execution:205:5)
+    at Socket.emit (node:events:526:24)
+    at endReadableNT (node:internal/streams/readable:1757:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+Node.js v24.20.0
+
+DYNAMIC_DEDUP_RUNTIME ReferenceError: color is not defined

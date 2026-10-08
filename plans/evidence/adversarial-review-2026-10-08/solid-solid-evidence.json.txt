@@ -1,0 +1,1 @@
+{"before":"<div title=\"before title\" class=\"flex gap-4 before\">Stack repro</div>","after":"<div title=\"before title\" class=\"flex gap-4 before\">Stack repro</div>","expectedClass":"flex gap-8 after","expectedTitle":"after title","transport":"T3 preview tab_2","url":"http://localhost:4382/"}

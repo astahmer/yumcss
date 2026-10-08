@@ -1,0 +1,24 @@
+import { createRequire } from "node:module";
+const root = "/Users/astahmer/dev/pandwind";
+const require = createRequire(`${root}/package.json`);
+const { runAdapterMigration, runSwap, dedupLiteralCallSites } = await import(require.resolve("@yumcss/codemod/swap"));
+const { createEmptyYumCSSMeta } = await import(require.resolve("@yumcss/codemod/migration/meta"));
+const { parseSync } = createRequire(`${root}/packages/codemod/package.json`)("oxc-parser");
+const standalone = runAdapterMigration('import styled from "styled-components"; export default styled.div({color:"red"});', {from:"styled-components",to:"tailwind",file:"Card.tsx",semantic:{source:{framework:"react"}}});
+console.log("STANDALONE", JSON.stringify({code:standalone.code,converted:standalone.converted,residuals:standalone.residuals,parseErrors:parseSync("Card.tsx",standalone.code).errors}));
+const localDynamic = runSwap('import {css} from "./design.ts";\nexport const first=(color)=>css.class({color:color});\nexport const second=(color)=>css.class({color:color});',createEmptyYumCSSMeta(),{from:"auto",to:"tw",file:"a.tsx",dedup:true});
+console.log("DYNAMIC_DEDUP", JSON.stringify({code:localDynamic.code,converted:localDynamic.converted,skipped:localDynamic.skippedByMarker}));
+console.log("COLLISION_DEDUP",dedupLiteralCallSites('import {tw} from "yumcss";\nconst pwStyle1="occupied";const a=tw({color:"red"});const b=tw({color:"red"});'));
+const underscores = runAdapterMigration('import {css} from "@emotion/css"; export const cls=css({fontFamily:"my_font", "--custom":"my_token"});',{from:"emotion",to:"tailwind",file:"a.tsx",semantic:{source:{framework:"react"}}});
+const twRequire=createRequire(`${root}/packages/codemod/package.json`);
+const { __unstable__loadDesignSystem }=twRequire("@tailwindcss/node");
+const system=await __unstable__loadDesignSystem("",{base:root});
+console.log("UNDERSCORES",JSON.stringify({code:underscores.code,converted:underscores.converted,residuals:underscores.residuals,validation:underscores.validations,officialCss:system.candidatesToCss(["[font-family:my_font]","[--custom:my_token]"])}));
+
+const collision=runAdapterMigration('import {css} from "@emotion/css"; const style={display:"block"}; export const cls=css({color:"red"});',{from:"emotion",to:"vanilla-extract",file:"a.css.ts",semantic:{source:{framework:"react"}}});
+console.log("TARGET_IMPORT_COLLISION",JSON.stringify({code:collision.code,converted:collision.converted,residuals:collision.residuals,parseErrors:parseSync("a.css.ts",collision.code).errors}));
+
+const {spawnSync}=await import("node:child_process");
+const syntaxCheck=spawnSync(process.execPath,["--check","--input-type=module"],{input:collision.code,encoding:"utf8"});
+console.log("TARGET_IMPORT_COLLISION_NODE_CHECK",syntaxCheck.status,syntaxCheck.stderr);
+try {new Function(localDynamic.code.replace('import {css} from "./design.ts";','const css={class: (value)=>value};').replaceAll('export const','const'))();} catch(error) {console.log("DYNAMIC_DEDUP_RUNTIME",String(error));}

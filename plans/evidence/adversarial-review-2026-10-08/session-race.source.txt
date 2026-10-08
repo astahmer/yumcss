@@ -1,0 +1,18 @@
+import { createMigrationPreviewSession } from '@yumcss/analyze/migration-preview';
+const deferred = () => { let resolve; const promise = new Promise(done => resolve = done); return {promise, resolve}; };
+const pending = [];
+const emissions = [];
+const workspace = {open: async () => ({revision:1,root:'/tmp',files:[]}),edit: async () => ({revision:2,root:'/tmp',files:[]}),subscribe: () => () => {}};
+const session = createMigrationPreviewSession({workspace,evaluation:{evaluate:request=>{const task=deferred(); pending.push({request,...task});return task.promise;}}});
+session.subscribe(value => emissions.push({target:value.target,evaluation:value.evaluation,revision:value.revision}));
+const opened=session.open({root:'/tmp'});
+await new Promise(resolve => setImmediate(resolve));
+pending[0].resolve({diagnostics:[],semantic:'initial'});
+await opened;
+const old=session.switchTarget({target:'tailwind'});
+const current=session.switchTarget({target:'stylex'});
+pending[2].resolve({diagnostics:[],semantic:'stylex result'});
+await current;
+pending[1].resolve({diagnostics:[],semantic:'tailwind result'});
+await old;
+console.log(JSON.stringify(emissions,null,2));

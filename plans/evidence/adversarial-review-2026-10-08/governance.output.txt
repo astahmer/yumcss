@@ -1,0 +1,40 @@
+COMMAND: nub --conditions yumcss /tmp/yumcss-adversarial-2026-10-08/governance-dynamic.ts
+EXIT: 0
+{
+  "content": "import {css} from \"./design\"; const color=active ? \"$brand\" : \"blue\"; css({color:color});",
+  "summary": {
+    "defined": 1,
+    "used": 0,
+    "unusedCandidates": 1,
+    "safeToRemove": 1,
+    "reviewRequired": 0,
+    "notRemovable": 0,
+    "strictViolations": 0,
+    "rawAllowed": 0,
+    "unknownStrictness": 0,
+    "suggestions": 0,
+    "boundaries": {
+      "dynamic-expression": 1,
+      "runtime-theme-access": 0,
+      "generated-css": 0,
+      "public-export": 0,
+      "safelist": 0,
+      "plugin-output": 0,
+      "unscanned-file": 0,
+      "configuration-failure": 0,
+      "unresolved-import": 0
+    }
+  },
+  "unused": [
+    {
+      "tokenId": "colors::brand",
+      "safety": "safe-to-remove",
+      "reasons": [],
+      "boundaries": []
+    }
+  ],
+  "changeset": {
+    "count": 1,
+    "content": "---\n\"yumcss\": patch\n---\n\nRemove 1 unused design token(s) from the app preset\n\nSafe-to-remove tokens (zero reachable usage, no coverage boundaries) per the token governance report:\n\n- `$colors.brand` (colors::brand)\n"
+  }
+}

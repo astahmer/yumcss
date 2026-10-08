@@ -1,0 +1,9 @@
+import {mkdtempSync,writeFileSync,readFileSync,readdirSync} from "node:fs";
+import {execFileSync} from "node:child_process";
+const root=mkdtempSync("/tmp/yumcss-cli-audit-");
+writeFileSync(root+"/package.json",JSON.stringify({type:"module"}));
+writeFileSync(root+"/styles.ts",'import {css} from "@emotion/css"; export const card=css({color:"red"});\n');
+writeFileSync(root+"/consumer.ts",'import {card} from "./styles"; import {css} from "@emotion/css"; export const second=css({color:"blue"}); export {card};\n');
+try {console.log(execFileSync("nub",["--conditions=yumcss","src/cli.ts","migrate","--root",root,"--from=emotion","--to=treat","--safe","--no-install","--report=json",root+"/*.ts"],{cwd:"/Users/astahmer/dev/pandwind/packages/codemod",encoding:"utf8"}));} catch(error) {console.log(error.stdout,error.stderr);}
+console.log("ROOT",root);
+for(const path of readdirSync(root))console.log(path,readFileSync(root+"/"+path,"utf8"));

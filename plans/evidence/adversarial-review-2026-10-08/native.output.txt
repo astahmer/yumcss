@@ -1,0 +1,6 @@
+COMMAND: node --conditions=yumcss /tmp/yumcss-adversarial-runtime/native.mjs
+EXIT: 0
+react-native condition-first { color: 'red' }
+CONFIRMED BUG react-native property-first condition rejected: yumcss/react-native: condition "_color" is not supported by this target
+opentui condition-first { color: 'red' }
+CONFIRMED BUG opentui property-first condition rejected: yumcss/opentui: condition "_color" is not supported by this target

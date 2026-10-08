@@ -1,0 +1,11 @@
+COMMAND: node --conditions=yumcss /tmp/yumcss-lint-review.mjs
+EXIT: 0
+import {cx} from "yumcss"; {const cx=(v)=>v+"changed"; cx("hello");} [
+  {
+    message: 'yumcss: cx() returns this single static string unchanged — use it directly; keep cx() when inputs need merging',
+    fix: undefined
+  }
+]
+import {cx} from "yumcss"; const f=(cx)=>cx("hello"); []
+import * as y from "yumcss"; const f=(y)=>y.cx("hello"); []
+import * as y from "yumcss"; const f=(y)=>y.css.class({color:"red"}); []

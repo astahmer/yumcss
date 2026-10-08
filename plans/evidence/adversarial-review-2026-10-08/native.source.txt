@@ -1,0 +1,9 @@
+import assert from "node:assert/strict";
+import {createRnBackend,createOpentuiBackend} from "yumcss/backends";
+for (const createBackend of [createRnBackend,createOpentuiBackend]) {
+ const backend=createBackend({conditions:{hover:()=>true}});
+ const expected=backend.resolve({_hover:{color:"red"}});
+ console.log(backend.name, "condition-first", expected);
+ try { assert.deepEqual(backend.resolve({color:{_hover:"red"}}),expected); }
+ catch(error) { console.log("CONFIRMED BUG", backend.name,"property-first condition rejected:",error.message); }
+}

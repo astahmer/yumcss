@@ -1,0 +1,9 @@
+import {mkdtempSync,writeFileSync,readFileSync,readdirSync} from "node:fs";
+import {execFileSync} from "node:child_process";
+const root=mkdtempSync("/tmp/yumcss-bootstrap-audit-");
+writeFileSync(root+"/package.json",JSON.stringify({type:"module",devDependencies:{unocss:"1.0.0"}}));
+writeFileSync(root+"/App.tsx",'import "virtual:uno.css";\nexport const App=()=> <div className="my-custom-utility" />;\n');
+writeFileSync(root+"/vite.config.ts",'import UnoCSS from "unocss/vite"; export default {plugins:[UnoCSS()]};\n');
+try {console.log(execFileSync("nub",["--conditions=yumcss","src/cli.ts","migrate","--root",root,"--from=unocss","--to=yumcss","--safe","--no-install","--report=json",root+"/App.tsx"],{cwd:"/Users/astahmer/dev/pandwind/packages/codemod",encoding:"utf8"}));} catch(error) {console.log(error.stdout,error.stderr);}
+console.log("ROOT",root);
+for(const path of readdirSync(root)) {try {console.log(path,readFileSync(root+"/"+path,"utf8"));}catch{console.log(path,"directory");}}

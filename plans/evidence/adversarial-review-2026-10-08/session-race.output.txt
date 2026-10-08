@@ -1,0 +1,32 @@
+COMMAND: nub --conditions yumcss /tmp/yumcss-adversarial-2026-10-08/session-race.ts
+EXIT: 0
+[
+  {
+    "target": null,
+    "evaluation": {
+      "diagnostics": [],
+      "semantic": "initial"
+    },
+    "revision": 1
+  },
+  {
+    "target": {
+      "target": "stylex"
+    },
+    "evaluation": {
+      "diagnostics": [],
+      "semantic": "stylex result"
+    },
+    "revision": 3
+  },
+  {
+    "target": {
+      "target": "stylex"
+    },
+    "evaluation": {
+      "diagnostics": [],
+      "semantic": "tailwind result"
+    },
+    "revision": 3
+  }
+]

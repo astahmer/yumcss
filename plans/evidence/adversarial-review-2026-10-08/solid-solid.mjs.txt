@@ -1,0 +1,8 @@
+import { createSignal, createComponent } from "solid-js";
+import { render } from "solid-js/web";
+import { Stack } from "yumcss/stack/solid";
+const [gap, setGap] = createSignal(4);
+const [extra, setExtra] = createSignal("before");
+const [title, setTitle] = createSignal("before title");
+render(() => createComponent(Stack, { get gap() { return gap(); }, get class() { return extra(); }, get title() { return title(); }, children: "Stack repro" }), document.getElementById("app"));
+window.changeStack = () => { setGap(8); setExtra("after"); setTitle("after title"); };

@@ -1,0 +1,14 @@
+import {createRequire} from 'node:module';
+const require=createRequire('/Users/astahmer/dev/pandwind/packages/lint-plugin/package.json');
+const {parseSync}=await import(require.resolve('oxc-parser'));
+// Harness intentionally loads the exact current source revision rather than a possibly stale dist package.
+const {default:plugin}=await import('/Users/astahmer/dev/pandwind/packages/lint-plugin/src/index.ts');
+const run=code=>{
+ const program=parseSync('fixture.tsx',code,{sourceType:'module',lang:'tsx'}).program;
+ const reports=[];
+ const listeners=plugin.rules['no-redundant-cx'].create({options:[],settings:{},sourceCode:{text:code,getAllComments:()=>[]},report:payload=>reports.push({message:payload.message,fix:payload.fix?.({replaceTextRange:(range,text)=>({range,text})})})});
+ listeners.Program?.(program);
+ const visit=value=>{if(Array.isArray(value)){for(const child of value) visit(child);return;} if(!value || typeof value!=='object') return;if(value.type==='CallExpression')listeners.CallExpression?.(value);for(const [key,child]of Object.entries(value))if(key!=='parent')visit(child);};
+ visit(program);return reports;
+};
+for(const code of ['import {cx} from "yumcss"; {const cx=(v)=>v+"changed"; cx("hello");}', 'import {cx} from "yumcss"; const f=(cx)=>cx("hello");', 'import * as y from "yumcss"; const f=(y)=>y.cx("hello");', 'import * as y from "yumcss"; const f=(y)=>y.css.class({color:"red"});']) console.log(code,run(code));

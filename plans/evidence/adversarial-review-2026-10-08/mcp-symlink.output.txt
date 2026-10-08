@@ -1,0 +1,206 @@
+COMMAND: nub --conditions yumcss /tmp/yumcss-adversarial-2026-10-08/mcp-symlink.ts
+EXIT: 0
+{
+  "externalBefore": "import {css} from \"@emotion/css\"; export const cls=css({color:\"red\"});",
+  "externalAfter": " export const cls=\"[color:red]\";",
+  "result": {
+    "schema": "yumcss.mcp.apply-migration/1",
+    "root": "/var/folders/_p/mx79mqqn6ss8755q205k8_340000gn/T/yumcss-symlink-9zEqUb/project",
+    "from": "emotion",
+    "to": "tailwind",
+    "mode": "safe",
+    "routeProof": {
+      "id": "unclassified:emotion->tailwind",
+      "from": "emotion",
+      "to": "tailwind",
+      "maturity": "research",
+      "execution": "unavailable",
+      "requiredDimensions": [
+        "canonical-css",
+        "typecheck",
+        "build",
+        "browser-states",
+        "ssr-hydration",
+        "dependencies",
+        "css-size"
+      ],
+      "referenceIds": [],
+      "note": "The route is registered, but no route-specific installed-project proof is available; inspect the adapter result as research evidence and treat host validation as required."
+    },
+    "executionEvidence": [
+      {
+        "lane": "in-process",
+        "status": "verified",
+        "checks": [
+          "adapter-program",
+          "residual-report"
+        ],
+        "detail": "The migration was previewed in process against project-relative files; no project files were written."
+      },
+      {
+        "lane": "in-process",
+        "status": "verified",
+        "checks": [
+          "conflict-safe-write",
+          "generated-file-write"
+        ],
+        "detail": "The explicitly confirmed migration was written by the MCP process after conflict checks."
+      }
+    ],
+    "files": [
+      {
+        "file": "Card.tsx",
+        "changed": true,
+        "code": " export const cls=\"[color:red]\";",
+        "diff": "--- a/Card.tsx\n+++ b/Card.tsx\n@@ -1,1 +1,1 @@\n-import {css} from \"@emotion/css\"; export const cls=css({color:\"red\"});\n+ export const cls=\"[color:red]\";",
+        "outputFile": "Card.tsx",
+        "converted": 1,
+        "skipped": 0,
+        "residuals": [],
+        "loweringPlans": [
+          {
+            "program": {
+              "schema": "yumcss.style-program/1",
+              "rules": [
+                {
+                  "kind": "style",
+                  "conditions": [],
+                  "declarations": [
+                    {
+                      "conditions": [],
+                      "property": "color",
+                      "value": {
+                        "kind": "literal",
+                        "value": "red"
+                      }
+                    }
+                  ],
+                  "children": [],
+                  "order": 0,
+                  "source": {
+                    "file": "Card.tsx",
+                    "start": 51,
+                    "end": 69,
+                    "adapter": "emotion"
+                  }
+                }
+              ],
+              "declarations": [
+                {
+                  "conditions": [],
+                  "property": "color",
+                  "value": {
+                    "kind": "literal",
+                    "value": "red"
+                  }
+                }
+              ],
+              "residuals": [],
+              "sourceMap": [
+                {
+                  "file": "Card.tsx",
+                  "start": 51,
+                  "end": 69,
+                  "adapter": "emotion"
+                },
+                {
+                  "file": "Card.tsx",
+                  "start": 51,
+                  "end": 69,
+                  "adapter": "emotion",
+                  "pattern": "css"
+                }
+              ],
+              "source": {
+                "file": "Card.tsx",
+                "start": 51,
+                "end": 69,
+                "adapter": "emotion",
+                "pattern": "css"
+              },
+              "compositions": [],
+              "plugins": [],
+              "emissionHints": []
+            },
+            "residuals": [],
+            "applied": [
+              "dynamic-and-theme"
+            ],
+            "representation": "static",
+            "availableRepresentations": [
+              "static",
+              "named-map",
+              "residual"
+            ]
+          }
+        ],
+        "outcomes": [
+          {
+            "sourceStart": 51,
+            "sourceText": "css({color:\"red\"})",
+            "outcome": "static",
+            "representation": "static",
+            "detail": "color: arbitrary-property (official-verification-unavailable)"
+          }
+        ],
+        "reports": [
+          {
+            "adapter": "tailwind",
+            "mode": "safe",
+            "requirements": [
+              {
+                "capability": "declarations",
+                "detail": "style declarations"
+              }
+            ],
+            "exact": [
+              {
+                "capability": "declarations",
+                "detail": "style declarations",
+                "level": "exact",
+                "blocking": false
+              }
+            ],
+            "partial": [],
+            "unsupported": [],
+            "blockers": [],
+            "convertible": true
+          }
+        ],
+        "validations": [
+          {
+            "valid": true,
+            "lossiness": "lossless",
+            "canonicalSource": "&{color:red}",
+            "canonicalTarget": "&{color:red}",
+            "differences": [],
+            "residuals": []
+          }
+        ],
+        "dependencies": [
+          {
+            "packages": [
+              {
+                "name": "tailwindcss",
+                "kind": "development"
+              }
+            ]
+          }
+        ],
+        "generatedFiles": [],
+        "fileChanges": []
+      }
+    ],
+    "applied": true,
+    "writtenFiles": [
+      "Card.tsx"
+    ],
+    "removedFiles": [],
+    "dependencies": [
+      {
+        "name": "tailwindcss",
+        "kind": "development"
+      }
+    ]
+  }
+}

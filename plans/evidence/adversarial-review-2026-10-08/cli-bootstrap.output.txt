@@ -1,0 +1,13 @@
+COMMAND: node /tmp/pandwind-cli-bootstrap-repro.mjs
+EXIT: 0
+{"from":"unocss","to":"yumcss","mode":"safe","routeProof":{"id":"unocss-to-yumcss","from":"unocss","to":"yumcss","maturity":"experimental","execution":"installed-project","requiredDimensions":["canonical-css","typecheck","build","browser-states","ssr-hydration","dependencies","css-size"],"referenceIds":["unocss-nextjs-page"],"evidenceIds":["unocss-installed-proof"],"note":"An installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; a pinned upstream Next example also passes the migration, Next typecheck/build, HTTP/RSC/browser checks, and UnoCSS removal. Broader preset and framework coverage is still required for promotion."},"projectGeneratedFiles":[],"files":[{"file":"App.tsx","generatedFiles":[],"from":"unocss","converted":0,"skipped":1,"residuals":1,"canonical":{"checked":false,"equal":false,"sourceBytes":0,"targetBytes":0,"differences":[]},"residualDetails":[{"kind":"configuration","text":"UnoCSS project configuration","hint":"no uno.config or unocss.config file was found, so the project's utility rules cannot be verified"}],"routeProof":{"id":"unocss-to-yumcss","from":"unocss","to":"yumcss","maturity":"experimental","execution":"installed-project","requiredDimensions":["canonical-css","typecheck","build","browser-states","ssr-hydration","dependencies","css-size"],"referenceIds":["unocss-nextjs-page"],"evidenceIds":["unocss-installed-proof"],"note":"An installed React/Vite fixture covers the official UnoCSS generator, custom token lowering, virtual stylesheet removal, generated Vite integration, SSR, hydration, browser parity, and CSS size; a pinned upstream Next example also passes the migration, Next typecheck/build, HTTP/RSC/browser checks, and UnoCSS removal. Broader preset and framework coverage is still required for promotion."}}]}
+
+ROOT /tmp/yumcss-bootstrap-audit-yXCHTy
+App.tsx // yumcss:migrate-skip (configuration-residual: configuration)
+
+export const App=()=> <div className="my-custom-utility" />;
+
+package.json {"type":"module","devDependencies":{"unocss":"1.0.0"}}
+vite.config.ts import { yumcssExtractVite } from "yumcss/vite";
+import { preset } from "./yumcss/preset.ts"; export default {plugins:[yumcssExtractVite(preset, { root: "." })]};
+
