@@ -474,15 +474,20 @@ async function officialMantineConfig(
 	return fallback;
 }
 
-function mantineRem(value: string | number): string | undefined {
+function mantineRem(value: string | number, fallbackToDefaultScale: boolean): string | undefined {
 	const numeric =
 		typeof value === "number" ? value : Number(value.endsWith("px") ? value.slice(0, -2) : value);
 	if (!Number.isFinite(numeric)) return undefined;
 	if (numeric === 0) return "0rem";
-	return `calc(${numeric / 16}rem * var(--mantine-scale))`;
+	return `calc(${numeric / 16}rem * var(--mantine-scale${fallbackToDefaultScale ? ", 1" : ""}))`;
 }
 
-function mantineValue(property: string, value: StyleValue, theme?: MantineThemeLike): StyleValue {
+function mantineValue(
+	property: string,
+	value: StyleValue,
+	theme: MantineThemeLike | undefined,
+	fallbackToDefaultScale: boolean,
+): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
 	const resolved =
 		typeof value.value === "string" ? resolveMantineValue(property, value.value, theme) : undefined;
@@ -490,7 +495,7 @@ function mantineValue(property: string, value: StyleValue, theme?: MantineThemeL
 	const properties = mantineProperties(property);
 	const scaled = properties.some((candidate) => MANTINE_SCALED_PROPERTIES.has(candidate));
 	if (scaled && (typeof value.value === "string" || typeof value.value === "number")) {
-		const rem = mantineRem(value.value);
+		const rem = mantineRem(value.value, fallbackToDefaultScale);
 		if (rem !== undefined) return { kind: StyleValueKindTag.Literal, value: rem };
 	}
 	if (typeof value.value !== "string") return value;
@@ -765,6 +770,7 @@ export function createMantineAdapter(
 									property,
 									value,
 									context.config.values.mantineTheme as MantineThemeLike | undefined,
+									context.targetId === CodemodAdapterId.YumCSS,
 								),
 								property,
 								mantineTokenGroup,
