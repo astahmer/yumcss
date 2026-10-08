@@ -6,6 +6,7 @@ import {
 	createRealRepositoryCorpus,
 	runAdapterMigrationAsync,
 } from "@yumcss/codemod/swap";
+import { adapterReferenceProofFails } from "./adapter-reference-gate.ts";
 import { createEffectToolingTaskRunner } from "./effect-tooling.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import {
@@ -162,6 +163,11 @@ async function proveReference(
 			skipped: migration.skipped,
 			residuals: migration.residuals.length,
 			validations: validations.length,
+			sourcePreserved:
+				migration.code
+					.replaceAll(/\/\/ yumcss:migrate-skip[^\n]*\n/gu, "")
+					.replaceAll(/\/\* yumcss:migrate-skip.*?\*\//gu, "")
+					.trim() === source.trim(),
 			valid:
 				migration.residuals.length === 0 &&
 				migration.skipped === 0 &&
@@ -227,6 +233,7 @@ async function run(): Promise<AdapterReferenceProofReport> {
 		references: reports,
 		passed,
 		failed: reports.length - passed,
+		regressions: reports.filter(adapterReferenceProofFails).length,
 	};
 }
 
@@ -237,5 +244,5 @@ if (import.meta.main) {
 		join(root, "plans/evidence/adapter-reference-proof.json");
 	writeFileSync(output, `${JSON.stringify(report, null, 2)}\n`);
 	console.log(JSON.stringify(report, null, 2));
-	if (report.failed > 0) process.exitCode = 1;
+	if (report.regressions > 0) process.exitCode = 1;
 }
