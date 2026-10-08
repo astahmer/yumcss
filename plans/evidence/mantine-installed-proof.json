@@ -26,8 +26,8 @@
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 85,
-			"targetBytes": 85,
+			"sourceBytes": 117,
+			"targetBytes": 117,
 			"differences": []
 		},
 		"sourceImportRemoved": true,
@@ -67,7 +67,7 @@
 	},
 	"css": {
 		"sourceBytes": 231220,
-		"targetBytes": 136,
+		"targetBytes": 171,
 		"note": "Mantine source bytes are its bundled stylesheet while the static YumCSS projection uses atomic class CSS. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
 	}
 }

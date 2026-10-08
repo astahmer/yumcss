@@ -50,7 +50,7 @@ test("mantine -> yumcss: migrates concrete mantine syntax to yumcss", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -161,7 +161,7 @@ test("mantine -> yumcss: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -196,7 +196,7 @@ test("mantine -> yumcss: loads concrete theme and project context variants", asy
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -243,7 +243,7 @@ test("mantine -> yumcss: resolves concrete token values with project context", a
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;",
+		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -287,7 +287,7 @@ test("mantine -> yumcss: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" })} />;
+		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "generatedFiles": [],

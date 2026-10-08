@@ -70,7 +70,8 @@
 	},
 	"css": {
 		"sourceBytes": 553,
-		"targetBytes": 292,
-		"targetNotLarger": true
+		"targetBytes": 309,
+		"targetNotLarger": true,
+		"comparison": "comparable"
 	}
 }
