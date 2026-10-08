@@ -6,32 +6,32 @@ Yums, the tuxedo cat, comes from the 17 approved mascot SVGs in [`../svg/`](../s
 
 ## Canonical assets
 
-| File | Use |
-| --- | --- |
-| `logo-mark.svg` | Primary mark. The approved Peek pose, tightly framed, on a transparent background. Use it next to the product name, in headers and in docs. |
-| `app-icon.svg` | Peek on the orange rounded square (corner radius 115 of 512). Use it for app and PWA icons, social avatars and store listings. |
-| `favicon.svg` | The favicon: the approved Peek artwork on the orange tile, cropped to the face and paw tips (`FAVICON_CROP` in `build-brand.py`). One file serves every size; nothing in it is redrawn. |
-| `favicon-16.png`, `favicon-32.png`, `favicon-48.png` | Raster favicons rendered from `favicon.svg`. |
-| `apple-touch-icon.png` | 180×180 with square corners, because iOS applies its own rounding. |
-| `icon-192.png`, `icon-512.png` | Web app manifest icons, rendered from `app-icon.svg`. |
+| File                                                 | Use                                                                                                                                                                                     |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `logo-mark.svg`                                      | Primary mark. The approved Peek pose, tightly framed, on a transparent background. Use it next to the product name, in headers and in docs.                                             |
+| `app-icon.svg`                                       | Peek on the orange rounded square (corner radius 115 of 512). Use it for app and PWA icons, social avatars and store listings.                                                          |
+| `favicon.svg`                                        | The favicon: the approved Peek artwork on the orange tile, cropped to the face and paw tips (`FAVICON_CROP` in `build-brand.py`). One file serves every size; nothing in it is redrawn. |
+| `favicon-16.png`, `favicon-32.png`, `favicon-48.png` | Raster favicons rendered from `favicon.svg`.                                                                                                                                            |
+| `apple-touch-icon.png`                               | 180×180 with square corners, because iOS applies its own rounding.                                                                                                                      |
+| `icon-192.png`, `icon-512.png`                       | Web app manifest icons, rendered from `app-icon.svg`.                                                                                                                                   |
 
 The favicons are always on the orange tile. There is no cream variant. A transparent variant has not been made yet.
 
 ```html
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 ```
 
 ## Colors
 
-| Name | Hex | Role |
-| --- | --- | --- |
-| Orange | `#F59E42` | Canonical brand color: app icon and favicon tile |
-| Coral | `#EF4444` | Secondary accent |
-| Cream | `#FEF7ED` | Light surfaces |
-| Charcoal | `#1F1F1F` | Dark surfaces |
+| Name     | Hex       | Role                                             |
+| -------- | --------- | ------------------------------------------------ |
+| Orange   | `#F59E42` | Canonical brand color: app icon and favicon tile |
+| Coral    | `#EF4444` | Secondary accent                                 |
+| Cream    | `#FEF7ED` | Light surfaces                                   |
+| Charcoal | `#1F1F1F` | Dark surfaces                                    |
 
 ## Using Yums on the website
 

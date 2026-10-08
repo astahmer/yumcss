@@ -887,7 +887,8 @@ const buildSnapshot = (scenarios: readonly RuntimeScenarioRecord[]): RuntimeSnap
 const sameRuntimeEnvironment = (
 	left: RuntimeSnapshot["environment"],
 	right: RuntimeSnapshot["environment"],
-): boolean => left.platform === right.platform && left.arch === right.arch && left.node === right.node;
+): boolean =>
+	left.platform === right.platform && left.arch === right.arch && left.node === right.node;
 
 test("runtime throughput comparisons require a matching environment", () => {
 	const baseline: RuntimeSnapshot["environment"] = {

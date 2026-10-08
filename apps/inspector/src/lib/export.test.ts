@@ -205,7 +205,10 @@ test("utilitiesToJson carries meta + unions and round-trips", () => {
 });
 
 test("coverageToJson round-trips the coverage slice", () => {
-	const doc = JSON.parse(InspectorExport.coverageToJson(payload)) as { eliminatedPct: number; files: unknown[] };
+	const doc = JSON.parse(InspectorExport.coverageToJson(payload)) as {
+		eliminatedPct: number;
+		files: unknown[];
+	};
 	expect(doc.eliminatedPct).toBe(46);
 	expect(doc.files).toHaveLength(2);
 });

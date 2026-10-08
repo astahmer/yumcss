@@ -3,12 +3,12 @@
 	"version": "0.0.0",
 	"description": "Typed style objects with build-time CSS extraction for TypeScript projects.",
 	"keywords": [
+		"atomic-css",
 		"css",
-		"typescript",
 		"design-system",
 		"tailwindcss",
-		"vite",
-		"atomic-css"
+		"typescript",
+		"vite"
 	],
 	"license": "MIT",
 	"repository": {
@@ -429,7 +429,7 @@
 		"build": "pnpm exec tsdown",
 		"prepack": "pnpm run build",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/runtime-api-benchmark.test.ts --exclude tests/tsc-performance.test.ts --exclude tests/cx-bench-smoke.test.ts --exclude tests/stack-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts tests/runtime-api-benchmark.test.ts tests/cx-bench-smoke.test.ts tests/stack-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts",
+		"test": "vitest run --exclude tests/runtime-benchmark.test.ts --exclude tests/runtime-api-benchmark.test.ts --exclude tests/tsc-performance.test.ts --exclude tests/cx-bench-smoke.test.ts --exclude tests/stack-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/tsc-performance.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts tests/runtime-api-benchmark.test.ts tests/cx-bench-smoke.test.ts tests/stack-performance.test.ts",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"test:size": "vitest run runtime-size",
