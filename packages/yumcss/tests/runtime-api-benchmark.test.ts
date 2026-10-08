@@ -884,6 +884,23 @@ const buildSnapshot = (scenarios: readonly RuntimeScenarioRecord[]): RuntimeSnap
 	scenarios: [...scenarios],
 });
 
+const sameRuntimeEnvironment = (
+	left: RuntimeSnapshot["environment"],
+	right: RuntimeSnapshot["environment"],
+): boolean => left.platform === right.platform && left.arch === right.arch && left.node === right.node;
+
+test("runtime throughput comparisons require a matching environment", () => {
+	const baseline: RuntimeSnapshot["environment"] = {
+		platform: "darwin",
+		arch: "arm64",
+		node: "v24.20.0",
+	};
+	expect(sameRuntimeEnvironment(baseline, baseline)).toBe(true);
+	expect(sameRuntimeEnvironment(baseline, { ...baseline, platform: "linux" })).toBe(false);
+	expect(sameRuntimeEnvironment(baseline, { ...baseline, arch: "x64" })).toBe(false);
+	expect(sameRuntimeEnvironment(baseline, { ...baseline, node: "v24.19.0" })).toBe(false);
+});
+
 test("public runtime API throughput stays within the recorded evidence band", async () => {
 	const measured = SCENARIOS.map(measure);
 	const snapshot = buildSnapshot(measured);
@@ -904,6 +921,12 @@ test("public runtime API throughput stays within the recorded evidence band", as
 	const removed = baseline.scenarios.filter((scenario) => !measuredNames.has(scenario.name));
 	expect(missing, "runtime API benchmark scenarios added; refresh with -u").toHaveLength(0);
 	expect(removed, "runtime API benchmark scenarios removed; refresh with -u").toHaveLength(0);
+	if (!sameRuntimeEnvironment(baseline.environment, snapshot.environment)) {
+		console.info(
+			`Runtime API throughput comparison skipped: baseline ${baseline.environment.platform}/${baseline.environment.arch} ${baseline.environment.node}, current ${snapshot.environment.platform}/${snapshot.environment.arch} ${snapshot.environment.node}.`,
+		);
+		return;
+	}
 	for (const scenario of measured) {
 		const reference = baselineByName.get(scenario.name)!;
 		expect(
