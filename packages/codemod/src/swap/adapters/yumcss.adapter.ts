@@ -2924,7 +2924,7 @@ export function createYumCSSAdapter(options: YumCSSAdapterOptions = {}) {
 		},
 		emit(program, { programObject, declarationsObject }, context) {
 			const cssBinding = generatedCssBinding(
-				context?.document?.document.source,
+				context?.sourceText ?? context?.document?.document.source,
 				context?.sourceModules,
 				context?.sourceModuleMatchers,
 			);

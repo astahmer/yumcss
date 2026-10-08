@@ -1735,7 +1735,12 @@ function runAdapterMigrationInternal(
 		// target dialect never calls.
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, [...demotedFactoryHosts]);
 	}
-	if (converted > 0 && skipped === 0 && residuals.length === 0) {
+	if (
+		converted > 0 &&
+		skipped === 0 &&
+		residuals.length === 0 &&
+		!sourceImportsBinding(code, "css", [], [() => true])
+	) {
 		const generatedTargetBinding =
 			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
 				[code, ...imports, ...generatedStatements].join("\n"),
@@ -1795,7 +1800,7 @@ function runAdapterMigrationInternal(
 				code,
 			);
 		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
-		if (binding !== undefined)
+		if (binding !== undefined && !sourceImportsBinding(code, "css", [], [() => true]))
 			code = canonicalizeGeneratedCssBinding({ text: code, imports: [] }, binding).text;
 		code = code.replace(/\bcss\s+as\s+css\b/gu, "css");
 	}

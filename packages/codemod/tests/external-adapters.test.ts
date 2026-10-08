@@ -2190,6 +2190,26 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('Button({ shade: "red" })');
 	});
 
+	test("keeps relative source css imports separate from generated bindings", () => {
+		const result = runAdapterMigration(
+			'import { css } from "../css";\nconst card = css({ color: "red" });\nconst legacy = css(value);',
+			{ from: "goober", to: "yumcss", file: "card.ts", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('import { css } from "../css"');
+		expect(result.code).toContain("const targetCss = createUnsafeCss();");
+		expect(result.code).toContain('targetCss.class({ color: "red" })');
+		expect(result.code).not.toContain("const css = createUnsafeCss();");
+		expect(result.code).toContain("css(value)");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { css } from "../css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
+			const targetCss = createUnsafeCss();
+			const card = targetCss.class({ color: "red" });
+			const legacy = css(value);"
+		`);
+	});
+
 	test("preserves Stitches styles read through source SSR hooks", () => {
 		const source =
 			'import { createStitches } from "@stitches/react";\n' +
