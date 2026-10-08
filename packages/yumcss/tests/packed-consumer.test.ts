@@ -7,7 +7,15 @@
  */
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	symlinkSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -156,12 +164,12 @@ describe("packed YumCSS consumer", () => {
 				},
 			});
 
-			const files = execFileSync("rg", ["--files", join(consumerDir, "dist")], { encoding: "utf8" })
-				.trim()
-				.split("\n");
-			const cssFile = files.find((file) => file.endsWith(".css"));
-			expect(cssFile).toBeDefined();
-			expect(readFileSync(cssFile!, "utf8")).toContain("#123456");
+			const distDirectory = join(consumerDir, "dist");
+			const cssFile = readdirSync(distDirectory, { recursive: true }).find((file) =>
+				file.endsWith(".css"),
+			);
+			if (cssFile === undefined) throw new Error("Vite consumer build emitted no CSS file");
+			expect(readFileSync(join(distDirectory, cssFile), "utf8")).toContain("#123456");
 		} finally {
 			rmSync(workdir, { recursive: true, force: true });
 		}
