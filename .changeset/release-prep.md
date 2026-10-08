@@ -3,6 +3,7 @@
 "@yumcss/codemod": minor
 "@yumcss/analyze": minor
 "@yumcss/lint-plugin": minor
+"@yumcss/devtools": minor
 ---
 
 Release preparation: publishable package metadata (files/engines/repository/license),
