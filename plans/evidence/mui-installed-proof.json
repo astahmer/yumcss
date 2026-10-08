@@ -25,8 +25,8 @@
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 115,
-			"targetBytes": 115,
+			"sourceBytes": 119,
+			"targetBytes": 119,
 			"differences": []
 		},
 		"targetUsesYumCSS": true,
@@ -67,7 +67,7 @@
 	},
 	"css": {
 		"sourceBytes": 131,
-		"targetBytes": 174,
+		"targetBytes": 182,
 		"note": "MUI source bytes are Emotion SSR stylesheet bytes while the static YumCSS projection uses YumCSS's generated atomic stylesheet. The values are diagnostic output-size measurements, not a like-for-like stylesheet budget."
 	}
 }

@@ -523,6 +523,8 @@ function defaultMuiSystemValue(
 		value.value <= 1
 	)
 		return { kind: "literal", value: `${value.value * 100}%` };
+	if (muiSizingProperties.has(property) && typeof value.value === "number" && value.value > 1)
+		return { kind: "literal", value: `${value.value}px` };
 	if (muiBorderProperties.has(property) && typeof value.value === "number")
 		return { kind: "literal", value: `${value.value}px solid` };
 	if (property === "boxShadow" && typeof value.value === "number") {
