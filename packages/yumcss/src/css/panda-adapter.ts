@@ -1,19 +1,19 @@
 /**
  * Panda adapter for the css() engine — emits Panda-shaped atomic class
- * names (backgroundColor: "red.500" -> bg-red.500).
+ * names using the project's resolved property class metadata.
  *
  * The formula is Panda's default non-hash output, verified against the real
- * @pandacss/shared runtime and @pandacss/generator@1.12.0 artifacts:
+ * @pandacss/generator@1.12.1 generated runtime (default separator `_`):
  *
  * - prop names resolve through the generated classNameByProp map
- *   (shorthands like backgroundColor -> bg); unknown props are hyphenated
+ *   (backgroundColor -> bg-c in the stock preset); unknown props are hyphenated
  *   (borderRadius -> border-radius);
- * - values replace spaces with underscores (w-calc(100%_-_20px));
+ * - values replace spaces with underscores (w_calc(100%_-_20px));
  * - conditions are finalized like the generator's finalizeConditions:
  *   configured keys become their underscore-stripped name (_hover ->
  *   hover), raw &/at-rule paths are bracketed ([&:hover],
  *   [@media(hover:hover)]) and joined with : (hover:bg_red_500);
- * - an optional prefix is prepended with - (ui-bg-red.500).
+ * - an optional prefix is prepended with - (ui-bg-c_red.500).
  *
  * Hash mode is intentionally unsupported: the atomic hash depends on the
  * user's full generator config, and a mismatched hash would produce classes
@@ -54,11 +54,11 @@ export interface PandaAdapterOptions {
 
 /** Panda's withoutSpace: intra-value spaces become underscores. */
 const withoutSpace = (value: string): string => value.replaceAll(" ", "_");
+const importantPattern = /\s*!(important)?/i;
 
 /** Panda's finalizeConditions bracketing for raw selector/at-rule paths. */
 const finalizeCondition = (selector: string): string => {
-	const compact = selector.replaceAll(/[\n\s]+/g, " ").trim();
-	return /[&@]/.test(compact) ? "[" + withoutSpace(compact) + "]" : compact;
+	return /[&@]/.test(selector) ? "[" + withoutSpace(selector.trim()) + "]" : selector;
 };
 
 /**
@@ -143,9 +143,14 @@ export const createPandaAdapter = (options: PandaAdapterOptions = {}): ClassName
 				finalized.push(name);
 			}
 
-			const base = propKey(property) + "-" + withoutSpace(value);
-			const className = prefix === undefined ? base : prefix + "-" + base;
-			return finalized.length === 0 ? className : finalized.join(":") + ":" + className;
+			const important = importantPattern.test(value);
+			const sanitized = value.replaceAll(/[\n\s]+/g, " ");
+			const normalized = important ? sanitized.replace(importantPattern, "").trim() : sanitized;
+			const base = propKey(property) + "_" + withoutSpace(normalized);
+			const className = prefix ? prefix + "-" + base : base;
+			const conditioned =
+				finalized.length === 0 ? className : finalized.join(":") + ":" + className;
+			return important ? conditioned + "!" : conditioned;
 		},
 	};
 };

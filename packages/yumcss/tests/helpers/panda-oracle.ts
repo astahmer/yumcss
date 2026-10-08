@@ -1,32 +1,41 @@
-/**
- * @pandacss/shared oracle: Panda's real classname runtime, loaded from the
- * workspace root (it is reachable only as a phantom dependency of the root's
- * @pandacss/config, so the yumcss package's own dependency graph stays
- * unchanged). Typed structurally against the package's .d.mts surface.
- */
-import { createRequire } from "node:module";
+/** Independent oracle: execute the installed Panda generator's actual artifacts. */
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { resolveConfig } from "@pandacss/config";
+import { Generator } from "@pandacss/generator";
 
-const rootRequire = createRequire(new URL("../../../../package.json", import.meta.url));
-
-interface PandaShared {
-	createCss: (context: {
-		utility: {
-			prefix?: string;
-			hasShorthand: boolean;
-			resolveShorthand: (prop: string) => string;
-			transform: (prop: string, value: string) => { className: string };
+export const pandaOracle = async (config: Parameters<typeof resolveConfig>[0]["config"] = {}) => {
+	const directory = mkdtempSync(join(tmpdir(), "yumcss-panda-oracle-"));
+	try {
+		const resolved = await resolveConfig(
+			{
+				config: { ...config, outdir: "styled-system" },
+				dependencies: [],
+				path: join(directory, "panda.config.ts"),
+			},
+			directory,
+		);
+		const generator = new Generator(resolved);
+		mkdirSync(join(directory, "css"));
+		for (const artifact of generator.getArtifacts(["helpers", "css-fn"])) {
+			for (const file of artifact.files) {
+				if (!file.file.endsWith(".mjs")) continue;
+				if (file.code === undefined)
+					throw new Error("Panda emitted a runtime artifact without code");
+				writeFileSync(
+					join(directory, artifact.id === "helpers" ? "" : "css", file.file),
+					file.code,
+				);
+			}
+		}
+		const generated = await import(pathToFileURL(join(directory, "css/css.mjs")).href);
+		return {
+			css: generated.css as (style: Record<string, unknown>) => string,
+			propClasses: Object.fromEntries(generator.utility.entries()),
 		};
-		conditions?: {
-			breakpoints: { keys: string[] };
-			shift: (paths: string[]) => string[];
-			finalize: (paths: string[]) => string[];
-		};
-	}) => (styles?: Record<string, unknown>) => string;
-	hypenateProperty: (prop: string) => string;
-	withoutSpace: (value: string) => string;
-}
-
-export const pandaShared = async (): Promise<PandaShared> => {
-	const pkgDir = rootRequire.resolve("@pandacss/shared/package.json").replace("/package.json", "");
-	return (await import(pkgDir + "/dist/index.mjs")) as PandaShared;
+	} finally {
+		rmSync(directory, { recursive: true, force: true });
+	}
 };

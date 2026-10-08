@@ -21,7 +21,7 @@ export const css = createCss(preset, { className: createNamedAtomsStrategy("ui")
 | _(default)_         | none                                                                       | `1f29p40`                                   | YumCSS       |
 | `yumcss/css/named`  | `createNamedAtomsStrategy(prefix = "pw")`                                  | `pw-color-$blue-500`, `pw-_hover-color-red` | YumCSS       |
 | `yumcss/css/stylex` | `createStyleXAdapter({ classNamePrefix, debug })`                          | `x1a2b3c`                                   | YumCSS       |
-| `yumcss/css/panda`  | `createPandaAdapter({ propClasses, prefix, conditions })`                  | `bg_red.500`, `hover:bg_red.500`            | Panda        |
+| `yumcss/css/panda`  | `createPandaAdapter({ propClasses, prefix, conditions })`                  | `bg-c_red.500`, `hover:bg-c_red.500`        | Panda        |
 | `yumcss/css/unocss` | `createUnoCssAdapter({ conditions, preset })`                              | `[color:red]`                               | UnoCSS       |
 | `yumcss/tw`         | `createTwAdapter({ variants, bridge, preset })` (generated as `twAdapter`) | `bg-blue-500`, `hover:text-blue-400`        | Tailwind     |
 
@@ -31,6 +31,13 @@ and the extractor serves an empty `yumcss:css`. See
 [Tailwind classes from css()](/tailwind/tailwind-classes/).
 
 [Try every strategy](/tools/playground/) with the playground's adapter switch.
+
+Panda property names come from the resolved project's generated class metadata.
+For the pinned Panda 1.12.1 stock configuration, `backgroundColor` uses `bg-c`,
+`color` uses `c`, and `borderRadius` uses `bdr`. Without `propClasses`, the
+adapter falls back to hyphenated property names. It supports non-hashed names
+with Panda's default `_` separator; custom separators and hash mode are unsupported.
+Pass Panda's own token spellings when consuming its generated stylesheet.
 
 ## Writing your own
 

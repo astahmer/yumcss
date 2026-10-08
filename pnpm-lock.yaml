@@ -124,6 +124,9 @@ importers:
       '@pandacss/config':
         specifier: 1.12.1
         version: 1.12.1
+      '@pandacss/generator':
+        specifier: 1.12.1
+        version: 1.12.1
       '@playwright/test':
         specifier: 1.62.1
         version: 1.62.1
