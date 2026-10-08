@@ -23,11 +23,11 @@
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 90,
-			"targetBytes": 90,
+			"sourceBytes": 109,
+			"targetBytes": 109,
 			"differences": []
 		},
-		"generatedSupportFiles": 6,
+		"generatedSupportFiles": 4,
 		"targetUsesYumCSS": true,
 		"sourceImportRemoved": true,
 		"generatedVitePresetImportIsExplicit": true,
@@ -45,7 +45,7 @@
 	"ssr": {
 		"markupEquivalent": true,
 		"sourceMarkup": "<button data-proof=\"true\" class=\"sc-bRKDuR hZa-Dvf\">Proof</button>",
-		"targetMarkup": "<button data-proof=\"true\" class=\"49nlxi 1tp51qt 1ko11iu 7nvuka jp2vkl\">Proof</button>"
+		"targetMarkup": "<button data-proof=\"true\" class=\"49nlxi 7nvuka 1tp51qt 1ko11iu i18ukb\">Proof</button>"
 	},
 	"browser": {
 		"checked": true,
@@ -69,7 +69,7 @@
 	},
 	"css": {
 		"sourceBytes": 181,
-		"targetBytes": 141,
+		"targetBytes": 165,
 		"targetNotLarger": true
 	}
 }

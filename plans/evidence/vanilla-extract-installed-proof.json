@@ -19,7 +19,7 @@
 		"targetNodeModule": true
 	},
 	"migration": {
-		"converted": 2,
+		"converted": 4,
 		"skipped": 0,
 		"residuals": 0,
 		"canonical": {

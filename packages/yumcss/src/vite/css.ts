@@ -39,8 +39,10 @@ import type {
 } from "../types/typings.ts";
 import { readFileSync, realpathSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
-import type { OutputBundle, PluginContext } from "rollup";
-import type { HmrContext, ModuleNode, ResolvedConfig, ViteDevServer } from "vite";
+import type { HmrContext, ModuleNode, ResolvedConfig, Rollup, ViteDevServer } from "vite";
+
+type OutputBundle = Rollup.OutputBundle;
+type PluginContext = Rollup.PluginContext;
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import { refreshYumCSSEngineContext, type YumCSSEngineContext } from "./engine-context.ts";
 import { findCssFactoryKinds } from "./css-factory-source.ts";
