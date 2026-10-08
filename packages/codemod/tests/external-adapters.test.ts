@@ -2224,7 +2224,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.hint?.includes("SSR semantics"))).toBe(true);
+		expect(result.residuals.some((residual) => residual.hint?.includes("SSR semantics"))).toBe(
+			true,
+		);
 		expect(result.code).toContain("const { css, getCssText } = createStitches();");
 		expect(result.code).toContain('css({ color: "red" })');
 		expect(result.code).toContain("const output = getCssText();");

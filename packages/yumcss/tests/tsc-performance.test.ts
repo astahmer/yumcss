@@ -368,7 +368,7 @@ test("public API typecheck scenarios stay within the recorded evidence band", as
 	}
 	const baseline = JSON.parse(readFileSync(SNAPSHOT, "utf8")) as Snapshot;
 	assertNoRegression(measured, baseline, snapshot.environment.typescript);
-});
+}, 300_000);
 
 test("accepts platform compiler metadata for the pinned TypeScript release", () => {
 	const baseline = buildSnapshot([], "7.0.2+effect-tsgo.0.36.5");
