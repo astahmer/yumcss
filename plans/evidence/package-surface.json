@@ -25,8 +25,8 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/package-exports.test.ts",
-				"docs/src/content/docs/api/css.md",
-				"docs/src/content/docs/getting-started.md"
+				"docs/src/content/docs/css/overview.mdx",
+				"docs/src/content/docs/start/quick-start.mdx"
 			],
 			"note": "The frozen authoring and host contracts."
 		},
@@ -42,7 +42,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/preset-tailwindcss.test.ts",
-				"docs/src/content/docs/api/presets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Ecosystem starter preset: Tailwind v4's theme namespaces and breakpoints as authored data, generated from the pinned tailwindcss package."
 		},
@@ -58,7 +58,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/preset-chakra.test.ts",
-				"docs/src/content/docs/api/presets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Ecosystem starter preset: Chakra UI v3's token scales, color-mode semantic tokens, and conditions as authored data, generated from the pinned @chakra-ui/react package."
 		},
@@ -74,7 +74,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/preset-shadcn.test.ts",
-				"docs/src/content/docs/api/presets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Ecosystem starter preset: shadcn/ui's registry color roles, radius and font variables, and create-page selections as authored data, generated from the pinned shadcn/ui checkout."
 		},
@@ -90,7 +90,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/preset-panda.test.ts",
-				"docs/src/content/docs/api/presets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Ecosystem starter preset: Panda CSS's token scales, conditions, and breakpoints as authored data, generated from the pinned @pandacss/config resolver."
 		},
@@ -107,7 +107,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/reset/tailwindcss.css",
 				"packages/yumcss/tests/packed-consumer.test.ts",
-				"docs/src/content/docs/api/resets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Reset stylesheet: Tailwind v4's preflight ported with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
 		},
@@ -124,7 +124,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/reset/panda.css",
 				"packages/yumcss/tests/packed-consumer.test.ts",
-				"docs/src/content/docs/api/resets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Reset stylesheet: Panda CSS's preflight ported from @pandacss/generator with a provenance and license header, shipped as a plain CSS asset in the @layer reset layer."
 		},
@@ -141,7 +141,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/reset/yumcss.css",
 				"packages/yumcss/tests/packed-consumer.test.ts",
-				"docs/src/content/docs/api/resets.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Reset stylesheet: YumCSS's own authored baseline (no upstream port) for engines that ship no reset, shipped as a plain CSS asset in the @layer reset layer."
 		},
@@ -158,7 +158,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/prose/tailwindcss.css",
 				"packages/yumcss/tests/packed-consumer.test.ts",
-				"docs/src/content/docs/api/prose.md"
+				"docs/src/content/docs/design-system/built-in-presets.mdx"
 			],
 			"note": "Prose stylesheet: the Tailwind Typography scale (core, four size modifiers, invert, and 22 color themes) compiled from @tailwindcss/typography through the pinned tailwindcss compiler, shipped as a plain CSS asset in the @layer prose layer."
 		},
@@ -176,7 +176,7 @@
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
-				"docs/src/content/docs/interop/css-in-js-adapters.md"
+				"docs/src/content/docs/reference/class-name-strategies.mdx"
 			],
 			"note": "Concrete ClassNameStrategy integrations remain opt-in and adapter-owned."
 		},
@@ -194,8 +194,8 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/package-exports.test.ts",
-				"docs/src/content/docs/tooling/codegen.md",
-				"docs/src/content/docs/api/css.md"
+				"docs/src/content/docs/reference/api.mdx",
+				"docs/src/content/docs/css/overview.mdx"
 			],
 			"note": "Opt-in generated CSS facade for large presets; codegen owns the emitted concrete types."
 		},
@@ -218,7 +218,7 @@
 			"externalContract": true,
 			"evidence": [
 				"packages/yumcss/package.json",
-				"docs/src/content/docs/reference/backends.md",
+				"docs/src/content/docs/guides/platforms.mdx",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
 			"note": "Non-default targets are retained, but they are not equivalent to the web lane."
@@ -241,7 +241,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"README.md",
-				"docs/src/content/docs/tooling/codegen.md"
+				"docs/src/content/docs/tailwind/tw.mdx"
 			],
 			"note": "The shared scanner and selector primitives remain build-time contracts; Tailwind project codegen lives in @yumcss/codemod."
 		},
@@ -261,8 +261,8 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/vite/preset-context.ts",
-				"docs/src/content/docs/tooling/vite-plugins.md",
-				"docs/src/content/docs/tooling/multi-bundler.md"
+				"docs/src/content/docs/reference/vite.mdx",
+				"docs/src/content/docs/guides/bundlers.mdx"
 			],
 			"note": "Bundler integration is explicit; the preset-context export exposes resolved property-aware token vocabulary to build tooling."
 		},
@@ -278,7 +278,7 @@
 			"evidence": [
 				"packages/yumcss/package.json",
 				"packages/yumcss/tests/lib-artifact.test.ts",
-				"docs/src/content/docs/guides/component-library.md"
+				"docs/src/content/docs/components/component-library.mdx"
 			],
 			"note": "Versioned publishable CSS-rule artifact contract consumed by the Vite integration."
 		},
@@ -297,7 +297,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/vite/runtime-pruner.ts",
 				"packages/codemod/src/runtime/cli.ts",
-				"docs/src/content/docs/tooling/codegen.md"
+				"docs/src/content/docs/reference/vite.mdx"
 			],
 			"note": "Tooling-only runtime-pruning explanation; it is not part of the browser runtime contract."
 		},
@@ -405,8 +405,8 @@
 			"evidence": [
 				"packages/codemod/package.json",
 				"packages/codemod/README.md",
-				"docs/src/content/docs/tooling/codemod.md",
-				"docs/src/content/docs/tooling/codegen.md",
+				"docs/src/content/docs/migrate/overview.mdx",
+				"docs/src/content/docs/reference/cli.mdx",
 				"packages/codemod/tests/runtime-cli.test.ts",
 				"packages/codemod/tests/css-cli.test.ts"
 			],
@@ -427,7 +427,7 @@
 			"evidence": [
 				"packages/codemod/package.json",
 				"packages/codemod/tests/lib-cli.test.ts",
-				"docs/src/content/docs/tooling/codegen.md"
+				"docs/src/content/docs/components/component-library.mdx"
 			],
 			"note": "Publishable YumCSS design-system artifact builder and CLI boundary."
 		},
@@ -469,7 +469,7 @@
 				"packages/codemod/package.json",
 				"packages/codemod/tests/token-document.test.ts",
 				"packages/codemod/README.md",
-				"docs/src/content/docs/tooling/codemod.md",
+				"docs/src/content/docs/contributing/architecture.md",
 				"docs/src/content/docs/contributing/architecture.md"
 			],
 			"note": "Narrow published migration helpers plus the versioned, loss-aware token document codec and serializer."
@@ -488,7 +488,7 @@
 				"packages/yumcss/package.json",
 				"packages/yumcss/src/stack/Stack.svelte",
 				"packages/yumcss/src/stack/Stack.astro",
-				"docs/src/content/docs/tooling/vite-plugins.md"
+				"docs/src/content/docs/guides/bundlers.mdx"
 			],
 			"note": "Renderer-specific Stack host projections; the shared style mapping remains owned by the YumCSS stack contract."
 		},
