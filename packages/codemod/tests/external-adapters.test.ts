@@ -2190,6 +2190,33 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('Button({ shade: "red" })');
 	});
 
+	test("preserves Stitches styles read through source SSR hooks", () => {
+		const source =
+			'import { createStitches } from "@stitches/react";\n' +
+			"const { css, getCssText } = createStitches();\n" +
+			'const card = css({ color: "red" });\n' +
+			"const output = getCssText();";
+		const result = runAdapterMigration(source, {
+			from: "stitches",
+			to: "yumcss",
+			file: "styles.ts",
+			mode: "safe",
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.hint.includes("SSR semantics"))).toBe(true);
+		expect(result.code).toContain("const { css, getCssText } = createStitches();");
+		expect(result.code).toContain('css({ color: "red" })');
+		expect(result.code).toContain("const output = getCssText();");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createStitches } from "@stitches/react";
+			const { css, getCssText } = createStitches();
+			// yumcss:migrate-skip (route: stitches -> yumcss | parse-residual: capability | available: named-map, residual)
+			const card = css({ color: "red" });
+			const output = getCssText();"
+		`);
+	});
+
 	test("removes the complete Stitches bootstrap when SSR bindings are destructured", () => {
 		const result = runAdapterMigration(
 			'import { createStitches } from "@stitches/react";\n' +

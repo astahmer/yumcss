@@ -4,7 +4,11 @@ import {
 	StyleValueKindTag,
 } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterParseContext,
+	AdapterProjectConfig,
+} from "../adapter-contract.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -55,7 +59,23 @@ function stitchesValue(value: StyleValue, catalog: TokenCatalog | undefined): St
 	return match === undefined ? value : { kind: "literal", value: match.resolved };
 }
 
-function stitchesTransform(program: StyleProgram): StyleProgram {
+const preserveStitchesSsr = (program: StyleProgram, context: AdapterParseContext): StyleProgram => {
+	if (!/\bgetCssText\s*\(/u.test(context.source)) return program;
+	return {
+		...program,
+		residuals: [
+			...program.residuals,
+			{
+				kind: StyleProgramResidualKindTag.Capability,
+				text: context.source.slice(program.source?.start ?? 0, program.source?.end),
+				hint: "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated",
+			},
+		],
+	};
+};
+
+function stitchesTransform(program: StyleProgram, context: AdapterParseContext): StyleProgram {
+	program = preserveStitchesSsr(program, context);
 	const unresolved = new Set<string>();
 	const work = [...program.rules].toReversed();
 	while (work.length > 0) {
@@ -183,6 +203,7 @@ export default defineCodemodAdapter({
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*\(\s*[^,]+,\s*\{/g,
 			transform: (program, context) => {
+				program = preserveStitchesSsr(program, context);
 				if (program.source === undefined) return program;
 				const subject = context.source
 					.slice(program.source.start)
@@ -202,11 +223,13 @@ export default defineCodemodAdapter({
 		},
 		{
 			name: "globalCss",
+			transform: preserveStitchesSsr,
 			kind: CodemodCallPatternKindTag.Global,
 			regex: /\bglobalCss\s*\(\s*\{/g,
 		},
 		{
 			name: "keyframes",
+			transform: preserveStitchesSsr,
 			kind: CodemodCallPatternKindTag.Keyframes,
 			regex: /\bkeyframes\s*\(\s*\{/g,
 		},
