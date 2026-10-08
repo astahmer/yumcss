@@ -48,7 +48,8 @@ test("emotion -> stitches: migrates concrete emotion syntax to stitches", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> stitches: carries a documented secondary emotion API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> stitches: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> stitches: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> stitches: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> stitches: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { css } from "@emotion/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

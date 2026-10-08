@@ -1207,7 +1207,7 @@ function rewriteStandaloneJsx(
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = ${forwardRefBinding}${forwardRefTypes}((props, ref) => <${request.tag} {...props} ref={ref} ` +
-		`${classAttribute}={${isYumCSSCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />;\n` +
+		`${classAttribute}={${isYumCSSCarrier(request.classExpression) ? `css.props(${className}, props.${classAttribute}).className` : mergedClass.expression}} />);\n` +
 		`export default ${componentName};`;
 	const end = expressionStart + expression.length;
 	return {

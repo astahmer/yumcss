@@ -276,7 +276,8 @@ test("treat -> solid-styled: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { style } from "treat";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

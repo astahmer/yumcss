@@ -52,7 +52,8 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +86,8 @@ test("panda -> tamagui -> panda: preserves an actionable concrete round trip", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 0,
@@ -214,7 +216,8 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -247,7 +250,8 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 0,
@@ -285,7 +289,8 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +323,8 @@ test("panda -> tamagui -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 0,
@@ -371,7 +377,8 @@ test("panda -> tamagui -> panda: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -404,7 +411,8 @@ test("panda -> tamagui -> panda: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> panda | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 0,

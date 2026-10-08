@@ -1,0 +1,42 @@
+{
+  "colors": [
+    {
+      "color": "rgb(0, 0, 0)",
+      "id": "condition-0-0"
+    },
+    {
+      "color": "rgb(0, 0, 0)",
+      "id": "condition-0-1"
+    },
+    {
+      "color": "rgb(0, 0, 0)",
+      "id": "condition-0-2"
+    },
+    {
+      "color": "rgb(0, 0, 0)",
+      "id": "condition-1-0"
+    },
+    {
+      "color": "rgb(255, 0, 0)",
+      "id": "condition-1-1"
+    },
+    {
+      "color": "rgb(255, 0, 0)",
+      "id": "condition-1-2"
+    },
+    {
+      "color": "rgb(0, 0, 0)",
+      "id": "condition-2-0"
+    },
+    {
+      "color": "rgb(255, 0, 0)",
+      "id": "condition-2-1"
+    },
+    {
+      "color": "rgb(255, 0, 0)",
+      "id": "condition-2-2"
+    }
+  ],
+  "css": ".\\31 lodn9x[data-first][data-second], .\\31 lodn9x[data-first][data-second-alt], .\\31 lodn9x[data-first-alt][data-second], .\\31 lodn9x[data-first-alt][data-second-alt]{color:red}\n.uj0kd4 > [data-text=\"A&B\"]{color:blue}",
+  "literalColor": "rgb(0, 0, 255)"
+}

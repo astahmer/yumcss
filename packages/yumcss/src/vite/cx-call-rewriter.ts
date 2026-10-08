@@ -1,3 +1,5 @@
+import { bindingIsShadowedInAncestors } from "./css-literal-scope.ts";
+import { walkWithParent } from "../tw/literal.ts";
 import { toOxcNode } from "../oxc-node.ts";
 import type { Expression } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
@@ -109,29 +111,13 @@ export interface CxRewriteResult {
 	readonly candidates?: string[];
 }
 
-interface CallNode {
+interface CallNode extends OxcNode {
 	type: typeof NodeKind.CallExpression;
 	start: number;
 	end: number;
 	callee: { type?: string; name?: string } | null;
 	arguments: Expression[];
 }
-
-const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
-	const stack: unknown[] = [root];
-	while (stack.length > 0) {
-		const current = stack.pop();
-		if (Array.isArray(current)) {
-			for (let index = current.length - 1; index >= 0; index--) stack.push(current[index]);
-			continue;
-		}
-		if (current === null || typeof current !== "object") continue;
-		const node = current as { type?: string };
-		if (node.type === NodeKind.CallExpression) visit(current as CallNode);
-		const values = Object.values(current);
-		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
-	}
-};
 
 /**
  * Class candidates for one unfolded cx() call, walking the cx input grammar
@@ -306,8 +292,21 @@ export class CxCallRewriter {
 			}
 		};
 
-		walkCalls(program, (call) => {
+		walkWithParent(program, (node, _parent, ancestors) => {
+			if (node.type !== NodeKind.CallExpression) return;
+			const call = node as CallNode;
+			if (bindingIsShadowedInAncestors(call.callee?.name ?? "", ancestors)) return;
 			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
+			const scopedFold =
+				fold === undefined ||
+				![...fold.cssNames].some((name) => bindingIsShadowedInAncestors(name, ancestors))
+					? fold
+					: {
+							...fold,
+							cssNames: new Set(
+								[...fold.cssNames].filter((name) => !bindingIsShadowedInAncestors(name, ancestors)),
+							),
+						};
 			const inputs: StaticEval[] = [];
 			const conditionals: Array<{ index: number; skeleton: FoldSkeleton }> = [];
 			const classMapReads: Array<{
@@ -332,7 +331,8 @@ export class CxCallRewriter {
 					registerCallCandidates(call);
 					return;
 				}
-				const value = this.ports.evaluate(argument, fold, constants);
+
+				const value = this.ports.evaluate(argument, scopedFold, constants);
 				if (value !== CX_NOT_STATIC) {
 					inputs.push(value);
 					if (mapMember !== undefined)

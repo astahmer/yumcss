@@ -281,7 +281,8 @@ test("compiled -> react-native: preserves malformed concrete compiled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "@compiled/react";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

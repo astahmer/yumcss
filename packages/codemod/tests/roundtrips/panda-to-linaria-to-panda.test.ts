@@ -52,7 +52,8 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("panda -> linaria -> panda: preserves an actionable concrete round trip", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
@@ -230,7 +232,8 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -266,7 +269,8 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
@@ -304,7 +308,8 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +345,8 @@ test("panda -> linaria -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
@@ -393,7 +399,8 @@ test("panda -> linaria -> panda: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -429,7 +436,8 @@ test("panda -> linaria -> panda: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		// yumcss:migrate-skip (route: linaria -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,

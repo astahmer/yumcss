@@ -48,7 +48,8 @@ test("aphrodite -> stitches: migrates concrete aphrodite syntax to stitches", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +157,8 @@ test("aphrodite -> stitches: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,7 +194,8 @@ test("aphrodite -> stitches: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("aphrodite -> stitches: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,7 +289,8 @@ test("aphrodite -> stitches: preserves malformed concrete aphrodite input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -49,7 +49,6 @@ test("yumcss -> vanilla-extract: migrates concrete yumcss syntax to vanilla-extr
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> vanilla-extract: carries a documented secondary yumcss API expli
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }), "muted": style({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> vanilla-extract: loads concrete theme and project context varian
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("yumcss -> vanilla-extract: loads concrete theme and project context varian
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("yumcss -> vanilla-extract: resolves concrete token values with project con
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +275,8 @@ test("yumcss -> vanilla-extract: preserves malformed concrete yumcss input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

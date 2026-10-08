@@ -48,7 +48,8 @@ test("react-native -> compiled: migrates concrete react-native syntax to compile
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> compiled: carries a documented secondary react-native API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> compiled: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> compiled: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> compiled: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> compiled: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import { StyleSheet } from "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

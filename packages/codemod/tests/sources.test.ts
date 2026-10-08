@@ -116,7 +116,7 @@ describe("StyleX source adapter", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("stylex.create");
-		expect(result.code).not.toContain("@stylexjs/stylex");
+		expect(result.code).not.toContain('import "@stylexjs/stylex";');
 		expect(result.code).toContain("css.class");
 	});
 

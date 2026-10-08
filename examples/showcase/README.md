@@ -1,7 +1,9 @@
 # showcase — one design system, three targets
 
 The plans/021 write-once demonstration: **`src/shared-styles.ts` is edited
-once**, and three runtimes render it:
+once**, and three runtimes render its shared base styles. Web and React Native
+also apply separate corner-radius extensions; OpenTUI has no radius
+representation and keeps its documented refusal behavior.
 
 | target | file                 | lowering                                                                 | runtime          |
 | ------ | -------------------- | ------------------------------------------------------------------------ | ---------------- |
@@ -12,9 +14,9 @@ once**, and three runtimes render it:
 The shared module is **typed against the preset** (`DesignStyleObject`) so a
 token typo fails at the single source, before any target sees it.
 
-Only the intersection of all three vocabulary subsets lives here —
-typography is refused by yumcss/opentui (terminals own fonts), which is
-the per-backend subset story working as designed.
+The shared base stays inside the three-target vocabulary intersection.
+Target-specific corner radii stay explicit; React inline styles receive only
+base declarations because they cannot represent nested condition objects.
 
 ## Run
 
@@ -27,7 +29,7 @@ pnpm tui         # the terminal app (bun)
 ## What the e2e proves
 
 The same `$blue-500` token renders as `rgb(49, 130, 206)` computed style on
-web AND native; corners `lg` is 8px radius / 8px cells respectively;
-`pad: [4, 8]` expands per-side in both grammars; and the shared `_dark`
-condition flips status to `$gray-900` on every target that resolves
-conditions at runtime.
+web AND native; corners `lg` is an 8px radius on both; and `pad: [4, 8]`
+expands per-side in all three targets. Native and TUI resolve the shared
+`_dark` status condition at runtime; the web inline-style example uses the
+base status because React `style` cannot represent nested selectors.

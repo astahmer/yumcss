@@ -289,6 +289,7 @@ export default defineCodemodAdapter({
 	},
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 	sourceModules: ["@stitches/react", "@stitches/core"],
+	sourceModulesSideEffectFree: ["@stitches/react"],
 	configFiles: ["stitches.config.ts", "package.json"],
 	loadConfig: stitchesConfig,
 	tokenPolicy: STITCHES_TOKEN_POLICY,

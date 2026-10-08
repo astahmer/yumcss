@@ -646,7 +646,8 @@ describe("composed cross-ecosystem routes", () => {
 			residuals: result.residuals,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+			  "code": "import "solid-styled-components";
+			import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 			import type { JSX as __yumcssCardJSX } from "solid-js";
 			const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();
 			export const App = () => <Card />;",

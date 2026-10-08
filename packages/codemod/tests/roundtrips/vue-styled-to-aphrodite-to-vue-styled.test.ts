@@ -52,7 +52,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -89,7 +90,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -142,7 +144,8 @@ test("vue-styled -> aphrodite -> vue-styled: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -179,7 +182,8 @@ test("vue-styled -> aphrodite -> vue-styled: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -248,7 +252,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, css } from "aphrodite";
+		      "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 1,
@@ -285,7 +290,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet, css } from "aphrodite";
+		      "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -325,7 +331,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet, css } from "aphrodite";
+		      "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 1,
@@ -362,7 +369,8 @@ test("vue-styled -> aphrodite -> vue-styled: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet, css } from "aphrodite";
+		      "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -417,7 +425,8 @@ test("vue-styled -> aphrodite -> vue-styled: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -454,7 +463,8 @@ test("vue-styled -> aphrodite -> vue-styled: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: aphrodite -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",

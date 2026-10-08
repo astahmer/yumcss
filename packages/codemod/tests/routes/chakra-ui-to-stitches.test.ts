@@ -278,7 +278,8 @@ test("chakra-ui -> stitches: preserves malformed concrete chakra-ui input", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@stitches/react";
 		export const App = () => css({ background: "#fecaca", padding: "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

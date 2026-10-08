@@ -48,7 +48,8 @@ test("vanilla-extract -> styled-components: migrates concrete vanilla-extract sy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("vanilla-extract -> styled-components: carries a documented secondary vanil
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createGlobalStyle } from "styled-components";
+		  "code": "import "@vanilla-extract/css";
+		import { createGlobalStyle } from "styled-components";
 		createGlobalStyle\`body { margin: 0; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("vanilla-extract -> styled-components: loads concrete theme and project con
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("vanilla-extract -> styled-components: loads concrete theme and project con
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("vanilla-extract -> styled-components: resolves concrete token values with 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("vanilla-extract -> styled-components: preserves malformed concrete vanilla
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

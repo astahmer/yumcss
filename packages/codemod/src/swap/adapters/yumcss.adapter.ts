@@ -48,7 +48,8 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { SOURCE_SCANNER_SERVICE, SourceBindingKind, SourceBindings } from "yumcss/source";
+import { NodeKind, SOURCE_SCANNER_SERVICE, SourceBindingKind, SourceBindings } from "yumcss/source";
+import { walkWithParent, type OxcNode } from "yumcss/tw/literal";
 import { presetConditions } from "yumcss/preset";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -986,42 +987,65 @@ async function officialYumCSSConfig(
 
 function generatedCssBinding(
 	source: string | undefined,
-	sourceModules: readonly string[] = [],
-	sourceModuleMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+	document?: AdapterEmitContext["document"],
 ): string {
 	const input = source ?? "";
-	const ownedModules = new Set(sourceModules);
-	const cssImports = /\bimport\s+([^;]+?)\s+from\s+["']([^"']+)["']/gu;
-	const ownsModule = (moduleSpecifier: string | undefined): boolean =>
-		moduleSpecifier !== undefined &&
-		(ownedModules.has(moduleSpecifier) ||
-			sourceModuleMatchers.some((matcher) => matcher(moduleSpecifier)));
-	for (const match of input.matchAll(cssImports)) {
-		const clause = match[1]?.trim() ?? "";
-		const moduleSpecifier = match[2];
-		const named = /\{([^}]*)\}/u.exec(clause)?.[1] ?? "";
-		const importsBareCss =
-			clause.split(",")[0]?.trim() === "css" ||
-			named.split(",").some((specifier) => {
-				const [imported, local] = specifier.trim().split(/\s+as\s+/u);
-				return imported === "css" && (local === undefined || local === "css");
-			});
-		if (importsBareCss) return "targetCss";
-		if (ownsModule(moduleSpecifier)) continue;
+	if (source === undefined && document?.program === undefined) return "css";
+	const scanned = document ?? SOURCE_SCANNER_SERVICE.scan({ file: "migration.tsx", source: input });
+	const reservedNames = new Set<string>();
+	const nextUnused = (baseName: string): string => {
+		if (!reservedNames.has(baseName)) return baseName;
+		let suffix = 2;
+		while (reservedNames.has(baseName + suffix)) suffix += 1;
+		return baseName + suffix;
+	};
+	const program = scanned.program;
+	if (program === undefined) {
+		for (const match of input.matchAll(/[$_\p{ID_Start}][$_\u200c\u200d\p{ID_Continue}]*/gu))
+			reservedNames.add(match[0]);
+		return nextUnused("targetCss");
 	}
-	const bindingInput = input.replace(
-		cssImports,
-		(statement, _clause: string, moduleSpecifier: string) =>
-			ownsModule(moduleSpecifier) ? "" : statement,
-	);
-	for (const candidate of ["css", "targetCss", "pwCss"]) {
-		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const bindings = SourceBindings.fromProgram(program);
+	for (const name of bindings.declaredNames) reservedNames.add(name);
+	for (const binding of bindings.bindings) reservedNames.add(binding.localName);
+	const generatedFactoryBindings: string[] = [];
+	const isOxcNode = (value: unknown): value is OxcNode =>
+		value !== null &&
+		typeof value === "object" &&
+		"type" in value &&
+		typeof value.type === "string";
+	walkWithParent(program, (node) => {
+		const start = node.start;
+		const inImportSpecifier =
+			typeof start === "number" &&
+			bindings.bindings.some(
+				(binding) => start >= binding.range.start && start < binding.range.end,
+			);
 		if (
-			!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(bindingInput)
+			node.type === NodeKind.Identifier &&
+			typeof node.name === "string" &&
+			!inImportSpecifier
 		)
-			return candidate;
-	}
-	return "targetCss";
+			reservedNames.add(node.name);
+		if (node.type !== NodeKind.VariableDeclarator) return;
+		const identifier = isOxcNode(node.id) ? node.id : undefined;
+		const initializer = isOxcNode(node.init) ? node.init : undefined;
+		const callee =
+			initializer !== undefined && isOxcNode(initializer.callee)
+				? initializer.callee
+				: undefined;
+		if (
+			identifier?.type === NodeKind.Identifier &&
+			typeof identifier.name === "string" &&
+			initializer?.type === NodeKind.CallExpression &&
+			callee?.type === NodeKind.Identifier &&
+			(callee.name === "createUnsafeCss" || callee.name === "createRuntimeCss")
+		)
+			generatedFactoryBindings.push(identifier.name);
+	});
+	if (generatedFactoryBindings[0] !== undefined) return generatedFactoryBindings[0];
+	if (reservedNames.has("css")) return nextUnused("targetCss");
+	return nextUnused("css");
 }
 
 function renameGeneratedCssBinding(
@@ -1029,8 +1053,8 @@ function renameGeneratedCssBinding(
 	binding: string,
 ): { text: string; imports: readonly string[] } {
 	if (binding === "css") return emission;
-	const rename = (value: string) =>
-		value.replace(/\bcss(?=\s*[.({,;}])/g, binding).replace(/\bcss(?=\s*=)/g, binding);
+	const rename = (source: string): string =>
+		SourcePass.renameIdentifier(source, "migration.tsx", "css", binding);
 	return { text: rename(emission.text), imports: emission.imports.map(rename) };
 }
 
@@ -2913,6 +2937,13 @@ export function createYumCSSAdapter(options: YumCSSAdapterOptions = {}) {
 			"yumcss/css/runtime",
 			"yumcss/recipe",
 		],
+		sourceModulesSideEffectFree: [
+			"yumcss/css",
+			"yumcss/css/generated",
+			"yumcss/unsafe/css",
+			"yumcss/css/runtime",
+			"yumcss/recipe",
+		],
 		sourceModuleMatchers: [
 			(moduleSpecifier) => /(?:^|[\\/])__yumcss[\\/]recipe(?:\.ts)?$/u.test(moduleSpecifier),
 		],
@@ -2951,8 +2982,7 @@ export function createYumCSSAdapter(options: YumCSSAdapterOptions = {}) {
 		emit(program, { programObject, declarationsObject }, context) {
 			const cssBinding = generatedCssBinding(
 				context?.sourceText ?? context?.document?.document.source,
-				context?.sourceModules,
-				context?.sourceModuleMatchers,
+				context?.document,
 			);
 			const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
 				return (

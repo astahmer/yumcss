@@ -88,7 +88,8 @@ test("linaria -> vanilla-extract -> linaria: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -263,7 +264,8 @@ test("linaria -> vanilla-extract -> linaria: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,7 +340,8 @@ test("linaria -> vanilla-extract -> linaria: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,7 +431,8 @@ test("linaria -> vanilla-extract -> linaria: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

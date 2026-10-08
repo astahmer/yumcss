@@ -52,7 +52,8 @@ test("react-native -> yumcss -> react-native: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
@@ -88,7 +89,6 @@ test("react-native -> yumcss -> react-native: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +141,8 @@ test("react-native -> yumcss -> react-native: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
@@ -177,7 +178,6 @@ test("react-native -> yumcss -> react-native: retains the documented secondary A
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +246,8 @@ test("react-native -> yumcss -> react-native: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
@@ -282,7 +283,6 @@ test("react-native -> yumcss -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +322,8 @@ test("react-native -> yumcss -> react-native: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		      "converted": 1,
@@ -358,7 +359,6 @@ test("react-native -> yumcss -> react-native: preserves concrete theme and proje
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,7 +414,8 @@ test("react-native -> yumcss -> react-native: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
@@ -450,7 +451,6 @@ test("react-native -> yumcss -> react-native: resolves token values across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

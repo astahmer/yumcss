@@ -52,7 +52,8 @@ test("vue-styled -> tamagui -> vue-styled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -86,10 +87,11 @@ test("vue-styled -> tamagui -> vue-styled: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} :class="__CardTamagui" />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -113,7 +115,7 @@ test("vue-styled -> tamagui -> vue-styled: preserves an actionable concrete roun
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "vue-styled has no host representation for the detected framework",
+		        "hint": "vue-styled has no host representation for vue",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -139,7 +141,8 @@ test("vue-styled -> tamagui -> vue-styled: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -173,10 +176,11 @@ test("vue-styled -> tamagui -> vue-styled: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} :class="__CardTamagui" />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -200,7 +204,7 @@ test("vue-styled -> tamagui -> vue-styled: retains the documented secondary API 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "vue-styled has no host representation for the detected framework",
+		        "hint": "vue-styled has no host representation for vue",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
@@ -242,7 +246,8 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -276,10 +281,11 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} :class="__CardTamagui" />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -303,7 +309,7 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "vue-styled has no host representation for the detected framework",
+		          "hint": "vue-styled has no host representation for vue",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -316,7 +322,8 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -350,10 +357,11 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} :class="__CardTamagui" />; };",
 		      "converted": 0,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +385,7 @@ test("vue-styled -> tamagui -> vue-styled: preserves concrete theme and project 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "vue-styled has no host representation for the detected framework",
+		          "hint": "vue-styled has no host representation for vue",
 		          "kind": "host-framework",
 		          "preserved": undefined,
 		        },
@@ -405,7 +413,8 @@ test("vue-styled -> tamagui -> vue-styled: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -439,10 +448,11 @@ test("vue-styled -> tamagui -> vue-styled: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "vue-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vue-styled | lowering-residual: host-framework | available: static, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} :class="__CardTamagui" />; };",
 		    "converted": 0,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -466,7 +476,7 @@ test("vue-styled -> tamagui -> vue-styled: resolves token values across both con
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "vue-styled has no host representation for the detected framework",
+		        "hint": "vue-styled has no host representation for vue",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },

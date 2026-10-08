@@ -139,7 +139,8 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@mui/system";
+		import { css } from "@tokenami/css";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": 8 }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +174,8 @@ test("mui -> tokenami -> mui: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@mui/system";
+		import { css } from "@tokenami/css";
 		// yumcss:migrate-skip (route: tokenami -> mui | parse-residual: configuration | lowering-residual: host-framework | available: named-map, residual)
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(css({ "--color": "red", "--padding": 8 }), propsStyle)} />; };",
 		    "converted": 0,

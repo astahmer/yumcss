@@ -52,7 +52,8 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", padding: "8px" });",
 		    "converted": 1,
@@ -88,7 +89,6 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +140,8 @@ test("vanilla-extract -> yumcss -> vanilla-extract: retains the documented secon
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+		    "code": "import "@vanilla-extract/css";
+		import { createRuntimeCss } from "yumcss/css/runtime";
 		import { defaultPreset } from "yumcss/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
 		(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
@@ -244,7 +245,8 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
@@ -280,7 +282,6 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +320,8 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", padding: "8px" });",
 		      "converted": 1,
@@ -355,7 +357,6 @@ test("vanilla-extract -> yumcss -> vanilla-extract: preserves concrete theme and
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +410,8 @@ test("vanilla-extract -> yumcss -> vanilla-extract: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
@@ -445,7 +447,6 @@ test("vanilla-extract -> yumcss -> vanilla-extract: resolves token values across
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

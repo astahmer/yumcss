@@ -276,7 +276,8 @@ test("treat -> jss: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { style } from "treat";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

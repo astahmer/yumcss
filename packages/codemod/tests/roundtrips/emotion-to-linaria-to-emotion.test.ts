@@ -52,7 +52,8 @@ test("emotion -> linaria -> emotion: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("emotion -> linaria -> emotion: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("emotion -> linaria -> emotion: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("emotion -> linaria -> emotion: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("emotion -> linaria -> emotion: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

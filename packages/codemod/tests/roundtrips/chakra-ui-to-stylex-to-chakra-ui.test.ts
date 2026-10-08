@@ -90,7 +90,8 @@ test("chakra-ui -> stylex -> chakra-ui: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => { "style": defaultSystem.css({ background: "red.200", padding: "4" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -258,7 +259,8 @@ test("chakra-ui -> stylex -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => { "style": defaultSystem.css({ background: "#f97316", padding: "4" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -331,7 +333,8 @@ test("chakra-ui -> stylex -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => { "style": defaultSystem.css({ background: "brand.500", padding: "4" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -419,7 +422,8 @@ test("chakra-ui -> stylex -> chakra-ui: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => { "style": defaultSystem.css({ background: "brand.500", padding: "4" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

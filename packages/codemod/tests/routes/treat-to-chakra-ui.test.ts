@@ -268,7 +268,8 @@ test("treat -> chakra-ui: preserves malformed concrete treat input", async () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { style } from "treat";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

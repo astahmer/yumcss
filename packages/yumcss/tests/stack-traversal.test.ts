@@ -36,6 +36,23 @@ describe("iterative Oxc traversal", () => {
 		expect(parents).toEqual(["First"]);
 	});
 
+	test("ignores parent backreferences while traversing Oxc nodes", () => {
+		const root: OxcNode = { type: TraversalNodeKind.Program, body: [] };
+		const child: OxcNode = { type: TraversalNodeKind.First, parent: root };
+		root.body = [child];
+		const order: string[] = [];
+		const parents: string[] = [];
+
+		walk(root, (node) => order.push(node.type));
+		walkWithParent(root, (node, parent) => {
+			if (node.type === TraversalNodeKind.First)
+				parents.push(parent?.type ?? TraversalNodeKind.None);
+		});
+
+		expect(order).toEqual([TraversalNodeKind.Program, TraversalNodeKind.First]);
+		expect(parents).toEqual([TraversalNodeKind.Program]);
+	});
+
 	test("handles a deeply nested AST without consuming the JS call stack", () => {
 		const depth = 12_000;
 		const root: OxcNode = { type: TraversalNodeKind.Root };
@@ -102,7 +119,7 @@ describe("iterative Oxc traversal", () => {
 		const rule: RuntimeSemanticRule = {
 			kind: RuntimeSemanticRuleKindTag.Style,
 			selector: '.item, [data-label="a,b"]',
-			conditions: [":hover"],
+			conditions: ["&:hover"],
 			declarations: [{ property: "color", value: "red" }],
 		};
 

@@ -277,7 +277,8 @@ test("next-yak -> react-strict-dom: preserves malformed concrete next-yak input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { css } from "next-yak";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

@@ -52,7 +52,8 @@ test("style9 -> yumcss -> style9: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -89,8 +90,7 @@ test("style9 -> yumcss -> style9: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const styles = { "card": style9.create({ "color": "red" }) };",
@@ -144,7 +144,8 @@ test("style9 -> yumcss -> style9: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -181,8 +182,7 @@ test("style9 -> yumcss -> style9: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
@@ -252,7 +252,8 @@ test("style9 -> yumcss -> style9: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -289,8 +290,7 @@ test("style9 -> yumcss -> style9: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
@@ -331,7 +331,8 @@ test("style9 -> yumcss -> style9: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -368,8 +369,7 @@ test("style9 -> yumcss -> style9: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
@@ -426,7 +426,8 @@ test("style9 -> yumcss -> style9: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -463,8 +464,7 @@ test("style9 -> yumcss -> style9: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import style9 from "style9";
 		const cx = createCx();
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",

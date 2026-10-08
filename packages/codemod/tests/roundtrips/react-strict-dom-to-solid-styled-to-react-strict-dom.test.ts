@@ -91,6 +91,7 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves an actiona
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "solid-styled-components";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -265,6 +266,7 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "solid-styled-components";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -344,6 +346,7 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: preserves concrete t
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "solid-styled-components";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -438,6 +441,7 @@ test("react-strict-dom -> solid-styled -> react-strict-dom: resolves token value
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "solid-styled-components";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",

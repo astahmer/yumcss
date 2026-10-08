@@ -52,7 +52,8 @@ test("react-native -> aphrodite -> react-native: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("react-native -> aphrodite -> react-native: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +143,8 @@ test("react-native -> aphrodite -> react-native: retains the documented secondar
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": "8px", "backgroundColor": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("react-native -> aphrodite -> react-native: retains the documented secondar
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 8, "backgroundColor": "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +250,8 @@ test("react-native -> aphrodite -> react-native: preserves concrete theme and pr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -282,7 +287,8 @@ test("react-native -> aphrodite -> react-native: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +328,8 @@ test("react-native -> aphrodite -> react-native: preserves concrete theme and pr
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +365,8 @@ test("react-native -> aphrodite -> react-native: preserves concrete theme and pr
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +421,8 @@ test("react-native -> aphrodite -> react-native: resolves token values across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +458,8 @@ test("react-native -> aphrodite -> react-native: resolves token values across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],

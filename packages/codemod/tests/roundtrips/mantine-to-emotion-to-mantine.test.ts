@@ -88,6 +88,7 @@ test("mantine -> emotion -> mantine: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "@emotion/css";
 		export const App = () => <Box className={{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,6 +252,7 @@ test("mantine -> emotion -> mantine: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "@emotion/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,6 +325,7 @@ test("mantine -> emotion -> mantine: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "@emotion/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -410,6 +413,7 @@ test("mantine -> emotion -> mantine: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "@emotion/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

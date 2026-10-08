@@ -278,7 +278,8 @@ test("tokenami -> aphrodite: preserves malformed concrete tokenami input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { css } from "@tokenami/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

@@ -266,7 +266,8 @@ test("stylex -> bamboo: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

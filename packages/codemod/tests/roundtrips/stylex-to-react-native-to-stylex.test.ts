@@ -89,7 +89,8 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +179,8 @@ test("stylex -> react-native -> stylex: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -283,7 +285,8 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +362,8 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -450,7 +454,8 @@ test("stylex -> react-native -> stylex: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

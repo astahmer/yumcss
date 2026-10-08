@@ -72,6 +72,17 @@ describe("SourcePass", () => {
 		expect(migrated).not.toContain("    // yumcss:migrate-skip");
 	});
 
+	test("falls back to a safe marker when a braced JSX escape breaks lazy AST materialization", () => {
+		const source = ["const App = () => (", "  <\\u{54}hemeProvider />", ");"].join("\n");
+
+		expect(() =>
+			SourcePass.markerText(source, "App.tsx", source.indexOf("<"), "// yumcss:migrate-skip"),
+		).not.toThrow();
+		expect(
+			SourcePass.markerText(source, "App.tsx", source.indexOf("<"), "// yumcss:migrate-skip"),
+		).toBe("// yumcss:migrate-skip");
+	});
+
 	test("recognizes a JSX child when insertion starts at its indentation", () => {
 		const source = ["const value = (", "  <Tooltip>", "    <Badge />", "  </Tooltip>", ");"].join(
 			"\n",

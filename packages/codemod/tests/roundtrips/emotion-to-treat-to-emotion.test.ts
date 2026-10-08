@@ -52,7 +52,8 @@ test("emotion -> treat -> emotion: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("emotion -> treat -> emotion: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("emotion -> treat -> emotion: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("emotion -> treat -> emotion: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

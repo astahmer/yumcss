@@ -48,7 +48,8 @@ test("bamboo -> solid-styled: migrates concrete bamboo syntax to solid-styled", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("bamboo -> solid-styled: carries a documented secondary bamboo API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("bamboo -> solid-styled: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("bamboo -> solid-styled: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("bamboo -> solid-styled: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> solid-styled: preserves malformed concrete bamboo input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

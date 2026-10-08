@@ -88,7 +88,8 @@ test("linaria -> solid-styled -> linaria: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "solid-styled-components";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -281,7 +282,8 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "solid-styled-components";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -356,7 +358,8 @@ test("linaria -> solid-styled -> linaria: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "solid-styled-components";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -446,7 +449,8 @@ test("linaria -> solid-styled -> linaria: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "solid-styled-components";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

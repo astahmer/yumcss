@@ -86,7 +86,8 @@ test("tokenami -> panda -> tokenami: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +249,8 @@ test("tokenami -> panda -> tokenami: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +321,8 @@ test("tokenami -> panda -> tokenami: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -405,7 +408,8 @@ test("tokenami -> panda -> tokenami: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

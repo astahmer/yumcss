@@ -50,8 +50,8 @@ test("panda -> chakra-ui: migrates concrete panda syntax to chakra-ui", async ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,8 +157,8 @@ test("panda -> chakra-ui: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,8 +192,8 @@ test("panda -> chakra-ui: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,8 +239,8 @@ test("panda -> chakra-ui: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,8 +283,8 @@ test("panda -> chakra-ui: preserves malformed concrete panda input", async () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

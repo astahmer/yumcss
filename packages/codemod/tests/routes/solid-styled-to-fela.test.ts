@@ -48,7 +48,8 @@ test("solid-styled -> fela: migrates concrete solid-styled syntax to fela", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		  "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[renderer.renderRule({ "color": "red", "padding": "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("solid-styled -> fela: carries a documented secondary solid-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		  "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[renderer.renderRule({ "color": "red", "padding": "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("solid-styled -> fela: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		    "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("solid-styled -> fela: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		    "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("solid-styled -> fela: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		  "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[renderer.renderRule({ "color": "#2563eb", "padding": "1rem" }), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		  "converted": 1,

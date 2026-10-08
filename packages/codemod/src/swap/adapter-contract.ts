@@ -111,6 +111,9 @@ export interface AdapterProjectConfig {
 export interface AdapterSourceModuleOwnership {
 	readonly modules: readonly string[];
 	readonly matchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Entry points whose package metadata guarantees no import-time effects. */
+	readonly sideEffectFreeModules?: readonly string[];
+	readonly sideEffectFreeMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	/** Match an authored alias to the corresponding documented entry point. */
 	readonly semanticMatchers?: readonly ((
 		actualSource: string,
@@ -139,6 +142,16 @@ export interface AdapterProjectBindings {
 	readonly twModule?: string;
 	/** Module exporting the shared `cx` binding. */
 	readonly cxModule?: string;
+}
+
+/** A target call whose identical static invocations may be hoisted when requested. */
+export interface AdapterStaticStyleCall {
+	readonly moduleSpecifier: string;
+	readonly importedName: string;
+	readonly resolveModuleSpecifier?: (context: {
+		readonly file: string;
+		readonly project?: AdapterProjectBindings;
+	}) => string | undefined;
 }
 
 /**
@@ -645,6 +658,12 @@ export interface StyleAdapter extends AdapterConfigGraphPort {
 	readonly configRequiresSourcePrograms?: boolean;
 	/** Package entry points this adapter owns and may remove during migration. */
 	readonly sourceModules: readonly string[];
+	/** Source entry points with verified `sideEffects: false` package metadata. */
+	readonly sourceModulesSideEffectFree?: readonly string[];
+	/** Matcher for side-effect-free project aliases of those entry points. */
+	readonly sourceModuleSideEffectFreeMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	/** Target-owned pure style calls eligible for explicit static deduplication. */
+	readonly staticStyleCalls?: readonly AdapterStaticStyleCall[];
 	/** Optional target-specific source modules to remove after a complete migration. */
 	readonly sourceModulesToRemove?: (targetId: string) => readonly string[];
 	/** Adapter-owned matcher for project-local aliases of those entry points. */

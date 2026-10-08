@@ -88,7 +88,7 @@ test("tailwind -> aphrodite -> tailwind: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "[display:flex] [align-items:center] [gap:1rem]" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -263,7 +263,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,7 +338,7 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,7 +428,7 @@ test("tailwind -> aphrodite -> tailwind: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

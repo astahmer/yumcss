@@ -52,7 +52,8 @@ test("panda -> stylex -> panda: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -226,7 +227,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -306,7 +308,8 @@ test("panda -> stylex -> panda: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -401,7 +404,8 @@ test("panda -> stylex -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {

@@ -48,7 +48,8 @@ test("vanilla-extract -> emotion: migrates concrete vanilla-extract syntax to em
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("vanilla-extract -> emotion: carries a documented secondary vanilla-extract
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { injectGlobal } from "@emotion/css";
+		  "code": "import "@vanilla-extract/css";
+		import { injectGlobal } from "@emotion/css";
 		injectGlobal\`body { margin: 0; }\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("vanilla-extract -> emotion: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("vanilla-extract -> emotion: loads concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("vanilla-extract -> emotion: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("vanilla-extract -> emotion: preserves malformed concrete vanilla-extract i
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

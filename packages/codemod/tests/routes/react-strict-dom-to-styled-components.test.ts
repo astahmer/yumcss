@@ -274,7 +274,7 @@ test("react-strict-dom -> styled-components: preserves malformed concrete react-
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import styled from "styled-components";
 		const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;

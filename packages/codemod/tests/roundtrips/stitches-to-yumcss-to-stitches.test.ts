@@ -88,7 +88,6 @@ test("stitches -> yumcss -> stitches: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +279,6 @@ test("stitches -> yumcss -> stitches: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +353,6 @@ test("stitches -> yumcss -> stitches: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
-
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +442,6 @@ test("stitches -> yumcss -> stitches: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@stitches/react";
-
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

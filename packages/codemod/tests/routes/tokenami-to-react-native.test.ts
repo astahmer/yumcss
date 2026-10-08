@@ -283,7 +283,8 @@ test("tokenami -> react-native: preserves malformed concrete tokenami input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "@tokenami/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "gap": 16 });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

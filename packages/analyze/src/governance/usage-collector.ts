@@ -15,9 +15,9 @@ import type {
 	TokenPolicySnapshot,
 	TokenUsage,
 } from "./contracts.ts";
+import { NodeKind, SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { walk, type OxcNode } from "yumcss/tw/literal";
 
-const BTICK = String.fromCharCode(96);
-const CALL_REGEX = /\b(?:tw|css)(?:\s*\.\s*\w+)?\s*\(\s*\{/g;
 /** Token id for non-token (raw/unknown) observations. */
 export const UNRESOLVED_TOKEN_ID = "";
 
@@ -43,18 +43,35 @@ interface RawUsage {
 	end: number;
 }
 
-/** Extract balanced {...} body; null when unbalanced. */
-function matchBlock(source: string, open: number): string | null {
-	let depth = 0;
-	for (let i = open; i < source.length; i++) {
-		if (source[i] === "{") depth++;
-		else if (source[i] === "}") {
-			depth--;
-			if (depth === 0) return source.slice(open + 1, i);
-		}
-	}
-	return null;
-}
+const isOxcNode = (value: unknown): value is OxcNode =>
+	typeof value === "object" && value !== null && "type" in value && typeof value.type === "string";
+
+const oxcNodeAt = (node: OxcNode, key: string): OxcNode | undefined => {
+	const value = node[key];
+	return isOxcNode(value) ? value : undefined;
+};
+
+const oxcNodesAt = (node: OxcNode, key: string): OxcNode[] => {
+	const value = node[key];
+	return Array.isArray(value) ? value.filter(isOxcNode) : [];
+};
+
+const stringAt = (node: OxcNode, key: string): string | undefined => {
+	const value = node[key];
+	return typeof value === "string" ? value : undefined;
+};
+
+const numberAt = (node: OxcNode, key: string): number | undefined => {
+	const value = node[key];
+	return typeof value === "number" ? value : undefined;
+};
+
+const sourceText = (source: string, node: OxcNode): string | undefined => {
+	const start = numberAt(node, "start");
+	const end = numberAt(node, "end");
+	if (start === undefined || end === undefined || start < 0 || end < start) return undefined;
+	return source.slice(start, end).trim();
+};
 
 function tokenRefIn(rawValue: string): string | null {
 	const unquoted = rawValue.replace(/^["']|["']$/g, "");
@@ -68,96 +85,80 @@ function tokenRefIn(rawValue: string): string | null {
  * are dynamic.
  */
 function isDynamicValue(rawValue: string): boolean {
-	if (rawValue.startsWith(BTICK)) return true;
-	if (rawValue.startsWith('"') || rawValue.startsWith("'")) return false;
-	if (rawValue.startsWith("$")) return false;
-	return /^[A-Za-z_$][\w$]*$/.test(rawValue.trim());
+	return !/^(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|true|false|null)$/u.test(
+		rawValue.trim(),
+	);
 }
 
-function walkObject(
-	body: string,
-	bodyOffset: number,
+const rawUsageAt = (
+	source: string,
+	node: OxcNode,
+	property: string,
 	condition: string,
-	collected: Array<RawUsage>,
-): void {
-	let segment = "";
-	let segmentStart = 0;
-	const flushTopLevel = (): void => {
-		const trimmed = segment.trim();
-		if (trimmed !== "") {
-			const colon = trimmed.indexOf(":");
-			if (colon !== -1) {
-				const key = trimmed
-					.slice(0, colon)
-					.trim()
-					.replace(/^["']|["']$/g, "");
-				const rawValue = trimmed.slice(colon + 1).trim();
-				if (key !== "" && rawValue !== "" && rawValue !== "{" && rawValue !== "[") {
-					const valueAt = segment.indexOf(rawValue);
-					const start = bodyOffset + segmentStart + (valueAt === -1 ? 0 : valueAt);
-					collected.push({
-						property: key,
-						condition,
-						rawValue,
-						tokenRef: tokenRefIn(rawValue),
-						dynamic: isDynamicValue(rawValue),
-						start,
-						end: start + rawValue.length,
-					});
-				}
-			}
-		}
-		segment = "";
-		segmentStart = 0;
+	dynamic = false,
+): RawUsage => {
+	const start = numberAt(node, "start") ?? 0;
+	const end = numberAt(node, "end") ?? start;
+	const rawValue = sourceText(source, node) ?? "";
+	return {
+		property,
+		condition,
+		rawValue,
+		tokenRef: dynamic ? null : tokenRefIn(rawValue),
+		dynamic: dynamic || isDynamicValue(rawValue),
+		start,
+		end,
 	};
-	for (let i = 0; i < body.length; i++) {
-		const ch = body[i]!;
-		if (ch === '"' || ch === "'" || ch === BTICK) {
-			const quote = ch;
-			segment += ch;
-			i++;
-			while (i < body.length && body[i] !== quote) {
-				if (body[i] === "\\") {
-					segment += body.slice(i, i + 2);
-					i += 2;
-					continue;
-				}
-				segment += body[i]!;
-				i++;
-			}
-			if (i < body.length) segment += quote;
+};
+
+const objectPropertyName = (property: OxcNode, source: string): string | undefined => {
+	if (property.computed === true) return undefined;
+	const key = oxcNodeAt(property, "key");
+	if (key === undefined) return undefined;
+	if (key.type === NodeKind.Identifier) return stringAt(key, "name");
+	const literal = key.value;
+	if (typeof literal === "string" || typeof literal === "number") return String(literal);
+	const authored = sourceText(source, key);
+	if (authored === undefined) return undefined;
+	if (
+		(authored.startsWith('"') && authored.endsWith('"')) ||
+		(authored.startsWith("'") && authored.endsWith("'"))
+	)
+		return authored.slice(1, -1);
+	return undefined;
+};
+
+const collectObjectUsages = (
+	source: string,
+	object: OxcNode,
+	condition: string,
+	collected: RawUsage[],
+): void => {
+	for (const property of oxcNodesAt(object, "properties")) {
+		if (property.type === NodeKind.SpreadElement) {
+			collected.push(rawUsageAt(source, property, "", condition, true));
 			continue;
 		}
-		if (ch === "/" && body[i + 1] === "/") {
-			while (i < body.length && body[i] !== "\n") i++;
+		const key = objectPropertyName(property, source);
+		if (key === undefined || property.computed === true) {
+			collected.push(rawUsageAt(source, property, "", condition, true));
 			continue;
 		}
-		if (ch === "{") {
-			const condName = /^["']?([\w$*-]+)["']?\s*:\s*$/.exec(segment.trim())?.[1] ?? "";
-			flushTopLevel();
-			const nestedCondition =
-				condName === "" ? condition : condition === "" ? condName : condition + "." + condName;
-			let innerDepth = 1;
-			const innerStart = i + 1;
-			while (i < body.length && innerDepth > 0) {
-				i++;
-				if (body[i] === "{") innerDepth++;
-				else if (body[i] === "}") innerDepth--;
-			}
-			walkObject(body.slice(innerStart, i), bodyOffset + innerStart, nestedCondition, collected);
-			segment = "";
-			segmentStart = 0;
+		const value = oxcNodeAt(property, "value");
+		if (value?.type === NodeKind.ObjectExpression) {
+			const nestedCondition = condition === "" ? key : `${condition}.${key}`;
+			collectObjectUsages(source, value, nestedCondition, collected);
 			continue;
 		}
-		if (ch === ",") {
-			flushTopLevel();
-			continue;
-		}
-		if (segment === "") segmentStart = i;
-		segment += ch;
+		collected.push(rawUsageAt(source, value ?? property, key, condition, value === undefined));
 	}
-	flushTopLevel();
-}
+};
+
+const callRootName = (call: OxcNode): string | undefined => {
+	let callee = oxcNodeAt(call, "callee");
+	while (callee?.type === NodeKind.MemberExpression) callee = oxcNodeAt(callee, "object");
+	return callee?.type === NodeKind.Identifier ? stringAt(callee, "name") : undefined;
+};
 
 interface PolicySets {
 	strictProperties: ReadonlySet<string>;
@@ -234,46 +235,62 @@ export function collectTokenUsage(
 	const boundaries = emptyBoundaries();
 
 	for (const file of files) {
-		for (const match of file.content.matchAll(CALL_REGEX)) {
-			const open = (match.index ?? 0) + match[0].length - 1;
-			const body = matchBlock(file.content, open);
-			if (body === null) continue;
-			const raws: Array<RawUsage> = [];
-			walkObject(body, open + 1, "", raws);
-			for (const raw of raws) {
-				const strictness = classifyStrictness(raw, policy, sets);
-				// Vocabulary-classified bare literals carry their canonical id
-				// (or $name authored form for ambiguous names) so the resolver
-				// and reachability can count them as real token usage.
-				const literal = raw.rawValue.replace(/^["']|["']$/g, "");
-				const vocabId =
-					raw.tokenRef === null && strictness === "token"
-						? policy?.tokenVocabulary?.[raw.property]?.[literal]
-						: undefined;
-				const fact: TokenUsage = {
-					tokenId: raw.tokenRef ?? vocabId ?? UNRESOLVED_TOKEN_ID,
-					kind: "direct",
-					file: file.file,
-					start: raw.start,
-					end: raw.end,
-					property: raw.property,
-					...(raw.condition === "" ? {} : { condition: raw.condition }),
-					rawValue: raw.rawValue,
-					strictness,
-					confidence:
-						raw.dynamic === true
-							? "unknown"
-							: policy !== null && policy.resolved
-								? "verified"
-								: "inferred",
-				};
-				if (raw.dynamic) {
-					dynamicSites.push(fact);
-					boundaries["dynamic-expression"].push(file.file);
-					continue;
-				}
-				usages.push(fact);
+		const fileRaws: RawUsage[] = [];
+		try {
+			const scanned = SOURCE_SCANNER_SERVICE.scan({ file: file.file, source: file.content });
+			if (scanned.program === undefined || scanned.diagnostics.length > 0) {
+				boundaries["unscanned-file"].push(file.file);
+				continue;
 			}
+			walk(scanned.program, (node) => {
+				if (node.type !== NodeKind.CallExpression) return;
+				const rootName = callRootName(node);
+				if (rootName !== "tw" && rootName !== "css") return;
+				for (const argument of oxcNodesAt(node, "arguments")) {
+					if (argument.type === NodeKind.ObjectExpression) {
+						collectObjectUsages(file.content, argument, "", fileRaws);
+						continue;
+					}
+					fileRaws.push(rawUsageAt(file.content, argument, "", "", true));
+				}
+			});
+		} catch {
+			boundaries["unscanned-file"].push(file.file);
+			continue;
+		}
+		for (const raw of fileRaws) {
+			const strictness = classifyStrictness(raw, policy, sets);
+			// Vocabulary-classified bare literals carry their canonical id
+			// (or $name authored form for ambiguous names) so the resolver
+			// and reachability can count them as real token usage.
+			const literal = raw.rawValue.replace(/^["']|["']$/g, "");
+			const vocabId =
+				raw.tokenRef === null && strictness === "token"
+					? policy?.tokenVocabulary?.[raw.property]?.[literal]
+					: undefined;
+			const fact: TokenUsage = {
+				tokenId: raw.tokenRef ?? vocabId ?? UNRESOLVED_TOKEN_ID,
+				kind: "direct",
+				file: file.file,
+				start: raw.start,
+				end: raw.end,
+				property: raw.property,
+				...(raw.condition === "" ? {} : { condition: raw.condition }),
+				rawValue: raw.rawValue,
+				strictness,
+				confidence:
+					raw.dynamic === true
+						? "unknown"
+						: policy !== null && policy.resolved
+							? "verified"
+							: "inferred",
+			};
+			if (raw.dynamic) {
+				dynamicSites.push(fact);
+				boundaries["dynamic-expression"].push(file.file);
+				continue;
+			}
+			usages.push(fact);
 		}
 	}
 	return { usage: usages, dynamicSites, boundaryHits: boundaries };

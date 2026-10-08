@@ -100,6 +100,12 @@ export const createRuntimeStylesheet = (
 			? undefined
 			: buildRuntimeColorPaletteMaps(preset, tokenMaps, debug);
 	const cssVars = new Map<string, TokenDeclaration>();
+	const tokenDeclarations = new Map<string, string[]>();
+	const recordTokenDeclaration = (name: string, declaration: string): void => {
+		const declarations = tokenDeclarations.get(name) ?? [];
+		declarations.push(declaration);
+		tokenDeclarations.set(name, declarations);
+	};
 	const presetTokens = preset.tokens ?? {};
 	// Pre-compute the `:root` token declarations (the class-value maps live
 	// in the shared `buildTokenMaps`). Runtime sheets always emit the complete
@@ -140,24 +146,28 @@ export const createRuntimeStylesheet = (
 						getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
 					);
 
+					const declaration = genCSSRule(cssVar.declaration(cssVarHash, value), conditions);
 					cssVars.set(`${tokenPath}.${condition}`, {
-						declaration: genCSSRule(cssVar.declaration(cssVarHash, value), conditions),
+						declaration,
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
+					recordTokenDeclaration(cssVarHash, declaration);
 				}
 				continue;
 			}
 
-			cssVars.set(tokenPath, {
-				declaration: genCSSRule(
-					cssVar.declaration(
-						cssVarHash,
-						resolveRuntimeTokenAliasValue(tokenMaps, tokenPath, tokenValue),
-					),
-					Object.assign(createConditionsBucket(), { parentSelectors: [":root "] }),
+			const declaration = genCSSRule(
+				cssVar.declaration(
+					cssVarHash,
+					resolveRuntimeTokenAliasValue(tokenMaps, tokenPath, tokenValue),
 				),
+				Object.assign(createConditionsBucket(), { parentSelectors: [":root "] }),
+			);
+			cssVars.set(tokenPath, {
+				declaration,
 				priority: getPropertyPriority(tokenName),
 			});
+			recordTokenDeclaration(cssVarHash, declaration);
 		}
 	}
 
@@ -178,17 +188,20 @@ export const createRuntimeStylesheet = (
 		const priorities = resolvedList.map((part) =>
 			getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
 		);
+		const declaration = genCSSRule(cssVar.declaration(entry.name, entry.value), conditions);
 		cssVars.set(`cssVariables.${entry.name}.${entry.condition}`, {
-			declaration: genCSSRule(cssVar.declaration(entry.name, entry.value), conditions),
+			declaration,
 			priority: priorities.reduce((acc, priority) => acc + priority, 0),
 		});
+		recordTokenDeclaration(entry.name, declaration);
 	}
 
 	const cssVariableRegistrations = normalizedCssVariables.registrations
-		.map(
-			({ name, descriptor }) =>
-				`@property --${escapeIdentifier(name)}{syntax:${serializeCssPropertySyntax(descriptor.syntax)};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`,
-		)
+		.map(({ name, descriptor }) => {
+			const declaration = `@property --${escapeIdentifier(name)}{syntax:${serializeCssPropertySyntax(descriptor.syntax)};inherits:${String(descriptor.inherits)};initial-value:${descriptor.initialValue}}`;
+			recordTokenDeclaration(name, declaration);
+			return declaration;
+		})
 		.toSorted();
 
 	let tokensCache: string | undefined;
@@ -213,7 +226,7 @@ export const createRuntimeStylesheet = (
 	): void => {
 		if (orderedKey === "" || !isCompilableCssValue(normalizedValue)) return;
 		const pairId = pairs.concat(orderedKey, normalizedValue);
-		if (cache.has(pairId)) return;
+		if (cache.has(pairId) || localCache.has(pairId)) return;
 
 		const atomic = decodeAtomicPath(preset.conditions, pairId);
 		const property = cssPropertyFromKey(atomic.prop, preset.conditions);
@@ -244,7 +257,6 @@ export const createRuntimeStylesheet = (
 				className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 			});
 			const rule = { id: pairId, css, priority: atomic.priority };
-			cache.set(pairId, rule);
 			localCache.set(pairId, rule);
 			return;
 		}
@@ -262,7 +274,6 @@ export const createRuntimeStylesheet = (
 				className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 			});
 			const rule = { id: pairId, css, priority: atomic.priority };
-			cache.set(pairId, rule);
 			localCache.set(pairId, rule);
 			return;
 		}
@@ -277,7 +288,6 @@ export const createRuntimeStylesheet = (
 			className: `.${escapeIdentifier(classNameFor(orderedKey, normalizedValue))}`,
 		});
 		const rule = { id: pairId, css, priority: atomic.priority };
-		cache.set(pairId, rule);
 		localCache.set(pairId, rule);
 	};
 
@@ -332,10 +342,22 @@ export const createRuntimeStylesheet = (
 			...atomic.conditions,
 			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
 		});
-		const rule = { id: orderedKey, css, priority: atomic.priority };
+		const rule = { id: `${namespace}\u0000${orderedKey}`, css, priority: atomic.priority };
 		varCache.set(orderedKey, rule);
 		return rule;
 	};
 
-	return { processPrepared, processVarKey, gen: { tokens } };
+	const tokenManifest = (): ReadonlyMap<string, string> =>
+		new Map(
+			Array.from(tokenDeclarations, ([name, declarations]) => [
+				name,
+				JSON.stringify(declarations.toSorted()),
+			]),
+		);
+
+	const commitPrepared = (rules: ReadonlyMap<string, Rule>): void => {
+		for (const [id, rule] of rules) cache.set(id, rule);
+	};
+
+	return { processPrepared, commitPrepared, processVarKey, gen: { tokens, tokenManifest } };
 };

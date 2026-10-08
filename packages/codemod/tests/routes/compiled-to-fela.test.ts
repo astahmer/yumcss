@@ -271,7 +271,8 @@ test("compiled -> fela: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "8px" });
+		  "code": "import { css } from "@compiled/react";
+		export const card = renderer.renderRule({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

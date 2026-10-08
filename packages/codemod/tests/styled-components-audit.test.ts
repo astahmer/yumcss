@@ -43,7 +43,6 @@ test("yumcss -> styled-components emits documented prop callbacks as a style fun
 	}).toMatchInlineSnapshot(`
 		{
 		  "code": "import styled from "styled-components";
-
 		export const Card = styled.div((props) => ({ color: props.title }));",
 		  "converted": 1,
 		  "residuals": [],

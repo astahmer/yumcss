@@ -33,7 +33,8 @@ export const App = () => <Box sx={{ padding: 2, margin: 1, gap: 3, columnGap: 2,
 	expect(result.code).toContain('paddingTop: "4px"');
 	expect(result.code).toContain('paddingBottom: "4px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", margin: "8px", gap: "24px", columnGap: "16px", rowGap: "4px", marginLeft: "8px", marginRight: "8px", paddingTop: "4px", paddingBottom: "4px", marginInline: "8px", paddingBlockStart: "4px" })} />;"
 	`);
@@ -53,7 +54,8 @@ export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, bo
 	expect(result.code).toContain('borderTop: "2px solid"');
 	expect(result.code).toContain('borderRadius: "4px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ width: "50%", maxWidth: "100%", minHeight: "25%", border: "1px solid", borderTop: "2px solid", borderRadius: "4px" })} />;"
 	`);
@@ -175,7 +177,8 @@ export const App = () => <Box sx={{ boxShadow: "none", zIndex: "auto", maxWidth:
 	expect(result.code).toContain('zIndex: "auto"');
 	expect(result.code).toContain('maxWidth: "max-content"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ boxShadow: "none", zIndex: "auto", maxWidth: "max-content" })} />;"
 	`);
@@ -191,7 +194,8 @@ export const App = () => <Box sx={{ fontFamily: "monospace", fontSize: "small", 
 	for (const value of ["monospace", "small", "normal", "italic", "uppercase"])
 		expect(result.code).toContain(value);
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ fontFamily: "monospace", fontSize: "small", fontWeight: "normal", fontStyle: "italic", lineHeight: "normal", letterSpacing: "normal", textTransform: "uppercase" })} />;"
 	`);
@@ -209,7 +213,8 @@ export const App = () => <Box sx={[{ color: "red", padding: 2 }, ({ margin: 1, c
 	expect(result.code).toContain('padding: "16px"');
 	expect(result.code).toContain('margin: "8px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ padding: "16px", margin: "8px", color: "blue" })} />;"
 	`);
@@ -252,7 +257,8 @@ export const App = () => <Box sx={{ display: "block", displayPrint: "none" }} />
 	expect(tailwindResult.residuals).toEqual([]);
 	expect(tailwindResult.code).toContain("print:[display:none]");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ display: "block", _print: { display: "none" } })} />;"
 	`);
@@ -360,7 +366,8 @@ export const App = () => <Box sx={{ width: { mobile: 0.5, tablet: 0.75 }, displa
 	expect(result.code).toContain('display: "flex"');
 	expect(result.code).not.toContain("responsive values");
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ "@media (min-width:0px)": { width: "50%", display: "none" }, "@media (min-width:700px)": { width: "75%" }, "@media (min-width:1200px)": { display: "flex" } })} />;"
 	`);
@@ -510,7 +517,8 @@ export const Panel = styled("section")({ margin: 3 });`;
 	expect(result.code).toContain("padding: 2");
 	expect(result.code).not.toContain('padding: "16px"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/system";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
@@ -530,7 +538,8 @@ export const App = () => <Box component="section" sx={{ color: "red" }} />;`;
 	expect(result.code).toContain("<section");
 	expect(result.code).not.toContain('component="section"');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <section className={css.class({ color: "red" })} />;"
 	`);
@@ -570,7 +579,6 @@ export const App = () => <div className={card} />;`;
 	expect(result.code).toContain('letterSpacing: "0.5px"');
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { Box } from "@mui/material";
-
 		const card = { padding: "4px", width: "0.5px", height: "1px", borderRadius: "1px", fontSize: "14px", letterSpacing: "0.5px" };
 		export const App = () => <Box component="div" sx={card} />;"
 	`);

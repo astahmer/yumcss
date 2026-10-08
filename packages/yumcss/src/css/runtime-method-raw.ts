@@ -20,6 +20,6 @@ export const attachRaw: RuntimeCssAttachment = (css, context) => {
 		const source = mergeFlatStyles(expandedStyles) ?? context.assign(...expandedStyles);
 		const flat = context.flatten(source);
 		for (const key of Object.keys(flat)) context.validate(key, flat[key]);
-		return source;
+		return { ...source };
 	};
 };

@@ -271,7 +271,8 @@ test("styled-components -> vue-styled: preserves malformed concrete styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import styled from "styled-components";
+		import styled from "vue-styled-components";
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

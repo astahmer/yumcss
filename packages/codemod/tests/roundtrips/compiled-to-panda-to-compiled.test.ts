@@ -86,7 +86,8 @@ test("compiled -> panda -> compiled: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +173,8 @@ test("compiled -> panda -> compiled: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -274,7 +276,8 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +350,8 @@ test("compiled -> panda -> compiled: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -435,7 +439,8 @@ test("compiled -> panda -> compiled: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

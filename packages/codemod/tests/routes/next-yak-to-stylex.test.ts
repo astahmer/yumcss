@@ -277,7 +277,8 @@ test("next-yak -> stylex: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "next-yak";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

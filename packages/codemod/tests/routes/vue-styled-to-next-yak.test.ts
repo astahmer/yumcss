@@ -48,7 +48,8 @@ test("vue-styled -> next-yak: migrates concrete vue-styled syntax to next-yak", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("vue-styled -> next-yak: carries a documented secondary vue-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -145,7 +147,8 @@ test("vue-styled -> next-yak: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -180,7 +183,8 @@ test("vue-styled -> next-yak: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -227,7 +231,8 @@ test("vue-styled -> next-yak: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -271,7 +276,8 @@ test("vue-styled -> next-yak: preserves malformed concrete vue-styled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import styled from "vue-styled-components";
+		import { css } from "next-yak";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

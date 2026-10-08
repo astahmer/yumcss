@@ -52,7 +52,8 @@ test("aphrodite -> linaria -> aphrodite: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "aphrodite";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "aphrodite";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("aphrodite -> linaria -> aphrodite: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "aphrodite";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("aphrodite -> linaria -> aphrodite: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "aphrodite";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],

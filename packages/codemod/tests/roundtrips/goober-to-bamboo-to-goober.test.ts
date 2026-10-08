@@ -86,7 +86,8 @@ test("goober -> bamboo -> goober: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -252,7 +253,8 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +327,8 @@ test("goober -> bamboo -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +416,8 @@ test("goober -> bamboo -> goober: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

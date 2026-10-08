@@ -90,6 +90,7 @@ test("chakra-ui -> panda -> chakra-ui: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "styled-system/css";
 		export const App = () => <Box css={{ background: "red.200", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -255,6 +256,7 @@ test("chakra-ui -> panda -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "styled-system/css";
 		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,6 +329,7 @@ test("chakra-ui -> panda -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "styled-system/css";
 		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,6 +417,7 @@ test("chakra-ui -> panda -> chakra-ui: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "styled-system/css";
 		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

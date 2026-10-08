@@ -52,7 +52,8 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@mui/system";
 		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("solid-styled -> mui -> solid-styled: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@mui/system";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("solid-styled -> mui -> solid-styled: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@mui/system";
 		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +175,8 @@ test("solid-styled -> mui -> solid-styled: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@mui/system";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@mui/system";
+		      "code": "import "solid-styled-components";
+		import { styled } from "@mui/system";
 		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +279,8 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "import "@mui/system";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		      "converted": 1,
 		      "generatedFiles": [],

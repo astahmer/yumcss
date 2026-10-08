@@ -287,7 +287,8 @@ test("goober -> react-native: preserves malformed concrete goober input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "goober";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

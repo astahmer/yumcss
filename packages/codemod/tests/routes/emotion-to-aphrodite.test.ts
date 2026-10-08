@@ -48,7 +48,8 @@ test("emotion -> aphrodite: migrates concrete emotion syntax to aphrodite", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> aphrodite: carries a documented secondary emotion API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> aphrodite: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> aphrodite: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> aphrodite: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> aphrodite: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { css } from "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

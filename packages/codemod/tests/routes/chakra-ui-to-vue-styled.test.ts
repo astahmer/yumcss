@@ -277,7 +277,8 @@ test("chakra-ui -> vue-styled: preserves malformed concrete chakra-ui input", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`background: #fecaca; padding: 1rem;\`;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

@@ -89,6 +89,7 @@ test("react-strict-dom -> panda -> react-strict-dom: preserves an actionable con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "styled-system/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -259,6 +260,7 @@ test("react-strict-dom -> panda -> react-strict-dom: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "styled-system/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -336,6 +338,7 @@ test("react-strict-dom -> panda -> react-strict-dom: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "styled-system/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -428,6 +431,7 @@ test("react-strict-dom -> panda -> react-strict-dom: resolves token values acros
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "styled-system/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",

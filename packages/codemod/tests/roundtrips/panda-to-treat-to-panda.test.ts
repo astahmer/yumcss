@@ -52,7 +52,8 @@ test("panda -> treat -> panda: preserves an actionable concrete round trip", asy
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "&:hover": { "color": "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +225,8 @@ test("panda -> treat -> panda: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +300,8 @@ test("panda -> treat -> panda: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("panda -> treat -> panda: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

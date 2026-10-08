@@ -110,7 +110,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves an ac
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const __yumcssCardStyles = styled.div({ color: "red", padding: "1rem" });
 		",
 		      "converted": 1,
@@ -220,7 +221,8 @@ test("styled-components -> vanilla-extract -> styled-components: retains the doc
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const __yumcssCardStyles = styled.div({ color: "red", padding: "1rem" });
 		",
 		      "converted": 1,
@@ -346,7 +348,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "reverseArtifacts": [
 		      {
 		        "changed": true,
-		        "code": "import styled from "styled-components";
+		        "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const __yumcssCardStyles = styled.div({ color: "#2563eb", padding: "1rem" });
 		",
 		        "converted": 1,
@@ -443,7 +446,8 @@ test("styled-components -> vanilla-extract -> styled-components: preserves concr
 		    "reverseArtifacts": [
 		      {
 		        "changed": true,
-		        "code": "import styled from "styled-components";
+		        "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const __yumcssCardStyles = styled.div({ color: "#2563eb", padding: "1rem" });
 		",
 		        "converted": 1,
@@ -555,7 +559,8 @@ test("styled-components -> vanilla-extract -> styled-components: resolves token 
 		  "reverseArtifacts": [
 		    {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const __yumcssCardStyles = styled.div({ color: "#2563eb", padding: "1rem" });
 		",
 		      "converted": 1,

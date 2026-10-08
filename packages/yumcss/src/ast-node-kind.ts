@@ -25,6 +25,8 @@ const defineNodeKinds = <T extends Readonly<Record<string, string>>>(kinds: T): 
 
 /** Node `type` discriminators compared in yumcss control flow. */
 export const NodeKind = defineNodeKinds({
+	SwitchStatement: "SwitchStatement",
+	StaticBlock: "StaticBlock",
 	ArrayExpression: "ArrayExpression",
 	ArrayPattern: "ArrayPattern",
 	ArrowFunctionExpression: "ArrowFunctionExpression",
@@ -39,6 +41,7 @@ export const NodeKind = defineNodeKinds({
 	ExportAllDeclaration: "ExportAllDeclaration",
 	ExportDefaultDeclaration: "ExportDefaultDeclaration",
 	ExportNamedDeclaration: "ExportNamedDeclaration",
+	ExportSpecifier: "ExportSpecifier",
 	ForInStatement: "ForInStatement",
 	ForOfStatement: "ForOfStatement",
 	ForStatement: "ForStatement",

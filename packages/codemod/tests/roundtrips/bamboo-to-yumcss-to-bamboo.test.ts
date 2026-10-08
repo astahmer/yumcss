@@ -52,7 +52,8 @@ test("bamboo -> yumcss -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red" });",
 		    "converted": 1,
@@ -88,7 +89,6 @@ test("bamboo -> yumcss -> bamboo: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +138,8 @@ test("bamboo -> yumcss -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ display: "flex", gap: "4" });",
 		    "converted": 1,
@@ -174,7 +175,6 @@ test("bamboo -> yumcss -> bamboo: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +240,8 @@ test("bamboo -> yumcss -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "#2563eb" });",
 		      "converted": 1,
@@ -276,7 +277,6 @@ test("bamboo -> yumcss -> bamboo: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +313,8 @@ test("bamboo -> yumcss -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		      "converted": 1,
@@ -349,7 +350,6 @@ test("bamboo -> yumcss -> bamboo: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +401,8 @@ test("bamboo -> yumcss -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
@@ -437,7 +438,6 @@ test("bamboo -> yumcss -> bamboo: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

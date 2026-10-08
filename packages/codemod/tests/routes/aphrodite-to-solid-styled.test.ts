@@ -48,7 +48,8 @@ test("aphrodite -> solid-styled: migrates concrete aphrodite syntax to solid-sty
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("aphrodite -> solid-styled: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("aphrodite -> solid-styled: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("aphrodite -> solid-styled: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("aphrodite -> solid-styled: preserves malformed concrete aphrodite input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

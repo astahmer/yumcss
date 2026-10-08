@@ -48,7 +48,8 @@ test("react-native -> vanilla-extract: migrates concrete react-native syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> vanilla-extract: carries a documented secondary react-nati
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> vanilla-extract: loads concrete theme and project context 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> vanilla-extract: loads concrete theme and project context 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> vanilla-extract: resolves concrete token values with proje
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> vanilla-extract: preserves malformed concrete react-native
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { StyleSheet } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

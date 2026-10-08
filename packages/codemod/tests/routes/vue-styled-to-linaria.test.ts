@@ -48,7 +48,8 @@ test("vue-styled -> linaria: migrates concrete vue-styled syntax to linaria", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("vue-styled -> linaria: carries a documented secondary vue-styled API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("vue-styled -> linaria: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("vue-styled -> linaria: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("vue-styled -> linaria: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		  "converted": 1,
@@ -281,7 +286,8 @@ test("vue-styled -> linaria: preserves malformed concrete vue-styled input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import styled from "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

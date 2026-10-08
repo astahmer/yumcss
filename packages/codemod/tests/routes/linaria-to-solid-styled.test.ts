@@ -276,7 +276,8 @@ test("linaria -> solid-styled: preserves malformed concrete linaria input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { css } from "@linaria/core";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

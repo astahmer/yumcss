@@ -7,7 +7,7 @@
  *   - native: react-native-web processing real RN style objects
  *
  * Asserted equal, computed-style for computed-style:
- *   $blue-500 -> rgb(49, 130, 206), corners lg -> 8px radius,
+ *   $blue-500 -> rgb(49, 130, 206), web/native corners lg -> 8px radius,
  *   pad [4, 8] -> 4px top / 8px left. Plus the native-only `_dark` runtime
  *   toggle flipping status to rgb(17, 24, 39) ($gray-900).
  */

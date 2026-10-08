@@ -48,7 +48,8 @@ test("emotion -> goober: migrates concrete emotion syntax to goober", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> goober: carries a documented secondary emotion API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> goober: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> goober: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> goober: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> goober: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { css } from "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

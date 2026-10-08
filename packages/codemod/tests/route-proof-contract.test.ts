@@ -136,7 +136,7 @@ describe("route proof contract", () => {
 		expect(result.code).toContain('padding: "16px"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@emotion/css";
-			 const css = createUnsafeCss(); const card = css({ color: "red", padding: "16px" }); export const App = () => <button className={card}>Proof</button>;"
+			import { createUnsafeCss } from "yumcss/unsafe/css"; const css = createUnsafeCss(); const card = css({ color: "red", padding: "16px" }); export const App = () => <button className={card}>Proof</button>;"
 		`);
 	});
 	test("keeps named-map child emission residuals instead of emitting an empty entry", () => {

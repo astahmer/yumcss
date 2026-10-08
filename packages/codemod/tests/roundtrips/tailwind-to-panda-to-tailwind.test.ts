@@ -86,7 +86,8 @@ test("tailwind -> panda -> tailwind: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
+		    "code": "import "styled-system/css";
+		export const App = () => <div className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -278,7 +279,8 @@ test("tailwind -> panda -> tailwind: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +353,8 @@ test("tailwind -> panda -> tailwind: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -439,7 +442,8 @@ test("tailwind -> panda -> tailwind: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		    "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

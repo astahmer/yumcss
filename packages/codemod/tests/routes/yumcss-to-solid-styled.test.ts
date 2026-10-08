@@ -49,7 +49,6 @@ test("yumcss -> solid-styled: migrates concrete yumcss syntax to solid-styled", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -158,7 +157,6 @@ test("yumcss -> solid-styled: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-
 		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -196,7 +194,6 @@ test("yumcss -> solid-styled: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "solid-styled-components";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +243,6 @@ test("yumcss -> solid-styled: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { css } from "solid-styled-components";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -292,8 +288,8 @@ test("yumcss -> solid-styled: preserves malformed concrete yumcss input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

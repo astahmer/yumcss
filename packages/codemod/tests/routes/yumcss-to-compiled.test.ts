@@ -49,7 +49,6 @@ test("yumcss -> compiled: migrates concrete yumcss syntax to compiled", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> compiled: carries a documented secondary yumcss API explicitly",
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const styles = { "card": css({ "color": "red" }), "muted": css({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> compiled: loads concrete theme and project context variants", as
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("yumcss -> compiled: loads concrete theme and project context variants", as
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("yumcss -> compiled: resolves concrete token values with project context", 
 		{
 		  "changed": true,
 		  "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +275,8 @@ test("yumcss -> compiled: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

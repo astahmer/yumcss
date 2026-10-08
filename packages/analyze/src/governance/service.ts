@@ -46,7 +46,7 @@ export function analyzeTokenGovernance(options: TokenGovernanceOptions): TokenGo
 		context.definitions,
 	);
 
-	// Merge caller boundary hits with the collector's dynamic-expression hits.
+	// Merge caller boundary hits with source-coverage events from the collector.
 	const boundaryHits: Record<GovernanceCoverageBoundary, string[]> = {
 		"dynamic-expression": [...(options.boundaryHits?.["dynamic-expression"] ?? [])],
 		"runtime-theme-access": [...(options.boundaryHits?.["runtime-theme-access"] ?? [])],
@@ -59,6 +59,7 @@ export function analyzeTokenGovernance(options: TokenGovernanceOptions): TokenGo
 		"unresolved-import": [...(options.boundaryHits?.["unresolved-import"] ?? [])],
 	};
 	boundaryHits["dynamic-expression"].push(...collected.boundaryHits["dynamic-expression"]);
+	boundaryHits["unscanned-file"].push(...collected.boundaryHits["unscanned-file"]);
 
 	// Public-export boundary: statically string-literal exports of the
 	// scanned files may escape the graph (re-exported design tokens, shared

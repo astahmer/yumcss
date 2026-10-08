@@ -48,7 +48,8 @@ test("vanilla-extract -> panda: migrates concrete vanilla-extract syntax to pand
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +145,8 @@ test("vanilla-extract -> panda: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +180,8 @@ test("vanilla-extract -> panda: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +227,8 @@ test("vanilla-extract -> panda: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -267,7 +271,8 @@ test("vanilla-extract -> panda: preserves malformed concrete vanilla-extract inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

@@ -54,8 +54,8 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,8 +239,8 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +275,6 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,8 +311,8 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +347,6 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,8 +398,8 @@ test("next-yak -> chakra-ui -> next-yak: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +434,6 @@ test("next-yak -> chakra-ui -> next-yak: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

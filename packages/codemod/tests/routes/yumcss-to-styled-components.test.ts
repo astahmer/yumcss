@@ -49,7 +49,6 @@ test("yumcss -> styled-components: migrates concrete yumcss syntax to styled-com
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +92,6 @@ test("yumcss -> styled-components: carries a documented secondary yumcss API exp
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "red" }), "muted": styled.div({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("yumcss -> styled-components: loads concrete theme and project context vari
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("yumcss -> styled-components: loads concrete theme and project context vari
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("yumcss -> styled-components: resolves concrete token values with project c
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,8 +265,8 @@ test("yumcss -> styled-components: preserves malformed concrete yumcss input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

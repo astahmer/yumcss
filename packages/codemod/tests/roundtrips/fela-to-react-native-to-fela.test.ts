@@ -92,6 +92,7 @@ test("fela -> react-native -> fela: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "react-native";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -267,6 +268,7 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "react-native";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -346,6 +348,7 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "react-native";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -440,6 +443,7 @@ test("fela -> react-native -> fela: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "react-native";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

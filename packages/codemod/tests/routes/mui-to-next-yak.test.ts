@@ -48,7 +48,8 @@ test("mui -> next-yak: migrates concrete mui syntax to next-yak", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: red; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("mui -> next-yak: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "@mui/system";
+		import { css } from "next-yak";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: 8;\`, props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
@@ -144,7 +146,8 @@ test("mui -> next-yak: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #f97316; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +181,8 @@ test("mui -> next-yak: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +228,8 @@ test("mui -> next-yak: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -267,7 +272,8 @@ test("mui -> next-yak: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import { Box } from "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: red; padding: 16px;\`;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

@@ -276,7 +276,8 @@ test("stylex -> vanilla-extract: preserves malformed concrete stylex input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

@@ -90,8 +90,8 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box style={defaultSystem.css({ background: "red.200", padding: "4" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -257,8 +257,8 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box style={defaultSystem.css({ background: "#f97316", padding: "4" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -331,8 +331,8 @@ test("chakra-ui -> tokenami -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box style={defaultSystem.css({ background: "brand.500", padding: "4" })} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -420,8 +420,8 @@ test("chakra-ui -> tokenami -> chakra-ui: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box style={defaultSystem.css({ background: "brand.500", padding: "4" })} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -278,7 +278,8 @@ test("chakra-ui -> fela: preserves malformed concrete chakra-ui input", async ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const App = () => renderer.renderRule({ "background": "#fecaca", "padding": "1rem" });
+		  "code": "import { Box } from "@chakra-ui/react";
+		export const App = () => renderer.renderRule({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -52,7 +52,8 @@ test("vue-styled -> jss -> vue-styled: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 1,
@@ -89,7 +90,8 @@ test("vue-styled -> jss -> vue-styled: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
@@ -142,7 +144,8 @@ test("vue-styled -> jss -> vue-styled: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 1,
@@ -179,7 +182,8 @@ test("vue-styled -> jss -> vue-styled: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
@@ -248,7 +252,8 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		      "converted": 1,
@@ -285,7 +290,8 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
@@ -325,7 +331,8 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		      "converted": 1,
@@ -362,7 +369,8 @@ test("vue-styled -> jss -> vue-styled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
@@ -417,7 +425,8 @@ test("vue-styled -> jss -> vue-styled: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 1,
@@ -454,7 +463,8 @@ test("vue-styled -> jss -> vue-styled: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: jss -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",

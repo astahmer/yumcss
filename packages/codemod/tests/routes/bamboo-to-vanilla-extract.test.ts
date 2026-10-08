@@ -48,7 +48,8 @@ test("bamboo -> vanilla-extract: migrates concrete bamboo syntax to vanilla-extr
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("bamboo -> vanilla-extract: carries a documented secondary bamboo API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("bamboo -> vanilla-extract: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("bamboo -> vanilla-extract: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("bamboo -> vanilla-extract: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> vanilla-extract: preserves malformed concrete bamboo input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { css } from "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

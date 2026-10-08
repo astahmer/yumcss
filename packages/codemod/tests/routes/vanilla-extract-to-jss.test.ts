@@ -48,7 +48,8 @@ test("vanilla-extract -> jss: migrates concrete vanilla-extract syntax to jss", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("vanilla-extract -> jss: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("vanilla-extract -> jss: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("vanilla-extract -> jss: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("vanilla-extract -> jss: preserves malformed concrete vanilla-extract input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

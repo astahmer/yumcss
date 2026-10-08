@@ -271,7 +271,8 @@ test("stylex -> fela: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "generatedFiles": [],

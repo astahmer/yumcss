@@ -25,7 +25,9 @@ const typecheckGeneratedSolid = (generatedSource: string): string => {
 	const projectRoot = resolve(import.meta.dirname, "../../yumcss");
 	const temporaryDirectory = mkdtempSync(resolve(projectRoot, ".codemod-solid-wrapper-"));
 	const generatedFile = join(temporaryDirectory, "SolidWrapper.tsx");
+	const sourceModuleTypes = join(temporaryDirectory, "source-module.d.ts");
 	try {
+		writeFileSync(sourceModuleTypes, 'declare module "solid-styled-components";\n');
 		writeFileSync(generatedFile, generatedSource);
 		const result = spawnSync(
 			"pnpm",
@@ -44,6 +46,7 @@ const typecheckGeneratedSolid = (generatedSource: string): string => {
 				"Bundler",
 				"--strict",
 				"--skipLibCheck",
+				sourceModuleTypes,
 				generatedFile,
 			],
 			{ cwd: projectRoot, encoding: "utf8" },

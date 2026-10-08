@@ -58,6 +58,7 @@ export default defineCodemodAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/\bfrom\s+["']next-yak["']/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["next-yak"],
+	sourceModulesSideEffectFree: ["next-yak"],
 	configFiles: ["package.json"],
 	migration: {
 		targetPolicy: {

@@ -90,6 +90,7 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "solid-styled-components";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "blue", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
@@ -261,6 +262,7 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "solid-styled-components";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
@@ -339,6 +341,7 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "solid-styled-components";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",
@@ -432,6 +435,7 @@ test("mantine -> solid-styled -> mantine: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "solid-styled-components";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => css.class({ "color": "var(--mantine-color-brand-0)", "marginInline": "auto", "maxWidth": "calc(25rem * var(--mantine-scale))" });",

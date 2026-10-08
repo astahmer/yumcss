@@ -1,6 +1,6 @@
 # Checked adversarial bug review — 2026-10-08
 
-21 independently checked bug groups: 11 P1, 10 P2. No application fixes were made.
+21 independently checked bug groups: 11 P1, 10 P2. This document preserves the original review evidence. See the [fix resolution ledger](adversarial-fixes-2026-10-08.md) for subsequent implementation and validation.
 
 Three subagents reviewed runtime/native APIs, compiler/extraction/lint, and migration adapters/CLI. The primary reviewer reran every accepted reproduction and separately reviewed analysis, filesystem writes, token governance, and asynchronous preview sessions. A checked box means **confirmed**, not fixed.
 
@@ -203,16 +203,294 @@ Initial source revision: `85b110c6`. Report parent: `f3c5eae4`; intervening chan
 
 ## Validation and limits
 
-- 433 existing focused tests passed; one existing governance inline snapshot failed. Suites: analyze preview/MCP (23), governance (13 pass / 1 fail), runtime/cx (53), compiler/stylesheet/Stack (142), codemod/CLI (202).
-- Governance failure: `packages/analyze/src/governance/service.test.ts:35` expects source offsets two characters later than actual. Recorded separately; it does not prove any of the checked behavior bugs.
+- At initial review capture, 433 focused tests passed and one governance inline snapshot failed. Suites: analyze preview/MCP (23), governance (13 pass / 1 fail), runtime/cx (53), compiler/stylesheet/Stack (142), codemod/CLI (202).
+- The initial governance snapshot mismatch at `packages/analyze/src/governance/service.test.ts:35` has since been resolved; the focused test passes in the current workspace.
 - Ten executable reproduction groups were rerun by the primary reviewer and archived above. Expected-bug assertions passing prove current faulty behavior; they do not indicate repaired behavior. Full outputs include actual emitted source/CSS and independent parser/compiler/runtime checks.
 - Solid reactivity was independently checked in a real browser. Playground `/basics` also loaded, and changing Tone to `danger` produced `Delete` with `bg-red-500`. This is a narrow smoke check, not comprehensive UI acceptance. T3 screenshots failed; browser JavaScript inspection remained available.
 - No exhaustive route matrix, full repository gates, production deployment, or complete framework/browser matrix was run. Large generated preset catalogs and every ecosystem adapter were not exhaustively reviewed. No bug-free claim follows from this review.
 - Historical nested-array traversal, implicit SSR sheet sharing, default sheet identity collisions, tokenless-preset erasure, and native cache alias/type collisions appeared repaired and were excluded. TW temporal-dead-zone folding was also excluded from the checked list because its demonstrated input already throws before transformation.
-- Only documentation and captured diagnostic evidence were added. No compiler/runtime/codemod fixes, dependency changes, snapshot updates, or generated product artifacts were made.
+- At initial review capture, only documentation and diagnostic evidence had been added. The subsequent fixes and their verification are tracked in `adversarial-fixes-2026-10-08.md`.
 
 ## Reproduction artifacts
 
 Each `.source.txt` preserves the runnable diagnostic source; corresponding `.output.txt` records its exact command, exit code, and output. Restore it to a temporary file with its original `.mjs`/`.ts` extension, then run the command shown in the output header. These are workstation reproductions: paths refer to `/Users/astahmer/dev/pandwind` and existing `/tmp` fixture setup. For the primary-reviewer scripts using bare imports, expose the workspace packages under a temporary `node_modules` using symlinks; all implementation access is through declared package exports.
 
 The lint harness intentionally loads the exact current package source instead of potentially stale built output. CLI harnesses run from the owning codemod package. The Solid fixture requires bundling with browser conditions and serving its generated JavaScript, as used for the browser proof. Temporary servers were stopped after verification.
+
+## Follow-up issues checked during fixes
+
+These additional issues were independently reproduced while implementing the original 21 fixes. Each now has focused regression coverage; current status and broader validation are recorded in `adversarial-fixes-2026-10-08.md`.
+
+### 22. P1 — adapter cleanup removes a still-used Emotion `css` import
+
+- Reproduction: Emotion → Treat with `export const original = css` beside a converted `css(...)` call.
+- Actual: the source import was removed while the exported value still referenced `css`.
+- Regression: `packages/codemod/tests/adversarial-migration-regressions.test.ts`, “source import cleanup preserves a live unaliased binding”.
+
+### 23. P2 — dedup does not recognize route-owned target calls
+
+- Reproduction: repeat one target style through a registered adapter or the project's generated `tw.ts` module with `--dedup`.
+- Actual: the adapter route skipped dedup, while the flat path did not reliably associate emitted calls with the generated module.
+- Regression: the adversarial codemod suite exercises CLI adapter dedup and metadata-backed flat migration dedup.
+
+### 24. P1 — aliased module-change paths can plan two writes to one file
+
+- Reproduction: compose conflicting changes for `src/consumer.ts` and `src/./consumer.ts`.
+- Actual: lexical aliases were treated as separate changes even though both resolve to the same file.
+- Regression: the adversarial codemod suite checks conflict rejection and identical-content deduplication after normalization.
+
+### 25. P1 — CLI output paths can escape through an in-project symlink
+
+- Reproduction: host conversion targets an output path whose parent symlink points outside the selected project.
+- Actual: lexical path validation alone allowed the output path to reach the outside sentinel.
+- Regression: the CLI symlink test verifies rejection and an unchanged outside sentinel; project-path tests also cover internal, escaping, and dangling symlinks.
+
+### 26. P2 — Emotion aliases with Unicode identifiers are skipped
+
+- Reproduction: import `css as 样式` from `@emotion/css` and call `样式(...)`.
+- Actual: migration left the call untouched without a residual because the alias boundary check used ASCII word semantics.
+- Regression: the adversarial codemod suite checks the AST-resolved Unicode alias conversion.
+
+### 27. P1 — one-line flat migration mistakes a `tw()` call for an import
+
+- Reproduction: convert a one-line `css.class(...)` module to `tw` with a generated project module configured.
+- Actual: the import check scanned the entire import line and saw the later emitted `tw()` call, leaving the call unbound.
+- Regression: metadata-backed flat migration checks the generated import; an additional case verifies reuse of an existing aliased generated import.
+
+### 28. P1 — absolute CLI patterns break when macOS resolves `/var` through `/private/var`
+
+- Reproduction: run the CLI with a temporary project root and an absolute file pattern on macOS.
+- Actual: glob output and the real project root used different canonical path spellings, so relative-path slicing produced an empty path and external auto-detection failed.
+- Regression: the full codemod swap suite checks absolute-path conversion and external-source auto-detection; project-path tests check canonical path mapping and root replacement.
+
+### 29. P2 — flat dedup regresses source calls and can claim foreign `tw` imports
+
+- Reproduction: dedup repeated `css.class(...)` calls that remain after a conservative skip, then pass a repeated `tw(...)` call imported from an unrelated module.
+- Actual: only target calls were considered, so retained source calls were missed; broadening by local name would incorrectly merge foreign calls.
+- Regression: codemod swap tests check retained-source dedup, foreign-import preservation, and import placement.
+
+### 30. P1 — import cleanup drops or mangles live Unicode and dollar-sign bindings
+
+- Reproduction: retain a live Emotion import alias named 样式, $css, or css$ beside a converted style call.
+- Actual: ASCII word-boundary matching treated valid JavaScript identifiers as unused; css$ could also be rewritten to an invalid Emotion export name.
+- Regression: the codemod adversarial suite checks a live Unicode alias and both dollar-sign boundary positions.
+
+### 31. P1 — import-shaped string literals are deleted during source import cleanup
+
+- Reproduction: convert an Emotion style call in a module containing a string literal with import-shaped text.
+- Actual: raw text matching mistook the string contents for an import declaration and replaced the string with an empty string.
+- Regression: the codemod adversarial suite preserves the string through Emotion to Tailwind; direct named-import cleanup checks cover the other pruning paths.
+
+### 32. P1 — live imports used in template expressions are removed
+
+- Reproduction: keep an imported css binding in an untagged template expression while converting another Emotion style call.
+- Actual: the scanner excludes the entire template literal, including executable interpolation, so cleanup removed the import and left an unbound reference.
+- Regression: the codemod adversarial suite requires both the Emotion import and the interpolation to remain.
+
+### 33. P1 — physical symlink aliases bypass file-change conflict detection
+
+- Reproduction: plan two different edits to one file using its real path and an in-project symlink alias.
+- Actual: lexical planning treated them as separate paths, then the CLI resolved both writes to one destination and let the later content win.
+- Regression: the project-path suite canonicalizes both aliases, merges identical edits, and rejects conflicting content.
+
+## Additional issues independently checked during the fix pass
+
+These were reproduced against the isolated fixes workspace, then checked again with targeted regressions.
+
+### 34. P2 — escaped JavaScript identifiers are missed by Emotion call matching
+
+- Reproduction: import and call an Emotion binding through a Unicode escape in its identifier spelling.
+- Actual: the adapter parsed the import but skipped the call or removed its still-live binding.
+- Regression: `packages/codemod/tests/adversarial-migration-regressions.test.ts` checks conversion and retained binding.
+
+### 35. P1 — residual JSX can lose its component provider import
+
+- Reproduction: keep a JSX component reference in a residual migration while converting a separate style call.
+- Actual: import cleanup pruned the provider even though the retained JSX still needed it.
+- Regression: the codemod adversarial suite checks the residual source and provider import together.
+
+### 36. P1 — selector comments can move generated rules outside their scope
+
+- Reproduction: place `&` inside a comment in a selector-list branch.
+- Actual: comment text affected parent-selector detection, leaving a generated rule unscoped.
+- Regression: `packages/yumcss/tests/adversarial-compiler-regressions.test.ts` checks emitted selector scope.
+
+### 37. P1 — nested destructuring and loop writes can leave stale extracted CSS
+
+- Reproduction: mutate a nested style value through a destructuring assignment or a `for…in/of` target after declaration.
+- Actual: the extractor still treated the object as immutable and inlined its old value.
+- Regression: compiler adversarial cases verify that these calls stay on the runtime path.
+
+### 38. P2 — safe immutable spreads lose extraction
+
+- Reproduction: spread a statically known immutable style object into an extractable carrier.
+- Actual: an escape-analysis guard blocked folding even though the spread value was scalar and immutable.
+- Regression: compiler adversarial and Vite CSS tests cover safe spreads alongside mutable nested aliases.
+
+### 39. P1 — runtime token-conflict recovery can corrupt pending styles
+
+- Reproduction: compile a call that conflicts with the token manifest after an earlier style has been queued, then retry with corrected tokens.
+- Actual: rollback could discard prior pending style state or retain declarations from the failing call.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` checks the queued rule and retry result.
+
+### 40. P1 — duplicate runtime module instances disagree about token-manifest registration
+
+- Reproduction: register or reuse token manifests through multiple runtime module instances.
+- Actual: equivalent runtime state was treated as missing or conflicting across module copies.
+- Regression: runtime-sheet tests cover module-instance registration and token reuse.
+
+### 41. P2 — lint reports shadowed `css.keyframes` as a YumCSS call
+
+- Reproduction: define a local `css` binding that shadows the imported API and call its `keyframes` member.
+- Actual: the lint rule emitted a YumCSS diagnostic for the unrelated local function.
+- Regression: `packages/lint-plugin/tests/index.test.ts` checks the shadowed call and the imported control case.
+
+### 42. P2 — governance misclassifies exponent-form numeric literals
+
+- Reproduction: use a numeric literal such as `1E3` in a token expression.
+- Actual: the scanner classified valid numeric syntax as dynamic usage.
+- Regression: governance usage-collector tests cover exponent-form numbers.
+
+### 43. P1 — MCP writes through hard links into files outside the project
+
+- Reproduction: link a project source file to an outside path, then apply a migration that rewrites the source in place.
+- Actual: truncating the project path also changed the outside file.
+- Regression: `packages/analyze/src/mcp/project-path.test.ts` requires rejection with both links unchanged.
+
+### 44. P2 — lint treats a class-expression self-name as an imported API
+
+- Reproduction: use an imported carrier name as the self-name of an unrelated class expression.
+- Actual: the scope resolver attributed the expression to the YumCSS import and reported a false positive.
+- Regression: lint tests cover class-expression self-name shadowing and the imported control case.
+
+### 45. P1 — empty runtime styles can claim a conflicting token manifest
+
+- Reproduction: invoke an empty or no-op style call with a different token manifest after a valid style call.
+- Actual: the empty call registered a token conflict despite adding no declarations.
+- Regression: runtime-sheet tests check no-op calls and token reuse after a real cached style call.
+
+### 46. P1 — denied source removal can leave an MCP migration partially applied
+
+- Reproduction: on macOS, deny removal of the source through an ACL while applying a migration that writes outputs.
+- Actual: failure during source cleanup could leave earlier project writes in place.
+- Regression: `packages/analyze/src/mcp/project-path.test.ts` verifies source and outputs roll back after the denied removal.
+
+### 47. P1 — a later generated-file failure can leave earlier MCP writes in place
+
+- Reproduction: plan multiple outputs where a later destination cannot be written.
+- Actual: the source rewrite and earlier generated output could be committed before the failure.
+- Regression: MCP project-path tests preflight all destinations and assert no source or output changes.
+
+### 48. P1 — import cleanup drops explicit module side effects
+
+- Reproduction: remove the last named import from a module that has evaluation side effects.
+- Actual: cleanup removed the whole declaration instead of preserving `import "module"`.
+- Regression: codemod adversarial tests assert side-effect-only imports survive direct and CLI cleanup.
+
+### 49. P2 — lint resolves `for…of/in` right-hand expressions in the wrong scope
+
+- Reproduction: iterate over an imported YumCSS carrier, then shadow that name in the loop binding.
+- Actual: the rule used the loop scope for the right-hand expression and missed the imported call.
+- Regression: lint tests cover both `for…of` and `for…in` right-hand expressions.
+
+### 50. P2 — static-block `var` declarations incorrectly shadow an enclosing function
+
+- Reproduction: declare `var tw` inside a class static block, then call the imported `tw` later in the enclosing function.
+- Actual: the resolver hoisted the class-local name across the function and suppressed the diagnostic.
+- Regression: lint tests cover the static-block case and the imported control call.
+
+### 51. P1 — comments containing `}` can hide dynamic token usage
+
+- Reproduction: put `}` inside a comment before a dynamic style expression that uses a token.
+- Actual: the scanner's brace matching ended the call early and allowed a false safe-to-remove recommendation.
+- Regression: governance collector and service tests cover `/* } */` and require a review boundary.
+
+### 52. P1 — nested object-property aliases can freeze stale extracted CSS
+
+- Reproduction: store a style object member in another object, mutate the member, then pass the original object to `css.class`.
+- Actual: extraction missed the escaped alias and emitted the pre-mutation value.
+- Regression: the compiler adversarial suite checks runtime preservation and no extraction.
+
+### 53. P1 — runtime selector lists turn a bare type branch into a pseudo selector
+
+- Reproduction: serialize `button, &:focus` through the semantic runtime sheet.
+- Actual: runtime output attached `button` as a pseudo to the generated class, while compiler lowering emitted a descendant selector.
+- Regression: runtime-sheet tests compare both selector branches with compiler lowering.
+
+### 54. P1 — codemod CLI writes through hard-linked project files
+
+- Reproduction: make a source, generated destination, or planned config change share an inode with an outside file.
+- Actual: direct writes could modify the outside link.
+- Regression: codemod path tests require preflight rejection and unchanged linked files.
+
+### 55. P2 — Unicode JSX escapes can crash lazy Oxc AST consumers
+
+- Reproduction: migrate JSX containing a Unicode escape through the full pipeline or import-cleanup helpers.
+- Actual: a deferred AST field threw instead of returning unchanged source with a parse residual.
+- Regression: source-pass and codemod adversarial tests cover full migration, direct import cleanup, and marker extraction.
+
+### 56. P1 — extension-changing MCP migration loses regular-file metadata
+
+- Reproduction: migrate a `.ts` file with mode `0640` and an extended attribute to a new extension.
+- Actual: writing a fresh destination lost the source mode and xattr.
+- Regression: MCP project-path tests check mode and, on macOS, xattr preservation.
+
+### 57. P1 — extension-changing MCP migration loses metadata on hard-linked sources
+
+- Reproduction: migrate a hard-linked `.ts` file whose outside link has a nondefault mode and xattr.
+- Actual: the new output lost metadata even though the outside link content stayed intact.
+- Regression: MCP project-path tests now require rejection before mutation and unchanged source/outside-link metadata.
+
+### 58. P1 — parser failures do not block governance pruning
+
+- Reproduction: add malformed source that contains a token reference after the parse error.
+- Actual: the unscanned boundary was not promoted into reachability, so pruning still marked the candidate safe.
+- Regression: governance service tests assert review-required status and no prune changeset.
+
+### 59. P1 — nonliteral and later `css()` arguments can hide token use from pruning
+
+- Reproduction: pass a style variable as the first argument or put a token-bearing object in a later style argument.
+- Actual: usage collection inspected only the first object argument and could mark the token safe to remove.
+- Regression: governance service tests require a dynamic boundary and capture later literal-object usage.
+
+### 60. P2 — immutable scalar member reads are over-conservatively kept at runtime
+
+- Reproduction: read a scalar from an immutable module constant into a local style object, then pass that object to `css.class`.
+- Actual: escape analysis dropped the module constant and skipped valid extraction.
+- Regression: compiler adversarial tests require extraction for this scalar-read path while the nested mutable-alias case remains runtime-only.
+
+### 61. P1 — Oxlint traverses Oxc parent cycles until it exhausts memory
+
+- Reproduction: run the repository Oxlint configuration on YumCSS source with the plugin rules that walk Oxc nodes.
+- Actual: AST traversal followed each node's `parent` back-reference and repeatedly walked the surrounding tree; Oxlint exhausted the Node heap even on a single source file.
+- Regression: the shared Oxc walkers now skip `parent` links, visit each object once, and a parent-linked AST fixture asserts bounded traversal. The rebuilt plugin completes on the triggering file and the full lint gate reaches ordinary diagnostics without OOM.
+
+### 62. P1 — `dss.raw()` returns a style object that crashes React DOM
+
+- Reproduction: pass `dss.raw(header)` to a React `style` prop in the Showcase app.
+- Actual: React 19 calls `styles.hasOwnProperty` and throws because the returned object has a null prototype; the page renders an empty root.
+- Regression: raw styles now return an ordinary object; the design test asserts its prototype and the fresh Showcase browser test checks all computed styles and zero page errors.
+
+### 63. P2 — Showcase passes nested conditions to a React inline `style` prop
+
+- Reproduction: pass `dss.raw(status)` to React after making the outer style object ordinary.
+- Actual: `_dark` remains a nested object and React throws `Cannot convert object to primitive value` while applying CSS values.
+- Regression: the web target passes the shared base status only; native and TUI retain their condition-aware status paths.
+
+### 64. P2 — Showcase sends OpenTUI a CSS border radius it deliberately rejects
+
+- Reproduction: run Showcase's headless TUI parity test with the shared header or body style.
+- Actual: `corners` lowers to `borderRadius`, which the OpenTUI backend rejects; the TUI example crashes before rendering.
+- Regression: shared base styles exclude radii, web/native apply explicit radius extensions, and the Showcase test passes both browser and TUI targets.
+
+### 65. P1 — JSX-emitting migrations keep TypeScript `.ts` output paths
+
+- Reproduction: migrate Vue-styled `Card.ts` to Tamagui. The target emits JSX but reports no output extension, so the CLI writes JSX back to `.ts`; import cleanup then fails to parse the generated output and leaves a duplicate `styled` binding.
+- Actual: the output contains JSX in a `.ts` file and both `vue-styled-components` and `@tamagui/core` bind `styled`.
+- Regression: a route-level migration assertion requires `.tsx`, valid JSX output, no stale source binding, and preservation of the source module's evaluation.
+
+### 66. P2 — generated CSS bindings collide with TypeScript-only `css` declarations
+
+- Reproduction: migrate a styled component in a TypeScript file that declares `type css = string`.
+- Actual: binding selection avoided the type name, but cleanup's text-based check missed it and renamed the generated binding back to `css`, creating a type/value name conflict.
+- Regression: the codemod adversarial suite requires the declaration to remain intact and generated styles to keep a separate target binding.

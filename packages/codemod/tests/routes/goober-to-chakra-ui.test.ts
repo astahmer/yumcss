@@ -50,8 +50,8 @@ test("goober -> chakra-ui: migrates concrete goober syntax to chakra-ui", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,8 +147,8 @@ test("goober -> chakra-ui: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,8 +182,8 @@ test("goober -> chakra-ui: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -229,8 +229,8 @@ test("goober -> chakra-ui: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -273,8 +273,8 @@ test("goober -> chakra-ui: preserves malformed concrete goober input", async () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

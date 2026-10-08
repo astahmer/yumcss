@@ -175,6 +175,7 @@ const defaultAdapter = defineCodemodAdapter({
 		/<\s*ClassNames\b/,
 	],
 	sourceModules: ["@compiled/react", "@compiled/css-in-js"],
+	sourceModulesSideEffectFree: ["@compiled/react"],
 	configFiles: ["package.json"],
 	migration: {
 		targetPolicy: {

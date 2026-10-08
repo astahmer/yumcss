@@ -94,7 +94,8 @@ test("fela -> yumcss: carries a documented secondary fela API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "react-fela";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "red" });",
 		  "converted": 1,

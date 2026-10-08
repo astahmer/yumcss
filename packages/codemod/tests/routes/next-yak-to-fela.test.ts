@@ -273,7 +273,8 @@ test("next-yak -> fela: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		  "code": "import { css } from "next-yak";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "generatedFiles": [],

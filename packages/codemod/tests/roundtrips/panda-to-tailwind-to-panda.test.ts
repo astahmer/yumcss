@@ -52,7 +52,8 @@ test("panda -> tailwind -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] hover:[color:blue]";",
+		    "code": "import "styled-system/css";
+		export const card = "[color:red] hover:[color:blue]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -228,7 +229,8 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand hover:[color:#f97316]";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#f97316]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -264,7 +266,8 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "import "styled-system/css";
+		// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#f97316]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -300,7 +303,8 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,7 +340,8 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		      "code": "import "styled-system/css";
+		// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#2563eb]";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -387,7 +392,8 @@ test("panda -> tailwind -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		    "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -423,7 +429,8 @@ test("panda -> tailwind -> panda: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		    "code": "import "styled-system/css";
+		// yumcss:migrate-skip (route: tailwind -> panda | parse-residual: unknown-utility | available: named-map, residual)
 		export const card = "text-brand hover:[color:#2563eb]";",
 		    "converted": 0,
 		    "generatedFiles": [],

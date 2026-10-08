@@ -271,7 +271,8 @@ test("treat -> fela: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "8px" });
+		  "code": "import { style } from "treat";
+		export const card = renderer.renderRule({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "generatedFiles": [],

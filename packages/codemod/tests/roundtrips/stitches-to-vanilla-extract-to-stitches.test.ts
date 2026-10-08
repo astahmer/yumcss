@@ -88,7 +88,8 @@ test("stitches -> vanilla-extract -> stitches: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("stitches -> vanilla-extract -> stitches: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { globalCss } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { globalCss } from "@stitches/react";
 		export const reset = globalCss({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("stitches -> vanilla-extract -> stitches: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("stitches -> vanilla-extract -> stitches: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

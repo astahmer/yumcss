@@ -53,7 +53,6 @@ test("yumcss -> jss -> yumcss: preserves an actionable concrete round trip", asy
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> jss -> yumcss: preserves an actionable concrete round trip", asy
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("yumcss -> jss -> yumcss: retains the documented secondary API without sile
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("yumcss -> jss -> yumcss: retains the documented secondary API without sile
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +242,6 @@ test("yumcss -> jss -> yumcss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -284,7 +279,6 @@ test("yumcss -> jss -> yumcss: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +316,6 @@ test("yumcss -> jss -> yumcss: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,7 +353,6 @@ test("yumcss -> jss -> yumcss: preserves concrete theme and project context vari
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +405,6 @@ test("yumcss -> jss -> yumcss: resolves token values across both concrete legs",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -451,7 +442,6 @@ test("yumcss -> jss -> yumcss: resolves token values across both concrete legs",
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

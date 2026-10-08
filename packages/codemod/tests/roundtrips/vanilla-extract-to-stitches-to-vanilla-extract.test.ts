@@ -52,7 +52,8 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("vanilla-extract -> stitches -> vanilla-extract: retains the documented sec
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { globalCss } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { globalCss } from "@stitches/react";
 		globalCss({ "body": { margin: 0 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +246,8 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +322,8 @@ test("vanilla-extract -> stitches -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +413,8 @@ test("vanilla-extract -> stitches -> vanilla-extract: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

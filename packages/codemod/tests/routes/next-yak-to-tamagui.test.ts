@@ -262,7 +262,8 @@ test("next-yak -> tamagui: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "next-yak";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

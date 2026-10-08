@@ -73,6 +73,7 @@ export interface SourceHostUse {
 
 export interface SourceBindingIndex {
 	readonly bindings: readonly SourceBinding[];
+	readonly declaredNames: ReadonlySet<string>;
 	readonly reexports: readonly SourceReexport[];
 	readonly exportAllSources: readonly SourceExportAll[];
 	/** AST ranges for static imports, re-exports, dynamic imports, and require calls. */
@@ -432,8 +433,11 @@ function collectBindings(program: OxcNode): {
 			node.type === NodeKind.ArrowFunctionExpression
 		) {
 			const names: string[] = [];
+			if (node.type === NodeKind.FunctionExpression)
+				bindingNames((node as { id?: unknown }).id, names);
 			for (const parameter of (node as { params?: unknown[] }).params ?? [])
 				bindingNames(parameter, names);
+			for (const name of names) declared.add(name);
 			addShadowedScope(names, (node as { body?: unknown }).body);
 		}
 		if (node.type === NodeKind.CatchClause) {
@@ -584,6 +588,7 @@ function collectHostUses(program: OxcNode): SourceHostUse[] {
 /** Immutable AST import index shared by codemod, Vite, analyzer, and hosts. */
 export class SourceBindings {
 	private readonly entries: readonly SourceBinding[];
+	private readonly declarations: ReadonlySet<string>;
 	private readonly exported: readonly SourceReexport[];
 	private readonly exportedAll: readonly SourceExportAll[];
 	private readonly references: readonly SourceModuleReference[];
@@ -594,6 +599,7 @@ export class SourceBindings {
 
 	private constructor(
 		entries: readonly SourceBinding[],
+		declaredNames: ReadonlySet<string>,
 		exported: readonly SourceReexport[],
 		exportedAll: readonly SourceExportAll[],
 		references: readonly SourceModuleReference[],
@@ -603,6 +609,7 @@ export class SourceBindings {
 		shadowedScopes: readonly ShadowedScope[],
 	) {
 		this.entries = entries;
+		this.declarations = declaredNames;
 		this.exported = exported;
 		this.exportedAll = exportedAll;
 		this.references = references;
@@ -618,6 +625,7 @@ export class SourceBindings {
 		const shadowed = new Set([...importedNames].filter((name) => collected.declared.has(name)));
 		return new SourceBindings(
 			collected.bindings,
+			collected.declared,
 			collected.reexports,
 			collected.exportAllSources,
 			collected.moduleReferences,
@@ -685,6 +693,7 @@ export class SourceBindings {
 		const declared = new Set(collected.flatMap(({ declared }) => [...declared]));
 		return new SourceBindings(
 			bindings,
+			declared,
 			collected.flatMap(({ reexports }) => reexports),
 			collected.flatMap(({ exportAllSources }) => exportAllSources),
 			collected.flatMap(({ moduleReferences }) => moduleReferences),
@@ -697,6 +706,10 @@ export class SourceBindings {
 
 	get bindings(): readonly SourceBinding[] {
 		return this.entries;
+	}
+
+	get declaredNames(): ReadonlySet<string> {
+		return this.declarations;
 	}
 
 	get reexports(): readonly SourceReexport[] {

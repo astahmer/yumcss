@@ -52,7 +52,8 @@ test("bamboo -> treat -> bamboo: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("bamboo -> treat -> bamboo: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("bamboo -> treat -> bamboo: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("bamboo -> treat -> bamboo: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("bamboo -> treat -> bamboo: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

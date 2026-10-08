@@ -48,7 +48,8 @@ test("panda -> stylex: migrates concrete panda syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -154,7 +155,8 @@ test("panda -> stylex: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -197,7 +199,8 @@ test("panda -> stylex: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -252,7 +255,8 @@ test("panda -> stylex: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {
@@ -304,7 +308,8 @@ test("panda -> stylex: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({
 			style: {
 				color: {

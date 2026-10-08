@@ -52,7 +52,8 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
@@ -145,7 +147,8 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +182,8 @@ test("react-native -> styled-components -> react-native: retains the documented 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 0,
@@ -249,7 +253,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -283,7 +288,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "react-native";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
@@ -329,7 +335,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -363,7 +370,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "react-native";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
@@ -424,7 +432,8 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -458,7 +467,8 @@ test("react-native -> styled-components -> react-native: resolves token values a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-native";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,

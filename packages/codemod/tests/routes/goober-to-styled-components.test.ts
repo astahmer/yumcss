@@ -266,7 +266,8 @@ test("goober -> styled-components: preserves malformed concrete goober input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { css } from "goober";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

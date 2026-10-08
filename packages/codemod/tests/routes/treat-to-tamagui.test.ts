@@ -261,7 +261,8 @@ test("treat -> tamagui: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { style } from "treat";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

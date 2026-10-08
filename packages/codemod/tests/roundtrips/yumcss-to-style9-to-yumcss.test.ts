@@ -53,7 +53,6 @@ test("yumcss -> style9 -> yumcss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,11 +88,11 @@ test("yumcss -> style9 -> yumcss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -144,7 +143,6 @@ test("yumcss -> style9 -> yumcss: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,11 +178,11 @@ test("yumcss -> style9 -> yumcss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -269,7 +267,6 @@ test("yumcss -> style9 -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -306,11 +303,11 @@ test("yumcss -> style9 -> yumcss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,7 +345,6 @@ test("yumcss -> style9 -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -385,11 +381,11 @@ test("yumcss -> style9 -> yumcss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -442,7 +438,6 @@ test("yumcss -> style9 -> yumcss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -479,11 +474,11 @@ test("yumcss -> style9 -> yumcss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "style9";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

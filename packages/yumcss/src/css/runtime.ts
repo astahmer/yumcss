@@ -8,6 +8,7 @@ import { createRuntimeStylesheet } from "./runtime-stylesheet.ts";
 import { createCss, type CreateCssOptions, type CssFn } from "./create-css.ts";
 import {
 	createRuntimeSheet,
+	registerRuntimeTokenManifest,
 	type RuntimeRule,
 	type RuntimeSheet,
 	type RuntimeSheetOptions,
@@ -107,8 +108,20 @@ export type RuntimeCssFn<
 interface RuntimeBinding {
 	sheet: RuntimeSheet;
 	cssOptions: CreateCssOptions;
-	flush: () => void;
+	checkpoint: () => RuntimeStyleCheckpoint;
+	rollback: (checkpoint: RuntimeStyleCheckpoint) => void;
+	flush: (request: RuntimeFlushRequest) => void;
 	registerVars: (css: CssFn<StyleObject>) => void;
+}
+
+interface RuntimeStyleCheckpoint {
+	pendingStyleCount: number;
+	needsTokenSync: boolean;
+}
+
+interface RuntimeFlushRequest {
+	checkpoint: RuntimeStyleCheckpoint;
+	hasClassOutput?: boolean;
 }
 
 // Browser module-scoped declarations share one artifact across split bundles.
@@ -148,26 +161,56 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	const sheet = runtimeSheetFor(preset, options);
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createRuntimeStylesheet(preset, cssOptions);
-	let tokensSynced = false;
 	let pendingStyles: RuntimeDeclaration[] = [];
 	const pendingStyleIds = new Set<string>();
 	const registeredVarKeys = new Set<string>();
+	let needsTokenSync = false;
 	const sync = (rules: readonly RuntimeRule[] = []): void => {
-		if (!tokensSynced) {
-			const tokens = stylesheet.gen.tokens();
-			if (tokens.length > 0) sheet.setTokens(tokens);
-			tokensSynced = true;
+		const tokens = stylesheet.gen.tokens();
+		if (tokens.length > 0) {
+			registerRuntimeTokenManifest(sheet, stylesheet.gen.tokenManifest(), tokens);
 		}
 		if (rules.length > 0) sheet.register(rules);
 	};
-	const flush = (): void => {
-		if (pendingStyles.length === 0) return;
+	const checkpoint = (): RuntimeStyleCheckpoint => ({
+		pendingStyleCount: pendingStyles.length,
+		needsTokenSync,
+	});
+	const rollback = (styleCheckpoint: RuntimeStyleCheckpoint): void => {
+		const removedStyles = pendingStyles.slice(styleCheckpoint.pendingStyleCount);
+		pendingStyles = pendingStyles.slice(0, styleCheckpoint.pendingStyleCount);
+		for (const style of removedStyles) pendingStyleIds.delete(style.key + "\u0000" + style.value);
+		needsTokenSync = styleCheckpoint.needsTokenSync;
+	};
+	const flush = ({
+		checkpoint: styleCheckpoint,
+		hasClassOutput = false,
+	}: RuntimeFlushRequest): void => {
+		if (pendingStyles.length === 0) {
+			if (!needsTokenSync && !(hasClassOutput && cssOptions.className?.sheetBacked !== false))
+				return;
+			sync();
+			needsTokenSync = false;
+			return;
+		}
 		const styles = pendingStyles;
-		pendingStyles = [];
-		const added = stylesheet.processPrepared(styles);
-		sync(Array.from(added.values()));
+		let added: Map<string, RuntimeRule>;
+		try {
+			added = stylesheet.processPrepared(styles);
+		} catch (error) {
+			rollback(styleCheckpoint);
+			throw error;
+		}
+		const rules = Array.from(added.values());
+		sync();
+		if (rules.length > 0) sheet.register(rules);
+		stylesheet.commitPrepared(added);
+		pendingStyles = pendingStyles.slice(styles.length);
+		needsTokenSync = false;
 	};
 	const syncVars = (varAtoms: readonly VarAtom[]): void => {
+		if (varAtoms.length === 0) return;
+		sync();
 		let needsRegistration = false;
 		for (const atom of varAtoms) {
 			for (const key of atom.keys) {
@@ -181,7 +224,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		// vars() does not enqueue atomic declarations. Once every structural
 		// key has its toggle rule, there is no sheet work left to flush.
 		if (!needsRegistration) return;
-		flush();
+		flush({ checkpoint: checkpoint() });
 		const newRules: RuntimeRule[] = [];
 		for (const atom of varAtoms) {
 			for (const key of atom.keys) {
@@ -205,6 +248,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 				// oxlint-disable-next-line no-control-regex -- Class tokens reject whitespace and NUL.
 				!/[\s\u0000]/.test(custom);
 			if (hasCustomClass && authoredStrategy?.sheetBacked !== true) return custom;
+			needsTokenSync = true;
 			const id = `${key}\u0000${value}`;
 			if (!pendingStyleIds.has(id)) {
 				pendingStyleIds.add(id);
@@ -216,6 +260,8 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 	return {
 		sheet,
 		cssOptions: { ...cssOptions, className: runtimeStrategy },
+		checkpoint,
+		rollback,
 		flush,
 		registerVars: (css) => {
 			const vars = css.vars;
@@ -236,29 +282,37 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
  */
 function withRuntimeFlush(css: CssFn<StyleObject>, runtime: RuntimeBinding): CssFn<StyleObject> {
 	const original = css;
-	const flushed = ((...styles: Array<StyleObject>) => {
+	const hasClassOutput = (value: unknown): boolean =>
+		typeof value === "string"
+			? value.length > 0
+			: typeof value === "object" &&
+				value !== null &&
+				Object.values(value).some(
+					(className) => typeof className === "string" && className.length > 0,
+				);
+	const run = <T>(operation: () => T, flushClassOutput = true): T => {
+		const checkpoint = runtime.checkpoint();
+		let output: T;
 		try {
-			return original(...styles);
-		} finally {
-			runtime.flush();
+			output = operation();
+		} catch (error) {
+			runtime.rollback(checkpoint);
+			throw error;
 		}
-	}) as CssFn<StyleObject>;
-	Object.assign(flushed, original);
-	flushed.class = (...styles: Array<StyleObject | false | null | undefined>) => {
-		try {
-			return original.class(...styles);
-		} finally {
-			runtime.flush();
-		}
+		runtime.flush({
+			checkpoint,
+			...(flushClassOutput ? { hasClassOutput: hasClassOutput(output) } : {}),
+		});
+		return output;
 	};
+	const flushed = ((...styles: Array<StyleObject>) =>
+		run(() => original(...styles))) as CssFn<StyleObject>;
+	Object.assign(flushed, original);
+	flushed.class = (...styles: Array<StyleObject | false | null | undefined>) =>
+		run(() => original.class(...styles));
 	const group = original.group as (groups: Record<string, unknown>) => unknown;
-	flushed.group = ((groups: Record<string, unknown>) => {
-		try {
-			return group(groups);
-		} finally {
-			runtime.flush();
-		}
-	}) as typeof flushed.group;
+	flushed.group = ((groups: Record<string, unknown>) =>
+		run(() => group(groups), false)) as typeof flushed.group;
 	return flushed;
 }
 

@@ -88,7 +88,6 @@ test("treat -> yumcss -> treat: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +175,6 @@ test("treat -> yumcss -> treat: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +278,6 @@ test("treat -> yumcss -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +352,6 @@ test("treat -> yumcss -> treat: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -446,7 +442,6 @@ test("treat -> yumcss -> treat: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

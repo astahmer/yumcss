@@ -48,7 +48,8 @@ test("react-native -> yumcss: migrates concrete react-native syntax to yumcss", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("react-native -> yumcss: carries a documented secondary react-native API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
@@ -145,7 +147,8 @@ test("react-native -> yumcss: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
@@ -180,7 +183,8 @@ test("react-native -> yumcss: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
@@ -227,7 +231,8 @@ test("react-native -> yumcss: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		  "converted": 1,
@@ -271,7 +276,8 @@ test("react-native -> yumcss: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { StyleSheet } from "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",

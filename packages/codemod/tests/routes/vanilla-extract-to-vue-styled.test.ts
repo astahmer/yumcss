@@ -48,7 +48,8 @@ test("vanilla-extract -> vue-styled: migrates concrete vanilla-extract syntax to
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,7 +147,8 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,7 +183,8 @@ test("vanilla-extract -> vue-styled: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -228,7 +231,8 @@ test("vanilla-extract -> vue-styled: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -272,7 +276,8 @@ test("vanilla-extract -> vue-styled: preserves malformed concrete vanilla-extrac
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

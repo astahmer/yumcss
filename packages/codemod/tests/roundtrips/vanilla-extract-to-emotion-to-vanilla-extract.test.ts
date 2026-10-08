@@ -52,7 +52,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves an actionable con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves an actionable con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "@emotion/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: retains the documented seco
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { injectGlobal } from "@emotion/css";
+		    "code": "import "@vanilla-extract/css";
+		import { injectGlobal } from "@emotion/css";
 		injectGlobal\`body { margin: 0; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +175,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: retains the documented seco
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { globalStyle } from "@vanilla-extract/css";
+		    "code": "import "@emotion/css";
+		import { globalStyle } from "@vanilla-extract/css";
 		globalStyle("body", { margin: "0" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves concrete theme an
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +279,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves concrete theme an
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "@emotion/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves concrete theme an
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +354,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: preserves concrete theme an
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "@emotion/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: resolves token values acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -435,7 +444,8 @@ test("vanilla-extract -> emotion -> vanilla-extract: resolves token values acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "@emotion/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

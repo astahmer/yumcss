@@ -48,8 +48,7 @@ test("yumcss -> unocss: migrates concrete yumcss syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red] [padding:1rem]";",
+		  "code": "export const card = "[color:red] [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -161,8 +160,7 @@ test("yumcss -> unocss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -198,8 +196,7 @@ test("yumcss -> unocss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -247,8 +244,7 @@ test("yumcss -> unocss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "text-brand [padding:1rem]";",
+		  "code": "export const card = "text-brand [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -293,7 +289,7 @@ test("yumcss -> unocss: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

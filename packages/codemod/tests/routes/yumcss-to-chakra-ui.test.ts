@@ -51,7 +51,6 @@ test("yumcss -> chakra-ui: migrates concrete yumcss syntax to chakra-ui", async 
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> chakra-ui: carries a documented secondary yumcss API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "muted": defaultSystem.css({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +145,6 @@ test("yumcss -> chakra-ui: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "#f97316", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,7 +179,6 @@ test("yumcss -> chakra-ui: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -229,7 +225,6 @@ test("yumcss -> chakra-ui: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -272,8 +267,8 @@ test("yumcss -> chakra-ui: preserves malformed concrete yumcss input", async () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

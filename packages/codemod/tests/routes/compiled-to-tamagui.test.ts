@@ -262,7 +262,8 @@ test("compiled -> tamagui: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "@compiled/react";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

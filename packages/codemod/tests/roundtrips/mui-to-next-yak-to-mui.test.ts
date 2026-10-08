@@ -52,7 +52,8 @@ test("mui -> next-yak -> mui: preserves an actionable concrete round trip", asyn
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("mui -> next-yak -> mui: preserves an actionable concrete round trip", asyn
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css\`color: red; padding: 16px;\`;",
 		    "converted": 0,
@@ -137,7 +139,8 @@ test("mui -> next-yak -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/system";
+		import { css } from "next-yak";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: 8;\`, props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
@@ -173,7 +176,8 @@ test("mui -> next-yak -> mui: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/system";
+		import { css } from "next-yak";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		// yumcss:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)
@@ -241,7 +245,8 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #f97316; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,7 +280,8 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@mui/material";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css\`color: #f97316; padding: 16px;\`;",
 		      "converted": 0,
@@ -313,7 +319,8 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +354,8 @@ test("mui -> next-yak -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@mui/material";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 0,
@@ -400,7 +408,8 @@ test("mui -> next-yak -> mui: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -434,7 +443,8 @@ test("mui -> next-yak -> mui: resolves token values across both concrete legs", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@mui/material";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 0,

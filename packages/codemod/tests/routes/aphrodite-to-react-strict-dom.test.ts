@@ -48,7 +48,8 @@ test("aphrodite -> react-strict-dom: migrates concrete aphrodite syntax to react
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +157,8 @@ test("aphrodite -> react-strict-dom: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,7 +194,8 @@ test("aphrodite -> react-strict-dom: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("aphrodite -> react-strict-dom: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,7 +289,8 @@ test("aphrodite -> react-strict-dom: preserves malformed concrete aphrodite inpu
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

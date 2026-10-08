@@ -48,7 +48,8 @@ test("vanilla-extract -> style9: migrates concrete vanilla-extract syntax to sty
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "@vanilla-extract/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("vanilla-extract -> style9: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "@vanilla-extract/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("vanilla-extract -> style9: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "@vanilla-extract/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("vanilla-extract -> style9: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "@vanilla-extract/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("vanilla-extract -> style9: preserves malformed concrete vanilla-extract in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

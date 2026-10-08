@@ -48,7 +48,8 @@ test("react-native -> react-strict-dom: migrates concrete react-native syntax to
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> react-strict-dom: carries a documented secondary react-nat
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> react-strict-dom: loads concrete theme and project context
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> react-strict-dom: loads concrete theme and project context
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> react-strict-dom: resolves concrete token values with proj
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> react-strict-dom: preserves malformed concrete react-nativ
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { StyleSheet } from "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

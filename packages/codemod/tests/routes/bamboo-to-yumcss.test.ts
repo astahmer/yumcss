@@ -48,7 +48,8 @@ test("bamboo -> yumcss: migrates concrete bamboo syntax to yumcss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red" });",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("bamboo -> yumcss: carries a documented secondary bamboo API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ display: "flex", gap: "4" });",
 		  "converted": 1,
@@ -145,7 +147,8 @@ test("bamboo -> yumcss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "#2563eb" });",
 		    "converted": 1,
@@ -180,7 +183,8 @@ test("bamboo -> yumcss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		    "converted": 1,
@@ -227,7 +231,8 @@ test("bamboo -> yumcss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand" });",
 		  "converted": 1,
@@ -271,7 +276,8 @@ test("bamboo -> yumcss: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { css } from "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",

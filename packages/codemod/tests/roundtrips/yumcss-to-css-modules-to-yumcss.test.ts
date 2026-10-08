@@ -53,7 +53,6 @@ test("yumcss -> css-modules -> yumcss: preserves an actionable concrete round tr
 		  "forward": {
 		    "changed": true,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -95,7 +94,6 @@ test("yumcss -> css-modules -> yumcss: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": false,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -162,7 +160,6 @@ test("yumcss -> css-modules -> yumcss: retains the documented secondary API with
 		  "forward": {
 		    "changed": true,
 		    "code": "import __yumcssstylesStyles from "./styles.yumcss-pw-group0-mxggr.module.css";
-
 		export const styles = { "card": __yumcssstylesStyles["pw-styles-card-1trzka1"], "muted": __yumcssstylesStyles["pw-styles-muted-1kk79fq"] };",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -204,7 +201,6 @@ test("yumcss -> css-modules -> yumcss: retains the documented secondary API with
 		  "reverse": {
 		    "changed": false,
 		    "code": "import __yumcssstylesStyles from "./styles.yumcss-pw-group0-mxggr.module.css";
-
 		export const styles = { "card": __yumcssstylesStyles["pw-styles-card-1trzka1"], "muted": __yumcssstylesStyles["pw-styles-muted-1kk79fq"] };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -305,7 +301,6 @@ test("yumcss -> css-modules -> yumcss: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -347,7 +342,6 @@ test("yumcss -> css-modules -> yumcss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -401,7 +395,6 @@ test("yumcss -> css-modules -> yumcss: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -443,7 +436,6 @@ test("yumcss -> css-modules -> yumcss: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -512,7 +504,6 @@ test("yumcss -> css-modules -> yumcss: resolves token values across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -554,7 +545,6 @@ test("yumcss -> css-modules -> yumcss: resolves token values across both concret
 		  "reverse": {
 		    "changed": false,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 0,
 		    "generatedFiles": [],

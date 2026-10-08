@@ -266,7 +266,8 @@ test("stylex -> emotion: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

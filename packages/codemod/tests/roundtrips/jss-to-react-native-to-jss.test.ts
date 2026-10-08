@@ -89,7 +89,8 @@ test("jss -> react-native -> jss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +179,8 @@ test("jss -> react-native -> jss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const sheet = createUseStyles({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -283,7 +285,8 @@ test("jss -> react-native -> jss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +362,8 @@ test("jss -> react-native -> jss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -450,7 +454,8 @@ test("jss -> react-native -> jss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

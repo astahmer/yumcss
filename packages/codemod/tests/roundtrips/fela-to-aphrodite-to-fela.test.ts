@@ -91,6 +91,7 @@ test("fela -> aphrodite -> fela: preserves an actionable concrete round trip", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "aphrodite";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -264,6 +265,7 @@ test("fela -> aphrodite -> fela: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "aphrodite";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -342,6 +344,7 @@ test("fela -> aphrodite -> fela: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "aphrodite";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -435,6 +438,7 @@ test("fela -> aphrodite -> fela: resolves token values across both concrete legs
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "aphrodite";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

@@ -54,8 +54,8 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@linaria/core";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,8 +221,8 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@linaria/core";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +257,6 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,8 +295,8 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@linaria/core";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +331,6 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,8 +384,8 @@ test("linaria -> chakra-ui -> linaria: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@linaria/core";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +420,6 @@ test("linaria -> chakra-ui -> linaria: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2a57c8; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

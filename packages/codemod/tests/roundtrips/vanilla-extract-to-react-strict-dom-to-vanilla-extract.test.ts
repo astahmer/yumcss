@@ -52,7 +52,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves an actio
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: preserves concrete
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("vanilla-extract -> react-strict-dom -> vanilla-extract: resolves token val
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -90,8 +90,7 @@ test("styled-components -> yumcss -> styled-components: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
@@ -182,8 +181,7 @@ test("styled-components -> yumcss -> styled-components: retains the documented s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import styled from "styled-components";
 		const cx = createCx();
 		const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
@@ -295,8 +293,7 @@ test("styled-components -> yumcss -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/slot";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -471,8 +468,7 @@ test("styled-components -> yumcss -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/slot";
 		import styled from "styled-components";
 		const cx = createCx();
@@ -662,8 +658,7 @@ test("styled-components -> yumcss -> styled-components: resolves token values ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/slot";
 		import styled from "styled-components";
 		const cx = createCx();

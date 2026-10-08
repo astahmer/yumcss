@@ -52,7 +52,8 @@ test("bamboo -> next-yak -> bamboo: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +137,8 @@ test("bamboo -> next-yak -> bamboo: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`display: flex; gap: 4;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +238,8 @@ test("bamboo -> next-yak -> bamboo: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,7 +310,8 @@ test("bamboo -> next-yak -> bamboo: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +397,8 @@ test("bamboo -> next-yak -> bamboo: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

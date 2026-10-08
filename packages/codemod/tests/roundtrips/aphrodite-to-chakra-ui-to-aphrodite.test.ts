@@ -54,7 +54,8 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +234,8 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -306,7 +308,8 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,7 +49,6 @@ test("yumcss -> jss: migrates concrete yumcss syntax to jss", () => {
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> jss: carries a documented secondary yumcss API explicitly", () =
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const styles = createUseStyles({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> jss: loads concrete theme and project context variants", async (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("yumcss -> jss: loads concrete theme and project context variants", async (
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("yumcss -> jss: resolves concrete token values with project context", async
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +275,8 @@ test("yumcss -> jss: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

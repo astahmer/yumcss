@@ -274,7 +274,8 @@ test("tokenami -> fela: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "gap": "1rem" });
+		  "code": "import { css } from "@tokenami/css";
+		export const card = renderer.renderRule({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "generatedFiles": [],

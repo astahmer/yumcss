@@ -89,7 +89,8 @@ test("compiled -> react-native -> compiled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +179,8 @@ test("compiled -> react-native -> compiled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -283,7 +285,8 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +362,8 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -450,7 +454,8 @@ test("compiled -> react-native -> compiled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "react-native";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

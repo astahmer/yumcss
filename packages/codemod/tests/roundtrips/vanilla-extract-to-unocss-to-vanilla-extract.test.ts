@@ -52,7 +52,8 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "[color:red] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,6 +89,7 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves an actionable conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "@vanilla-extract/css";
 		export const card = "[color:red] [padding:8px]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -208,7 +210,8 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb] [padding:8px]";",
+		      "code": "import "@vanilla-extract/css";
+		export const card = "[color:#2563eb] [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +285,8 @@ test("vanilla-extract -> unocss -> vanilla-extract: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand [padding:8px]";",
+		      "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -371,7 +375,8 @@ test("vanilla-extract -> unocss -> vanilla-extract: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

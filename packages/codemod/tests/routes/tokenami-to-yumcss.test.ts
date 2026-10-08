@@ -269,7 +269,8 @@ test("tokenami -> yumcss: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { css } from "@tokenami/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",

@@ -111,7 +111,8 @@ describe("concrete adapter capability proofs", () => {
 		expect(outputs).toMatchInlineSnapshot(`
 			[
 			  {
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -128,7 +129,8 @@ describe("concrete adapter capability proofs", () => {
 			    "residuals": [],
 			  },
 			  {
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@/styled-system/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -256,11 +258,11 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.residuals).toEqual([]);
 		expect({ forward: forward.code, reverse: reverse.code }).toMatchInlineSnapshot(`
 			{
-			  "forward": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			  "forward": "import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red", padding: "1rem" });",
 			  "reverse": "import { css } from "@emotion/css";
-
 			const card = css({ color: "red", padding: "1rem" });",
 			}
 		`);
@@ -275,14 +277,14 @@ describe("explicit adapter round trips", () => {
 
 		expect(forward.converted).toBe(1);
 		expect(forward.residuals).toEqual([]);
-		expect(forward.code).not.toContain("@/styled-system/css");
+		expect(forward.code).toContain('import "@/styled-system/css";');
 		expect(reverse.converted).toBe(1);
 		expect(reverse.skipped).toBe(0);
 		expect(reverse.residuals).toEqual([]);
 		expect(reverse.code).not.toContain("yumcss/css");
 		expect(reverse.code).toMatchInlineSnapshot(`
-			"import { css } from "styled-system/css";
-
+			"import "@/styled-system/css";
+			import { css } from "styled-system/css";
 			const card = css({ color: "red", padding: "1rem" });"
 		`);
 	});
@@ -299,10 +301,7 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.residuals).toEqual([]);
 		expect(reverse.code).not.toContain("createCss");
 		expect(reverse.code).toMatchInlineSnapshot(
-			`
-			"
-			<div className={"[color:red] [padding:1rem]"}/>"
-		`,
+			`"<div className={"[color:red] [padding:1rem]"}/>"`,
 		);
 	});
 });

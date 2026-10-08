@@ -666,8 +666,8 @@ describe("Chakra migration audit", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+			  "code": "import { css } from "@tokenami/css";
+			import { defaultSystem } from "@chakra-ui/react";
 			export const card = defaultSystem.css({ "--card-gap": "1rem" });",
 			  "converted": 1,
 			  "generatedFiles": [],
@@ -876,7 +876,8 @@ describe("Chakra migration audit", () => {
 		expect(routeEvidence(result)).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { defaultSystem } from "@chakra-ui/react";
+			  "code": "import "aphrodite";
+			import { defaultSystem } from "@chakra-ui/react";
 			export const styles = { "card": defaultSystem.css({ color: "#2563eb" }) };",
 			  "converted": 1,
 			  "generatedFiles": [],

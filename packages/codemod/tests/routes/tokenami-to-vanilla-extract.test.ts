@@ -275,7 +275,8 @@ test("tokenami -> vanilla-extract: preserves malformed concrete tokenami input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { css } from "@tokenami/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

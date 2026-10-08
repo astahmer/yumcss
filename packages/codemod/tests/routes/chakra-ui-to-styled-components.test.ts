@@ -268,7 +268,8 @@ test("chakra-ui -> styled-components: preserves malformed concrete chakra-ui inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
 		export const App = () => styled.div({ background: "#fecaca", padding: "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

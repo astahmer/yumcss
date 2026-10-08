@@ -86,7 +86,8 @@ test("next-yak -> emotion -> next-yak: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@emotion/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,7 +171,8 @@ test("next-yak -> emotion -> next-yak: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@emotion/styled";
+		import { css } from "next-yak";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
@@ -272,7 +274,8 @@ test("next-yak -> emotion -> next-yak: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@emotion/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -343,7 +346,8 @@ test("next-yak -> emotion -> next-yak: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@emotion/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -429,7 +433,8 @@ test("next-yak -> emotion -> next-yak: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@emotion/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

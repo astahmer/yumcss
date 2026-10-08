@@ -1303,6 +1303,7 @@ export function createTokenamiAdapter(
 			/['"]--(?:[A-Za-z_$][\w$-]*)(?:_[^'"]+)?['"]\s*:/,
 		],
 		sourceModules: ["@tokenami/css"],
+		sourceModulesSideEffectFree: ["@tokenami/css"],
 		configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
 		loadConfig: tokenamiConfig,
 		...(moduleLoader === undefined

@@ -193,6 +193,7 @@ const reactStrictDom = defineCodemodAdapter({
 	}),
 	detectPatterns: [/from\s+["']react-strict-dom["']/g, /\bcss\.create\s*\(/g],
 	sourceModules: [RSD_MODULE],
+	sourceModulesSideEffectFree: [RSD_MODULE],
 	configFiles: ["package.json"],
 	sourceObjectOptions: (source, context) =>
 		createStyleXSourceObjectOptions(source, context, undefined, RSD_CSS_BINDING),

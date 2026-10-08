@@ -281,7 +281,8 @@ test("stylex -> react-native: preserves malformed concrete stylex input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

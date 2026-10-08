@@ -44,6 +44,12 @@ growing inside a CLI parser.
 
 ### Migration application service
 
+`MigrationFilePlan` owns composition of project import edits for both CLI and MCP
+application. It verifies a shared source baseline, merges independent import
+destinations, and reapplies those deltas to the final migrated file before a
+rename is written. Conflicting baselines, destinations, or non-import edits
+fail before writing. Transport hosts retain filesystem and containment policy.
+
 One source-file migration is orchestrated by the `StyleMigrationUseCase`. Its
 executor depends on four infrastructure ports: the adapter catalog, the shared
 source scanner, the lowering registry, and the project-aware adapter resolver.

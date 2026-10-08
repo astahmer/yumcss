@@ -50,8 +50,8 @@ test("compiled -> chakra-ui: migrates concrete compiled syntax to chakra-ui", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,8 +146,8 @@ test("compiled -> chakra-ui: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,8 +181,8 @@ test("compiled -> chakra-ui: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -228,8 +228,8 @@ test("compiled -> chakra-ui: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -272,8 +272,8 @@ test("compiled -> chakra-ui: preserves malformed concrete compiled input", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

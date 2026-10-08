@@ -52,7 +52,8 @@ test("react-native -> react-strict-dom -> react-native: preserves an actionable 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> react-strict-dom -> react-native: retains the documented s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +248,8 @@ test("react-native -> react-strict-dom -> react-native: preserves concrete theme
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +325,8 @@ test("react-native -> react-strict-dom -> react-native: preserves concrete theme
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +417,8 @@ test("react-native -> react-strict-dom -> react-native: resolves token values ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "react-native";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

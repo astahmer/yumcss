@@ -48,7 +48,8 @@ test("panda -> jss: migrates concrete panda syntax to jss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("panda -> jss: loads concrete theme and project context variants", async ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -188,7 +190,8 @@ test("panda -> jss: loads concrete theme and project context variants", async ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +239,8 @@ test("panda -> jss: resolves concrete token values with project context", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +285,8 @@ test("panda -> jss: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { css } from "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

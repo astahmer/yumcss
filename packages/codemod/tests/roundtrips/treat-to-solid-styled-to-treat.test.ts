@@ -88,7 +88,8 @@ test("treat -> solid-styled -> treat: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "solid-styled-components";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("treat -> solid-styled -> treat: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "solid-styled-components";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "solid-styled-components";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("treat -> solid-styled -> treat: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "solid-styled-components";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("treat -> solid-styled -> treat: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "solid-styled-components";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

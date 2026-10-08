@@ -266,7 +266,8 @@ test("jss -> styled-components: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { createUseStyles } from "react-jss";
+		import styled from "styled-components";
 		export const useStyles = { "card": styled.div({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

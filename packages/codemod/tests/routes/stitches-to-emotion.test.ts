@@ -266,7 +266,8 @@ test("stitches -> emotion: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { css } from "@stitches/react";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

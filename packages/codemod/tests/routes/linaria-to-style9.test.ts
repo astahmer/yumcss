@@ -277,7 +277,8 @@ test("linaria -> style9: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { css } from "@linaria/core";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

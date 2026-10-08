@@ -48,7 +48,8 @@ test("vanilla-extract -> react-native: migrates concrete vanilla-extract syntax 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +151,8 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +189,8 @@ test("vanilla-extract -> react-native: loads concrete theme and project context 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +239,8 @@ test("vanilla-extract -> react-native: resolves concrete token values with proje
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +286,8 @@ test("vanilla-extract -> react-native: preserves malformed concrete vanilla-extr
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

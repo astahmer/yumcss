@@ -52,7 +52,8 @@ test("solid-styled -> styled-components -> solid-styled: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("solid-styled -> styled-components -> solid-styled: retains the documented 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("solid-styled -> styled-components -> solid-styled: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("solid-styled -> styled-components -> solid-styled: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("solid-styled -> styled-components -> solid-styled: resolves token values a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

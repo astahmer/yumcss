@@ -48,7 +48,8 @@ test("style9 -> stitches: migrates concrete style9 syntax to stitches", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> stitches: carries a documented secondary style9 API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> stitches: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> stitches: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> stitches: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> stitches: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import style9 from "style9";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ color: "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

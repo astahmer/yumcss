@@ -271,7 +271,8 @@ test("treat -> vue-styled: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { style } from "treat";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

@@ -88,7 +88,8 @@ test("tailwind -> solid-styled -> tailwind: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
+		    "code": "import "solid-styled-components";
+		export const App = () => "[display:flex] [align-items:center] [gap:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -262,7 +263,8 @@ test("tailwind -> solid-styled -> tailwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "text-brand p-card";",
+		      "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -336,7 +338,8 @@ test("tailwind -> solid-styled -> tailwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "text-brand p-card";",
+		      "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -425,7 +428,8 @@ test("tailwind -> solid-styled -> tailwind: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "text-brand p-card";",
+		    "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

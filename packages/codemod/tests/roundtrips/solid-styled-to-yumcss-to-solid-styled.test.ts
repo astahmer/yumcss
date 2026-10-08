@@ -52,7 +52,8 @@ test("solid-styled -> yumcss -> solid-styled: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Dynamic } from "solid-js/web";
+		    "code": "import "solid-styled-components";
+		import { Dynamic } from "solid-js/web";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -92,7 +93,6 @@ test("solid-styled -> yumcss -> solid-styled: preserves an actionable concrete r
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Dynamic } from "solid-js/web";
-
 		import { createCx } from "yumcss/cx";
 		import { css } from "solid-styled-components";
 		const cx = createCx();
@@ -148,7 +148,8 @@ test("solid-styled -> yumcss -> solid-styled: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Dynamic } from "solid-js/web";
+		    "code": "import "solid-styled-components";
+		import { Dynamic } from "solid-js/web";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -188,7 +189,6 @@ test("solid-styled -> yumcss -> solid-styled: retains the documented secondary A
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Dynamic } from "solid-js/web";
-
 		import { createCx } from "yumcss/cx";
 		import { css } from "solid-styled-components";
 		const cx = createCx();
@@ -260,7 +260,8 @@ test("solid-styled -> yumcss -> solid-styled: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -303,8 +304,7 @@ test("solid-styled -> yumcss -> solid-styled: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		import { css } from "solid-styled-components";
 		const cx = createCx();
@@ -393,7 +393,8 @@ test("solid-styled -> yumcss -> solid-styled: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -436,8 +437,7 @@ test("solid-styled -> yumcss -> solid-styled: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		import { createCx } from "yumcss/cx";
+		      "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		import { css } from "solid-styled-components";
 		const cx = createCx();
@@ -542,7 +542,8 @@ test("solid-styled -> yumcss -> solid-styled: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -585,8 +586,7 @@ test("solid-styled -> yumcss -> solid-styled: resolves token values across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		import { css } from "solid-styled-components";
 		const cx = createCx();

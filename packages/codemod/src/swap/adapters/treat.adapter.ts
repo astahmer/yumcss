@@ -1,3 +1,4 @@
+import { targetImportBinding } from "../target-import-binding.ts";
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
@@ -56,6 +57,8 @@ const treat = makeExtraAdapter({
 		],
 	},
 	modules: ["treat"],
+	sourceModulesSideEffectFree: ["treat"],
+	staticStyleCalls: [{ moduleSpecifier: "treat", importedName: "style" }],
 	packages: { packages: [{ name: "treat", kind: AdapterDependencyKindTag.Development }] },
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
 	call: /\bstyle\s*\(\s*\{/g,
@@ -104,8 +107,33 @@ const treat = makeExtraAdapter({
 			context.host.subject === undefined ||
 			binding === undefined ||
 			!isPlainReactStyleProgram(program)
-		)
-			return undefined;
+		) {
+			const local = targetImportBinding({
+				context,
+				importedName: "style",
+				moduleSpecifier: "treat",
+				preserveSourceBindings:
+					program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+				preferred: "style",
+			});
+			return {
+				text: program.rules.some((rule) => rule.name !== undefined)
+					? `{ ${program.rules
+							.filter((rule) => rule.name !== undefined && rule.kind === StyleRuleKindTag.Style)
+							.map(
+								(rule) =>
+									`${JSON.stringify(rule.name)}: ${local.localName}(${programObject({ ...program, rules: [{ ...rule, name: undefined }], declarations: rule.declarations })})`,
+							)
+							.join(", ")} }`
+					: `${local.localName}(${programObject(program)})`,
+				imports: local.importRequired
+					? [
+							`import { style${local.localName === "style" ? "" : ` as ${local.localName}`} } from "treat";`,
+						]
+					: [],
+				residuals: [...program.residuals],
+			};
+		}
 		const artifact = reactStyledComponentArtifact(
 			context,
 			binding,

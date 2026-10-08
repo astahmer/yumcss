@@ -271,7 +271,8 @@ test("compiled -> tailwind: preserves malformed concrete compiled input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:8px]";
+		  "code": "import { css } from "@compiled/react";
+		export const card = "[color:red] [padding:8px]";
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "generatedFiles": [],

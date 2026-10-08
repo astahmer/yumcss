@@ -48,7 +48,8 @@ test("emotion -> style9: migrates concrete emotion syntax to style9", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> style9: carries a documented secondary emotion API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> style9: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> style9: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> style9: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> style9: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { css } from "@emotion/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

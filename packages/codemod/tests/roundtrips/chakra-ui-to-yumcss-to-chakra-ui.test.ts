@@ -90,7 +90,6 @@ test("chakra-ui -> yumcss -> chakra-ui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-
 		export const App = () => <chakra.div css={{ background: "red.200", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -256,7 +255,6 @@ test("chakra-ui -> yumcss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-
 		export const App = () => <chakra.div css={{ background: "#f97316", padding: "4" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -329,7 +327,6 @@ test("chakra-ui -> yumcss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { chakra } from "@chakra-ui/react";
-
 		export const App = () => <chakra.div css={{ background: "brand.500", padding: "4" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -417,7 +414,6 @@ test("chakra-ui -> yumcss -> chakra-ui: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { chakra } from "@chakra-ui/react";
-
 		export const App = () => <chakra.div css={{ background: "brand.500", padding: "4" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

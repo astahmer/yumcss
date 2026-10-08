@@ -1,9 +1,30 @@
-import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import {
+	accessSync,
+	closeSync,
+	constants,
+	existsSync,
+	fstatSync,
+	ftruncateSync,
+	lstatSync,
+	linkSync,
+	mkdirSync,
+	openSync,
+	readFileSync,
+	realpathSync,
+	renameSync,
+	rmdirSync,
+	statSync,
+	unlinkSync,
+	writeFileSync,
+	writeSync,
+} from "node:fs";
 import { performance } from "node:perf_hooks";
-import { extname, isAbsolute, relative, resolve, sep } from "node:path";
+import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { createSourceWorkspace } from "yumcss/source/workspace";
 import {
 	createBuiltinCodemodCatalog,
+	MigrationFilePlan,
 	findMigrationRouteProof,
 	migrationRouteProofCatalog,
 	type AdapterCapabilityMode,
@@ -45,6 +66,11 @@ export interface McpProjectContext {
 	readonly root: string;
 	readonly workspace: ReturnType<typeof createSourceWorkspace>;
 }
+
+const projectRootIdentity = new WeakMap<
+	McpProjectContext,
+	{ readonly device: number; readonly inode: number }
+>();
 
 export interface McpToolService {
 	readonly tools: readonly McpToolDefinition[];
@@ -529,7 +555,27 @@ function benchmarkMeasurementMode(value: unknown): McpBenchmarkMeasurementMode {
 	);
 }
 
-function projectPath(root: string, candidate: string): string {
+function assertProjectRoot(context: McpProjectContext): string {
+	const identity = projectRootIdentity.get(context);
+	try {
+		const canonicalRoot = realpathSync(context.root);
+		const stats = statSync(canonicalRoot);
+		if (
+			canonicalRoot === context.root &&
+			identity !== undefined &&
+			stats.isDirectory() &&
+			stats.dev === identity.device &&
+			stats.ino === identity.inode
+		)
+			return canonicalRoot;
+	} catch {
+		throw new McpToolError("project root changed after its MCP context was created");
+	}
+	throw new McpToolError("project root changed after its MCP context was created");
+}
+
+function projectPath(context: McpProjectContext, candidate: string): string {
+	const root = assertProjectRoot(context);
 	const normalized = candidate.replaceAll("\\", "/");
 	if (
 		normalized.startsWith("/") ||
@@ -541,6 +587,20 @@ function projectPath(root: string, candidate: string): string {
 	const outside = relative(root, absolute);
 	if (outside === ".." || outside.startsWith(`..${sep}`))
 		throw new McpToolError(`path escapes project root: ${candidate}`);
+	let existing = absolute;
+	while (true) {
+		try {
+			lstatSync(existing);
+			break;
+		} catch (error) {
+			if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
+			existing = dirname(existing);
+		}
+	}
+	const realPath = realpathSync(existing);
+	const realRelative = relative(root, realPath);
+	if (realRelative === ".." || realRelative.startsWith(`..${sep}`) || isAbsolute(realRelative))
+		throw new McpToolError(`path resolves outside the project root: ${candidate}`);
 	return absolute;
 }
 
@@ -548,9 +608,11 @@ function relativeProjectPath(root: string, file: string): string {
 	return relative(root, file).split(sep).join("/");
 }
 
-function readPackageJson(root: string): Readonly<Record<string, unknown>> | undefined {
+function readPackageJson(
+	context: McpProjectContext,
+): Readonly<Record<string, unknown>> | undefined {
 	try {
-		const value: unknown = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+		const value: unknown = JSON.parse(readFileSync(projectPath(context, "package.json"), "utf8"));
 		return typeof value === "object" && value !== null
 			? (value as Record<string, unknown>)
 			: undefined;
@@ -559,11 +621,11 @@ function readPackageJson(root: string): Readonly<Record<string, unknown>> | unde
 	}
 }
 
-function readProjectFile(root: string, candidate: string): string | undefined {
+function readProjectFile(context: McpProjectContext, candidate: string): string | undefined {
 	try {
 		const absolute = isAbsolute(candidate)
-			? projectPath(root, relativeProjectPath(root, candidate))
-			: projectPath(root, candidate);
+			? projectPath(context, relativeProjectPath(context.root, candidate))
+			: projectPath(context, candidate);
 		return readFileSync(absolute, "utf8");
 	} catch {
 		return undefined;
@@ -571,7 +633,10 @@ function readProjectFile(root: string, candidate: string): string | undefined {
 }
 
 function projectFiles(context: McpProjectContext): string[] {
-	return [...context.workspace.files(["**/*"], context.root, { includeUnsupported: true })];
+	assertProjectRoot(context);
+	return [...context.workspace.files(["**/*"], context.root, { includeUnsupported: true })].map(
+		(file) => projectPath(context, relativeProjectPath(context.root, file)),
+	);
 }
 
 function projectPattern(candidate: string): string {
@@ -593,7 +658,7 @@ async function inspectProject(
 	const input = asRecord(arguments_, MCP_TOOL.InspectProject);
 	const includeFiles = input.includeFiles === true;
 	const files = projectFiles(context);
-	const packageJson = readPackageJson(context.root);
+	const packageJson = readPackageJson(context);
 	const catalog = ports.createCatalog();
 	const detections = new Map<
 		string,
@@ -608,7 +673,7 @@ async function inspectProject(
 				source,
 				root: context.root,
 				packageJson,
-				readFile: (candidate) => readProjectFile(context.root, candidate),
+				readFile: (candidate) => readProjectFile(context, candidate),
 			});
 			if (!detection.matched) continue;
 			const current = detections.get(adapter.id) ?? {
@@ -632,7 +697,7 @@ async function inspectProject(
 					source: "",
 					root: context.root,
 					packageJson,
-					readFile: (candidate: string) => readProjectFile(context.root, candidate),
+					readFile: (candidate: string) => readProjectFile(context, candidate),
 					listFiles: (_root: string) => files,
 				};
 				try {
@@ -745,13 +810,15 @@ function migrationMode(value: unknown): AdapterCapabilityMode {
 	throw new McpToolError(`mode must be one of ${Object.values(MCP_MIGRATION_MODE).join(", ")}`);
 }
 
+const migrationSourceSnapshots = new WeakMap<object, string>();
+
 function serializeMigration(
 	root: string,
 	file: string,
 	result: AdapterMigrationResult,
 	before: string,
 ) {
-	return {
+	const serialized = {
 		file,
 		changed: result.changed,
 		code: result.code,
@@ -771,6 +838,8 @@ function serializeMigration(
 		generatedFiles: result.generatedFiles,
 		fileChanges: result.fileChanges,
 	};
+	migrationSourceSnapshots.set(serialized, before);
+	return serialized;
 }
 
 async function migrationPreview(
@@ -802,18 +871,18 @@ async function migrationPreview(
 	}
 	if (expanded.size === 0) throw new McpToolError("files did not match any project files");
 	const allFiles = projectFiles(context);
-	const packageJson = readPackageJson(context.root);
+	const packageJson = readPackageJson(context);
 	const results = [];
 	for (const absolute of [...expanded].toSorted()) {
 		const file = relativeProjectPath(context.root, absolute);
-		const before = readFileSync(absolute, "utf8");
+		const before = readFileSync(projectPath(context, file), "utf8");
 		const result = await ports.migration.runAsync(before, {
 			from,
 			to,
 			file,
 			root: context.root,
 			packageJson,
-			readFile: (candidate) => readProjectFile(context.root, candidate),
+			readFile: (candidate) => readProjectFile(context, candidate),
 			listFiles: () => allFiles,
 			mode,
 		});
@@ -850,6 +919,20 @@ interface PlannedMigrationWrite {
 	readonly expectedContent?: string;
 }
 
+interface MigrationWriteReceipt {
+	readonly path: string;
+	readonly content: string;
+	readonly previousContent?: string;
+	readonly device: number;
+	readonly inode: number;
+}
+
+interface MigrationSourceMove {
+	readonly sourcePath: string;
+	readonly stagedPath: string;
+	readonly preserveOutput: boolean;
+}
+
 function planMigrationWrite(
 	context: McpProjectContext,
 	planned: Map<string, PlannedMigrationWrite>,
@@ -858,10 +941,13 @@ function planMigrationWrite(
 	expectedContent: string | undefined,
 	kind: string,
 ): void {
-	const normalizedPath = path.replaceAll("\\", "/");
-	const absolutePath = projectPath(context.root, normalizedPath);
+	const normalizedPath = canonicalMigrationWritePath(context, path.replaceAll("\\", "/"));
+	const absolutePath = projectPath(context, normalizedPath);
 	const existing = planned.get(normalizedPath);
-	if (existing !== undefined && existing.content !== content)
+	if (
+		existing !== undefined &&
+		(existing.content !== content || existing.expectedContent !== expectedContent)
+	)
 		throw new McpToolError(`conflicting ${kind} content for ${normalizedPath}`);
 	if (existing !== undefined) return;
 	if (existsSync(absolutePath)) {
@@ -880,6 +966,312 @@ function planMigrationWrite(
 	});
 }
 
+function canonicalMigrationWritePath(context: McpProjectContext, path: string): string {
+	const root = assertProjectRoot(context);
+	let existing = projectPath(context, path);
+	const suffix: string[] = [];
+	while (true) {
+		try {
+			lstatSync(existing);
+			break;
+		} catch (error) {
+			if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
+			const parent = dirname(existing);
+			if (parent === existing) throw new McpToolError(`invalid migration target ${path}`);
+			suffix.unshift(basename(existing));
+			existing = parent;
+		}
+	}
+	let canonical: string;
+	try {
+		canonical = resolve(realpathSync(existing), ...suffix);
+	} catch (error) {
+		if (error instanceof Error && "code" in error && error.code === "ENOENT")
+			throw new McpToolError(`refusing dangling migration target ${path}`);
+		throw error;
+	}
+	const canonicalRelative = relative(root, canonical);
+	if (
+		canonicalRelative === ".." ||
+		canonicalRelative.startsWith(`..${sep}`) ||
+		isAbsolute(canonicalRelative)
+	)
+		throw new McpToolError(`path resolves outside the project root: ${path}`);
+	return relativeProjectPath(root, canonical);
+}
+
+function cleanupMigrationDirectories(directories: readonly string[]): unknown[] {
+	const errors: unknown[] = [];
+	for (const directory of directories.toReversed()) {
+		try {
+			rmdirSync(directory);
+		} catch (error) {
+			const code =
+				error !== null && typeof error === "object" && "code" in error ? error.code : undefined;
+			if (code !== "ENOENT" && code !== "ENOTEMPTY") errors.push(error);
+		}
+	}
+	return errors;
+}
+
+function prepareMigrationWriteDirectories(
+	context: McpProjectContext,
+	writes: Iterable<PlannedMigrationWrite>,
+): string[] {
+	const created: string[] = [];
+	try {
+		for (const write of writes) {
+			const destination = projectPath(context, write.path);
+			if (existsSync(destination)) continue;
+			const missing: string[] = [];
+			let parent = dirname(destination);
+			while (!existsSync(parent)) {
+				missing.push(parent);
+				const next = dirname(parent);
+				if (next === parent) throw new McpToolError(`invalid migration target ${write.path}`);
+				parent = next;
+			}
+			if (!statSync(parent).isDirectory())
+				throw new McpToolError(`migration parent is not a directory for ${write.path}`);
+			accessSync(parent, constants.W_OK | constants.X_OK);
+			for (const directory of missing.toReversed()) {
+				if (existsSync(directory)) continue;
+				mkdirSync(directory);
+				created.push(directory);
+				accessSync(directory, constants.W_OK | constants.X_OK);
+			}
+		}
+		return created;
+	} catch (error) {
+		const cleanupErrors = cleanupMigrationDirectories(created);
+		if (cleanupErrors.length > 0)
+			throw new AggregateError(
+				[error, ...cleanupErrors],
+				"could not prepare migration directories",
+				{ cause: error },
+			);
+		throw error;
+	}
+}
+
+function writeDescriptorContents(descriptor: number, value: string, path: string): void {
+	const content = Buffer.from(value);
+	let offset = 0;
+	while (offset < content.length) {
+		const written = writeSync(descriptor, content, offset, content.length - offset, offset);
+		if (written === 0) throw new Error(`short write for migration file ${path}`);
+		offset += written;
+	}
+	ftruncateSync(descriptor, content.length);
+}
+
+function validateMigrationWrite(context: McpProjectContext, write: PlannedMigrationWrite): void {
+	const absolutePath = projectPath(context, write.path);
+	if (!existsSync(absolutePath)) {
+		if (write.expectedContent !== undefined)
+			throw new McpToolError(`refusing missing migration file ${write.path}`);
+		return;
+	}
+	const root = assertProjectRoot(context);
+	const destination = realpathSync(absolutePath);
+	const safeDestination = projectPath(context, relativeProjectPath(root, destination));
+	if (readFileSync(safeDestination, "utf8") === write.content) return;
+	let descriptor: number | undefined;
+	try {
+		descriptor = openSync(
+			safeDestination,
+			constants.O_RDWR | constants.O_NOFOLLOW | constants.O_NONBLOCK,
+		);
+		const opened = fstatSync(descriptor);
+		if (!opened.isFile())
+			throw new McpToolError(`refusing to overwrite non-file migration target ${write.path}`);
+		const current = readFileSync(descriptor, "utf8");
+		if (current === write.content) return;
+		if (write.expectedContent === undefined || current !== write.expectedContent)
+			throw new McpToolError(`refusing stale migration file ${write.path}`);
+		if (opened.nlink > 1)
+			throw new McpToolError(`refusing to overwrite multiply linked migration file ${write.path}`);
+	} finally {
+		if (descriptor !== undefined) closeSync(descriptor);
+	}
+}
+
+function writeMigrationFile(
+	context: McpProjectContext,
+	write: PlannedMigrationWrite,
+): MigrationWriteReceipt | undefined {
+	const root = assertProjectRoot(context);
+	const absolutePath = projectPath(context, write.path);
+	const exists = existsSync(absolutePath);
+	if (exists) {
+		const current = readFileSync(absolutePath, "utf8");
+		if (current === write.content) return undefined;
+		if (write.expectedContent === undefined || current !== write.expectedContent)
+			throw new McpToolError(`refusing stale migration file ${write.path}`);
+	} else if (write.expectedContent !== undefined) {
+		throw new McpToolError(`refusing missing migration file ${write.path}`);
+	}
+	const destination = exists ? realpathSync(absolutePath) : absolutePath;
+	const safeDestination = projectPath(context, relativeProjectPath(root, destination));
+	const parent = dirname(safeDestination);
+	mkdirSync(parent, { recursive: true });
+	const temporaryPath = resolve(parent, ".yumcss-" + randomUUID() + ".tmp");
+	if (exists) {
+		let descriptor: number | undefined;
+		try {
+			descriptor = openSync(
+				safeDestination,
+				constants.O_RDWR | constants.O_NOFOLLOW | constants.O_NONBLOCK,
+			);
+			const opened = fstatSync(descriptor);
+			if (!opened.isFile())
+				throw new McpToolError(`refusing to overwrite non-file migration target ${write.path}`);
+			const previousContent = readFileSync(descriptor, "utf8");
+			if (previousContent === write.content) return undefined;
+			if (write.expectedContent === undefined || previousContent !== write.expectedContent)
+				throw new McpToolError(`refusing stale migration file ${write.path}`);
+			if (opened.nlink > 1)
+				throw new McpToolError(
+					`refusing to overwrite multiply linked migration file ${write.path}`,
+				);
+			try {
+				writeDescriptorContents(descriptor, write.content, write.path);
+			} catch (error) {
+				try {
+					writeDescriptorContents(descriptor, previousContent, write.path);
+				} catch (rollbackError) {
+					throw new AggregateError(
+						[error, rollbackError],
+						`failed to restore migration file ${write.path}`,
+						{ cause: rollbackError },
+					);
+				}
+				throw error;
+			}
+			return {
+				path: safeDestination,
+				content: write.content,
+				previousContent,
+				device: opened.dev,
+				inode: opened.ino,
+			};
+		} finally {
+			if (descriptor !== undefined) closeSync(descriptor);
+		}
+	}
+	try {
+		writeFileSync(temporaryPath, write.content, { flag: "wx" });
+		if (existsSync(safeDestination)) {
+			const current = readFileSync(safeDestination, "utf8");
+			if (current === write.content) {
+				unlinkSync(temporaryPath);
+				return undefined;
+			}
+			if (write.expectedContent === undefined || current !== write.expectedContent)
+				throw new McpToolError(`refusing stale migration file ${write.path}`);
+		}
+		linkSync(temporaryPath, safeDestination);
+		const created = lstatSync(safeDestination);
+		unlinkSync(temporaryPath);
+		return {
+			path: safeDestination,
+			content: write.content,
+			device: created.dev,
+			inode: created.ino,
+		};
+	} catch (error) {
+		const cleanupErrors: unknown[] = [];
+		if (existsSync(safeDestination)) {
+			try {
+				const created = lstatSync(safeDestination);
+				if (created.isFile() && readFileSync(safeDestination, "utf8") === write.content)
+					unlinkSync(safeDestination);
+			} catch (cleanupError) {
+				cleanupErrors.push(cleanupError);
+			}
+		}
+		if (existsSync(temporaryPath)) {
+			try {
+				unlinkSync(temporaryPath);
+			} catch (cleanupError) {
+				cleanupErrors.push(cleanupError);
+			}
+		}
+		if (cleanupErrors.length > 0)
+			throw new AggregateError(
+				[error, ...cleanupErrors],
+				`failed to clean migration file ${write.path}`,
+				{ cause: error },
+			);
+		throw error;
+	}
+}
+
+function restoreMigrationWrite(receipt: MigrationWriteReceipt): void {
+	const descriptor = openSync(
+		receipt.path,
+		constants.O_RDWR | constants.O_NOFOLLOW | constants.O_NONBLOCK,
+	);
+	try {
+		const opened = fstatSync(descriptor);
+		if (!opened.isFile() || opened.dev !== receipt.device || opened.ino !== receipt.inode)
+			throw new McpToolError(`refusing to roll back replaced migration file ${receipt.path}`);
+		const current = readFileSync(descriptor, "utf8");
+		if (current !== receipt.content)
+			throw new McpToolError(`refusing to roll back changed migration file ${receipt.path}`);
+		if (opened.nlink > 1)
+			throw new McpToolError(
+				`refusing to roll back multiply linked migration file ${receipt.path}`,
+			);
+		if (receipt.previousContent === undefined) {
+			unlinkSync(receipt.path);
+			return;
+		}
+		writeDescriptorContents(descriptor, receipt.previousContent, receipt.path);
+	} finally {
+		closeSync(descriptor);
+	}
+}
+
+function stageMigrationSourceRemoval(
+	context: McpProjectContext,
+	path: string,
+	sourceSnapshot: string,
+	outputPath: string | undefined,
+): MigrationSourceMove {
+	const sourcePath = projectPath(context, path);
+	if (readFileSync(sourcePath, "utf8") !== sourceSnapshot)
+		throw new McpToolError(`refusing to remove changed migration source ${path}`);
+	const sourceStats = lstatSync(sourcePath);
+	if (outputPath !== undefined && sourceStats.isFile() && sourceStats.nlink === 1) {
+		const destinationPath = projectPath(context, outputPath);
+		if (existsSync(destinationPath))
+			throw new McpToolError(`refusing to overwrite host-conversion output ${outputPath}`);
+		renameSync(sourcePath, destinationPath);
+		return { sourcePath, stagedPath: destinationPath, preserveOutput: true };
+	}
+	const stagedPath = resolve(dirname(sourcePath), `.yumcss-${randomUUID()}.migration-backup`);
+	renameSync(sourcePath, stagedPath);
+	return { sourcePath, stagedPath, preserveOutput: false };
+}
+
+function restoreMigrationSources(moves: readonly MigrationSourceMove[]): unknown[] {
+	const errors: unknown[] = [];
+	for (const move of moves.toReversed()) {
+		if (!existsSync(move.stagedPath)) continue;
+		try {
+			if (existsSync(move.sourcePath))
+				throw new McpToolError(
+					`cannot restore migration source over existing path ${move.sourcePath}`,
+				);
+			renameSync(move.stagedPath, move.sourcePath);
+		} catch (error) {
+			errors.push(error);
+		}
+	}
+	return errors;
+}
+
 async function applyMigration(
 	context: McpProjectContext,
 	arguments_: unknown,
@@ -891,18 +1283,43 @@ async function applyMigration(
 	const preview = await migrationPreview(context, arguments_, ports);
 	const planned = new Map<string, PlannedMigrationWrite>();
 	const removed = new Set<string>();
+	const outputBySource = new Map<string, string>();
+	const migratedPaths = new Set(preview.files.map((file) => file.file));
+	const sharedChanges = MigrationFilePlan.compose({
+		changes: preview.files.flatMap((file) => file.fileChanges),
+	});
+	const sourceSnapshots = new Map<string, string>();
+	const changesByPath = new Map(sharedChanges.map((change) => [change.path, change]));
 	for (const file of preview.files) {
-		const sourcePath = projectPath(context.root, file.file);
+		const sharedChange = changesByPath.get(file.file);
+		if (sharedChange !== undefined)
+			file.code = MigrationFilePlan.rewrite({
+				file: file.file,
+				source: file.code,
+				change: sharedChange,
+			});
+	}
+	for (const file of preview.files) {
+		const sourceSnapshot = migrationSourceSnapshots.get(file);
+		if (sourceSnapshot === undefined)
+			throw new McpToolError(`missing migration source snapshot for ${file.file}`);
+		const sourcePath = projectPath(context, file.file);
 		const before = readFileSync(sourcePath, "utf8");
+		if (before !== sourceSnapshot)
+			throw new McpToolError(`refusing stale migration source ${file.file}`);
+		sourceSnapshots.set(file.file, sourceSnapshot);
+		file.changed = file.code !== before;
+		file.diff = unifiedDiff(before, file.code, file.file);
 		if (file.outputFile === file.file) {
 			if (file.code !== before)
 				planMigrationWrite(context, planned, file.file, file.code, before, "source file");
 		} else {
 			if (file.code !== before) {
-				if (existsSync(projectPath(context.root, file.outputFile)))
+				if (existsSync(projectPath(context, file.outputFile)))
 					throw new McpToolError(`refusing to overwrite host-conversion output ${file.outputFile}`);
 				planMigrationWrite(context, planned, file.outputFile, file.code, undefined, "output file");
 				removed.add(file.file);
+				outputBySource.set(file.file, file.outputFile);
 			}
 		}
 		for (const generated of file.generatedFiles)
@@ -914,25 +1331,90 @@ async function applyMigration(
 				undefined,
 				"generated file",
 			);
-		for (const change of file.fileChanges)
-			planMigrationWrite(
-				context,
-				planned,
-				change.path,
-				change.content,
-				change.expectedContent,
-				"shared file change",
+	}
+	for (const change of sharedChanges) {
+		if (migratedPaths.has(change.path)) continue;
+		planMigrationWrite(
+			context,
+			planned,
+			change.path,
+			change.content,
+			change.expectedContent,
+			"shared file change",
+		);
+	}
+	for (const [file, sourceSnapshot] of sourceSnapshots) {
+		if (readFileSync(projectPath(context, file), "utf8") !== sourceSnapshot)
+			throw new McpToolError(`refusing stale migration source ${file}`);
+	}
+	for (const write of planned.values()) validateMigrationWrite(context, write);
+	const sourceMoves: MigrationSourceMove[] = [];
+	const writeReceipts: MigrationWriteReceipt[] = [];
+	let createdDirectories: string[] = [];
+	try {
+		for (const path of removed) {
+			const canonicalSource = canonicalMigrationWritePath(context, path);
+			if (planned.has(canonicalSource))
+				throw new McpToolError(`migration source removal conflicts with write target ${path}`);
+			const outputPath = outputBySource.get(path);
+			if (outputPath !== undefined) {
+				const sourceStats = lstatSync(projectPath(context, path));
+				if (sourceStats.isFile() && sourceStats.nlink > 1)
+					throw new McpToolError(`refusing to migrate multiply linked migration source ${path}`);
+			}
+		}
+		createdDirectories = prepareMigrationWriteDirectories(context, planned.values());
+		for (const path of removed) {
+			const sourceSnapshot = sourceSnapshots.get(path);
+			if (sourceSnapshot === undefined)
+				throw new McpToolError(`missing migration source snapshot for ${path}`);
+			const outputPath = outputBySource.get(path);
+			const move = stageMigrationSourceRemoval(context, path, sourceSnapshot, outputPath);
+			sourceMoves.push(move);
+		}
+		const preservedOutputContents = new Map<string, string>();
+		for (const [sourcePath, outputPath] of outputBySource) {
+			if (
+				!sourceMoves.some(
+					(move) => move.sourcePath === projectPath(context, sourcePath) && move.preserveOutput,
+				)
+			)
+				continue;
+			const sourceSnapshot = sourceSnapshots.get(sourcePath);
+			if (sourceSnapshot !== undefined)
+				preservedOutputContents.set(
+					canonicalMigrationWritePath(context, outputPath),
+					sourceSnapshot,
+				);
+		}
+		for (const write of planned.values()) {
+			const previousContent = preservedOutputContents.get(write.path);
+			const preparedWrite =
+				previousContent === undefined
+					? write
+					: { path: write.path, content: write.content, expectedContent: previousContent };
+			const receipt = writeMigrationFile(context, preparedWrite);
+			if (receipt !== undefined) writeReceipts.push(receipt);
+		}
+		for (const move of sourceMoves) if (!move.preserveOutput) unlinkSync(move.stagedPath);
+	} catch (error) {
+		const rollbackErrors: unknown[] = [];
+		for (const receipt of writeReceipts.toReversed()) {
+			try {
+				restoreMigrationWrite(receipt);
+			} catch (rollbackError) {
+				rollbackErrors.push(rollbackError);
+			}
+		}
+		rollbackErrors.push(...restoreMigrationSources(sourceMoves));
+		rollbackErrors.push(...cleanupMigrationDirectories(createdDirectories));
+		if (rollbackErrors.length > 0)
+			throw new AggregateError(
+				[error, ...rollbackErrors],
+				"migration apply failed and rollback was incomplete",
+				{ cause: error },
 			);
-	}
-	for (const write of planned.values()) {
-		const absolutePath = projectPath(context.root, write.path);
-		if (existsSync(absolutePath) && readFileSync(absolutePath, "utf8") === write.content) continue;
-		mkdirSync(resolve(absolutePath, ".."), { recursive: true });
-		writeFileSync(absolutePath, write.content, { flag: existsSync(absolutePath) ? "w" : "wx" });
-	}
-	for (const path of removed) {
-		const absolutePath = projectPath(context.root, path);
-		if (existsSync(absolutePath)) unlinkSync(absolutePath);
+		throw error;
 	}
 	return textToolResult({
 		schema: "yumcss.mcp.apply-migration/1",
@@ -1210,7 +1692,7 @@ async function validateMigration(
 	const preview = await migrationPreview(context, arguments_, ports);
 	const files = preview.files.map((file) => {
 		const generatedConflicts = file.generatedFiles.filter((generated) => {
-			const path = projectPath(context.root, generated.path);
+			const path = projectPath(context, generated.path);
 			return existsSync(path) && readFileSync(path, "utf8") !== generated.content;
 		});
 		const adapterValidations = file.validations.every((validation) => validation.valid);
@@ -1336,6 +1818,7 @@ async function analyzeProject(
 	ports: McpToolPorts,
 ): Promise<McpToolResult> {
 	const input = asRecord(arguments_, MCP_TOOL.AnalyzeProject);
+	projectFiles(context);
 	const patterns =
 		input.patterns === undefined ? ["src/**/*"] : stringArray(input.patterns, "patterns");
 	for (const pattern of patterns) projectPattern(pattern);
@@ -1343,7 +1826,7 @@ async function analyzeProject(
 	const argv = [
 		...patterns,
 		"--tw",
-		projectPath(context.root, twPath),
+		projectPath(context, twPath),
 		"--root",
 		context.root,
 		"--json",
@@ -1351,7 +1834,7 @@ async function analyzeProject(
 	if (input.constantsPath !== undefined)
 		argv.push(
 			"--constants",
-			projectPath(context.root, stringValue(input.constantsPath, "constantsPath")),
+			projectPath(context, stringValue(input.constantsPath, "constantsPath")),
 		);
 	if (input.css === true) argv.push("--css");
 	const foldReport = JSON.parse(await ports.analyze(argv)) as Record<string, unknown>;
@@ -1470,7 +1953,7 @@ export function createMcpToolService(
 				return resourceJson({
 					schema: "yumcss.mcp.project-configuration/1",
 					root: context.root,
-					packageJson: readPackageJson(context.root),
+					packageJson: readPackageJson(context),
 					files: files
 						.map((file) => relativeProjectPath(context.root, file))
 						.filter((file) =>
@@ -1552,5 +2035,9 @@ export function createMcpProjectContext(root: string): McpProjectContext {
 	const absoluteRoot = resolve(root);
 	if (!existsSync(absoluteRoot) || !statSync(absoluteRoot).isDirectory())
 		throw new McpToolError(`project root is not a directory: ${absoluteRoot}`);
-	return { root: absoluteRoot, workspace: createSourceWorkspace() };
+	const canonicalRoot = realpathSync(absoluteRoot);
+	const stats = statSync(canonicalRoot);
+	const context = { root: canonicalRoot, workspace: createSourceWorkspace() };
+	projectRootIdentity.set(context, { device: stats.dev, inode: stats.ino });
+	return context;
 }

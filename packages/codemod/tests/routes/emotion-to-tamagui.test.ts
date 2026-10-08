@@ -48,7 +48,8 @@ test("emotion -> tamagui: migrates concrete emotion syntax to tamagui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -90,7 +91,8 @@ test("emotion -> tamagui: carries a documented secondary emotion API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -141,7 +143,8 @@ test("emotion -> tamagui: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("emotion -> tamagui: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +223,8 @@ test("emotion -> tamagui: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -261,7 +266,8 @@ test("emotion -> tamagui: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

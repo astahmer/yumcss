@@ -52,7 +52,8 @@ test("emotion -> react-native -> emotion: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +90,8 @@ test("emotion -> react-native -> emotion: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "react-native";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +141,8 @@ test("emotion -> react-native -> emotion: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +179,8 @@ test("emotion -> react-native -> emotion: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "react-native";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,7 +246,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,7 +284,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "react-native";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +322,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -353,7 +360,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "react-native";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -405,7 +413,8 @@ test("emotion -> react-native -> emotion: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -442,7 +451,8 @@ test("emotion -> react-native -> emotion: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "react-native";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

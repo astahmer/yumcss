@@ -48,7 +48,8 @@ test("emotion -> react-native: migrates concrete emotion syntax to react-native"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +95,8 @@ test("emotion -> react-native: carries a documented secondary emotion API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +151,8 @@ test("emotion -> react-native: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +189,8 @@ test("emotion -> react-native: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +239,8 @@ test("emotion -> react-native: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +286,8 @@ test("emotion -> react-native: preserves malformed concrete emotion input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "@emotion/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

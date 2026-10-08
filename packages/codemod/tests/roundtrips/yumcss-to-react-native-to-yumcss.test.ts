@@ -53,7 +53,6 @@ test("yumcss -> react-native -> yumcss: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,9 +89,9 @@ test("yumcss -> react-native -> yumcss: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -143,7 +142,6 @@ test("yumcss -> react-native -> yumcss: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,9 +178,9 @@ test("yumcss -> react-native -> yumcss: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +246,6 @@ test("yumcss -> react-native -> yumcss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#f97316", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,9 +283,9 @@ test("yumcss -> react-native -> yumcss: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -326,7 +323,6 @@ test("yumcss -> react-native -> yumcss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -364,9 +360,9 @@ test("yumcss -> react-native -> yumcss: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -419,7 +415,6 @@ test("yumcss -> react-native -> yumcss: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -457,9 +452,9 @@ test("yumcss -> react-native -> yumcss: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-native";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

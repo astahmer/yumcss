@@ -48,7 +48,8 @@ test("mui -> yumcss: migrates concrete mui syntax to yumcss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("mui -> yumcss: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "@mui/system";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -147,7 +149,8 @@ test("mui -> yumcss: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		    "converted": 1,
@@ -182,7 +185,8 @@ test("mui -> yumcss: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		    "converted": 1,
@@ -229,7 +233,8 @@ test("mui -> yumcss: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		  "converted": 1,
@@ -273,7 +278,8 @@ test("mui -> yumcss: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { Box } from "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;
 		const unfinished = { /* unfinished mui */",

@@ -52,7 +52,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves an actionabl
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves an actionabl
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "solid-styled-components";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +224,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +261,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "solid-styled-components";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +301,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +338,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "solid-styled-components";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +393,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: resolves token values 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +430,8 @@ test("vanilla-extract -> solid-styled -> vanilla-extract: resolves token values 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "solid-styled-components";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

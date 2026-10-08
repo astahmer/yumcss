@@ -86,7 +86,8 @@ test("goober -> emotion -> goober: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -275,7 +276,8 @@ test("goober -> emotion -> goober: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -348,7 +350,8 @@ test("goober -> emotion -> goober: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -436,7 +439,8 @@ test("goober -> emotion -> goober: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@emotion/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

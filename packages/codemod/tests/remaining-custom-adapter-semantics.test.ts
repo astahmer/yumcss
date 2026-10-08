@@ -130,7 +130,8 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toContain('const accent = "--pw-accent"');
 		expect(result.code).toContain('color: "var(--pw-accent)"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "@vanilla-extract/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const accent = "--pw-accent";
 			export const card = css.class({ color: "var(--pw-accent)", "--pw-accent": "#123456" });"
@@ -190,6 +191,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"// yumcss:migrate-skip (route: emotion -> yumcss | parse-residual: runtime-context | available: named-map, residual)
 			import { ThemeProvider } from "@emotion/react";
+			import "@emotion/css";
 			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.vars({ color: theme.colors.brand });
@@ -350,7 +352,6 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).not.toContain("createCss");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { cva } from "styled-system/recipes";
-
 			export const button = cva({ base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });"
 		`);
 	});
@@ -379,7 +380,6 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).not.toContain("createSlotRecipe");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { sva } from "styled-system/recipes";
-
 			export const card = sva({ slots: ["root", "label"], base: { "root": { color: "red" }, "label": {  } }, variants: { "size": { "sm": { "root": { padding: "2" } } } } });"
 		`);
 	});

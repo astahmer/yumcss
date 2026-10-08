@@ -53,7 +53,6 @@ test("yumcss -> less -> yumcss: preserves an actionable concrete round trip", as
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -95,7 +94,6 @@ test("yumcss -> less -> yumcss: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +159,6 @@ test("yumcss -> less -> yumcss: retains the documented secondary API without sil
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.less";
-
 		export const styles = { "card": "pw-styles-card-1trzka1", "muted": "pw-styles-muted-1kk79fq" };",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -203,7 +200,6 @@ test("yumcss -> less -> yumcss: retains the documented secondary API without sil
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.less";
-
 		export const styles = { "card": "pw-styles-card-1trzka1", "muted": "pw-styles-muted-1kk79fq" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -299,7 +295,6 @@ test("yumcss -> less -> yumcss: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -341,7 +336,6 @@ test("yumcss -> less -> yumcss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -394,7 +388,6 @@ test("yumcss -> less -> yumcss: preserves concrete theme and project context var
 		    "forward": {
 		      "changed": true,
 		      "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -436,7 +429,6 @@ test("yumcss -> less -> yumcss: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": false,
 		      "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -504,7 +496,6 @@ test("yumcss -> less -> yumcss: resolves token values across both concrete legs"
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -546,7 +537,6 @@ test("yumcss -> less -> yumcss: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -48,7 +48,8 @@ test("vanilla-extract -> react-strict-dom: migrates concrete vanilla-extract syn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +157,8 @@ test("vanilla-extract -> react-strict-dom: loads concrete theme and project cont
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,7 +194,8 @@ test("vanilla-extract -> react-strict-dom: loads concrete theme and project cont
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("vanilla-extract -> react-strict-dom: resolves concrete token values with p
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,7 +289,8 @@ test("vanilla-extract -> react-strict-dom: preserves malformed concrete vanilla-
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

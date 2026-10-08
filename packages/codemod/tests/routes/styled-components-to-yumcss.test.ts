@@ -301,7 +301,8 @@ test("styled-components -> yumcss: preserves malformed concrete styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import styled from "styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();

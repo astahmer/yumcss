@@ -126,7 +126,10 @@ function arbitraryUtility(
 	if (match?.[1] === undefined || match[2] === undefined) return undefined;
 	return [
 		{
-			...literal(cssProperty(match[1]), match[2].replaceAll("_", " ")),
+			...literal(
+				cssProperty(match[1]),
+				match[2].replace(/\\_|_/gu, (match) => (match === "_" ? " " : "_")),
+			),
 			conditions: prefixes.map(authoredVariantCondition),
 		},
 	];
@@ -599,7 +602,11 @@ function parseTailwind(
 }
 
 function utilityValue(value: string | number | boolean): string {
-	return String(value).replaceAll(" ", "_").replaceAll("[", "\\[").replaceAll("]", "\\]");
+	return String(value)
+		.replaceAll("_", "\\_")
+		.replaceAll(" ", "_")
+		.replaceAll("[", "\\[")
+		.replaceAll("]", "\\]");
 }
 
 function utilityCondition(conditionValue: StyleCondition): string {

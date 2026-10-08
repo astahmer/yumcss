@@ -52,7 +52,8 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("mui -> styled-components -> mui: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
+		    "code": "import "@mui/material";
+		import { styled } from "@mui/system";
 		export const App = () => styled("div")({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -245,7 +247,8 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,7 +282,8 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@mui/material";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		      "converted": 0,
@@ -325,7 +329,8 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -359,7 +364,8 @@ test("mui -> styled-components -> mui: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@mui/material";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		      "converted": 0,
@@ -420,7 +426,8 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -454,7 +461,8 @@ test("mui -> styled-components -> mui: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/material";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> mui | lowering-residual: validation)
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 0,

@@ -48,7 +48,8 @@ test("style9 -> treat: migrates concrete style9 syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> treat: carries a documented secondary style9 API explicitly", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }), "muted": style({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> treat: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> treat: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> treat: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> treat: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import style9 from "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

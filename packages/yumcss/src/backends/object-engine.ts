@@ -1,6 +1,7 @@
 import { createHashFn } from "../css/hash.ts";
 import { assign, flattenStyle, type FlatStyles } from "../lib/utils.ts";
 import { isSafeCssValue } from "../css/value-normalization.ts";
+import { cssPropertyFromKey } from "../css/style-key.ts";
 import type { StyleObject } from "../types/typings.ts";
 import {
 	STYLE_BACKEND_SCHEMA,
@@ -97,14 +98,16 @@ const snapshotStyleValue = (
 	};
 };
 
-const splitKey = (key: string): { conditions: string[]; prop: string } => {
-	const parts = key.split("__");
-	return { conditions: parts.slice(0, -1), prop: parts[parts.length - 1]! };
-};
-
 export function createObjectBackend(options: ObjectBackendOptions): ObjectBackend {
 	const convert = options.convert ?? ((prop: string, value: string) => ({ [prop]: value }));
 	const resolvers = options.conditions ?? {};
+	const conditionPaths = Object.fromEntries(Object.keys(resolvers).map((name) => [name, "&"]));
+	const splitKey = (key: string): { conditions: string[]; prop: string } => {
+		const parts = key.split("__");
+		const prop = cssPropertyFromKey(key, conditionPaths);
+		const propertyIndex = parts.lastIndexOf(prop);
+		return { conditions: parts.filter((_part, index) => index !== propertyIndex), prop };
+	};
 	const registry = new Map<string, Map<string, TargetStyle>>();
 	const hashFn = createHashFn(false);
 

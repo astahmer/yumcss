@@ -52,7 +52,8 @@ test("emotion -> styled-components -> emotion: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("emotion -> styled-components -> emotion: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +138,8 @@ test("emotion -> styled-components -> emotion: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,7 +173,8 @@ test("emotion -> styled-components -> emotion: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +240,8 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,7 +275,8 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "@emotion/css";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,7 +313,8 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,7 +348,8 @@ test("emotion -> styled-components -> emotion: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "@emotion/css";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +401,8 @@ test("emotion -> styled-components -> emotion: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,7 +436,8 @@ test("emotion -> styled-components -> emotion: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

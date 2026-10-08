@@ -52,7 +52,8 @@ test("panda -> react-strict-dom -> panda: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +220,8 @@ test("panda -> react-strict-dom -> panda: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -292,7 +294,8 @@ test("panda -> react-strict-dom -> panda: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -380,7 +383,8 @@ test("panda -> react-strict-dom -> panda: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

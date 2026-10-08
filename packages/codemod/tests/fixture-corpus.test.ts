@@ -40,7 +40,8 @@ describe("representative CSS-in-JS migration corpus", () => {
 			residuals: style9Result.residuals,
 		}).toMatchInlineSnapshot(`
 			{
-			  "code": "import { css } from "@emotion/css";
+			  "code": "import "style9";
+			import { css } from "@emotion/css";
 
 			export const card = { "card": css({ color: "red", padding: "2px" }) };
 			",
@@ -73,7 +74,8 @@ export const styles = style9.create({ card: { fontSize: 16, opacity: 0.5, lineHe
 		expect(result.code).toContain('width: "2px"');
 		expect(result.code).toContain('"--scale": 3');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "@emotion/css";
+			"import "style9";
+			import { css } from "@emotion/css";
 			export const styles = { "card": css({ fontSize: "1rem", opacity: 0.5, lineHeight: 1.25, width: "2px", "--scale": 3 }) };"
 		`);
 	});

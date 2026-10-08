@@ -267,7 +267,8 @@ test("stitches -> tamagui: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "@stitches/react";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

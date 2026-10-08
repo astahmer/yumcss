@@ -49,8 +49,8 @@ test("solid-styled -> vue-styled: migrates concrete solid-styled syntax to vue-s
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -97,8 +97,8 @@ test("solid-styled -> vue-styled: carries a documented secondary solid-styled AP
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -154,8 +154,8 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -193,8 +193,8 @@ test("solid-styled -> vue-styled: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -244,8 +244,8 @@ test("solid-styled -> vue-styled: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -292,8 +292,8 @@ test("solid-styled -> vue-styled: preserves malformed concrete solid-styled inpu
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import { styled } from "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished solid-styled */
 		</script>

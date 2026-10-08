@@ -164,6 +164,14 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 	`);
 });
 
+test("diagnoseCssSources ignores shadowed unsupported CSS members", () => {
+	const code = 'import { css } from "./design"; function render(css) { css.keyframes(getSpin()); }';
+
+	const diagnostics = extract().diagnose(code, "src/card.ts", new Set(["css"]));
+
+	expect(diagnostics).toEqual([]);
+});
+
 test("diagnoseCssSources keeps authored @property rules in the explicit CSS lane", () => {
 	const code = `
 		import { css } from "./design";

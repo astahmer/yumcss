@@ -53,7 +53,6 @@ test("yumcss -> goober -> yumcss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> goober -> yumcss: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +231,6 @@ test("yumcss -> goober -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -272,7 +269,6 @@ test("yumcss -> goober -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,7 +306,6 @@ test("yumcss -> goober -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +344,6 @@ test("yumcss -> goober -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,7 +396,6 @@ test("yumcss -> goober -> yumcss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -441,7 +434,6 @@ test("yumcss -> goober -> yumcss: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

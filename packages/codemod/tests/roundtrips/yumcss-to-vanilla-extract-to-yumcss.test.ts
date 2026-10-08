@@ -53,7 +53,6 @@ test("yumcss -> vanilla-extract -> yumcss: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,9 +88,9 @@ test("yumcss -> vanilla-extract -> yumcss: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +141,6 @@ test("yumcss -> vanilla-extract -> yumcss: retains the documented secondary API 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const styles = { "card": style({ color: "red" }), "muted": style({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,9 +176,9 @@ test("yumcss -> vanilla-extract -> yumcss: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -265,7 +263,6 @@ test("yumcss -> vanilla-extract -> yumcss: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -301,9 +298,9 @@ test("yumcss -> vanilla-extract -> yumcss: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,7 +338,6 @@ test("yumcss -> vanilla-extract -> yumcss: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -377,9 +373,9 @@ test("yumcss -> vanilla-extract -> yumcss: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -432,7 +428,6 @@ test("yumcss -> vanilla-extract -> yumcss: resolves token values across both con
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-
 		export const card = style({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -468,9 +463,9 @@ test("yumcss -> vanilla-extract -> yumcss: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

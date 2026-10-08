@@ -86,7 +86,8 @@ test("stitches -> panda -> stitches: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -252,7 +253,8 @@ test("stitches -> panda -> stitches: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +327,8 @@ test("stitches -> panda -> stitches: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +416,8 @@ test("stitches -> panda -> stitches: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

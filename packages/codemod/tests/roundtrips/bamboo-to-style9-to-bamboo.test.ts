@@ -52,7 +52,8 @@ test("bamboo -> style9 -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("bamboo -> style9 -> bamboo: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("bamboo -> style9 -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("bamboo -> style9 -> bamboo: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("bamboo -> style9 -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> style9 -> bamboo: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("bamboo -> style9 -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +356,8 @@ test("bamboo -> style9 -> bamboo: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("bamboo -> style9 -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +446,8 @@ test("bamboo -> style9 -> bamboo: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

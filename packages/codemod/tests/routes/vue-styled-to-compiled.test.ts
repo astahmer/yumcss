@@ -48,7 +48,8 @@ test("vue-styled -> compiled: migrates concrete vue-styled syntax to compiled", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("vue-styled -> compiled: carries a documented secondary vue-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("vue-styled -> compiled: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("vue-styled -> compiled: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("vue-styled -> compiled: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		  "converted": 1,
@@ -281,7 +286,8 @@ test("vue-styled -> compiled: preserves malformed concrete vue-styled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import styled from "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

@@ -276,7 +276,8 @@ test("linaria -> stitches: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { css } from "@linaria/core";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

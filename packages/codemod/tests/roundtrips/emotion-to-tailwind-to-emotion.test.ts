@@ -52,7 +52,8 @@ test("emotion -> tailwind -> emotion: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +138,8 @@ test("emotion -> tailwind -> emotion: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +240,8 @@ test("emotion -> tailwind -> emotion: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb] [padding:1rem]";",
+		      "code": "import "@emotion/css";
+		export const card = "[color:#2563eb] [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +313,8 @@ test("emotion -> tailwind -> emotion: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand [padding:1rem]";",
+		      "code": "import "@emotion/css";
+		export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -397,7 +401,8 @@ test("emotion -> tailwind -> emotion: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

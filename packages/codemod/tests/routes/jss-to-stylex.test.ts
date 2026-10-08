@@ -276,7 +276,8 @@ test("jss -> stylex: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { createUseStyles } from "react-jss";
+		import * as stylex from "@stylexjs/stylex";
 		export const useStyles = stylex.create({ card: { color: "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

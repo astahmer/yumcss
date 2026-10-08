@@ -53,7 +53,6 @@ test("yumcss -> treat -> yumcss: preserves an actionable concrete round trip", a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> treat -> yumcss: preserves an actionable concrete round trip", a
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -233,7 +231,6 @@ test("yumcss -> treat -> yumcss: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -272,7 +269,6 @@ test("yumcss -> treat -> yumcss: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,7 +306,6 @@ test("yumcss -> treat -> yumcss: preserves concrete theme and project context va
 		    "forward": {
 		      "changed": true,
 		      "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +344,6 @@ test("yumcss -> treat -> yumcss: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -402,7 +396,6 @@ test("yumcss -> treat -> yumcss: resolves token values across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -441,7 +434,6 @@ test("yumcss -> treat -> yumcss: resolves token values across both concrete legs
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -49,7 +49,6 @@ test("yumcss -> react-strict-dom: migrates concrete yumcss syntax to react-stric
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> react-strict-dom: carries a documented secondary yumcss API expl
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-
 		export const styles = { "card": css.create({ color: "red" }), "muted": css.create({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> react-strict-dom: loads concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +183,6 @@ test("yumcss -> react-strict-dom: loads concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +231,6 @@ test("yumcss -> react-strict-dom: resolves concrete token values with project co
 		{
 		  "changed": true,
 		  "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,8 +275,8 @@ test("yumcss -> react-strict-dom: preserves malformed concrete yumcss input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

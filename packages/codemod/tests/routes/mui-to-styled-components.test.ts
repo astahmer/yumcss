@@ -48,7 +48,8 @@ test("mui -> styled-components: migrates concrete mui syntax to styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "red", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +152,8 @@ test("mui -> styled-components: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#f97316", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +187,8 @@ test("mui -> styled-components: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +234,8 @@ test("mui -> styled-components: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "#2563eb", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -274,7 +278,8 @@ test("mui -> styled-components: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { Box } from "@mui/material";
+		import styled from "styled-components";
 		export const App = () => styled.div({ color: "red", padding: "16px" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

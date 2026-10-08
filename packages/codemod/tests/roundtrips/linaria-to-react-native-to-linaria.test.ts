@@ -89,7 +89,8 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -266,7 +267,8 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -342,7 +344,8 @@ test("linaria -> react-native -> linaria: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -433,7 +436,8 @@ test("linaria -> react-native -> linaria: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

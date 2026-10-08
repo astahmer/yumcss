@@ -52,7 +52,8 @@ test("bamboo -> stylex -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("bamboo -> stylex -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { display: "flex", gap: "4" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("bamboo -> stylex -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("bamboo -> stylex -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("bamboo -> stylex -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -267,7 +267,8 @@ test("linaria -> panda: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import { css } from "@linaria/core";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

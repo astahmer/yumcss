@@ -52,7 +52,8 @@ test("solid-styled -> stitches -> solid-styled: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("solid-styled -> stitches -> solid-styled: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +246,8 @@ test("solid-styled -> stitches -> solid-styled: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@stitches/react";
+		      "code": "import "solid-styled-components";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +322,8 @@ test("solid-styled -> stitches -> solid-styled: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "@stitches/react";
+		      "code": "import "solid-styled-components";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +413,8 @@ test("solid-styled -> stitches -> solid-styled: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

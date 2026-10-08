@@ -52,7 +52,8 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "&:hover": { "color": "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +90,8 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +228,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -264,7 +267,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -301,7 +305,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -339,7 +344,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -391,7 +397,8 @@ test("panda -> react-native -> panda: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -429,7 +436,8 @@ test("panda -> react-native -> panda: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

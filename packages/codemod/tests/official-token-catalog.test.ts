@@ -411,7 +411,8 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toContain('"--border-radius": "#123456"');
 		expect(result.code).toContain('"---gradient-from": "var(--color_brand)"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "@tokenami/css";
+			"import "@emotion/css";
+			import { css } from "@tokenami/css";
 			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_card)", "--border-radius": "#123456", "---gradient-from": "var(--color_brand)" });"
 		`);
 	});
@@ -564,7 +565,8 @@ describe("official custom-token loaders", () => {
 		expect(result.code).toContain('color: "brand"');
 		expect(result.code).not.toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "brand" });"
 		`);

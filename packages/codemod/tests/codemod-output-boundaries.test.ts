@@ -66,7 +66,8 @@ describe("codemod output file boundaries", () => {
 		expect(supported.converted).toBe(1);
 		expect(supported.code).toContain('import { style } from "treat";');
 		expect(supported.code).toMatchInlineSnapshot(`
-			"import { style } from "treat";
+			"import "@emotion/css";
+			import { style } from "treat";
 			export const card = style({ "color": "red", "padding": "1rem" });"
 		`);
 	});
@@ -90,7 +91,8 @@ describe("codemod output file boundaries", () => {
 		expect(supported.converted).toBe(1);
 		expect(supported.code).toContain('import { style } from "@vanilla-extract/css";');
 		expect(supported.code).toMatchInlineSnapshot(`
-			"import { style } from "@vanilla-extract/css";
+			"import "@emotion/css";
+			import { style } from "@vanilla-extract/css";
 			export const card = style({ color: "red", padding: "1rem" });"
 		`);
 	});
@@ -156,7 +158,8 @@ describe("codemod output file boundaries", () => {
 		expect(snapshots).toMatchInlineSnapshot(`
 			[
 			  {
-			    "code": "import { style } from "treat";
+			    "code": "import "@emotion/css";
+			import { style } from "treat";
 			export const card = style({ "color": "red", "padding": "1rem" });",
 			    "fileChanges": [
 			      {
@@ -171,7 +174,8 @@ describe("codemod output file boundaries", () => {
 			export const App = () => <div className={card} />;",
 			  },
 			  {
-			    "code": "import { style } from "@vanilla-extract/css";
+			    "code": "import "@emotion/css";
+			import { style } from "@vanilla-extract/css";
 			export const card = style({ color: "red", padding: "1rem" });",
 			    "fileChanges": [
 			      {

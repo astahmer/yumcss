@@ -49,7 +49,6 @@ test("yumcss -> tamagui: migrates concrete yumcss syntax to tamagui", () => {
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +143,6 @@ test("yumcss -> tamagui: loads concrete theme and project context variants", asy
 		  "amber": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#f97316", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +176,6 @@ test("yumcss -> tamagui: loads concrete theme and project context variants", asy
 		  "blue": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +221,6 @@ test("yumcss -> tamagui: resolves concrete token values with project context", a
 		{
 		  "changed": true,
 		  "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,8 +262,8 @@ test("yumcss -> tamagui: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

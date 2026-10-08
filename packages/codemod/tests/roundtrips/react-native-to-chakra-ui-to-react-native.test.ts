@@ -54,7 +54,8 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> chakra-ui -> react-native: retains the documented secondar
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +246,8 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -318,7 +321,8 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -408,7 +412,8 @@ test("react-native -> chakra-ui -> react-native: resolves token values across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

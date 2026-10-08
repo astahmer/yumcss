@@ -91,6 +91,7 @@ test("fela -> vanilla-extract -> fela: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -269,6 +270,7 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -347,6 +349,7 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -440,6 +443,7 @@ test("fela -> vanilla-extract -> fela: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

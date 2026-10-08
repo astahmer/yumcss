@@ -1,4 +1,9 @@
-import { splitSelectorList } from "./selector-list.ts";
+import {
+	hasRelativeSelectorPrefix,
+	hasParentSelectorReference,
+	replaceParentSelector,
+	splitSelectorList,
+} from "./selector-list.ts";
 import { pairs } from "../lib/utils.ts";
 import type { AnyConditions } from "../types/typings.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
@@ -94,7 +99,8 @@ export const parseCondition = (
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
 	else if (isSimpleSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
 	else if (isParentSelector(selector)) conditions.parentSelectors.push(selector.slice(0, -1));
-	else if (selector.includes("&")) conditions.selectorLists.push(selector);
+	else if (hasParentSelectorReference(selector) || hasRelativeSelectorPrefix(selector))
+		conditions.selectorLists.push(selector);
 	else if (isAtRule(selector)) conditions.atRules.push(selector);
 	else return true;
 	return;
@@ -103,33 +109,20 @@ export const parseCondition = (
 export const genCSSRule = (decls: string, conditions: ParsedConditions): string => {
 	const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
 	if (selectorLists.length) {
-		return atRules.reduce(
-			(acc, atRule) => `${atRule}{${acc}}`,
-			`${selectorLists.map((list) => {
-				const selectors = splitSelectorList(list);
-				return selectors
-					.map((selector) => {
-						if (
-							selector.includes("&") &&
-							!isSimpleSelfSelector(selector) &&
-							!isParentSelector(selector)
-						) {
-							const base = scopedClassName(className, selfSelectors);
-							const scopedSelector = selector.startsWith("&")
-								? selector.replaceAll("&", `${base}${selfSelectors.join("")}`)
-								: `${selector.replaceAll("&", base)}${selfSelectors.join("")}`;
-							return `${parentSelectors.join("")}${scopedSelector}`;
-						}
-						const selfs = [...selfSelectors];
-						const parents = [...parentSelectors];
-						if (isSimpleSelfSelector(selector)) selfs.push(selector.slice(1));
-						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
-						return `${parents.join("")}${scopedClassName(className, selfs)}${selfs.join("")}`;
-					})
-					.join(", ");
-			})}{${decls}}`,
-		);
+		const base = `${scopedClassName(className, selfSelectors)}${selfSelectors.join("")}`;
+		const composed = selectorLists
+			.reduce(
+				(selectors, list) =>
+					selectors.flatMap((parent) =>
+						splitSelectorList(list).map((selector) => replaceParentSelector(selector, parent)),
+					),
+				[base],
+			)
+			.map((selector) => `${parentSelectors.join("")}${selector}`)
+			.join(", ");
+		return atRules.reduce((rule, atRule) => `${atRule}{${rule}}`, `${composed}{${decls}}`);
 	}
+
 	const selectors = `${parentSelectors.join("")}${scopedClassName(className, selfSelectors)}${selfSelectors.join("")}`;
 	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectors}{${decls}}`);
 };

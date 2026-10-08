@@ -52,7 +52,8 @@ test("react-native -> panda -> react-native: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("react-native -> panda -> react-native: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +141,8 @@ test("react-native -> panda -> react-native: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +176,8 @@ test("react-native -> panda -> react-native: retains the documented secondary AP
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,7 +246,8 @@ test("react-native -> panda -> react-native: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> panda -> react-native: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +322,8 @@ test("react-native -> panda -> react-native: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -350,7 +357,8 @@ test("react-native -> panda -> react-native: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -406,7 +414,8 @@ test("react-native -> panda -> react-native: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -440,7 +449,8 @@ test("react-native -> panda -> react-native: resolves token values across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

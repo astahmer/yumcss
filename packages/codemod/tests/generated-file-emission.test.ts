@@ -124,7 +124,8 @@ describe("generated target files", () => {
 			]
 		`);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			"
@@ -150,7 +151,8 @@ describe("generated target files", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.generatedFiles).toHaveLength(1);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			const panel = css.class({ backgroundColor: "white" });

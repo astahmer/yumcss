@@ -299,6 +299,7 @@ export default defineCodemodAdapter({
 	},
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],
 	sourceModules: ["styled-components"],
+	sourceModulesSideEffectFree: ["styled-components"],
 	configFiles: ["package.json"],
 	emit(program, { firstKind, programObject, templateCss }) {
 		const kind = firstKind(program);

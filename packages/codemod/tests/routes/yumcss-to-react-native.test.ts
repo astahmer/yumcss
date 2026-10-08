@@ -49,7 +49,6 @@ test("yumcss -> react-native: migrates concrete yumcss syntax to react-native", 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -96,7 +95,6 @@ test("yumcss -> react-native: carries a documented secondary yumcss API explicit
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +149,6 @@ test("yumcss -> react-native: loads concrete theme and project context variants"
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#f97316", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -190,7 +187,6 @@ test("yumcss -> react-native: loads concrete theme and project context variants"
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +237,6 @@ test("yumcss -> react-native: resolves concrete token values with project contex
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "react-native";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": 16 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -288,8 +283,8 @@ test("yumcss -> react-native: preserves malformed concrete yumcss input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

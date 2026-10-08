@@ -142,7 +142,8 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "react-fela";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
 		    "converted": 1,
@@ -176,11 +177,11 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// yumcss:migrate-skip (route: tamagui -> fela | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		const __CardTamagui = styled(View, { color: "red" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
-		    "converted": 0,
+		    "code": "import "react-fela";
+		import { View } from "@tamagui/core";
+		const __CardTamagui = renderer.renderRule({ "color": "red" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} className={__CardTamagui} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -198,19 +199,19 @@ test("fela -> tamagui -> fela: retains the documented secondary API without sile
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

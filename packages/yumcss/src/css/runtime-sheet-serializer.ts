@@ -6,7 +6,12 @@ import type {
 } from "./runtime-sheet-contracts.ts";
 import { dashCase } from "./hash.ts";
 import { serializeCssPropertySyntax } from "./css-variables.ts";
-import { splitSelectorList } from "./selector-list.ts";
+import {
+	hasRelativeSelectorPrefix,
+	hasParentSelectorReference,
+	replaceParentSelector,
+	splitSelectorList,
+} from "./selector-list.ts";
 
 const hash = (input: string): string => {
 	let value = 2166136261;
@@ -33,41 +38,18 @@ const declarations = (items: readonly RuntimeDeclaration[] = [], propertyRule = 
 const condition = (value: string): string =>
 	value.startsWith("@") || value.startsWith(":") || value.startsWith("&") ? value : `&:${value}`;
 
-const replaceParentSelector = (value: string, base: string): string => {
-	let output = "";
-	let quote = "";
-	let attributeDepth = 0;
-	for (let index = 0; index < value.length; index++) {
-		const character = value[index]!;
-		if (quote !== "") {
-			output += character;
-			if (character === quote && value[index - 1] !== "\\") quote = "";
-			continue;
-		}
-		if (character === '"' || character === "'") {
-			quote = character;
-			output += character;
-			continue;
-		}
-		if (character === "[") attributeDepth++;
-		else if (character === "]" && attributeDepth > 0) attributeDepth--;
-		output += character === "&" && attributeDepth === 0 ? base : character;
-	}
-	return output;
-};
-
-const applySelectorCondition = (base: string, conditionValue: string): string =>
-	splitSelectorList(base)
+const applySelectorCondition = (base: string, conditionValue: string): string => {
+	const items = splitSelectorList(conditionValue);
+	return splitSelectorList(base)
 		.flatMap((baseSelector) =>
-			splitSelectorList(conditionValue).map((item) => {
-				if (item.includes("&")) return replaceParentSelector(item, baseSelector);
-				if (item.startsWith(":") || item.startsWith("[")) return `${baseSelector}${item}`;
-				if (item.startsWith(">") || item.startsWith("+") || item.startsWith("~"))
-					return `${baseSelector}${item}`;
+			items.map((item) => {
+				if (items.length > 1 || hasParentSelectorReference(item) || hasRelativeSelectorPrefix(item))
+					return replaceParentSelector(item, baseSelector);
 				return `${baseSelector}:${item}`;
 			}),
 		)
 		.join(", ");
+};
 
 const selector = (
 	value: string,

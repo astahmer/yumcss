@@ -580,6 +580,40 @@ const createApiResolver = (
 		for (const name of compilerStaticAnalysisForProgram(sourceProgram).cxConstants.keys())
 			staticBindings.add(name);
 
+		const addPatternBindings = (pattern: AstValue, names: Set<string>): void => {
+			if (!isNode(pattern)) return;
+			if (pattern.type === NodeKind.Identifier) {
+				names.add(pattern.name);
+				return;
+			}
+			if (pattern.type === NodeKind.Property) {
+				addPatternBindings(pattern.value, names);
+				return;
+			}
+			if (pattern.type === NodeKind.AssignmentPattern) {
+				addPatternBindings(pattern.left, names);
+				return;
+			}
+			for (const key of Object.keys(pattern)) {
+				if (key === "parent" || key === "type") continue;
+				const child = pattern[key];
+				if (Array.isArray(child)) for (const element of child) addPatternBindings(element, names);
+				else addPatternBindings(child, names);
+			}
+		};
+		const addDeclarations = (statements: readonly AstNode[], names: Set<string>): void => {
+			for (const statement of statements) {
+				if (statement.type === NodeKind.VariableDeclaration) {
+					for (const declaration of statement.declarations ?? [])
+						addPatternBindings(declaration.id, names);
+				}
+				if (
+					statement.type === NodeKind.FunctionDeclaration ||
+					statement.type === NodeKind.ClassDeclaration
+				)
+					addPatternBindings(statement.id, names);
+			}
+		};
 		const scopedStack: Array<{ value: AstValue; shadowed: ReadonlySet<string> }> = [
 			{ value: sourceProgram, shadowed: new Set() },
 		];
@@ -596,13 +630,9 @@ const createApiResolver = (
 
 			if (value.type === NodeKind.CallExpression) {
 				const callee = value.callee;
-				const name =
-					callee?.type === NodeKind.Identifier
-						? callee.name
-						: callee?.type === NodeKind.MemberExpression &&
-							  callee.object?.type === NodeKind.Identifier
-							? callee.object.name
-							: undefined;
+				let root = callee;
+				while (root?.type === NodeKind.MemberExpression) root = root.object;
+				const name = root?.type === NodeKind.Identifier ? root.name : undefined;
 				if (name !== undefined && current.shadowed.has(name)) shadowedCalls.add(value);
 			}
 
@@ -612,18 +642,79 @@ const createApiResolver = (
 				value.type === NodeKind.ArrowFunctionExpression
 			) {
 				const shadowed = new Set(current.shadowed);
-				for (const parameter of value.params ?? []) {
-					const patternStack: AstValue[] = [parameter];
-					while (patternStack.length > 0) {
-						const pattern = patternStack.pop();
-						if (!isNode(pattern)) continue;
-						if (pattern.type === NodeKind.Identifier) shadowed.add(pattern.name);
-						for (const key of Object.keys(pattern)) {
-							if (key !== "parent" && key !== "type") patternStack.push(pattern[key]);
-						}
+				for (const parameter of value.params ?? []) addPatternBindings(parameter, shadowed);
+				addPatternBindings(value.id, shadowed);
+				const pending: AstNode[] = isNode(value.body) ? [value.body] : [];
+				while (pending.length > 0) {
+					const child = pending.pop()!;
+					if (
+						child.type === NodeKind.FunctionDeclaration ||
+						child.type === NodeKind.FunctionExpression ||
+						child.type === NodeKind.ArrowFunctionExpression ||
+						child.type === NodeKind.StaticBlock
+					)
+						continue;
+					if (child.type === NodeKind.VariableDeclaration && child.kind === "var")
+						addDeclarations([child], shadowed);
+					for (const [key, nested] of Object.entries(child)) {
+						if (key === "parent") continue;
+						if (Array.isArray(nested))
+							for (const element of nested) {
+								if (isNode(element)) pending.push(element);
+							}
+						else if (isNode(nested)) pending.push(nested);
 					}
 				}
 				scopedStack.push({ value: value.body, shadowed });
+				continue;
+			}
+			if (value.type === NodeKind.ClassExpression) {
+				const shadowed = new Set(current.shadowed);
+				addPatternBindings(value.id, shadowed);
+				if (isNode(value.superClass))
+					scopedStack.push({ value: value.superClass, shadowed: current.shadowed });
+				if (isNode(value.body)) scopedStack.push({ value: value.body, shadowed });
+				continue;
+			}
+
+			if (
+				value.type === NodeKind.BlockStatement ||
+				value.type === NodeKind.StaticBlock ||
+				value.type === NodeKind.SwitchStatement
+			) {
+				const shadowed = new Set(current.shadowed);
+				addDeclarations(
+					value.type === NodeKind.SwitchStatement
+						? (value.cases ?? []).flatMap((branch: AstNode) => branch.consequent ?? [])
+						: (value.body ?? []),
+					shadowed,
+				);
+				scopedStack.push({
+					value: value.type === NodeKind.SwitchStatement ? value.cases : value.body,
+					shadowed,
+				});
+				continue;
+			}
+			if (value.type === NodeKind.CatchClause) {
+				const shadowed = new Set(current.shadowed);
+				addPatternBindings(value.param, shadowed);
+				scopedStack.push({ value: value.body, shadowed });
+				continue;
+			}
+			if (
+				value.type === NodeKind.ForStatement ||
+				value.type === NodeKind.ForOfStatement ||
+				value.type === NodeKind.ForInStatement
+			) {
+				const shadowed = new Set(current.shadowed);
+				const declaration = value.init ?? value.left;
+				if (isNode(declaration)) addDeclarations([declaration], shadowed);
+				for (const key of Object.keys(value)) {
+					if (key === "parent" || key === "type") continue;
+					const childShadowed =
+						value.type !== NodeKind.ForStatement && key === "right" ? current.shadowed : shadowed;
+					scopedStack.push({ value: value[key], shadowed: childShadowed });
+				}
 				continue;
 			}
 
@@ -914,7 +1005,15 @@ const createLiteralScopeAnalysis = (program: AstNode): LiteralScopeAnalysis => {
 	const cached = literalScopeAnalysisCache.get(program);
 	if (cached !== undefined) return cached;
 	const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksImports(program));
-	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall);
+	const resolver = createApiResolver(program);
+	const styleNames = new Set<string>();
+	walkNode(program, (node) => {
+		if (node.type !== NodeKind.CallExpression || resolver.resolve(node)?.kind !== API.style) return;
+		let root = node.callee;
+		while (root?.type === NodeKind.MemberExpression) root = root.object;
+		if (root?.type === NodeKind.Identifier) styleNames.add(root.name);
+	});
+	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall, styleNames);
 	const scopes = new WeakMap<AstNode, ReadonlyMap<string, unknown>>();
 	walkWithAncestors(program, (node, ancestors) => {
 		if (node.type !== NodeKind.CallExpression) return;

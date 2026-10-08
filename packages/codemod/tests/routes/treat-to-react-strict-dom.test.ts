@@ -276,7 +276,8 @@ test("treat -> react-strict-dom: preserves malformed concrete treat input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { style } from "treat";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

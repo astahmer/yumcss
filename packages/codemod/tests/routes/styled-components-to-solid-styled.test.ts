@@ -276,7 +276,8 @@ test("styled-components -> solid-styled: preserves malformed concrete styled-com
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
+		  "code": "import styled from "styled-components";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

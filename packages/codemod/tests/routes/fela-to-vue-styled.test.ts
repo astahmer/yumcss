@@ -94,7 +94,8 @@ test("fela -> vue-styled: carries a documented secondary fela API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "react-fela";
+		import styled from "vue-styled-components";
 		export const Card = styled.button\`color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],

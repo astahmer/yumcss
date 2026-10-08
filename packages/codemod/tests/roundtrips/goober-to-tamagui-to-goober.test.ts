@@ -172,11 +172,11 @@ test("goober -> tamagui -> goober: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-		// yumcss:migrate-skip (route: tamagui -> goober | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
-		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
-		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
-		    "converted": 0,
+		    "code": "import { View } from "@tamagui/core";
+		import { css } from "goober";
+		const __CardTamagui = css({ "color": "red", "padding": "1rem" });
+		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <View {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} className={__CardTamagui} />; };",
+		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
 		      {
@@ -194,19 +194,19 @@ test("goober -> tamagui -> goober: retains the documented secondary API without 
 		    ],
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverseArtifacts": [],
 		}

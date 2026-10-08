@@ -48,7 +48,8 @@ test("react-native -> tailwind: migrates concrete react-native syntax to tailwin
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
+		  "code": "import "react-native";
+		export const styles = { "card": "[color:red] [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +93,8 @@ test("react-native -> tailwind: carries a documented secondary react-native API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[padding:8px] [background-color:red]" };",
+		  "code": "import "react-native";
+		export const styles = { "card": "[padding:8px] [background-color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +147,8 @@ test("react-native -> tailwind: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
+		    "code": "import "react-native";
+		export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,8 @@ test("react-native -> tailwind: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		    "code": "import "react-native";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +231,8 @@ test("react-native -> tailwind: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		  "code": "import "react-native";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +276,8 @@ test("react-native -> tailwind: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };
+		  "code": "import { StyleSheet } from "react-native";
+		export const styles = { "card": "[color:red] [padding:8px]" };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "generatedFiles": [],

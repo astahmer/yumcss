@@ -48,7 +48,8 @@ test("vanilla-extract -> yumcss: migrates concrete vanilla-extract syntax to yum
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", padding: "8px" });",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("vanilla-extract -> yumcss: carries a documented secondary vanilla-extract 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+		  "code": "import "@vanilla-extract/css";
+		import { createRuntimeCss } from "yumcss/css/runtime";
 		import { defaultPreset } from "yumcss/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
 		(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
@@ -146,7 +148,8 @@ test("vanilla-extract -> yumcss: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
@@ -181,7 +184,8 @@ test("vanilla-extract -> yumcss: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", padding: "8px" });",
 		    "converted": 1,
@@ -228,7 +232,8 @@ test("vanilla-extract -> yumcss: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", padding: "8px" });",
 		  "converted": 1,
@@ -272,7 +277,8 @@ test("vanilla-extract -> yumcss: preserves malformed concrete vanilla-extract in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",

@@ -48,7 +48,8 @@ test("solid-styled -> stylex: migrates concrete solid-styled syntax to stylex", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("solid-styled -> stylex: carries a documented secondary solid-styled API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("solid-styled -> stylex: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("solid-styled -> stylex: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("solid-styled -> stylex: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		  "converted": 1,

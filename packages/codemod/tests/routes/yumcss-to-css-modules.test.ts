@@ -49,7 +49,6 @@ test("yumcss -> css-modules: migrates concrete yumcss syntax to css-modules", ()
 		{
 		  "changed": true,
 		  "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -100,7 +99,6 @@ test("yumcss -> css-modules: carries a documented secondary yumcss API explicitl
 		{
 		  "changed": true,
 		  "code": "import __yumcssstylesStyles from "./styles.yumcss-pw-group0-mxggr.module.css";
-
 		export const styles = { "card": __yumcssstylesStyles["pw-styles-card-1trzka1"], "muted": __yumcssstylesStyles["pw-styles-muted-1kk79fq"] };",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -159,7 +157,6 @@ test("yumcss -> css-modules: loads concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -201,7 +198,6 @@ test("yumcss -> css-modules: loads concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -255,7 +251,6 @@ test("yumcss -> css-modules: resolves concrete token values with project context
 		{
 		  "changed": true,
 		  "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -305,8 +300,8 @@ test("yumcss -> css-modules: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import __yumcsscardStyles from "./styles.yumcss-pw-card-8cd0mc.module.css";
 		export const card = __yumcsscardStyles["pw-card-8cd0mc"];
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

@@ -88,7 +88,8 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "style9";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -281,7 +282,8 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "style9";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -354,7 +356,8 @@ test("next-yak -> style9 -> next-yak: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "style9";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -442,7 +445,8 @@ test("next-yak -> style9 -> next-yak: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "style9";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

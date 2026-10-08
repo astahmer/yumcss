@@ -53,7 +53,6 @@ test("yumcss -> tamagui -> yumcss: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("yumcss -> tamagui -> yumcss: preserves an actionable concrete round trip",
 		    "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +218,6 @@ test("yumcss -> tamagui -> yumcss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +253,6 @@ test("yumcss -> tamagui -> yumcss: preserves concrete theme and project context 
 		      "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -294,7 +290,6 @@ test("yumcss -> tamagui -> yumcss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -330,7 +325,6 @@ test("yumcss -> tamagui -> yumcss: preserves concrete theme and project context 
 		      "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -383,7 +377,6 @@ test("yumcss -> tamagui -> yumcss: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { View, styled } from "@tamagui/core";
-
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -419,7 +412,6 @@ test("yumcss -> tamagui -> yumcss: resolves token values across both concrete le
 		    "code": "import { View } from "@tamagui/core";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

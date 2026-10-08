@@ -88,7 +88,8 @@ test("tokenami -> aphrodite -> tokenami: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -255,7 +256,8 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -329,7 +331,8 @@ test("tokenami -> aphrodite -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -418,7 +421,8 @@ test("tokenami -> aphrodite -> tokenami: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

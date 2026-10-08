@@ -90,7 +90,7 @@ test("styled-components -> aphrodite -> styled-components: preserves an actionab
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		import styled from "styled-components";
@@ -181,7 +181,7 @@ test("styled-components -> aphrodite -> styled-components: retains the documente
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		import styled from "styled-components";
@@ -288,7 +288,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		import styled from "styled-components";
@@ -366,7 +366,7 @@ test("styled-components -> aphrodite -> styled-components: preserves concrete th
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		import styled from "styled-components";
@@ -459,7 +459,7 @@ test("styled-components -> aphrodite -> styled-components: resolves token values
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		import styled from "styled-components";

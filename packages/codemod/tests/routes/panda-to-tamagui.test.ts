@@ -48,7 +48,8 @@ test("panda -> tamagui: migrates concrete panda syntax to tamagui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -141,7 +142,8 @@ test("panda -> tamagui: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +176,8 @@ test("panda -> tamagui: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +222,8 @@ test("panda -> tamagui: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -261,7 +265,8 @@ test("panda -> tamagui: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

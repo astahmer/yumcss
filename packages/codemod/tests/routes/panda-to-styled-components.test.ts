@@ -48,7 +48,8 @@ test("panda -> styled-components: migrates concrete panda syntax to styled-compo
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +144,8 @@ test("panda -> styled-components: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +179,8 @@ test("panda -> styled-components: loads concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +226,8 @@ test("panda -> styled-components: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +270,8 @@ test("panda -> styled-components: preserves malformed concrete panda input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { css } from "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

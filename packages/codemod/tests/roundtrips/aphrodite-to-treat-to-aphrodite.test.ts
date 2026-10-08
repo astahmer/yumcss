@@ -52,7 +52,8 @@ test("aphrodite -> treat -> aphrodite: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +223,8 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +299,8 @@ test("aphrodite -> treat -> aphrodite: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("aphrodite -> treat -> aphrodite: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

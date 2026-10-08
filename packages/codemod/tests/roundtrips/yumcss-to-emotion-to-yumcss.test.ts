@@ -53,7 +53,6 @@ test("yumcss -> emotion -> yumcss: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,9 +86,9 @@ test("yumcss -> emotion -> yumcss: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@emotion/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +139,6 @@ test("yumcss -> emotion -> yumcss: retains the documented secondary API without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,9 +172,9 @@ test("yumcss -> emotion -> yumcss: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@emotion/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -261,7 +259,6 @@ test("yumcss -> emotion -> yumcss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,9 +292,9 @@ test("yumcss -> emotion -> yumcss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@emotion/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +332,6 @@ test("yumcss -> emotion -> yumcss: preserves concrete theme and project context 
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -369,9 +365,9 @@ test("yumcss -> emotion -> yumcss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@emotion/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -424,7 +420,6 @@ test("yumcss -> emotion -> yumcss: resolves token values across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -458,9 +453,9 @@ test("yumcss -> emotion -> yumcss: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@emotion/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

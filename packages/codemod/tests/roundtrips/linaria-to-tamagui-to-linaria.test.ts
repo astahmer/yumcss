@@ -173,8 +173,10 @@ test("linaria -> tamagui -> linaria: retains the documented secondary API withou
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "@tamagui/core";
-		import { styled } from "@linaria/react";
-		const __CardTamagui = styled(View)\`color: red; padding: 1rem;\`;
+		import { css } from "@linaria/core";
+		import { forwardRef as __yumcss__CardTamaguiForwardRef } from "react";
+		import type { ComponentPropsWithoutRef as __yumcss__CardTamaguiPropsWithoutRef, ComponentRef as __yumcss__CardTamaguiRef, ElementType as __yumcss__CardTamaguiElementType, ReactElement as __yumcss__CardTamaguiReactElement, Ref as __yumcss__CardTamaguiRefProp } from "react";
+		const __CardTamagui = (() => { type __yumcss__CardTamaguiProps<C extends __yumcss__CardTamaguiElementType> = Omit<__yumcss__CardTamaguiPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcss__CardTamaguiComponent = <C extends __yumcss__CardTamaguiElementType = typeof View>(props: __yumcss__CardTamaguiProps<C> & { ref?: __yumcss__CardTamaguiRefProp<__yumcss__CardTamaguiRef<C>> }) => __yumcss__CardTamaguiReactElement | null; type __yumcss__CardTamaguiRuntimeProps = Record<string, any>; return __yumcss__CardTamaguiForwardRef<__yumcss__CardTamaguiRef<typeof View>, __yumcss__CardTamaguiRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "View"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css\`color: red; padding: 1rem;\`, props.className].filter(Boolean).join(" ")} />; }) as __yumcss__CardTamaguiComponent; })();
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],

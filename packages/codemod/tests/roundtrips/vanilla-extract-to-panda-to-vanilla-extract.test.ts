@@ -52,7 +52,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves an actionable concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves an actionable concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +220,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -252,7 +255,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,7 +295,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +330,8 @@ test("vanilla-extract -> panda -> vanilla-extract: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,7 +385,8 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -413,7 +420,8 @@ test("vanilla-extract -> panda -> vanilla-extract: resolves token values across 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -91,8 +91,8 @@ test("chakra-ui -> goober -> chakra-ui: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "red.200", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -261,8 +261,8 @@ test("chakra-ui -> goober -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "#f97316", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -336,8 +336,8 @@ test("chakra-ui -> goober -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -426,8 +426,8 @@ test("chakra-ui -> goober -> chakra-ui: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],

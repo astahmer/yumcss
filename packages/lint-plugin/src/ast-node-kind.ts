@@ -6,6 +6,16 @@
  * discriminants while keeping every comparison typed and centralized.
  */
 export const NodeKind = {
+	SwitchStatement: "SwitchStatement",
+	StaticBlock: "StaticBlock",
+	ForInStatement: "ForInStatement",
+	ForOfStatement: "ForOfStatement",
+	ForStatement: "ForStatement",
+	CatchClause: "CatchClause",
+	ClassDeclaration: "ClassDeclaration",
+	ClassExpression: "ClassExpression",
+	BlockStatement: "BlockStatement",
+	AssignmentPattern: "AssignmentPattern",
 	ArrayExpression: "ArrayExpression",
 	ArrowFunctionExpression: "ArrowFunctionExpression",
 	AwaitExpression: "AwaitExpression",

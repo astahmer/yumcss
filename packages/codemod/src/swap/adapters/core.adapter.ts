@@ -184,6 +184,20 @@ function makeCoreAdapter(
 				: dialect === SwapSourceId.Dss
 					? ["yumcss/design"]
 					: ["yumcss/css", "yumcss/unsafe/css"],
+		...(role === "target" && dialect === SwapSourceId.Tw
+			? {
+					staticStyleCalls: [
+						{
+							moduleSpecifier: "yumcss",
+							importedName: "tw",
+							resolveModuleSpecifier: ({ file, project }) =>
+								project?.twModule === undefined
+									? undefined
+									: relativeModuleImport(file, project.twModule, ""),
+						},
+					],
+				}
+			: {}),
 		capabilities: CORE_CAPABILITIES(id),
 		dependencies: CORE_DEPENDENCIES,
 		...(role === "target" && dialect === SwapSourceId.Tw

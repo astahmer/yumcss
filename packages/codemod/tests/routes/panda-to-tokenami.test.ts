@@ -48,7 +48,8 @@ test("panda -> tokenami: migrates concrete panda syntax to tokenami", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--hover_color": "blue" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,7 +184,8 @@ test("panda -> tokenami: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -228,7 +231,8 @@ test("panda -> tokenami: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +275,8 @@ test("panda -> tokenami: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--hover_color": "blue" });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

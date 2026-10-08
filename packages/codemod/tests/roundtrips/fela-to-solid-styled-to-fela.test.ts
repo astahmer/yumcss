@@ -91,6 +91,7 @@ test("fela -> solid-styled -> fela: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "solid-styled-components";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -143,7 +144,8 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "react-fela";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("button")(() => ({ "color": "red" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +181,9 @@ test("fela -> solid-styled -> fela: retains the documented secondary API without
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
+		    "code": "import "react-fela";
+		import "solid-styled-components";
+		export const Card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -291,6 +295,7 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "solid-styled-components";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -369,6 +374,7 @@ test("fela -> solid-styled -> fela: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "solid-styled-components";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -462,6 +468,7 @@ test("fela -> solid-styled -> fela: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "solid-styled-components";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

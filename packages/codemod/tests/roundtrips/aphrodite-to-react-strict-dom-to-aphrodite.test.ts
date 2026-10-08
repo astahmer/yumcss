@@ -52,7 +52,8 @@ test("aphrodite -> react-strict-dom -> aphrodite: preserves an actionable concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("aphrodite -> react-strict-dom -> aphrodite: preserves concrete theme and p
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("aphrodite -> react-strict-dom -> aphrodite: preserves concrete theme and p
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("aphrodite -> react-strict-dom -> aphrodite: resolves token values across b
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "aphrodite";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

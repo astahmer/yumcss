@@ -164,6 +164,7 @@ export const resolvePandaSourceModuleOwnership = ({
 	return {
 		modules,
 		matchers,
+		sideEffectFreeModules: ["@pandacss/dev"],
 		semanticMatchers: [
 			(actualSource, expectedSource) =>
 				isPandaGeneratedSourceModule(actualSource, expectedSource) ||

@@ -52,7 +52,8 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red]";",
+		    "code": "import "styled-system/css";
+		export const card = "[color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,6 +89,7 @@ test("bamboo -> unocss -> bamboo: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "styled-system/css";
 		export const card = "[color:red]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -126,7 +128,8 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[display:flex] [gap:4]";",
+		    "code": "import "styled-system/css";
+		export const card = "[display:flex] [gap:4]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -162,6 +165,7 @@ test("bamboo -> unocss -> bamboo: retains the documented secondary API without s
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "styled-system/css";
 		export const card = "[display:flex] [gap:4]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -216,7 +220,8 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb]";",
+		      "code": "import "styled-system/css";
+		export const card = "[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -288,7 +293,8 @@ test("bamboo -> unocss -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -375,7 +381,8 @@ test("bamboo -> unocss -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand";",
+		    "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -272,7 +272,8 @@ test("compiled -> vue-styled: preserves malformed concrete compiled input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { css } from "@compiled/react";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

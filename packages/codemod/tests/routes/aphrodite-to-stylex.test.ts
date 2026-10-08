@@ -48,7 +48,8 @@ test("aphrodite -> stylex: migrates concrete aphrodite syntax to stylex", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +157,8 @@ test("aphrodite -> stylex: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,7 +194,8 @@ test("aphrodite -> stylex: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("aphrodite -> stylex: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,7 +289,8 @@ test("aphrodite -> stylex: preserves malformed concrete aphrodite input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

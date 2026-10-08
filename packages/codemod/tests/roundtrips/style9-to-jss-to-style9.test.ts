@@ -52,7 +52,8 @@ test("style9 -> jss -> style9: preserves an actionable concrete round trip", asy
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("style9 -> jss -> style9: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +246,8 @@ test("style9 -> jss -> style9: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +322,8 @@ test("style9 -> jss -> style9: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +413,8 @@ test("style9 -> jss -> style9: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -90,6 +90,7 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "red" })] }, slots.default?.()));",
@@ -143,7 +144,8 @@ test("fela -> vue-styled -> fela: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "react-fela";
+		import styled from "vue-styled-components";
 		export const Card = styled.button\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +180,9 @@ test("fela -> vue-styled -> fela: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "react-fela";
+		import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("button", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "red" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -284,6 +288,7 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb" })] }, slots.default?.()));",
@@ -362,6 +367,7 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb" })] }, slots.default?.()));",
@@ -455,6 +461,7 @@ test("fela -> vue-styled -> fela: resolves token values across both concrete leg
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		const renderer = createRenderer();
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb" })] }, slots.default?.()));",

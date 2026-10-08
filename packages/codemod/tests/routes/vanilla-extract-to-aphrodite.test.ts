@@ -48,7 +48,8 @@ test("vanilla-extract -> aphrodite: migrates concrete vanilla-extract syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("vanilla-extract -> aphrodite: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("vanilla-extract -> aphrodite: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("vanilla-extract -> aphrodite: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("vanilla-extract -> aphrodite: preserves malformed concrete vanilla-extract
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

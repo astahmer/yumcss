@@ -52,7 +52,8 @@ test("style9 -> treat -> style9: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("style9 -> treat -> style9: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red" }), "muted": style({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -265,7 +267,8 @@ test("style9 -> treat -> style9: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +343,8 @@ test("style9 -> treat -> style9: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -430,7 +434,8 @@ test("style9 -> treat -> style9: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "style9";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

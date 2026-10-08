@@ -48,7 +48,8 @@ test("vue-styled -> emotion: migrates concrete vue-styled syntax to emotion", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("vue-styled -> emotion: carries a documented secondary vue-styled API expli
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("vue-styled -> emotion: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("vue-styled -> emotion: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("vue-styled -> emotion: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("vue-styled -> emotion: preserves malformed concrete vue-styled input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import styled from "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

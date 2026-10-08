@@ -52,7 +52,8 @@ test("emotion -> panda -> emotion: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("emotion -> panda -> emotion: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +138,8 @@ test("emotion -> panda -> emotion: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,7 +173,8 @@ test("emotion -> panda -> emotion: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +240,8 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -270,7 +275,8 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,7 +313,8 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,7 +348,8 @@ test("emotion -> panda -> emotion: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +401,8 @@ test("emotion -> panda -> emotion: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -427,7 +436,8 @@ test("emotion -> panda -> emotion: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("vanilla-extract -> fela -> vanilla-extract: preserves an actionable concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "8px" });",
+		    "code": "import "@vanilla-extract/css";
+		export const card = renderer.renderRule({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -221,7 +222,8 @@ test("vanilla-extract -> fela -> vanilla-extract: preserves concrete theme and p
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
+		      "code": "import "@vanilla-extract/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,7 +297,8 @@ test("vanilla-extract -> fela -> vanilla-extract: preserves concrete theme and p
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
+		      "code": "import "@vanilla-extract/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -384,7 +387,8 @@ test("vanilla-extract -> fela -> vanilla-extract: resolves token values across b
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
+		    "code": "import "@vanilla-extract/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

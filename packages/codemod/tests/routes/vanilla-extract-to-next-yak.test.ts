@@ -48,7 +48,8 @@ test("vanilla-extract -> next-yak: migrates concrete vanilla-extract syntax to n
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("vanilla-extract -> next-yak: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +188,8 @@ test("vanilla-extract -> next-yak: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("vanilla-extract -> next-yak: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,7 +279,8 @@ test("vanilla-extract -> next-yak: preserves malformed concrete vanilla-extract 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

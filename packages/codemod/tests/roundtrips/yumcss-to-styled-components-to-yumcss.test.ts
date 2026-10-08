@@ -53,7 +53,6 @@ test("yumcss -> styled-components -> yumcss: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -92,7 +91,6 @@ test("yumcss -> styled-components -> yumcss: preserves an actionable concrete ro
 		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "red", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -148,7 +146,6 @@ test("yumcss -> styled-components -> yumcss: retains the documented secondary AP
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const styles = { "card": styled.div({ color: "red" }), "muted": styled.div({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("yumcss -> styled-components -> yumcss: retains the documented secondary AP
 		import { defaultPreset } from "yumcss/preset/default";
 		import type * as React from "react";
 		const runtimeCss = createRuntimeCss(defaultPreset);
-
 		export const styles = { "card": __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; }), "muted": __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ opacity: "0.5" }); const attrs: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -272,7 +268,6 @@ test("yumcss -> styled-components -> yumcss: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -311,7 +306,6 @@ test("yumcss -> styled-components -> yumcss: preserves concrete theme and projec
 		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -354,7 +348,6 @@ test("yumcss -> styled-components -> yumcss: preserves concrete theme and projec
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +386,6 @@ test("yumcss -> styled-components -> yumcss: preserves concrete theme and projec
 		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -451,7 +443,6 @@ test("yumcss -> styled-components -> yumcss: resolves token values across both c
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "styled-components";
-
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -490,7 +481,6 @@ test("yumcss -> styled-components -> yumcss: resolves token values across both c
 		import { __yumcssSlot } from "./__yumcss/slot";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = __yumcssSlot({ defaultComponent: "div", style: css.class({ color: "brand", padding: "1rem" }), stableClass: "pw-jhsizg", inheritedClass: undefined, classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx });",
 		    "converted": 1,
 		    "generatedFiles": [

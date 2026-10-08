@@ -52,7 +52,8 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", async
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { color: "red", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -86,7 +87,8 @@ test("mui -> tamagui -> mui: preserves an actionable concrete round trip", async
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import "@mui/material";
+		import { View } from "@tamagui/core";
 		import { styled } from "@mui/system";
 		const __componentTamagui = styled(View)({ color: "red", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -138,7 +140,8 @@ test("mui -> tamagui -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@mui/system";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: 8 });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -239,7 +242,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -273,7 +277,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#f97316", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -320,7 +325,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -354,7 +360,8 @@ test("mui -> tamagui -> mui: preserves concrete theme and project context varian
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -416,7 +423,8 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -450,7 +458,8 @@ test("mui -> tamagui -> mui: resolves token values across both concrete legs", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@mui/material";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> mui | lowering-residual: validation)
 		const __componentTamagui = styled(View, { color: "#2563eb", padding: "16px" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",

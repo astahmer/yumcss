@@ -94,8 +94,8 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).toContain('color: "brand.500"');
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { defaultSystem } from "@chakra-ui/react";
-
+			"import { css } from "@emotion/css";
+			import { defaultSystem } from "@chakra-ui/react";
 			export const card = defaultSystem.css({ color: "brand.500" });"
 		`);
 	});
@@ -160,8 +160,8 @@ describe("custom design-system context resolution", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('color: "brand.500"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { defaultSystem } from "@chakra-ui/react";
-
+			"import { css } from "styled-system/css";
+			import { defaultSystem } from "@chakra-ui/react";
 			export const card = defaultSystem.css({ color: "brand.500" });"
 		`);
 	});
@@ -197,7 +197,8 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).toContain('color: "brand.500"');
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "styled-system/css";
+			"import "@emotion/css";
+			import { css } from "styled-system/css";
 			export const card = css({ color: "brand.500", padding: "17px" });"
 		`);
 	});
@@ -360,7 +361,10 @@ describe("custom design-system context resolution", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"text-brand p-card"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`"export const card = "text-brand p-card";"`);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import "@emotion/css";
+			export const card = "text-brand p-card";"
+		`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div className="btn-brand text-brand" />;',
@@ -434,7 +438,10 @@ describe("custom design-system context resolution", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('"text-brand p-card"');
 		expect(result.code).not.toContain("#123456");
-		expect(result.code).toMatchInlineSnapshot(`"export const card = "text-brand p-card";"`);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import "@emotion/css";
+			export const card = "text-brand p-card";"
+		`);
 
 		const source = await runAdapterMigrationAsync(
 			'export const App = () => <div class="btn-brand text-brand" />;',
@@ -492,7 +499,8 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).not.toContain('"17px"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "@tokenami/css";
+			"import "@emotion/css";
+			import { css } from "@tokenami/css";
 			export const card = css({ "--color": "var(--color_brand)", "--padding": "var(--spacing_card)" });"
 		`);
 	});

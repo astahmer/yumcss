@@ -48,7 +48,8 @@ test("style9 -> styled-components: migrates concrete style9 syntax to styled-com
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("style9 -> styled-components: carries a documented secondary style9 API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red" }), "muted": styled.div({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("style9 -> styled-components: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("style9 -> styled-components: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("style9 -> styled-components: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("style9 -> styled-components: preserves malformed concrete style9 input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import style9 from "style9";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

@@ -290,7 +290,7 @@ test("react-strict-dom -> react-native: preserves malformed concrete react-stric
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { StyleSheet } from "react-native";
 		const styles = StyleSheet.create({ "card": { "color": "red", "padding": 16 } });
 		export const Card = () => <html.div style={styles.card} />;

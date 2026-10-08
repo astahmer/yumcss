@@ -52,7 +52,8 @@ test("panda -> yumcss -> panda: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 1,
@@ -88,7 +89,6 @@ test("panda -> yumcss -> panda: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red", _hover: { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +138,8 @@ test("panda -> yumcss -> panda: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/recipes";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 		const css = createUnsafeCss();
 		export const button = __yumcsscreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
@@ -179,8 +180,8 @@ test("panda -> yumcss -> panda: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { cva } from "styled-system/recipes";
-
+		    "code": "import "./__yumcss/recipe";
+		import { cva } from "styled-system/recipes";
 		export const button = cva({ base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -322,7 +323,8 @@ test("panda -> yumcss -> panda: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
@@ -358,7 +360,6 @@ test("panda -> yumcss -> panda: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +396,8 @@ test("panda -> yumcss -> panda: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		      "converted": 1,
@@ -431,7 +433,6 @@ test("panda -> yumcss -> panda: preserves concrete theme and project context var
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -483,7 +484,8 @@ test("panda -> yumcss -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
@@ -519,7 +521,6 @@ test("panda -> yumcss -> panda: resolves token values across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", _hover: { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

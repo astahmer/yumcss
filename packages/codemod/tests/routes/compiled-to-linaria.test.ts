@@ -276,7 +276,8 @@ test("compiled -> linaria: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { css } from "@compiled/react";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

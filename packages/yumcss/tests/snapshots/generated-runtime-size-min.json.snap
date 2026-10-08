@@ -9,13 +9,13 @@
     "min": 23160
   },
   "generated conflict cx (dynamic, no css)": {
-    "min": 30583
+    "min": 30686
   },
   "explicit conflict cx (dynamic)": {
-    "min": 58923
+    "min": 59030
   },
   "example dss+cx (no tw metadata)": {
-    "min": 35844
+    "min": 35951
   },
   "generated tw+cx (static)": {
     "min": 51

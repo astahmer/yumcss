@@ -272,7 +272,8 @@ test("chakra-ui -> yumcss: preserves malformed concrete chakra-ui input", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ background: "#fecaca", padding: "1rem" })} />;
 		const unfinished = { /* unfinished chakra-ui */",

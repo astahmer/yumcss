@@ -48,7 +48,8 @@ test("aphrodite -> panda: migrates concrete aphrodite syntax to panda", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "aphrodite";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +145,8 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "aphrodite";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +180,8 @@ test("aphrodite -> panda: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "aphrodite";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +227,8 @@ test("aphrodite -> panda: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "aphrodite";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -267,7 +271,8 @@ test("aphrodite -> panda: preserves malformed concrete aphrodite input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

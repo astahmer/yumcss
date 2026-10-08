@@ -54,8 +54,8 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,8 +222,8 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -259,7 +258,6 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,8 +297,8 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +333,6 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,8 +387,8 @@ test("goober -> chakra-ui -> goober: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "goober";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +423,6 @@ test("goober -> chakra-ui -> goober: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-
 		export const card = css({ "color": "#2a57c8", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

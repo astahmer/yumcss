@@ -48,7 +48,8 @@ test("bamboo -> tailwind: migrates concrete bamboo syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red]";",
+		  "code": "import "styled-system/css";
+		export const card = "[color:red]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +93,8 @@ test("bamboo -> tailwind: carries a documented secondary bamboo API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[display:flex] [gap:4]";",
+		  "code": "import "styled-system/css";
+		export const card = "[display:flex] [gap:4]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +147,8 @@ test("bamboo -> tailwind: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[color:#2563eb]";",
+		    "code": "import "styled-system/css";
+		export const card = "[color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,8 @@ test("bamboo -> tailwind: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "text-brand";",
+		    "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +231,8 @@ test("bamboo -> tailwind: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "text-brand";",
+		  "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +276,8 @@ test("bamboo -> tailwind: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red]";
+		  "code": "import { css } from "styled-system/css";
+		export const card = "[color:red]";
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,
 		  "generatedFiles": [],

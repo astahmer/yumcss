@@ -271,7 +271,8 @@ test("next-yak -> vue-styled: preserves malformed concrete next-yak input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { css } from "next-yak";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

@@ -285,7 +285,7 @@ test("react-strict-dom -> style9: preserves malformed concrete react-strict-dom 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import style9 from "style9";
 		const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;

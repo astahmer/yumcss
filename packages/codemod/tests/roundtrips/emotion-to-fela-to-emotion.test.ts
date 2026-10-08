@@ -52,7 +52,8 @@ test("emotion -> fela -> emotion: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
+		    "code": "import "@emotion/css";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +138,8 @@ test("emotion -> fela -> emotion: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
+		    "code": "import "@emotion/css";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +240,8 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		      "code": "import "@emotion/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +313,8 @@ test("emotion -> fela -> emotion: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		      "code": "import "@emotion/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -397,7 +401,8 @@ test("emotion -> fela -> emotion: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		    "code": "import "@emotion/css";
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

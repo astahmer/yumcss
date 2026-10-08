@@ -48,7 +48,8 @@ test("panda -> compiled: migrates concrete panda syntax to compiled", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "_hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +158,8 @@ test("panda -> compiled: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#f97316", "_hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +195,8 @@ test("panda -> compiled: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +244,8 @@ test("panda -> compiled: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "_hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -286,7 +290,8 @@ test("panda -> compiled: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "_hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

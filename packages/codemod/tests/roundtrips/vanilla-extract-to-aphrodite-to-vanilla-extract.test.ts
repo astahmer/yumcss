@@ -52,7 +52,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "aphrodite";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +224,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +261,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "aphrodite";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +301,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +338,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "aphrodite";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +393,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: resolves token values acr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +430,8 @@ test("vanilla-extract -> aphrodite -> vanilla-extract: resolves token values acr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "aphrodite";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

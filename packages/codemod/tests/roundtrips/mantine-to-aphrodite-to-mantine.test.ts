@@ -90,7 +90,7 @@ test("mantine -> aphrodite -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-
+		import { css } from "aphrodite";
 		export const App = () => <Box className={css({ style: { color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -259,7 +259,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-
+		import { css } from "aphrodite";
 		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +335,7 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-
+		import { css } from "aphrodite";
 		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -426,7 +426,7 @@ test("mantine -> aphrodite -> mantine: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-
+		import { css } from "aphrodite";
 		export const App = () => <Box className={css({ style: { color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" } }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

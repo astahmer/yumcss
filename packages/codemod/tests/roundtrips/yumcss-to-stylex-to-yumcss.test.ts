@@ -53,7 +53,6 @@ test("yumcss -> stylex -> yumcss: preserves an actionable concrete round trip", 
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> stylex -> yumcss: preserves an actionable concrete round trip", 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = { "style": css.class({ color: "red", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("yumcss -> stylex -> yumcss: retains the documented secondary API without s
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,7 +178,6 @@ test("yumcss -> stylex -> yumcss: retains the documented secondary API without s
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -247,7 +243,6 @@ test("yumcss -> stylex -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#f97316", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -285,7 +280,6 @@ test("yumcss -> stylex -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +317,6 @@ test("yumcss -> stylex -> yumcss: preserves concrete theme and project context v
 		    "forward": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -361,7 +354,6 @@ test("yumcss -> stylex -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,7 +406,6 @@ test("yumcss -> stylex -> yumcss: resolves token values across both concrete leg
 		  "forward": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -452,7 +443,6 @@ test("yumcss -> stylex -> yumcss: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = { "style": css.class({ color: "brand", padding: "1rem" }) }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],

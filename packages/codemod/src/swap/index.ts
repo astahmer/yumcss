@@ -17,7 +17,13 @@ import {
 import type { YumCSSMeta } from "../meta.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
+import {
+	deduplicateStaticStyleCalls,
+	staticStyleCallsFromSource,
+	type StaticStyleCall,
+} from "./static-style-dedup.ts";
 import { simplifyYumCSSStaticStyles } from "./static-style-simplifier.ts";
+import { targetImportBinding } from "./target-import-binding.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import {
@@ -283,6 +289,7 @@ export {
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
 export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
+export { MigrationFilePlan } from "./migration-file-plan.ts";
 export { runAdapterMigration, runAdapterMigrationAsync } from "./adapter-migration.ts";
 export { STYLE_MIGRATION_USE_CASE, createStyleMigrationUseCase } from "./adapter-migration.ts";
 export { STYLE_MIGRATION_USE_CASE_SCHEMA } from "./adapter-migration-contract.ts";
@@ -354,6 +361,7 @@ export type {
 	AdapterRewriteContext,
 	AdapterRewriteResult,
 	AdapterMigrationHooks,
+	AdapterStaticStyleCall,
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
@@ -755,6 +763,21 @@ export function runSwap(
 	const tokenReferenceFormat = options.tokenReferenceFormat ?? TokenReferenceFormat.Preserve;
 	const headers: string[] = [];
 	const imports: string[] = [];
+	const targetTwModule =
+		options.to === SwapTargetId.Tw && options.metaDir !== undefined && options.metaDir !== ""
+			? relativeModuleImport(file, options.metaDir, "tw")
+			: undefined;
+	const targetTwBinding =
+		targetTwModule === undefined
+			? undefined
+			: targetImportBinding({
+					source,
+					file,
+					importedName: "tw",
+					moduleSpecifier: targetTwModule,
+					preserveSourceBindings: true,
+					preferred: "tw",
+				});
 	const addSkipMarker = (index: number, reason: string): void => {
 		markerEdits.push(SourcePass.markerEdit(source, index, reason, marker, file));
 	};
@@ -842,7 +865,11 @@ export function runSwap(
 			}
 			continue;
 		}
-		edits.push({ start: match.start, end: match.end, text: result.text });
+		const emittedText =
+			targetTwBinding === undefined || targetTwBinding.localName === "tw"
+				? result.text
+				: result.text.replace(/^tw(?=\s*\()/u, targetTwBinding.localName);
+		edits.push({ start: match.start, end: match.end, text: emittedText });
 		converted++;
 		for (const residual of emissionResiduals) {
 			residualsOut.push({
@@ -864,32 +891,36 @@ export function runSwap(
 			// Target-import hygiene: tw targets need the app's generated tw module
 			// unless the file already binds it; css.class/design ride the existing
 			// css binding (gated above).
-			if (
-				options.to === SwapTargetId.Tw &&
-				options.metaDir !== undefined &&
-				options.metaDir !== ""
-			) {
-				if (
-					!/\btw\s*\(/.test(
-						code
-							.split("\n")
-							.filter((l) => l.startsWith("import"))
-							.join("\n"),
-					) &&
-					!/(?:^|\n)\s*import\s*\{[^}]*\btw\b[^}]*\}\s*from/.test(code)
-				) {
-					code = ensureImport(
-						code,
-						`import { tw } from "${relativeModuleImport(file, options.metaDir, "tw")}";`,
-					);
-				}
+			if (targetTwModule !== undefined && targetTwBinding?.importRequired === true) {
+				const importedBinding =
+					targetTwBinding.localName === "tw" ? "tw" : `tw as ${targetTwBinding.localName}`;
+				code = ensureImport(code, `import { ${importedBinding} } from "${targetTwModule}";`);
 			}
 		}
 	}
 
 	if (options.to === SwapTargetId.CssClass && options.hoistStaticStyles === true)
 		code = simplifyYumCSSStaticStyles(code, file, { hoistStaticStyles: true }).code;
-	if (options.dedup === true) code = dedupLiteralCallSites(code);
+	if (options.dedup === true) {
+		const staticStyleCalls: StaticStyleCall[] = [
+			{ moduleSpecifier: "yumcss/tw", importedName: "tw" },
+			...staticStyleCallsFromSource({
+				source,
+				file,
+				callStarts: new Set(matches.map((match) => match.start)),
+				twModuleSpecifiers: new Set([
+					"yumcss/tw",
+					...(targetTwModule === undefined ? [] : [targetTwModule]),
+				]),
+			}),
+		];
+		if (targetTwModule !== undefined)
+			staticStyleCalls.push({
+				moduleSpecifier: targetTwModule,
+				importedName: "tw",
+			});
+		code = deduplicateStaticStyleCalls({ source: code, file, staticStyleCalls });
+	}
 
 	return {
 		code,
@@ -929,27 +960,12 @@ function semanticProgramForMatch(
 	return styleProgramFromSwapIR(match.ir, programOptions);
 }
 
-/**
- * Dedup pass: identical literal `css.class({...})` / `tw({...})` call sites
- * appearing 2+ times hoist into one module constant placed after the import
- * section (ensureImport semantics); every occurrence references it.
- */
-const DEDUP_CALL_REGEX = /\b(css\.class|tw)\(\{[^{}]*\}\)/g;
-
-export function dedupLiteralCallSites(code: string): string {
-	const counts = new Map<string, number>();
-	for (const match of code.matchAll(DEDUP_CALL_REGEX)) {
-		const key = `${match[1]}|${match[0]}`;
-		counts.set(key, (counts.get(key) ?? 0) + 1);
-	}
-	const duplicates = [...counts.entries()].filter(([, n]) => n >= 2);
-	if (duplicates.length === 0) return code;
-	let working = code;
-	duplicates.forEach(([key], i) => {
-		const literal = key.slice(key.indexOf("|") + 1);
-		const name = `pwStyle${i + 1}`;
-		working = working.split(literal).join(name);
-		working = ensureImport(working, `const ${name} = ${literal};`);
+export const dedupLiteralCallSites = (code: string): string =>
+	deduplicateStaticStyleCalls({
+		source: code,
+		file: "migration.tsx",
+		staticStyleCalls: [
+			{ moduleSpecifier: "yumcss/tw", importedName: "tw" },
+			...staticStyleCallsFromSource({ source: code, file: "migration.tsx" }),
+		],
 	});
-	return working;
-}

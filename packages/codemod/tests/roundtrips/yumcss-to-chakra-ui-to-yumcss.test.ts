@@ -55,7 +55,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("yumcss -> chakra-ui -> yumcss: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const styles = { "card": defaultSystem.css({ color: "red" }), "muted": defaultSystem.css({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +175,6 @@ test("yumcss -> chakra-ui -> yumcss: retains the documented secondary API withou
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -263,7 +259,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "#f97316", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,7 +294,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,7 +331,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -373,7 +366,6 @@ test("yumcss -> chakra-ui -> yumcss: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -426,7 +418,6 @@ test("yumcss -> chakra-ui -> yumcss: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -462,7 +453,6 @@ test("yumcss -> chakra-ui -> yumcss: resolves token values across both concrete 
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

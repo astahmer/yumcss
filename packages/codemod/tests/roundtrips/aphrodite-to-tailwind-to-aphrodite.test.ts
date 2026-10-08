@@ -52,7 +52,8 @@ test("aphrodite -> tailwind -> aphrodite: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -221,7 +222,8 @@ test("aphrodite -> tailwind -> aphrodite: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
+		      "code": "import "aphrodite";
+		export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,7 +297,8 @@ test("aphrodite -> tailwind -> aphrodite: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		      "code": "import "aphrodite";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -384,7 +387,8 @@ test("aphrodite -> tailwind -> aphrodite: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

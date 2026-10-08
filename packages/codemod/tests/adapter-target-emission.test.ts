@@ -102,7 +102,8 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("className={css(");
 		expect(result.code).not.toContain('from "styled-system/css"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { chakra } from "@chakra-ui/react";
+			"import "styled-system/css";
+			import { chakra } from "@chakra-ui/react";
 			const card = { padding: "1rem", color: "$colors.brand" };
 			export const App = () => <chakra.div css={{ padding: "1rem", color: "$colors.brand" }} />;"
 		`);
@@ -596,11 +597,11 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("ref={ref}");
 		if (target === CodemodAdapterId.UnoCSS)
 			expect(result.code).toMatchInlineSnapshot(`
-			"import { forwardRef as __yumcssCardForwardRef } from "react";
-			import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
-			const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--yumcss-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __yumcssCardComponent; })();
-			export const App = () => <Card />;"
-		`);
+				"import { forwardRef as __yumcssCardForwardRef } from "react";
+				import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
+				const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={["[color:var(--yumcss-dynamic-5qa8dh)]", props.className].filter(Boolean).join(" ")} style={{ ...{ "--yumcss-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />; }) as __yumcssCardComponent; })();
+				export const App = () => <Card />;"
+			`);
 	});
 
 	test("emits dynamic styled values through Treat and Vanilla Extract sidecars", () => {
@@ -778,7 +779,10 @@ describe("target adapter emission contract", () => {
 			expect(result.code).toContain("__yumcssForwardRef<ComponentRef<typeof View>, ViewProps>");
 			expect(result.code).toContain("<View {...props} ref={ref}");
 			expect(result.code).toContain("StyleSheet.create");
-			expect(result.code).not.toContain(sourceAdapter);
+			if (sourceAdapter === CodemodAdapterId.SolidStyled) {
+				expect(result.code).toContain('import "solid-styled-components";');
+				expect(result.code).not.toContain('import { styled } from "solid-styled-components"');
+			} else expect(result.code).not.toContain("next-yak");
 		},
 	);
 
@@ -803,7 +807,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("<script setup>");
 		expect(result.code).toContain("<template>");
 		expect(result.code).toContain('<Card class="extra" />');
-		expect(result.code).not.toContain("solid-styled-components");
+		expect(result.code).toContain('import "solid-styled-components";');
 	});
 
 	test("keeps a dynamic styled subject as an explicit React Native residual", () => {
@@ -868,7 +872,7 @@ describe("target adapter emission contract", () => {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain(targetImport);
 			expect(result.code).toContain(declaration);
-			expect(result.code).not.toContain("solid-styled-components");
+			expect(result.code).toContain('import "solid-styled-components";');
 		},
 	);
 
@@ -899,7 +903,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("export default function App()");
 		expect(result.code).toMatch(/<(?:Card|div)\b/);
 		expect(result.code).not.toContain("<template>");
-		expect(result.code).not.toContain("vue-styled-components");
+		expect(result.code).toContain('import "vue-styled-components";');
 		expect(result.outputExtension).toBe(".tsx");
 	});
 
@@ -1074,8 +1078,11 @@ describe("target adapter emission contract", () => {
 					? '<div :class="Card" />'
 					: "<div className={Card} />",
 			);
-			expect(result.code).not.toContain("solid-styled-components");
-			expect(result.code).not.toContain("vue-styled-components");
+			expect(result.code).toContain(
+				framework === BuiltinHostFramework.Vue
+					? 'import "vue-styled-components";'
+					: 'import "solid-styled-components";',
+			);
 		},
 	);
 

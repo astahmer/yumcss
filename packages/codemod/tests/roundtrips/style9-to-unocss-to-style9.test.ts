@@ -52,7 +52,8 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red]" };",
+		    "code": "import "style9";
+		export const styles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,6 +89,7 @@ test("style9 -> unocss -> style9: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "style9";
 		export const styles = { "card": "[color:red]" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -221,7 +223,8 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[color:#2563eb]" };",
+		      "code": "import "style9";
+		export const styles = { "card": "[color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,7 +298,8 @@ test("style9 -> unocss -> style9: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "text-brand" };",
+		      "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -384,7 +388,8 @@ test("style9 -> unocss -> style9: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand" };",
+		    "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

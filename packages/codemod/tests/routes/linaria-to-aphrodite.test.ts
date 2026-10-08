@@ -277,7 +277,8 @@ test("linaria -> aphrodite: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { css } from "@linaria/core";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

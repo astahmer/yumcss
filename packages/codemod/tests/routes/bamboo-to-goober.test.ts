@@ -48,7 +48,8 @@ test("bamboo -> goober: migrates concrete bamboo syntax to goober", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("bamboo -> goober: carries a documented secondary bamboo API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("bamboo -> goober: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("bamboo -> goober: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("bamboo -> goober: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> goober: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

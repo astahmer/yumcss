@@ -284,7 +284,7 @@ test("react-strict-dom -> stitches: preserves malformed concrete react-strict-do
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { css } from "@stitches/react";
 		const styles = { "card": css({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;

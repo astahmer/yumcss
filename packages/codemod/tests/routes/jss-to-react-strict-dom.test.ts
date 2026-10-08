@@ -276,7 +276,8 @@ test("jss -> react-strict-dom: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { css } from "react-strict-dom";
 		export const useStyles = { "card": css.create({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

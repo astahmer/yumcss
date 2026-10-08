@@ -48,7 +48,8 @@ test("panda -> emotion: migrates concrete panda syntax to emotion", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +144,8 @@ test("panda -> emotion: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +179,8 @@ test("panda -> emotion: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +226,8 @@ test("panda -> emotion: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +270,8 @@ test("panda -> emotion: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

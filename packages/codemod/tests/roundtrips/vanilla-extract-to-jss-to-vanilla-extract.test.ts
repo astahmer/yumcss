@@ -52,7 +52,8 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +223,8 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +299,8 @@ test("vanilla-extract -> jss -> vanilla-extract: preserves concrete theme and pr
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("vanilla-extract -> jss -> vanilla-extract: resolves token values across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@vanilla-extract/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("style9 -> stylex -> style9: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("style9 -> stylex -> style9: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -245,7 +247,8 @@ test("style9 -> stylex -> style9: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +323,8 @@ test("style9 -> stylex -> style9: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -410,7 +414,8 @@ test("style9 -> stylex -> style9: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

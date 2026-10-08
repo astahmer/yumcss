@@ -86,7 +86,8 @@ test("styled-components -> mui -> styled-components: preserves an actionable con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/system";
+		import styled from "styled-components";
 		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -170,7 +171,8 @@ test("styled-components -> mui -> styled-components: retains the documented seco
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@mui/system";
+		import styled from "styled-components";
 		export const Card = styled("div")({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -270,7 +272,8 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@mui/system";
+		import styled from "styled-components";
 		export const Card = styled("div")({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],

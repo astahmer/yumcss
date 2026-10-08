@@ -18,21 +18,28 @@ import type { examplePreset } from "@yumcss/example-preset";
 
 type Styles = DesignStyleObject<typeof examplePreset>;
 
-// NOTE: only the intersection of all three targets' vocabularies lives
-// here (fills/corners/padding/colors). Typography is web/RN-only
-// (terminals own fonts — yumcss/opentui refuses it loudly), which is
-// exactly the per-backend vocabulary-subset story of plans/021.
+// Base styles use the vocabulary shared by web, React Native, and OpenTUI.
+// Corner radii stay in separate web/native extensions because OpenTUI refuses
+// CSS borderRadius instead of approximating it with terminal cells.
 export const header: Styles = {
-	$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
+	$frame: { fill: "$blue-500", pad: [4, 8] },
 	$text: { color: "$white" },
 };
 
-export const status: Styles = {
+export const headerCorners: Styles = { $frame: { corners: "lg" } };
+
+export const statusBase: Styles = {
 	$frame: { fill: "$gray-100" },
+};
+
+export const status: Styles = {
+	...statusBase,
 	_dark: { $frame: { fill: "$gray-900" } },
 };
 
 export const body: Styles = {
-	$frame: { corners: "md", pad: "6px" },
+	$frame: { pad: "6px" },
 	$text: { color: "$gray-700" },
 };
+
+export const bodyCorners: Styles = { $frame: { corners: "md" } };

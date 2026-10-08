@@ -50,8 +50,8 @@ test("tokenami -> chakra-ui: migrates concrete tokenami syntax to chakra-ui", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,8 +145,8 @@ test("tokenami -> chakra-ui: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#f97316", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,8 +180,8 @@ test("tokenami -> chakra-ui: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,8 +227,8 @@ test("tokenami -> chakra-ui: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,8 +271,8 @@ test("tokenami -> chakra-ui: preserves malformed concrete tokenami input", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", gap: "4" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

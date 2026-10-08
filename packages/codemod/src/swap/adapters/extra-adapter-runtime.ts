@@ -18,6 +18,7 @@ import type {
 	AdapterParseResult,
 	AdapterProjectConfig,
 	AdapterMigrationHooks,
+	AdapterStaticStyleCall,
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "../adapter-contract.ts";
@@ -52,6 +53,7 @@ import { styledSubjectFromFunctionMatch } from "../host-component-rewriter.ts";
 export interface ExtraAdapterOptions {
 	readonly id: string;
 	readonly modules: readonly string[];
+	readonly sourceModulesSideEffectFree?: readonly string[];
 	readonly packages: AdapterDependencies;
 	readonly detect: readonly RegExp[];
 	readonly call: RegExp;
@@ -72,6 +74,8 @@ export interface ExtraAdapterOptions {
 	readonly suffix?: string;
 	/** Target imports required when this adapter is used as an emitter. */
 	readonly targetImports?: readonly string[];
+	/** Target-owned pure calls eligible for explicit static style deduplication. */
+	readonly staticStyleCalls?: readonly AdapterStaticStyleCall[];
 	readonly namedObjects?: boolean;
 	/** Public source forms that the adapter recognizes but cannot safely lower. */
 	readonly residualPatterns?: readonly ExtraAdapterResidualPattern[];
@@ -606,6 +610,12 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			apis: options.officialApi?.apis ?? defaultOfficialApi.apis,
 		}),
 		sourceModules: options.modules,
+		...(options.sourceModulesSideEffectFree === undefined
+			? {}
+			: { sourceModulesSideEffectFree: options.sourceModulesSideEffectFree }),
+		...(options.staticStyleCalls === undefined
+			? {}
+			: { staticStyleCalls: options.staticStyleCalls }),
 		capabilities: capabilities(
 			options.id,
 			options.namedObjects === true,

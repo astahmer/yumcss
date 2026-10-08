@@ -580,7 +580,8 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).toContain('"--{&[data-state=active]}_color": "green"');
 		expect(result.code).not.toContain('color: "red"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "@tokenami/css";
+			"import "@emotion/css";
+			import { css } from "@tokenami/css";
 			export const card = css({ "--color": "red", "--hover_color": "blue", "--{&[data-state=active]}_color": "green" });"
 		`);
 	});
@@ -632,7 +633,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).toContain('"--md_color": "blue"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			 export const card = css({ "--color": "red", "--md_color": "blue" });"
+			import "@emotion/css"; export const card = css({ "--color": "red", "--md_color": "blue" });"
 		`);
 	});
 
@@ -662,7 +663,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			 const card = css({ "--parent-hover_color": "blue" }); export const App = () => <div style={card} />;"
+			import "@emotion/css"; const card = css({ "--parent-hover_color": "blue" }); export const App = () => <div style={card} />;"
 		`);
 	});
 
@@ -694,7 +695,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).not.toContain("yumcss:migrate-skip");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			 const card = css({ "--hover_color": "blue" }); export const App = () => <div style={card} />;"
+			import "@emotion/css"; const card = css({ "--hover_color": "blue" }); export const App = () => <div style={card} />;"
 		`);
 	});
 
@@ -885,7 +886,8 @@ export const App = () => {
 		expect(result.code).toContain("<div style={card} />");
 		expect(result.code).not.toContain("className={card}");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { css } from "@tokenami/css";
+			"import "@emotion/css";
+			import { css } from "@tokenami/css";
 			const card = css({ "--color": "red" });
 			export const App = () => <div style={card} />;"
 		`);
@@ -907,7 +909,7 @@ export const App = () => {
 		expect(result.code).not.toContain("class={card}");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
-			 import { createSignal } from "solid-js"; const card = css({ "--color": "red" }); export const App = () => <div style={card} />;"
+			import "@emotion/css"; import { createSignal } from "solid-js"; const card = css({ "--color": "red" }); export const App = () => <div style={card} />;"
 		`);
 	});
 
@@ -928,7 +930,7 @@ export const App = () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"<script setup lang="ts">
 			import { css } from "@tokenami/css";
-			 const card = css({ "--color": "red" });</script>
+			import "@emotion/css"; const card = css({ "--color": "red" });</script>
 			<template><div :style="card" /></template>"
 		`);
 	});

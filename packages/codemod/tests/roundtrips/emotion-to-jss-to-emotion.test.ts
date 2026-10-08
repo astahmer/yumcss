@@ -52,7 +52,8 @@ test("emotion -> jss -> emotion: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("emotion -> jss -> emotion: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("emotion -> jss -> emotion: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("emotion -> jss -> emotion: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

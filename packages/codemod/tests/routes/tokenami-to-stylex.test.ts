@@ -275,7 +275,8 @@ test("tokenami -> stylex: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "@tokenami/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", gap: "1rem" } }).style;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

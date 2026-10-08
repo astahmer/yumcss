@@ -284,7 +284,8 @@ test("styled-components -> mui: preserves malformed concrete styled-components i
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
+		  "code": "import styled from "styled-components";
+		import { styled } from "@mui/system";
 		export const Card = styled("div")({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

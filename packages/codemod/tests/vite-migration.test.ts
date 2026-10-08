@@ -267,13 +267,14 @@ export function App() {
 
 		expect(result).toMatchInlineSnapshot(`
 			{
-			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			  "code": "import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });
 			",
 			  "map": SourceMap {
 			    "file": undefined,
-			    "mappings": "AAAA,MAAM,CAAC,CAAC,CAAC,CAAC;AAAA;AAAA,oBACI,EAAE,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;",
+			    "mappings": "AAAA,MAAM,CAAC;AAAA;AAAA;AAAA,oBACO,EAAE,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;",
 			    "names": [],
 			    "sources": [
 			      "/virtual/project/src/Card.tsx",

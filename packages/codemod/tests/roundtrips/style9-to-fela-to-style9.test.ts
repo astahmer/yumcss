@@ -52,7 +52,8 @@ test("style9 -> fela -> style9: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
+		    "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -139,7 +140,8 @@ test("style9 -> fela -> style9: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
+		    "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -263,7 +265,8 @@ test("style9 -> fela -> style9: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		      "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -337,7 +340,8 @@ test("style9 -> fela -> style9: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		      "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -426,7 +430,8 @@ test("style9 -> fela -> style9: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		    "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -48,7 +48,8 @@ test("aphrodite -> tailwind: migrates concrete aphrodite syntax to tailwind", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
+		  "code": "import "aphrodite";
+		export const styles = { "card": "[color:red] [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +148,8 @@ test("aphrodite -> tailwind: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +184,8 @@ test("aphrodite -> tailwind: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +232,8 @@ test("aphrodite -> tailwind: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		  "code": "import "aphrodite";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +277,8 @@ test("aphrodite -> tailwind: preserves malformed concrete aphrodite input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red] [padding:8px]" };
+		  "code": "import { StyleSheet } from "aphrodite";
+		export const styles = { "card": "[color:red] [padding:8px]" };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "generatedFiles": [],

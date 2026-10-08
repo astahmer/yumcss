@@ -1092,6 +1092,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			compilerIntegrations: ["@unocss/config", "@unocss/core"],
 		}),
 		sourceModules: ["unocss", "@unocss/core", "@unocss/preset-wind"],
+		sourceModulesSideEffectFree: ["unocss", "@unocss/core", "@unocss/preset-wind"],
 		dependencies: {
 			packages: [{ name: "unocss", kind: AdapterDependencyKindTag.Development }],
 		},

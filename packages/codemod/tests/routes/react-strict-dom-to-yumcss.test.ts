@@ -276,7 +276,8 @@ test("react-strict-dom -> yumcss: preserves malformed concrete react-strict-dom 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { css, html } from "react-strict-dom";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;

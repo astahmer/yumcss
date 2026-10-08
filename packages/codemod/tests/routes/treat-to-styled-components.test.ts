@@ -266,7 +266,8 @@ test("treat -> styled-components: preserves malformed concrete treat input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { style } from "treat";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

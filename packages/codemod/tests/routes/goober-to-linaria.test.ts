@@ -276,7 +276,8 @@ test("goober -> linaria: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { css } from "goober";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

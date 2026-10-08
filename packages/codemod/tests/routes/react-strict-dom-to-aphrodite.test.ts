@@ -285,7 +285,7 @@ test("react-strict-dom -> aphrodite: preserves malformed concrete react-strict-d
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { StyleSheet } from "aphrodite";
 		const styles = StyleSheet.create({ "card": { "color": "red", "padding": "1rem" } });
 		export const Card = () => <html.div style={styles.card} />;

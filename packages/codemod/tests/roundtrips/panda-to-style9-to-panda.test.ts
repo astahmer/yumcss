@@ -52,7 +52,8 @@ test("panda -> style9 -> panda: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "&:hover": { "color": "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("panda -> style9 -> panda: preserves an actionable concrete round trip", as
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +226,8 @@ test("panda -> style9 -> panda: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,7 +264,8 @@ test("panda -> style9 -> panda: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +302,8 @@ test("panda -> style9 -> panda: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +340,8 @@ test("panda -> style9 -> panda: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +393,8 @@ test("panda -> style9 -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -424,7 +431,8 @@ test("panda -> style9 -> panda: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

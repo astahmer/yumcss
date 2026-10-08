@@ -48,7 +48,8 @@ test("vue-styled -> yumcss: migrates concrete vue-styled syntax to yumcss", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -95,7 +96,8 @@ test("vue-styled -> yumcss: carries a documented secondary vue-styled API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -151,7 +153,8 @@ test("vue-styled -> yumcss: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -189,7 +192,8 @@ test("vue-styled -> yumcss: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -239,7 +243,8 @@ test("vue-styled -> yumcss: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -286,7 +291,8 @@ test("vue-styled -> yumcss: preserves malformed concrete vue-styled input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import styled from "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();

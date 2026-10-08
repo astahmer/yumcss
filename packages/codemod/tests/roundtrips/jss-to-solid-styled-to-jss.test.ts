@@ -88,7 +88,8 @@ test("jss -> solid-styled -> jss: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "solid-styled-components";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("jss -> solid-styled -> jss: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "solid-styled-components";
+		import { createUseStyles } from "react-jss";
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "solid-styled-components";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("jss -> solid-styled -> jss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "solid-styled-components";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("jss -> solid-styled -> jss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "solid-styled-components";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

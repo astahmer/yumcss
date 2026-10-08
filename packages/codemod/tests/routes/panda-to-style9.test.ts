@@ -48,7 +48,8 @@ test("panda -> style9: migrates concrete panda syntax to style9", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("panda -> style9: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +191,8 @@ test("panda -> style9: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +241,8 @@ test("panda -> style9: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +288,8 @@ test("panda -> style9: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { css } from "styled-system/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

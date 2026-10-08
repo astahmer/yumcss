@@ -52,7 +52,8 @@ test("panda -> emotion -> panda: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("panda -> emotion -> panda: preserves an actionable concrete round trip", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,7 +217,8 @@ test("panda -> emotion -> panda: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -249,7 +252,8 @@ test("panda -> emotion -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -286,7 +290,8 @@ test("panda -> emotion -> panda: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -320,7 +325,8 @@ test("panda -> emotion -> panda: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -372,7 +378,8 @@ test("panda -> emotion -> panda: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -406,7 +413,8 @@ test("panda -> emotion -> panda: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@emotion/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("vanilla-extract -> goober -> vanilla-extract: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +223,8 @@ test("vanilla-extract -> goober -> vanilla-extract: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +299,8 @@ test("vanilla-extract -> goober -> vanilla-extract: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("vanilla-extract -> goober -> vanilla-extract: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

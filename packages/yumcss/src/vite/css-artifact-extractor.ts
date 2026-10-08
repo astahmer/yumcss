@@ -184,7 +184,11 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		const keyframes: ExtractedKeyframe[] = [];
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
-		const resolveLiteralScope = createCssLiteralScopeResolver(parsed as OxcNode, evaluateCall);
+		const resolveLiteralScope = createCssLiteralScopeResolver(
+			parsed as OxcNode,
+			evaluateCall,
+			names,
+		);
 		for (const site of findStaticCssHelperCallSites(
 			parsed,
 			names,
@@ -197,6 +201,11 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
 			const literalConstants = resolveLiteralScope(call, ancestors);
+			const binding =
+				call.callee?.type === NodeKind.Identifier
+					? (call.callee as { name?: string }).name
+					: (call.callee as { object?: { name?: string } })?.object?.name;
+			if (binding !== undefined && literalConstants.isShadowed(binding)) return;
 			const kind = this.callKind(call.callee, names, reactStrictDom.cssNames);
 			if (kind === undefined) return;
 			if (kind === "css.create") {

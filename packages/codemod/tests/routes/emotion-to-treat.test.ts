@@ -48,7 +48,8 @@ test("emotion -> treat: migrates concrete emotion syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> treat: carries a documented secondary emotion API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> treat: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> treat: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> treat: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> treat: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import { css } from "@emotion/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

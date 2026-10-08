@@ -276,7 +276,8 @@ test("jss -> aphrodite: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { StyleSheet } from "aphrodite";
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

@@ -273,7 +273,8 @@ test("stitches -> unocss: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:1rem]";
+		  "code": "import { css } from "@stitches/react";
+		export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,
 		  "generatedFiles": [],

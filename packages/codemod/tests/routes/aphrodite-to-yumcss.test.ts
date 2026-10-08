@@ -48,7 +48,8 @@ test("aphrodite -> yumcss: migrates concrete aphrodite syntax to yumcss", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("aphrodite -> yumcss: carries a documented secondary aphrodite API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+		  "code": "import "aphrodite";
+		import { createRuntimeCss } from "yumcss/css/runtime";
 		import { defaultPreset } from "yumcss/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
@@ -146,7 +148,8 @@ test("aphrodite -> yumcss: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
@@ -181,7 +184,8 @@ test("aphrodite -> yumcss: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
@@ -228,7 +232,8 @@ test("aphrodite -> yumcss: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		  "converted": 1,
@@ -272,7 +277,8 @@ test("aphrodite -> yumcss: preserves malformed concrete aphrodite input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",

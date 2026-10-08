@@ -271,7 +271,8 @@ test("stylex -> yumcss: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",

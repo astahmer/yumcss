@@ -48,7 +48,8 @@ test("react-native -> linaria: migrates concrete react-native syntax to linaria"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> linaria: carries a documented secondary react-native API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> linaria: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> linaria: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> linaria: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> linaria: preserves malformed concrete react-native input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { StyleSheet } from "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red; padding: 8px;\` };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

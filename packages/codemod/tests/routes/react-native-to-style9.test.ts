@@ -48,7 +48,8 @@ test("react-native -> style9: migrates concrete react-native syntax to style9", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> style9: carries a documented secondary react-native API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "padding": "8px", "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> style9: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> style9: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> style9: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> style9: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { StyleSheet } from "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

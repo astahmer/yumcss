@@ -52,7 +52,8 @@ test("vue-styled -> style9 -> vue-styled: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -89,7 +90,8 @@ test("vue-styled -> style9 -> vue-styled: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -142,7 +144,8 @@ test("vue-styled -> style9 -> vue-styled: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -179,7 +182,8 @@ test("vue-styled -> style9 -> vue-styled: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -248,7 +252,8 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 1,
@@ -285,7 +290,8 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -325,7 +331,8 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		      "converted": 1,
@@ -362,7 +369,8 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
@@ -417,7 +425,8 @@ test("vue-styled -> style9 -> vue-styled: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -454,7 +463,8 @@ test("vue-styled -> style9 -> vue-styled: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		// yumcss:migrate-skip (route: style9 -> vue-styled | capability-blocked: named-rules: named style rule: style | available: static, residual)
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",

@@ -48,8 +48,7 @@ test("yumcss -> fela: migrates concrete yumcss syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
+		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +92,7 @@ test("yumcss -> fela: carries a documented secondary yumcss API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
+		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("yumcss -> fela: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +180,7 @@ test("yumcss -> fela: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,8 +228,7 @@ test("yumcss -> fela: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		  "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +273,7 @@ test("yumcss -> fela: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

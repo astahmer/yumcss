@@ -266,7 +266,8 @@ test("next-yak -> emotion: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { css } from "next-yak";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

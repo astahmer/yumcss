@@ -49,7 +49,6 @@ test("yumcss -> stylex: migrates concrete yumcss syntax to stylex", () => {
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> stylex: carries a documented secondary yumcss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +148,6 @@ test("yumcss -> stylex: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#f97316", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("yumcss -> stylex: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +232,6 @@ test("yumcss -> stylex: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,8 +276,8 @@ test("yumcss -> stylex: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

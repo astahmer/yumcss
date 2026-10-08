@@ -95,7 +95,8 @@ test("fela -> solid-styled: carries a documented secondary fela API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
+		  "code": "import "react-fela";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("button")(() => ({ "color": "red" }));",
 		  "converted": 1,
 		  "generatedFiles": [],

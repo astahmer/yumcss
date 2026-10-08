@@ -52,7 +52,8 @@ test("bamboo -> styled-components -> bamboo: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +143,8 @@ test("bamboo -> styled-components -> bamboo: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +250,8 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +328,8 @@ test("bamboo -> styled-components -> bamboo: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -417,7 +421,8 @@ test("bamboo -> styled-components -> bamboo: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

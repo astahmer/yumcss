@@ -48,7 +48,8 @@ test("bamboo -> compiled: migrates concrete bamboo syntax to compiled", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("bamboo -> compiled: carries a documented secondary bamboo API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("bamboo -> compiled: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("bamboo -> compiled: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("bamboo -> compiled: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> compiled: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

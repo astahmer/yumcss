@@ -48,7 +48,8 @@ test("aphrodite -> jss: migrates concrete aphrodite syntax to jss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("aphrodite -> jss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("aphrodite -> jss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("aphrodite -> jss: preserves malformed concrete aphrodite input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

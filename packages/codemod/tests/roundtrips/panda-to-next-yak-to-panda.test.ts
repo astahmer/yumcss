@@ -52,7 +52,8 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("panda -> next-yak -> panda: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: red;&:hover { color: blue; }\`;",
 		    "converted": 0,
@@ -216,7 +218,8 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -250,7 +253,8 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #f97316;&:hover { color: #f97316; }\`;",
 		      "converted": 0,
@@ -288,7 +292,8 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +327,8 @@ test("panda -> next-yak -> panda: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		      "converted": 0,
@@ -375,7 +381,8 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -409,7 +416,8 @@ test("panda -> next-yak -> panda: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "styled-system/css";
+		import { css } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> panda | capability-blocked: rule-level: 1 semantic rules; nesting: style nested rules | available: static, named-map, residual)
 		export const card = css\`color: #2563eb;&:hover { color: #2563eb; }\`;",
 		    "converted": 0,

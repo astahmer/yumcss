@@ -48,7 +48,8 @@ test("style9 -> unocss: migrates concrete style9 syntax to unocss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]" };",
+		  "code": "import "style9";
+		export const styles = { "card": "[color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -160,7 +161,8 @@ test("style9 -> unocss: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:#2563eb]" };",
+		    "code": "import "style9";
+		export const styles = { "card": "[color:#2563eb]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -195,7 +197,8 @@ test("style9 -> unocss: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand" };",
+		    "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +245,8 @@ test("style9 -> unocss: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "text-brand" };",
+		  "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -286,7 +290,8 @@ test("style9 -> unocss: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]" };
+		  "code": "import style9 from "style9";
+		export const styles = { "card": "[color:red]" };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -3,7 +3,7 @@
  * attribute convention. The default component uses the Tailwind-compatible
  * mapper; `createStack(css)` binds it to a CSS compiler's class strategy.
  */
-import { createComponent, splitProps, type Component, type JSX } from "solid-js";
+import { createComponent, mergeProps, splitProps, type Component, type JSX } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
 	createStackClassName,
@@ -33,20 +33,17 @@ const createSolidStack =
 			"class",
 			"children",
 		]);
-		const stackProps = {
-			direction: stack.direction,
-			gap: stack.gap,
-			padding: stack.padding,
-			align: stack.align,
-			justify: stack.justify,
-		} satisfies StackProps;
-		const mapped = classNameFor(stackProps);
-		return createComponent(Dynamic, {
+		const elementProps = {
 			component: "div",
-			...attributes,
-			class: stack.class === undefined ? mapped : `${mapped} ${stack.class}`,
-			children: stack.children,
-		});
+			get class() {
+				const mapped = classNameFor(stack);
+				return stack.class === undefined ? mapped : `${mapped} ${stack.class}`;
+			},
+			get children() {
+				return stack.children;
+			},
+		};
+		return createComponent(Dynamic, mergeProps(attributes, elementProps));
 	};
 
 /** Bind the Solid Stack component to one CSS compiler. */

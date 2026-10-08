@@ -245,6 +245,25 @@ describe("source binding index", () => {
 		});
 	});
 
+	test("exposes declared names without treating object properties as bindings", () => {
+		const source = [
+			'import { style } from "treat";',
+			"const { style: localStyle, ...rest } = props;",
+			"function render(style: string) {",
+			"  const nested = style;",
+			"  return { style: nested, propertyOnly: props.propertyOnly };",
+			"}",
+			"const view = ({ className }: { className: string }) => className;",
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "bindings.ts", source });
+
+		expect(index.declaredNames).toEqual(
+			new Set(["localStyle", "rest", "render", "style", "nested", "className", "view"]),
+		);
+		expect(index.declaredNames.has("propertyOnly")).toBe(false);
+		expect(index.isShadowed("style")).toBe(true);
+	});
+
 	test("indexes script bindings and template hosts in a Vue SFC", () => {
 		const source = [
 			"<script setup>",

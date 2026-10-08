@@ -396,6 +396,7 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			/\b(?:cva|sva|css)\s*\(\s*\{/,
 		],
 		sourceModules: PANDA_SOURCE_MODULES,
+		sourceModulesSideEffectFree: ["@pandacss/dev"],
 		sourceModuleMatchers: [isPandaGeneratedSourceModule],
 		resolveSourceModuleOwnership: pandaSourceOwnership,
 		configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],

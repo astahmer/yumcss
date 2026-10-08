@@ -52,7 +52,8 @@ test("vue-styled -> yumcss -> vue-styled: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -91,7 +92,6 @@ test("vue-styled -> yumcss -> vue-styled: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defineComponent, h } from "vue";
-
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
@@ -145,7 +145,8 @@ test("vue-styled -> yumcss -> vue-styled: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -184,7 +185,6 @@ test("vue-styled -> yumcss -> vue-styled: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defineComponent, h } from "vue";
-
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
@@ -254,7 +254,8 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -293,7 +294,6 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defineComponent, h } from "vue";
-
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
@@ -334,7 +334,8 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -373,7 +374,6 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { defineComponent, h } from "vue";
-
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
@@ -430,7 +430,8 @@ test("vue-styled -> yumcss -> vue-styled: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -469,7 +470,6 @@ test("vue-styled -> yumcss -> vue-styled: resolves token values across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { defineComponent, h } from "vue";
-
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();

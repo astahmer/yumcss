@@ -52,7 +52,8 @@ test("panda -> tokenami -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--hover_color": "blue" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -220,7 +221,8 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,7 +293,8 @@ test("panda -> tokenami -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -377,7 +380,8 @@ test("panda -> tokenami -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "styled-system/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--hover_color": "var(--color_brand)" });",
 		    "converted": 1,
 		    "generatedFiles": [],

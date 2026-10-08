@@ -275,7 +275,8 @@ test("tokenami -> compiled: preserves malformed concrete tokenami input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import { css } from "@tokenami/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "gap": "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

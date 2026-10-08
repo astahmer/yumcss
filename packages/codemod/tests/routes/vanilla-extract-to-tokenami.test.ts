@@ -48,7 +48,8 @@ test("vanilla-extract -> tokenami: migrates concrete vanilla-extract syntax to t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +145,8 @@ test("vanilla-extract -> tokenami: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "#2563eb", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,7 +180,8 @@ test("vanilla-extract -> tokenami: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +227,8 @@ test("vanilla-extract -> tokenami: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -267,7 +271,8 @@ test("vanilla-extract -> tokenami: preserves malformed concrete vanilla-extract 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

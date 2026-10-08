@@ -1966,6 +1966,8 @@ export function createChakraAdapter(
 		},
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
 		sourceModules: CHAKRA_SOURCE_MODULES,
+		sourceModulesSideEffectFree: CHAKRA_SOURCE_MODULES,
+		sourceModuleSideEffectFreeMatchers: [isChakraSourceModule],
 		sourceModuleMatchers: [isChakraSourceModule],
 		sourceModulesToRemove: (targetId) =>
 			targetId === CodemodAdapterId.YumCSS ? CHAKRA_SOURCE_MODULES : [],

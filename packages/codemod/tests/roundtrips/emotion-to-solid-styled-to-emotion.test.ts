@@ -52,7 +52,8 @@ test("emotion -> solid-styled -> emotion: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@emotion/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("emotion -> solid-styled -> emotion: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("emotion -> solid-styled -> emotion: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@emotion/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("emotion -> solid-styled -> emotion: retains the documented secondary API w
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("emotion -> solid-styled -> emotion: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@emotion/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> solid-styled -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "solid-styled-components";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("emotion -> solid-styled -> emotion: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@emotion/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +356,8 @@ test("emotion -> solid-styled -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "solid-styled-components";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("emotion -> solid-styled -> emotion: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@emotion/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +446,8 @@ test("emotion -> solid-styled -> emotion: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -271,7 +271,8 @@ test("compiled -> yumcss: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { css } from "@compiled/react";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",

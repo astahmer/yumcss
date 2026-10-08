@@ -48,7 +48,8 @@ test("solid-styled -> styled-components: migrates concrete solid-styled syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("solid-styled -> styled-components: carries a documented secondary solid-st
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("solid-styled -> styled-components: loads concrete theme and project contex
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("solid-styled -> styled-components: loads concrete theme and project contex
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("solid-styled -> styled-components: resolves concrete token values with pro
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("solid-styled -> styled-components: preserves malformed concrete solid-styl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { styled } from "solid-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,

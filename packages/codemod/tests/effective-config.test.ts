@@ -347,7 +347,8 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 		expect(result.code).toContain('brandShadow: "soft"');
 		expect(result.code).toContain('data-testid="button"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "styled-system/jsx";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Button = () => <button data-testid="button" className={css.class({ brandShadow: "soft" })} />;"
 		`);

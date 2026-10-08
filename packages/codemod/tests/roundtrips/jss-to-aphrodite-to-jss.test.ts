@@ -88,7 +88,8 @@ test("jss -> aphrodite -> jss: preserves an actionable concrete round trip", asy
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("jss -> aphrodite -> jss: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const sheet = createUseStyles({ card: { color: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("jss -> aphrodite -> jss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("jss -> aphrodite -> jss: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("jss -> aphrodite -> jss: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +88,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: red; padding: 8px;\`;",
 		    "converted": 0,
@@ -221,7 +223,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +259,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
@@ -296,7 +300,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -331,7 +336,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 0,
@@ -386,7 +392,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +428,8 @@ test("vanilla-extract -> vue-styled -> vanilla-extract: resolves token values ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 0,

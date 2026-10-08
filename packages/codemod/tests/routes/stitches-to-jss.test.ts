@@ -277,7 +277,8 @@ test("stitches -> jss: preserves malformed concrete stitches input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { css } from "@stitches/react";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

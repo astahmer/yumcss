@@ -48,7 +48,8 @@ test("aphrodite -> react-native: migrates concrete aphrodite syntax to react-nat
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -150,7 +151,8 @@ test("aphrodite -> react-native: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +189,8 @@ test("aphrodite -> react-native: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +239,8 @@ test("aphrodite -> react-native: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb", "padding": 8 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +286,8 @@ test("aphrodite -> react-native: preserves malformed concrete aphrodite input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 8 } });
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

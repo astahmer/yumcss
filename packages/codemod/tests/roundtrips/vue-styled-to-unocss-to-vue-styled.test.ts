@@ -52,7 +52,8 @@ test("vue-styled -> unocss -> vue-styled: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,6 +90,7 @@ test("vue-styled -> unocss -> vue-styled: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
@@ -128,7 +130,8 @@ test("vue-styled -> unocss -> vue-styled: retains the documented secondary API w
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -165,6 +168,7 @@ test("vue-styled -> unocss -> vue-styled: retains the documented secondary API w
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "vue-styled-components";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
@@ -220,7 +224,8 @@ test("vue-styled -> unocss -> vue-styled: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:#2563eb] [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -256,7 +261,8 @@ test("vue-styled -> unocss -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:#2563eb] [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -271,7 +277,8 @@ test("vue-styled -> unocss -> vue-styled: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,7 +314,8 @@ test("vue-styled -> unocss -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -337,7 +345,8 @@ test("vue-styled -> unocss -> vue-styled: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -373,7 +382,8 @@ test("vue-styled -> unocss -> vue-styled: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 0,
 		    "generatedFiles": [],

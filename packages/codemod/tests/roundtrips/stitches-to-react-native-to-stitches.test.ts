@@ -89,7 +89,8 @@ test("stitches -> react-native -> stitches: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "react-native";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -261,7 +262,8 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "react-native";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -337,7 +339,8 @@ test("stitches -> react-native -> stitches: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "react-native";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,7 +431,8 @@ test("stitches -> react-native -> stitches: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "react-native";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -14,17 +14,26 @@ export interface OxcNode {
 /** Depth-first walk over an oxc AST node, visiting every typed child once. */
 export function walk(node: unknown, visit: (node: OxcNode) => void): void {
 	const stack: unknown[] = [node];
+	const visited = new WeakSet<object>();
 	while (stack.length > 0) {
 		const current = stack.pop();
 		if (Array.isArray(current)) {
+			if (visited.has(current)) continue;
+			visited.add(current);
 			for (let index = current.length - 1; index >= 0; index--) stack.push(current[index]);
 			continue;
 		}
 		if (current === null || typeof current !== "object") continue;
+		if (visited.has(current)) continue;
+		visited.add(current);
 		const typed = current as OxcNode;
 		if (typeof typed.type === "string") visit(typed);
-		const values = Object.values(typed);
-		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
+		const entries = Object.entries(typed);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const entry = entries[index];
+			if (entry === undefined || entry[0] === "parent" || entry[0] === "type") continue;
+			stack.push(entry[1]);
+		}
 	}
 }
 
@@ -47,6 +56,7 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
 
 	const frames: Frame[] = [{ kind: "enter", node, parent: undefined, depth: 0 }];
 	const ancestors: OxcNode[] = [];
+	const visited = new WeakSet<object>();
 	while (frames.length > 0) {
 		const frame = frames.pop()!;
 		if (frame.kind === "leave") {
@@ -56,6 +66,8 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
 
 		const current = frame.node;
 		if (Array.isArray(current)) {
+			if (visited.has(current)) continue;
+			visited.add(current);
 			for (let index = current.length - 1; index >= 0; index--)
 				frames.push({
 					kind: "enter",
@@ -66,16 +78,21 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
 			continue;
 		}
 		if (current === null || typeof current !== "object") continue;
+		if (visited.has(current)) continue;
+		visited.add(current);
 		const typed = current as OxcNode;
 		if (typeof typed.type !== "string") {
-			const values = Object.values(typed);
-			for (let index = values.length - 1; index >= 0; index--)
+			const entries = Object.entries(typed);
+			for (let index = entries.length - 1; index >= 0; index--) {
+				const entry = entries[index];
+				if (entry === undefined || entry[0] === "parent") continue;
 				frames.push({
 					kind: "enter",
-					node: values[index],
+					node: entry[1],
 					parent: frame.parent,
 					depth: frame.depth,
 				});
+			}
 			continue;
 		}
 
@@ -83,9 +100,12 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
 		visit(typed, frame.parent, ancestors);
 		frames.push({ kind: "leave", depth: frame.depth });
 		ancestors.push(typed);
-		const values = Object.values(typed);
-		for (let index = values.length - 1; index >= 0; index--)
-			frames.push({ kind: "enter", node: values[index], parent: typed, depth: frame.depth + 1 });
+		const entries = Object.entries(typed);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const entry = entries[index];
+			if (entry === undefined || entry[0] === "parent" || entry[0] === "type") continue;
+			frames.push({ kind: "enter", node: entry[1], parent: typed, depth: frame.depth + 1 });
+		}
 	}
 }
 
@@ -94,7 +114,9 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
  * value. Only values proven constant by the caller (see the cx inliner's
  * `collectModuleConstants`) should be passed — evalLiteral trusts it.
  */
-export type LiteralConstantScope = ReadonlyMap<string, unknown>;
+export type LiteralConstantScope = ReadonlyMap<string, unknown> & {
+	readonly isShadowed?: (name: string) => boolean;
+};
 
 /** Optional evaluator for a whitelisted pure call in CSS/build-time lanes. */
 export type LiteralCallEvaluator = (node: Expression, consts?: LiteralConstantScope) => unknown;

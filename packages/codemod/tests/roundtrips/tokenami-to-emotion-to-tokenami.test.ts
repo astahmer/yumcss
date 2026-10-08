@@ -86,7 +86,8 @@ test("tokenami -> emotion -> tokenami: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -248,7 +249,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +321,8 @@ test("tokenami -> emotion -> tokenami: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -405,7 +408,8 @@ test("tokenami -> emotion -> tokenami: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

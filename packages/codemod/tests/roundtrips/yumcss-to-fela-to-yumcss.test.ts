@@ -52,8 +52,7 @@ test("yumcss -> fela -> yumcss: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
+		    "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +89,6 @@ test("yumcss -> fela -> yumcss: preserves an actionable concrete round trip", as
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,8 +138,7 @@ test("yumcss -> fela -> yumcss: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
+		    "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +175,6 @@ test("yumcss -> fela -> yumcss: retains the documented secondary API without sil
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -262,8 +258,7 @@ test("yumcss -> fela -> yumcss: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -301,7 +296,6 @@ test("yumcss -> fela -> yumcss: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,8 +332,7 @@ test("yumcss -> fela -> yumcss: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		      "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +370,6 @@ test("yumcss -> fela -> yumcss: preserves concrete theme and project context var
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -429,8 +421,7 @@ test("yumcss -> fela -> yumcss: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
+		    "code": "export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -468,7 +459,6 @@ test("yumcss -> fela -> yumcss: resolves token values across both concrete legs"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

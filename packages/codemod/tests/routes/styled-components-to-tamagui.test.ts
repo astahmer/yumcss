@@ -266,7 +266,8 @@ test("styled-components -> tamagui: preserves malformed concrete styled-componen
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import styled from "styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished styled-components */",

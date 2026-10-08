@@ -255,7 +255,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -330,7 +330,7 @@ test("unocss -> aphrodite -> unocss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -420,7 +420,7 @@ test("unocss -> aphrodite -> unocss: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { css } from "aphrodite";
 		export const App = () => <div className={css({ "style": "text-brand p-card" }.style)}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

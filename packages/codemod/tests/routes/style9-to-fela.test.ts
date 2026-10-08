@@ -48,7 +48,8 @@ test("style9 -> fela: migrates concrete style9 syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
+		  "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +93,8 @@ test("style9 -> fela: carries a documented secondary style9 API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
+		  "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "red" }), "muted": renderer.renderRule({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +147,8 @@ test("style9 -> fela: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		    "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,8 @@ test("style9 -> fela: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		    "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +231,8 @@ test("style9 -> fela: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
+		  "code": "import "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +276,8 @@ test("style9 -> fela: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": renderer.renderRule({ "color": "red" }) };
+		  "code": "import style9 from "style9";
+		export const styles = { "card": renderer.renderRule({ "color": "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "generatedFiles": [],

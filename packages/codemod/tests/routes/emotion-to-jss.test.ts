@@ -48,7 +48,8 @@ test("emotion -> jss: migrates concrete emotion syntax to jss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> jss: carries a documented secondary emotion API explicitly", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> jss: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> jss: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> jss: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> jss: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { css } from "@emotion/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

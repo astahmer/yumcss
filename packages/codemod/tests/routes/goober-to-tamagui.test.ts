@@ -262,7 +262,8 @@ test("goober -> tamagui: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "goober";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

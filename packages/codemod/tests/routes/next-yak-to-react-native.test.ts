@@ -282,7 +282,8 @@ test("next-yak -> react-native: preserves malformed concrete next-yak input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "next-yak";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 16 });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

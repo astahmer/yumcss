@@ -52,7 +52,8 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +88,9 @@ test("emotion -> vue-styled -> emotion: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +140,8 @@ test("emotion -> vue-styled -> emotion: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +176,9 @@ test("emotion -> vue-styled -> emotion: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +244,8 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@emotion/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -273,7 +280,9 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "@emotion/css";
+		import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,7 +319,8 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@emotion/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -345,7 +355,9 @@ test("emotion -> vue-styled -> emotion: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "@emotion/css";
+		import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -397,7 +409,8 @@ test("emotion -> vue-styled -> emotion: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -432,7 +445,9 @@ test("emotion -> vue-styled -> emotion: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "@emotion/css";
+		import "vue-styled-components";
+		import styled from "@emotion/styled";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

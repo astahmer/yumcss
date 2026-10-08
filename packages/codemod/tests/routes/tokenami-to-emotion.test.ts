@@ -265,7 +265,8 @@ test("tokenami -> emotion: preserves malformed concrete tokenami input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { css } from "@tokenami/css";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", gap: "1rem" });
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

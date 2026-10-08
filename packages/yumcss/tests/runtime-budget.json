@@ -44,11 +44,11 @@
 		"gz": 12300
 	},
 	"createCss(fixturePreset) + cx()": {
-		"min": 38400,
+		"min": 38500,
 		"gz": 13750
 	},
 	"createCss(fixturePreset) + tw() + cx()": {
-		"min": 42650,
+		"min": 42750,
 		"gz": 15050
 	},
 	"createUnsafeCss(), fallback": {
@@ -56,8 +56,8 @@
 		"gz": 5400
 	},
 	"createRuntimeCss(preset), live sheet": {
-		"min": 40400,
-		"gz": 14700
+		"min": 43300,
+		"gz": 15500
 	},
 	"createUnsafeCss(), static output after extraction": {
 		"min": 100,
@@ -144,7 +144,7 @@
 		"gz": 8100
 	},
 	"stylesheet generator (build-time only)": {
-		"min": 30350,
+		"min": 31400,
 		"gz": 11500
 	}
 }

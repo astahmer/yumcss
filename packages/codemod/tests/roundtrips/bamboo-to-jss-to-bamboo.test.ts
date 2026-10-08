@@ -52,7 +52,8 @@ test("bamboo -> jss -> bamboo: preserves an actionable concrete round trip", asy
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("bamboo -> jss -> bamboo: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("bamboo -> jss -> bamboo: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("bamboo -> jss -> bamboo: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("bamboo -> jss -> bamboo: resolves token values across both concrete legs",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

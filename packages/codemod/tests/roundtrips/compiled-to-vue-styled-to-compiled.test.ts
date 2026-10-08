@@ -87,7 +87,8 @@ test("compiled -> vue-styled -> compiled: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "8px" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -256,7 +257,8 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -331,7 +333,8 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -421,7 +424,8 @@ test("compiled -> vue-styled -> compiled: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "vue-styled-components";
+		import { css } from "@compiled/react";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "8px" })] }, slots.default?.()));",
 		    "converted": 1,

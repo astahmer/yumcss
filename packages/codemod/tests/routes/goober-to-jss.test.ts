@@ -277,7 +277,8 @@ test("goober -> jss: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { css } from "goober";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

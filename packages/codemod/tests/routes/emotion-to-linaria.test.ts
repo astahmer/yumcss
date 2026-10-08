@@ -48,7 +48,8 @@ test("emotion -> linaria: migrates concrete emotion syntax to linaria", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> linaria: carries a documented secondary emotion API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> linaria: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> linaria: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> linaria: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> linaria: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { css } from "@emotion/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

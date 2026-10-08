@@ -1,3 +1,4 @@
+import { targetImportBinding } from "../target-import-binding.ts";
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
@@ -192,6 +193,7 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 		/\b(?:style|globalStyle|keyframes|styleVariants|recipe|createRecipe)\s*\(/,
 	],
 	sourceModules: ["@vanilla-extract/css", "@vanilla-extract/recipes"],
+	sourceModulesSideEffectFree: ["@vanilla-extract/recipes"],
 	configFiles: ["package.json"],
 	migration: {
 		targetPolicy: {
@@ -393,30 +395,81 @@ const vanillaExtractAdapter = defineCodemodAdapter({
 				residuals: [],
 			};
 		}
-		if (kind === StyleRuleKindTag.Keyframes)
+		if (kind === StyleRuleKindTag.Keyframes) {
+			const binding = targetImportBinding({
+				context,
+				importedName: "keyframes",
+				moduleSpecifier: "@vanilla-extract/css",
+				preserveSourceBindings:
+					program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+				preferred: "keyframes",
+			});
 			return {
-				text: `keyframes(${programObject(program)})`,
-				imports: ['import { keyframes } from "@vanilla-extract/css";'],
+				text: `${binding.localName}(${programObject(program)})`,
+				imports: binding.importRequired
+					? [
+							`import { keyframes${binding.localName === "keyframes" ? "" : ` as ${binding.localName}`} } from "@vanilla-extract/css";`,
+						]
+					: [],
 			};
-		if (kind === StyleRuleKindTag.Global)
+		}
+		if (kind === StyleRuleKindTag.Global) {
+			const binding = targetImportBinding({
+				context,
+				importedName: "globalStyle",
+				moduleSpecifier: "@vanilla-extract/css",
+				preserveSourceBindings:
+					program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+				preferred: "globalStyle",
+			});
 			return {
 				text: program.rules
 					.filter((rule) => rule.kind === StyleRuleKindTag.Global)
 					.map(
 						(rule) =>
-							`globalStyle(${JSON.stringify(rule.selector ?? "*")}, ${declarationsObject(rule.declarations)})`,
+							`${binding.localName}(${JSON.stringify(rule.selector ?? "*")}, ${declarationsObject(rule.declarations)})`,
 					)
 					.join("; "),
-				imports: ['import { globalStyle } from "@vanilla-extract/css";'],
+				imports: binding.importRequired
+					? [
+							`import { globalStyle${binding.localName === "globalStyle" ? "" : ` as ${binding.localName}`} } from "@vanilla-extract/css";`,
+						]
+					: [],
 			};
-		if (kind === StyleRuleKindTag.FontFace)
+		}
+		if (kind === StyleRuleKindTag.FontFace) {
+			const binding = targetImportBinding({
+				context,
+				importedName: "fontFace",
+				moduleSpecifier: "@vanilla-extract/css",
+				preserveSourceBindings:
+					program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+				preferred: "fontFace",
+			});
 			return {
-				text: `fontFace(${programObject(program)})`,
-				imports: ['import { fontFace } from "@vanilla-extract/css";'],
+				text: `${binding.localName}(${programObject(program)})`,
+				imports: binding.importRequired
+					? [
+							`import { fontFace${binding.localName === "fontFace" ? "" : ` as ${binding.localName}`} } from "@vanilla-extract/css";`,
+						]
+					: [],
 			};
+		}
+		const styleBinding = targetImportBinding({
+			context,
+			importedName: "style",
+			moduleSpecifier: "@vanilla-extract/css",
+			preserveSourceBindings:
+				program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+			preferred: "style",
+		});
 		return {
-			text: `style(${programObject(vanillaExtractStyleProgram(program))})`,
-			imports: ['import { style } from "@vanilla-extract/css";'],
+			text: `${styleBinding.localName}(${programObject(vanillaExtractStyleProgram(program))})`,
+			imports: styleBinding.importRequired
+				? [
+						`import { style${styleBinding.localName === "style" ? "" : ` as ${styleBinding.localName}`} } from "@vanilla-extract/css";`,
+					]
+				: [],
 		};
 	},
 });

@@ -276,7 +276,8 @@ test("next-yak -> solid-styled: preserves malformed concrete next-yak input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { css } from "next-yak";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

@@ -53,7 +53,6 @@ test("yumcss -> authored-css -> yumcss: preserves an actionable concrete round t
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -95,7 +94,6 @@ test("yumcss -> authored-css -> yumcss: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -161,7 +159,6 @@ test("yumcss -> authored-css -> yumcss: retains the documented secondary API wit
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.css";
-
 		export const styles = { "card": "pw-styles-card-1trzka1", "muted": "pw-styles-muted-1kk79fq" };",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -203,7 +200,6 @@ test("yumcss -> authored-css -> yumcss: retains the documented secondary API wit
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.css";
-
 		export const styles = { "card": "pw-styles-card-1trzka1", "muted": "pw-styles-muted-1kk79fq" };",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -299,7 +295,6 @@ test("yumcss -> authored-css -> yumcss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -341,7 +336,6 @@ test("yumcss -> authored-css -> yumcss: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -394,7 +388,6 @@ test("yumcss -> authored-css -> yumcss: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 1,
 		      "generatedFiles": [
@@ -436,7 +429,6 @@ test("yumcss -> authored-css -> yumcss: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": false,
 		      "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		      "converted": 0,
 		      "generatedFiles": [],
@@ -504,7 +496,6 @@ test("yumcss -> authored-css -> yumcss: resolves token values across both concre
 		  "forward": {
 		    "changed": true,
 		    "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -546,7 +537,6 @@ test("yumcss -> authored-css -> yumcss: resolves token values across both concre
 		  "reverse": {
 		    "changed": false,
 		    "code": "import "./styles.styles.css";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 0,
 		    "generatedFiles": [],

@@ -1069,11 +1069,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(result.residuals).toEqual([]);
 		expect(result.converted).toBe(1);
-		expect(result.code).not.toContain("solid-styled-components");
+		expect(result.code).toContain('import "solid-styled-components";');
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 		expect(result.code).toContain('import { Dynamic } from "solid-js/web";');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { Dynamic } from "solid-js/web";
+			"import "solid-styled-components";
+			import { Dynamic } from "solid-js/web";
 			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			import type { JSX } from "solid-js";
@@ -1131,7 +1132,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
 			{ from: "emotion", to: "yumcss", file: "styles.ts", mode: "safe" },
 		);
-		expect(result.code).not.toContain("@emotion/css");
+		expect(result.code).toContain('import "@emotion/css";');
 		expect(result.code).toContain('import { createRuntimeCss } from "yumcss/css/runtime";');
 		expect(result.code).toContain("const runtimeCss = createRuntimeCss(defaultPreset);");
 		expect(result.code).toContain('runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes"');
@@ -1157,7 +1158,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			`import { css } from "@emotion/css"; const card = css({ color: "red" });`,
 			{ from: "emotion", to: "styled-components", file: "styles.ts", mode: "safe" },
 		);
-		expect(result.code).not.toContain("@emotion/css");
+		expect(result.code).toContain('import "@emotion/css";');
 		expect(result.code).toContain('import styled from "styled-components";');
 	});
 
@@ -1321,7 +1322,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.code).toContain("css.class");
 			expect(result.code).toContain("const __yumcssSlot =");
 			expect(result.code).toContain(marker);
-			expect(result.code).not.toContain("styled-components");
+			if (_id === "solid-styled")
+				expect(result.code).toContain('import "solid-styled-components";');
+			else expect(result.code).not.toContain("styled-components");
 			expect(result.code).not.toContain("createRuntimeCss");
 		},
 	);
@@ -1343,7 +1346,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			result.code.indexOf('import { defineComponent, h } from "vue";'),
 		);
 		expect(result.code).not.toMatch(/^import .*vue.*\n<script setup>/);
-		expect(result.code).not.toContain("vue-styled-components");
+		expect(result.code).toContain('import "vue-styled-components";');
 	});
 
 	test("wraps an unused Vue styled subject for a static class target", () => {
@@ -1360,7 +1363,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('import { defineComponent, h } from "vue";');
 		expect(result.code).toContain("defineComponent");
 		expect(result.code).toContain('h("div"');
-		expect(result.code).not.toContain("vue-styled-components");
+		expect(result.code).toContain('import "vue-styled-components";');
 	});
 
 	test("preserves a bare YumCSS binding when MUI has no sx host", () => {
@@ -2575,7 +2578,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.code).not.toContain('from "yumcss/cx"');
 		expect(solid.code).toContain("props.class");
 		expect(solid.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "solid-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} class={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.class, props.class).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();"
 		`);
@@ -2623,11 +2627,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.code).not.toContain("runtimeCss.group");
 		expect(vue.code).toMatchInlineSnapshot(`
 			"<script setup>
+			import "vue-styled-components";
 			import { computed, defineComponent, h } from "vue";
 			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-
 			const Card = defineComponent({ props: { color: String }, inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const props = computed(() => ({ ..._props, ...attrs })); const style = computed(() => runtimeCss.vars({ color: ((props) => props.color)(props.value) })); return () => h("div", { ...attrs, ...{}, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } });
 			</script>"
 		`);

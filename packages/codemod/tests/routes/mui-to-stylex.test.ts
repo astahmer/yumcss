@@ -48,7 +48,8 @@ test("mui -> stylex: migrates concrete mui syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("mui -> stylex: carries a documented secondary mui API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@mui/system";
+		import * as stylex from "@stylexjs/stylex";
 		const __CardStyle = stylex.create({ style: { color: "red", padding: "8px" } }).style;
 		export const Card = (props) => { const attrs = {}; const Component = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(__CardStyle); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; };",
 		  "converted": 1,
@@ -148,7 +150,8 @@ test("mui -> stylex: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { color: "#f97316", padding: "16px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +187,8 @@ test("mui -> stylex: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +236,8 @@ test("mui -> stylex: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { color: "#2563eb", padding: "16px" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +282,8 @@ test("mui -> stylex: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { Box } from "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

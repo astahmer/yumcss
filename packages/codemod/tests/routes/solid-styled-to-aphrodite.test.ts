@@ -48,7 +48,8 @@ test("solid-styled -> aphrodite: migrates concrete solid-styled syntax to aphrod
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -95,7 +96,8 @@ test("solid-styled -> aphrodite: carries a documented secondary solid-styled API
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -151,7 +153,8 @@ test("solid-styled -> aphrodite: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -189,7 +192,8 @@ test("solid-styled -> aphrodite: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -239,7 +243,8 @@ test("solid-styled -> aphrodite: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style), local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",

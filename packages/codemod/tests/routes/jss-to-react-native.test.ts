@@ -281,7 +281,8 @@ test("jss -> react-native: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { StyleSheet } from "react-native";
 		export const useStyles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

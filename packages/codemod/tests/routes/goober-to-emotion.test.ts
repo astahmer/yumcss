@@ -266,7 +266,8 @@ test("goober -> emotion: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
+		  "code": "import { css } from "goober";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

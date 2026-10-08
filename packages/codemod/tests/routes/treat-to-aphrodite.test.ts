@@ -276,7 +276,8 @@ test("treat -> aphrodite: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { style } from "treat";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

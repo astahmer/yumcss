@@ -142,6 +142,8 @@ export interface CodemodAdapterSpec {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	readonly sourceModulesSideEffectFree?: readonly string[];
+	readonly sourceModuleSideEffectFreeMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	/** Source-owned prop-filter semantics copied onto component programs. */
 	readonly hostPropFilter?: StyleHostPropFilter;
 	/** Optional target-specific source modules to remove after a complete migration. */
@@ -226,6 +228,12 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			});
 		})(),
 		sourceModules: spec.sourceModules,
+		...(spec.sourceModulesSideEffectFree === undefined
+			? {}
+			: { sourceModulesSideEffectFree: spec.sourceModulesSideEffectFree }),
+		...(spec.sourceModuleSideEffectFreeMatchers === undefined
+			? {}
+			: { sourceModuleSideEffectFreeMatchers: spec.sourceModuleSideEffectFreeMatchers }),
 		...(spec.sourceModulesToRemove === undefined
 			? {}
 			: { sourceModulesToRemove: spec.sourceModulesToRemove }),

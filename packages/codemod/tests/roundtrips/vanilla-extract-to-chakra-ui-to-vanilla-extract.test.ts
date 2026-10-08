@@ -54,7 +54,8 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -225,7 +226,8 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +300,8 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves concrete theme 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
+		      "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,7 +389,8 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: resolves token values acr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

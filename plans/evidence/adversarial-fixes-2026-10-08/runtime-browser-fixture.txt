@@ -1,0 +1,13 @@
+// This harness bundles the checked-in regression fixture from the isolated review checkout.
+import {mountReactiveStack} from "/Users/astahmer/dev/pandwind-adversarial-fixes-2026-10-08/packages/yumcss/tests/fixtures/stack-solid-reactive.ts";
+import {createRuntimeCss,createRuntimeSheet} from "yumcss/css/runtime";
+import {defaultPreset} from "yumcss/preset/default";
+import {define} from "yumcss/preset";
+window.updateStack=mountReactiveStack(document.getElementById("solid")).update;
+const sheet=createRuntimeSheet({id:"runtime-proof"});
+const first=createRuntimeCss(defaultPreset,{sheet,namespace:"first"}),second=createRuntimeCss(defaultPreset,{sheet,namespace:"second"});
+for(const [id,carrier] of [["first",first.vars({color:"red"})],["second",second.vars({color:"blue"})]]){const element=document.getElementById(id);element.className=carrier.class;for(const [name,value] of Object.entries(carrier.style))element.style.setProperty(name,value)}
+const make=(name,value)=>define.preset({config:{},tokens:{colors:{[name]:value}}},{strict:true,conditions:{},properties:{color:{$tokens:"colors",$strict:false}}});
+const tokenFirst=createRuntimeCss(make("$first","red"),{sheet}),tokenSecond=createRuntimeCss(make("$second","blue"),{sheet});
+document.getElementById("token-first").className=tokenFirst.class({color:"$first"});document.getElementById("token-second").className=tokenSecond.class({color:"$second"});
+window.proof=()=>({solid:document.getElementById("solid").innerHTML,first:getComputedStyle(document.getElementById("first")).color,second:getComputedStyle(document.getElementById("second")).color,tokenFirst:getComputedStyle(document.getElementById("token-first")).color,tokenSecond:getComputedStyle(document.getElementById("token-second")).color,rules:sheet.snapshot().rules.length,tokens:sheet.snapshot().tokens});

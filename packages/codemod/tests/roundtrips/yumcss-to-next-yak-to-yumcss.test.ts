@@ -53,7 +53,6 @@ test("yumcss -> next-yak -> yumcss: preserves an actionable concrete round trip"
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +88,6 @@ test("yumcss -> next-yak -> yumcss: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +138,6 @@ test("yumcss -> next-yak -> yumcss: retains the documented secondary API without
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const styles = { "card": css\`color: red;\`, "muted": css\`opacity: 0.5;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +173,6 @@ test("yumcss -> next-yak -> yumcss: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: "0.5" }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -261,7 +257,6 @@ test("yumcss -> next-yak -> yumcss: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #f97316; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +292,6 @@ test("yumcss -> next-yak -> yumcss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +329,6 @@ test("yumcss -> next-yak -> yumcss: preserves concrete theme and project context
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -371,7 +364,6 @@ test("yumcss -> next-yak -> yumcss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -424,7 +416,6 @@ test("yumcss -> next-yak -> yumcss: resolves token values across both concrete l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -460,7 +451,6 @@ test("yumcss -> next-yak -> yumcss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

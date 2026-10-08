@@ -278,7 +278,8 @@ test("chakra-ui -> stylex: preserves malformed concrete chakra-ui input", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import * as stylex from "@stylexjs/stylex";
 		export const App = () => stylex.create({ style: { background: "#fecaca", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

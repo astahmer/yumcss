@@ -3,6 +3,8 @@ import { createMigrationPreviewSession } from "./session.ts";
 import { createStaticMigrationPreviewHost } from "./static-preview.ts";
 import type {
 	MigrationPreviewEvaluationRequest,
+	MigrationPreviewEvaluationResult,
+	MigrationPreviewSnapshot,
 	MigrationPreviewWorkspacePort,
 	MigrationPreviewWorkspaceSnapshot,
 } from "./contracts.ts";
@@ -221,4 +223,128 @@ describe("createMigrationPreviewSession", () => {
 		);
 		await session.close();
 	});
+});
+
+test("out-of-order target evaluations publish only the current coherent result", async () => {
+	const older = deferred<MigrationPreviewEvaluationResult>();
+	const newer = deferred<MigrationPreviewEvaluationResult>();
+	const emissions: MigrationPreviewSnapshot[] = [];
+	const hostTargets: Array<string | undefined> = [];
+	const session = createMigrationPreviewSession({
+		workspace: workspacePort(),
+		evaluation: {
+			evaluate: async (request) => {
+				if (request.target?.target === "tailwind") return older.promise;
+				if (request.target?.target === "stylex") return newer.promise;
+				return { diagnostics: [] };
+			},
+		},
+		preview: {
+			id: "target-host",
+			available: true,
+			start: async () => ({ host: "target-host", status: "ready" }),
+			update: async (request) => {
+				hostTargets.push(request.target?.target);
+				return { host: "target-host", status: "ready" };
+			},
+		},
+	});
+	session.subscribe((snapshot) => emissions.push(snapshot));
+	await session.open({ root: "/repo" });
+	const oldRequest = session.switchTarget({ target: "tailwind" });
+	const newRequest = session.switchTarget({ target: "stylex" });
+	newer.resolve({ diagnostics: [], semantic: "stylex result" });
+	const current = await newRequest;
+	older.resolve({ diagnostics: [], semantic: "tailwind result" });
+	const superseded = await oldRequest;
+	expect(current.target).toEqual({ target: "stylex" });
+	expect(current.evaluation?.semantic).toBe("stylex result");
+	expect(superseded).toEqual(current);
+	expect(emissions).toHaveLength(2);
+	expect(emissions.at(-1)).toEqual(current);
+	expect(hostTargets).toEqual(["stylex"]);
+	await session.close();
+});
+
+const deferred = <Value>() => {
+	let resolve: ((value: Value) => void) | undefined;
+	const promise = new Promise<Value>((complete) => {
+		resolve = complete;
+	});
+	return {
+		promise,
+		resolve: (value: Value) => {
+			if (resolve === undefined) throw new Error("deferred promise was not initialized");
+			resolve(value);
+		},
+	};
+};
+
+test("serializes preview host updates and does not publish an obsolete in-flight host result", async () => {
+	const oldHost = deferred<void>();
+	const oldStarted = deferred<void>();
+	const targets: Array<string | undefined> = [];
+	const snapshots: MigrationPreviewSnapshot[] = [];
+	const session = createMigrationPreviewSession({
+		workspace: workspacePort(),
+		evaluation: {
+			evaluate: async (request) => ({ diagnostics: [], semantic: request.target?.target }),
+		},
+		preview: {
+			id: "host",
+			available: true,
+			start: async () => ({ host: "host", status: "ready" }),
+			update: async (request) => {
+				targets.push(request.target?.target);
+				if (request.target?.target === "tailwind") {
+					oldStarted.resolve();
+					await oldHost.promise;
+				}
+				return { host: "host", status: "ready" };
+			},
+		},
+	});
+	await session.open({ root: "/repo" });
+	session.subscribe((snapshot) => snapshots.push(snapshot));
+	const older = session.switchTarget({ target: "tailwind" });
+	await oldStarted.promise;
+	const newer = session.switchTarget({ target: "stylex" });
+	await Promise.resolve();
+	expect(targets).toEqual(["tailwind"]);
+	oldHost.resolve();
+	const current = await newer;
+	expect(await older).toEqual(current);
+	expect(targets).toEqual(["tailwind", "stylex"]);
+	expect(snapshots).toEqual([current]);
+	await session.close();
+});
+
+test("closing the session prevents pending evaluations from restarting or publishing previews", async () => {
+	const evaluation = deferred<MigrationPreviewEvaluationResult>();
+	const snapshots: MigrationPreviewSnapshot[] = [];
+	const hostTargets: Array<string | undefined> = [];
+	const session = createMigrationPreviewSession({
+		workspace: workspacePort(),
+		evaluation: {
+			evaluate: async (request) =>
+				request.target === null ? { diagnostics: [] } : evaluation.promise,
+		},
+		preview: {
+			id: "host",
+			available: true,
+			start: async () => ({ host: "host", status: "ready" }),
+			update: async (request) => {
+				hostTargets.push(request.target?.target);
+				return { host: "host", status: "ready" };
+			},
+		},
+	});
+	await session.open({ root: "/repo" });
+	session.subscribe((snapshot) => snapshots.push(snapshot));
+	const pending = session.switchTarget({ target: "tailwind" });
+	await session.close();
+	evaluation.resolve({ diagnostics: [], semantic: "closed" });
+	await pending;
+	expect(snapshots).toEqual([]);
+	expect(hostTargets).toEqual([]);
 });

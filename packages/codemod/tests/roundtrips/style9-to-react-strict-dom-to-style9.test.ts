@@ -52,7 +52,8 @@ test("style9 -> react-strict-dom -> style9: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("style9 -> react-strict-dom -> style9: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red" }), "muted": css.create({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -265,7 +267,8 @@ test("style9 -> react-strict-dom -> style9: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +343,8 @@ test("style9 -> react-strict-dom -> style9: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -430,7 +434,8 @@ test("style9 -> react-strict-dom -> style9: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

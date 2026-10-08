@@ -277,7 +277,8 @@ test("goober -> style9: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { css } from "goober";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

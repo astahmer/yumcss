@@ -52,7 +52,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +224,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -258,7 +261,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "solid-styled-components";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +301,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +338,8 @@ test("aphrodite -> solid-styled -> aphrodite: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "solid-styled-components";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +393,8 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "aphrodite";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -423,7 +430,8 @@ test("aphrodite -> solid-styled -> aphrodite: resolves token values across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

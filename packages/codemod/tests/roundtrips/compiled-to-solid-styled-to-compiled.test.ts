@@ -88,7 +88,8 @@ test("compiled -> solid-styled -> compiled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "solid-styled-components";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("compiled -> solid-styled -> compiled: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "solid-styled-components";
+		import { css } from "@compiled/react";
 		export const colors = { "red": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("compiled -> solid-styled -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "solid-styled-components";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("compiled -> solid-styled -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "solid-styled-components";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("compiled -> solid-styled -> compiled: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "solid-styled-components";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

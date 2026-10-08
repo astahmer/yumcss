@@ -49,7 +49,6 @@ test("yumcss -> aphrodite: migrates concrete yumcss syntax to aphrodite", () => 
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> aphrodite: carries a documented secondary yumcss API explicitly"
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> aphrodite: loads concrete theme and project context variants", a
 		  "amber": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("yumcss -> aphrodite: loads concrete theme and project context variants", a
 		  "blue": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("yumcss -> aphrodite: resolves concrete token values with project context",
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,8 +278,8 @@ test("yumcss -> aphrodite: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

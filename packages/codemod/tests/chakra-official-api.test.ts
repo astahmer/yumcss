@@ -238,10 +238,12 @@ describe("Chakra UI official API forms", () => {
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).not.toContain("@chakra-ui/react");
-			expect(result.code).toContain("className={css.class({");
+			expect(result.code).toMatch(/className=\{(?:css|targetCss|pwCss)\.(?:props|class)\(/u);
+			expect(result.code).toContain('padding: "1rem"');
+			expect(result.code).toContain('color: "red"');
 		}
-		expect(chakraThenPanda.code, "Chakra then Panda").not.toContain("#styled-system");
-		expect(pandaThenChakra.code, "Panda then Chakra").not.toContain("#styled-system");
+		expect(chakraThenPanda.code, "Chakra then Panda").toContain('import "#styled-system/css";');
+		expect(pandaThenChakra.code, "Panda then Chakra").toContain('import "#styled-system/css";');
 
 		for (const result of [chakraThenPanda, pandaThenChakra]) {
 			for (const sourceAdapter of [CodemodAdapterId.ChakraUi, CodemodAdapterId.Panda]) {

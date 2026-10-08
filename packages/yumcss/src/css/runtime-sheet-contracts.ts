@@ -73,6 +73,7 @@ export interface RuntimeSemanticRule {
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];
+	readonly tokenManifest?: readonly { readonly name: string; readonly fingerprint: string }[];
 }
 
 /** Minimal style-element contract used by the default runtime sink. */

@@ -249,10 +249,15 @@ const findCallSites = (
 	const sites: CssCallSite[] = [];
 	const reactStrictDom = findReactStrictDomBindings(program);
 	const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(program));
-	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall);
+	const resolveLiteralScope = createCssLiteralScopeResolver(program, evaluateCall, names);
 	walkWithParent(program, (node, _parent, ancestors) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
+		const binding =
+			call.callee?.type === NodeKind.Identifier
+				? (call.callee as { name?: string }).name
+				: (call.callee as { object?: { name?: string } })?.object?.name;
+		if (binding !== undefined && resolveLiteralScope(call, ancestors).isShadowed(binding)) return;
 		const kind = callKind(call.callee, names, reactStrictDom);
 		if (kind === undefined) return;
 		const literalConstants = resolveLiteralScope(call, ancestors);
@@ -480,7 +485,7 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			);
 		const reactStrictDom = findReactStrictDomBindings(parsed);
 		const evaluateCall = createFirstThatWorksEvaluator(findFirstThatWorksBindings(parsed));
-		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall);
+		const resolveLiteralScope = createCssLiteralScopeResolver(parsed, evaluateCall, names);
 		walkWithParent(parsed, (node, _parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
@@ -492,10 +497,13 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			)
 				return;
 			const member = memberName(call.callee);
+			const binding = (call.callee as { object?: { name?: string } })?.object?.name;
+			const literalScope = binding === undefined ? undefined : resolveLiteralScope(call, ancestors);
+			if (binding !== undefined && literalScope?.isShadowed(binding)) return;
 			const start = call.start;
 			const position = location(code, start);
 			if (member === "keyframes") {
-				const literalConstants = resolveLiteralScope(call, ancestors);
+				const literalConstants = literalScope ?? resolveLiteralScope(call, ancestors);
 				const body = evalLiteral(call.arguments[0] as never, literalConstants, evaluateCall);
 				if (call.arguments.length !== 1 || !isLiteralKeyframeBody(body)) {
 					diagnostics.push({
@@ -526,7 +534,7 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			}
 			const kind = callKind(call.callee, names, reactStrictDom);
 			if (kind === undefined) return;
-			const literalConstants = resolveLiteralScope(call, ancestors);
+			const literalConstants = literalScope ?? resolveLiteralScope(call, ancestors);
 			const staticArguments = call.arguments.filter((argument) =>
 				isObjectLiteral(argument, literalConstants, evaluateCall),
 			).length;

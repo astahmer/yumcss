@@ -388,7 +388,7 @@ describe("YumCSS project bootstrap", () => {
 		});
 	});
 
-	test("replaces UnoCSS Vite support and removes its virtual stylesheet import", async () => {
+	test("preserves UnoCSS Vite support and its virtual stylesheet when configuration is unavailable", async () => {
 		const root = "/project";
 		const files = new Map<string, string>([
 			[`${root}/src/main.tsx`, 'import "virtual:uno.css";\nexport const App = () => null;\n'],
@@ -410,18 +410,10 @@ describe("YumCSS project bootstrap", () => {
 			listFiles: () => [...files.keys()],
 		});
 
-		expect(support.fileChanges).toContainEqual({
-			path: "src/main.tsx",
-			content: "\nexport const App = () => null;\n",
-			expectedContent: 'import "virtual:uno.css";\nexport const App = () => null;\n',
-		});
-		expect(support.fileChanges.find((change) => change.path === "vite.config.ts")?.content).toBe(
-			[
-				'import { yumcssExtractVite } from "yumcss/vite";',
-				'import { preset } from "./yumcss/preset.ts";',
-				'import { defineConfig } from "vite";',
-				'export default defineConfig({ plugins: [yumcssExtractVite(preset, { root: "." })] });',
-			].join("\n"),
+		expect(support.files).toEqual([]);
+		expect(support.fileChanges).toEqual([]);
+		expect(support.sourceConfig.residuals).toContainEqual(
+			expect.objectContaining({ kind: "configuration" }),
 		);
 	});
 

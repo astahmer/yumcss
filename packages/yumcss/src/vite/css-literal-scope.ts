@@ -2,8 +2,8 @@ import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 import {
 	evalLiteral,
 	type LiteralCallEvaluator,
-	type LiteralConstantScope,
 	type OxcNode,
+	walkWithParent,
 } from "../tw/literal.ts";
 
 interface RangedNode extends OxcNode {
@@ -49,10 +49,16 @@ class CssLiteralConstantScope implements ReadonlyMap<string, unknown> {
 	readonly #layers: ScopeLayer[] = [];
 	readonly #moduleConstants: ReadonlyMap<string, ModuleConstant>;
 	readonly #useStart: number;
+	readonly #unsafeObjects: ReadonlySet<string>;
 
-	constructor(moduleConstants: ReadonlyMap<string, ModuleConstant>, useStart: number) {
+	constructor(
+		moduleConstants: ReadonlyMap<string, ModuleConstant>,
+		useStart: number,
+		unsafeObjects: ReadonlySet<string>,
+	) {
 		this.#moduleConstants = moduleConstants;
 		this.#useStart = useStart;
+		this.#unsafeObjects = unsafeObjects;
 	}
 
 	pushLayer(bindings: ReadonlySet<string>): void {
@@ -65,7 +71,12 @@ class CssLiteralConstantScope implements ReadonlyMap<string, unknown> {
 		layer.values.set(name, value);
 	}
 
+	isShadowed(name: string): boolean {
+		return this.#layers.some((layer) => layer.bindings.has(name));
+	}
+
 	get(name: string): unknown {
+		if (this.#unsafeObjects.has(name)) return undefined;
 		for (let index = this.#layers.length - 1; index >= 0; index -= 1) {
 			const layer = this.#layers[index];
 			if (layer === undefined) continue;
@@ -79,6 +90,7 @@ class CssLiteralConstantScope implements ReadonlyMap<string, unknown> {
 	}
 
 	has(name: string): boolean {
+		if (this.#unsafeObjects.has(name)) return false;
 		for (let index = this.#layers.length - 1; index >= 0; index -= 1) {
 			const layer = this.#layers[index];
 			if (layer === undefined) continue;
@@ -125,6 +137,7 @@ class CssLiteralConstantScope implements ReadonlyMap<string, unknown> {
 			for (const name of layer.bindings) scope.delete(name);
 			for (const [name, value] of layer.values) scope.set(name, value);
 		}
+		for (const name of this.#unsafeObjects) scope.delete(name);
 		return scope;
 	}
 }
@@ -183,7 +196,12 @@ const blockScopeData = (container: OxcNode): BlockScopeData => {
 	if (cached !== undefined) return cached;
 	const bindings = new Set<string>();
 	const declarations: VariableDeclarationNode[] = [];
-	const body = (container as { body?: readonly OxcNode[] }).body ?? [];
+	const body =
+		container.type === NodeKind.SwitchStatement
+			? (
+					(container as { cases?: readonly { consequent?: readonly OxcNode[] }[] }).cases ?? []
+				).flatMap((branch) => branch.consequent ?? [])
+			: ((container as { body?: readonly OxcNode[] }).body ?? []);
 	for (const statement of body) {
 		const declaration = declarationFromStatement(statement);
 		if (declaration?.type === NodeKind.VariableDeclaration) {
@@ -239,7 +257,7 @@ const collectVarBindings = (root: OxcNode, names: Set<string>): void => {
 const collectModuleConstants = (
 	program: OxcNode,
 	evaluateCall: LiteralCallEvaluator,
-): ReadonlyMap<string, ModuleConstant> => {
+): Map<string, ModuleConstant> => {
 	const values = new Map<string, unknown>();
 	const constants = new Map<string, ModuleConstant>();
 	for (const declaration of blockScopeData(program).declarations) {
@@ -328,25 +346,256 @@ const applyForScope = (
 		applyVariableScope(scope, declaration as VariableDeclarationNode, useStart, evaluateCall);
 };
 
+export const bindingIsShadowedInAncestors = (
+	name: string,
+	ancestors: readonly OxcNode[],
+): boolean =>
+	ancestors.some((ancestor) => {
+		if (isFunction(ancestor)) return functionScopeBindings(ancestor as FunctionNode).has(name);
+		if (
+			ancestor.type === NodeKind.BlockStatement ||
+			ancestor.type === NodeKind.SwitchStatement ||
+			ancestor.type === NodeKind.StaticBlock
+		)
+			return blockScopeData(ancestor).bindings.has(name);
+		const names = new Set<string>();
+		if (ancestor.type === NodeKind.CatchClause)
+			bindingNames((ancestor as { param?: OxcNode }).param, names);
+		if (
+			ancestor.type === NodeKind.ForStatement ||
+			ancestor.type === NodeKind.ForOfStatement ||
+			ancestor.type === NodeKind.ForInStatement
+		) {
+			const declaration =
+				(ancestor as { init?: VariableDeclarationNode; left?: VariableDeclarationNode }).init ??
+				(ancestor as { left?: VariableDeclarationNode }).left;
+			for (const variable of declaration?.declarations ?? [])
+				bindingNames((variable as VariableDeclaratorNode).id, names);
+		}
+		return names.has(name);
+	});
+
+const collectUnsafeObjectBindings = (
+	program: OxcNode,
+	styleNames: ReadonlySet<string>,
+	moduleConstants: ReadonlyMap<string, ModuleConstant>,
+	evaluateCall: LiteralCallEvaluator,
+): ReadonlySet<string> => {
+	const candidates = new Set<string>();
+	const unsafe = new Set<string>();
+	const unwrapExpression = (node: OxcNode | null | undefined): OxcNode | undefined => {
+		let expression = node ?? undefined;
+		while (
+			expression?.type === NodeKind.TSAsExpression ||
+			expression?.type === NodeKind.TSSatisfiesExpression ||
+			expression?.type === NodeKind.TSTypeAssertion ||
+			expression?.type === NodeKind.ParenthesizedExpression
+		) {
+			expression = (expression as { expression?: OxcNode }).expression;
+		}
+		return expression;
+	};
+	walkWithParent(program, (node, _parent, ancestors) => {
+		if (node.type !== NodeKind.VariableDeclarator) return;
+		const variable = node as VariableDeclaratorNode;
+		const name =
+			variable.id?.type === NodeKind.Identifier
+				? (variable.id as { name?: string }).name
+				: undefined;
+		if (name === undefined || variable.init === undefined || variable.init === null) return;
+		const initializer = unwrapExpression(variable.init);
+		if (
+			initializer?.type === NodeKind.ObjectExpression ||
+			initializer?.type === NodeKind.ArrayExpression ||
+			initializer?.type === NodeKind.Identifier ||
+			initializer?.type === NodeKind.MemberExpression
+		) {
+			candidates.add(name);
+			if (ancestors.some((ancestor) => ancestor.type === NodeKind.ExportNamedDeclaration))
+				unsafe.add(name);
+		}
+	});
+	const rootName = (node: OxcNode | null | undefined): string | undefined => {
+		let root = unwrapExpression(node);
+		while (root?.type === NodeKind.MemberExpression) {
+			root = unwrapExpression((root as { object?: OxcNode }).object);
+		}
+		return root?.type === NodeKind.Identifier ? (root as { name?: string }).name : undefined;
+	};
+	const isKnownPrimitiveMemberRead = (
+		reference: OxcNode,
+		name: string,
+		ancestors: readonly OxcNode[],
+	): boolean => {
+		if (
+			reference.type !== NodeKind.MemberExpression ||
+			bindingIsShadowedInAncestors(name, ancestors)
+		)
+			return false;
+		const useStart = nodeStart(reference);
+		const constants = new Map<string, unknown>();
+		for (const [constantName, constant] of moduleConstants) {
+			if (constant.declStart < useStart) constants.set(constantName, constant.value);
+		}
+		const value = evalLiteral(reference as never, constants, evaluateCall);
+		return value !== undefined && (value === null || typeof value !== "object");
+	};
+	const assignmentTargets = (node: OxcNode | null | undefined, targets: Set<string>): void => {
+		node = unwrapExpression(node);
+		if (node === undefined) return;
+		if (node.type === NodeKind.Identifier) {
+			const name = (node as { name?: string }).name;
+			if (name !== undefined) targets.add(name);
+			return;
+		}
+		if (node.type === NodeKind.MemberExpression) {
+			const name = rootName(node);
+			if (name !== undefined) targets.add(name);
+			return;
+		}
+		if (node.type === NodeKind.AssignmentPattern) {
+			assignmentTargets((node as { left?: OxcNode }).left, targets);
+			return;
+		}
+		if (node.type === NodeKind.RestElement) {
+			assignmentTargets((node as { argument?: OxcNode }).argument, targets);
+			return;
+		}
+		if (node.type === NodeKind.ArrayPattern) {
+			for (const element of (node as { elements?: readonly (OxcNode | null)[] }).elements ?? [])
+				assignmentTargets(element, targets);
+			return;
+		}
+		if (node.type === NodeKind.ObjectPattern) {
+			for (const property of (node as { properties?: readonly OxcNode[] }).properties ?? []) {
+				if (property.type === NodeKind.RestElement)
+					assignmentTargets((property as { argument?: OxcNode }).argument, targets);
+				else assignmentTargets((property as { value?: OxcNode }).value, targets);
+			}
+		}
+	};
+	walkWithParent(program, (node, parent, ancestors) => {
+		if (node.type === NodeKind.AssignmentExpression) {
+			const targets = new Set<string>();
+			assignmentTargets((node as { left?: OxcNode }).left, targets);
+			for (const name of targets) if (candidates.has(name)) unsafe.add(name);
+		}
+		if (node.type === NodeKind.ForInStatement || node.type === NodeKind.ForOfStatement) {
+			const left = (node as { left?: OxcNode }).left;
+			if (left?.type !== NodeKind.VariableDeclaration) {
+				const targets = new Set<string>();
+				assignmentTargets(left, targets);
+				for (const name of targets) if (candidates.has(name)) unsafe.add(name);
+			}
+		}
+		if (
+			node.type === NodeKind.UpdateExpression ||
+			(node.type === NodeKind.UnaryExpression &&
+				(node as { operator?: string }).operator === "delete")
+		) {
+			const name = rootName((node as { argument?: OxcNode }).argument);
+			if (name !== undefined && candidates.has(name)) unsafe.add(name);
+		}
+		if (node.type !== NodeKind.Identifier || parent === undefined) return;
+		const name = (node as { name?: string }).name;
+		if (name === undefined || !candidates.has(name)) return;
+		if (
+			parent.type === NodeKind.VariableDeclarator &&
+			(parent as VariableDeclaratorNode).id === node
+		)
+			return;
+		if (
+			parent.type === NodeKind.Property &&
+			(parent as { key?: OxcNode; computed?: boolean; shorthand?: boolean }).key === node &&
+			(parent as { computed?: boolean; shorthand?: boolean }).computed !== true &&
+			(parent as { shorthand?: boolean }).shorthand !== true
+		)
+			return;
+		let reference = node;
+		let referenceParent = parent;
+		let ancestorIndex = ancestors.length - 2;
+		while (
+			referenceParent.type === NodeKind.MemberExpression &&
+			(referenceParent as { object?: OxcNode }).object === reference
+		) {
+			reference = referenceParent;
+			const next = ancestors[ancestorIndex--];
+			if (next === undefined) return;
+			referenceParent = next;
+		}
+		if (referenceParent.type === NodeKind.MemberExpression) return;
+		if (referenceParent.type === NodeKind.CallExpression) {
+			const callee = (referenceParent as { callee?: OxcNode }).callee;
+			const carrier = rootName(callee);
+			if (
+				reference !== callee &&
+				carrier !== undefined &&
+				styleNames.has(carrier) &&
+				!bindingIsShadowedInAncestors(carrier, ancestors)
+			)
+				return;
+			unsafe.add(name);
+			return;
+		}
+		const enclosingCall = [...ancestors]
+			.toReversed()
+			.find((ancestor) => ancestor.type === NodeKind.CallExpression);
+		const enclosingCarrier = rootName((enclosingCall as { callee?: OxcNode } | undefined)?.callee);
+		if (
+			enclosingCarrier !== undefined &&
+			styleNames.has(enclosingCarrier) &&
+			!bindingIsShadowedInAncestors(enclosingCarrier, ancestors)
+		)
+			return;
+		const isStoredPropertyValue =
+			referenceParent.type === NodeKind.Property &&
+			(referenceParent as { value?: OxcNode }).value === reference;
+		const isStoredArrayElement =
+			referenceParent.type === NodeKind.ArrayExpression &&
+			((referenceParent as { elements?: readonly (OxcNode | null)[] }).elements ?? []).includes(
+				reference,
+			);
+		if (
+			(isStoredPropertyValue || isStoredArrayElement) &&
+			isKnownPrimitiveMemberRead(reference, name, ancestors)
+		)
+			return;
+		unsafe.add(name);
+	});
+	return unsafe;
+};
+
 export type CssLiteralScopeResolver = (
 	node: OxcNode,
 	ancestors: readonly OxcNode[],
-) => LiteralConstantScope;
+) => CssLiteralConstantScope;
 
 export const createCssLiteralScopeResolver = (
 	program: OxcNode,
 	evaluateCall: LiteralCallEvaluator,
+	styleNames: ReadonlySet<string> = new Set(),
 ): CssLiteralScopeResolver => {
 	const moduleConstants = collectModuleConstants(program, evaluateCall);
+	const unsafeObjects = collectUnsafeObjectBindings(
+		program,
+		styleNames,
+		moduleConstants,
+		evaluateCall,
+	);
+	for (const name of unsafeObjects) moduleConstants.delete(name);
 	return (node, ancestors) => {
 		const useStart = nodeStart(node);
-		const scope = new CssLiteralConstantScope(moduleConstants, useStart);
+		const scope = new CssLiteralConstantScope(moduleConstants, useStart, unsafeObjects);
 		for (const ancestor of ancestors) {
 			if (isFunction(ancestor)) {
 				scope.pushLayer(functionScopeBindings(ancestor as FunctionNode));
 				continue;
 			}
-			if (ancestor.type === NodeKind.BlockStatement) {
+			if (
+				ancestor.type === NodeKind.BlockStatement ||
+				ancestor.type === NodeKind.SwitchStatement ||
+				ancestor.type === NodeKind.StaticBlock
+			) {
 				applyBlockScope(scope, ancestor, useStart, evaluateCall);
 				continue;
 			}

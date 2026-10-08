@@ -48,7 +48,8 @@ test("vue-styled -> tailwind: migrates concrete vue-styled syntax to tailwind", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("vue-styled -> tailwind: carries a documented secondary vue-styled API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("vue-styled -> tailwind: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:#2563eb] [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("vue-styled -> tailwind: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("vue-styled -> tailwind: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "text-brand [padding:1rem]"] }, slots.default?.()));",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("vue-styled -> tailwind: preserves malformed concrete vue-styled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defineComponent, h } from "vue";
+		  "code": "import styled from "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, "[color:red] [padding:1rem]"] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",
 		  "converted": 1,

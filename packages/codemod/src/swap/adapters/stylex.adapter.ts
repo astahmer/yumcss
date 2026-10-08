@@ -1,3 +1,4 @@
+import { targetImportBinding } from "../target-import-binding.ts";
 import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { SemanticConditionKindTag, StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
@@ -448,6 +449,7 @@ function generatedStylexComponentBinding(context: AdapterEmitContext | undefined
 function stylexComponentEmission(
 	styleExpression: string,
 	context: AdapterEmitContext | undefined,
+	stylexBinding: string,
 ):
 	| {
 			readonly text: string;
@@ -475,7 +477,7 @@ function stylexComponentEmission(
 				? `(${attrs})(props)`
 				: `(${attrs})`;
 	return {
-		text: `(props) => { const attrs = ${attrsExpression}; const Component = attrs.as ?? props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = stylex.props(${styleBinding}); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; }`,
+		text: `(props) => { const attrs = ${attrsExpression}; const Component = attrs.as ?? props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; const styleProps = ${stylexBinding}.props(${styleBinding}); return <Component {...rest} {...forwardedAttrs} className={[styleProps.className, props.className, attrs.className].filter(Boolean).join(" ")} style={{ ...styleProps.style, ...props.style, ...attrs.style }} />; }`,
 		generatedStatements: [`const ${styleBinding} = ${styleExpression};`],
 		componentExpression: true,
 	};
@@ -1279,7 +1281,10 @@ function renderStyleXConditionNode(node: StyleXConditionNode, entryDepth: number
 	return `{\n${entries.join("\n")}\n${closeIndent}}`;
 }
 
-function stylexConditionalProgramObject(program: StyleProgram): {
+function stylexConditionalProgramObject(
+	program: StyleProgram,
+	stylexBinding: string,
+): {
 	readonly text?: string;
 	readonly residuals: readonly StyleProgram["residuals"][number][];
 } {
@@ -1366,7 +1371,7 @@ function stylexConditionalProgramObject(program: StyleProgram): {
 		return `\t${ruleKey}: {\n${propertiesText.join("\n")}\n\t},`;
 	});
 	if (residuals.length > 0) return { residuals };
-	const object = `stylex.create({\n${renderedRules.join("\n")}\n})`;
+	const object = `${stylexBinding}.create({\n${renderedRules.join("\n")}\n})`;
 	return {
 		text: unnamedRules.length === 1 && rules.length === 1 ? `${object}.style` : object,
 		residuals: [],
@@ -1495,6 +1500,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		}),
 		detectPatterns: [/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
 		sourceModules: ["@stylexjs/stylex"],
+		sourceModulesSideEffectFree: ["@stylexjs/stylex"],
 		configFiles: ["package.json"],
 		sourceObjectOptions: (source, context) =>
 			createStyleXSourceObjectOptions(source, context, options.crossModuleResolver),
@@ -1745,33 +1751,44 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		},
 		lowerings: [stylexNumericLowering],
 		emit(program, { programObject }, context) {
+			const stylexImport = targetImportBinding({
+				context,
+				importedName: "*",
+				moduleSpecifier: "@stylexjs/stylex",
+				preserveSourceBindings:
+					program.residuals.length > 0 || (context?.loweringResiduals?.length ?? 0) > 0,
+				preferred: "stylex",
+			});
+			const stylexBinding = stylexImport.localName;
+			const targetImport = `import * as ${stylexBinding} from "@stylexjs/stylex";`;
+			const targetImports = stylexImport.importRequired ? [targetImport] : [];
 			if (
 				program.source?.pattern === CodemodPatternId.StyleXKeyframes ||
 				program.rules[0]?.kind === StyleRuleKindTag.Keyframes
 			) {
 				return {
-					text: `stylex.keyframes(${programObject(program)})`,
-					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					text: `${stylexBinding}.keyframes(${programObject(program)})`,
+					imports: targetImports,
 				};
 			}
 			if (program.source?.pattern === CodemodPatternId.StyleXDefineVars) {
 				return {
-					text: `stylex.defineVars(${programObject(program)})`,
-					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					text: `${stylexBinding}.defineVars(${programObject(program)})`,
+					imports: targetImports,
 				};
 			}
 			const named = program.rules.some((rule) => rule.name !== undefined);
-			const conditionalEmission = stylexConditionalProgramObject(program);
+			const conditionalEmission = stylexConditionalProgramObject(program, stylexBinding);
 			const styleExpression =
 				conditionalEmission.text ??
 				(named
-					? `stylex.create(${programObject(program)})`
-					: `stylex.create({ style: ${programObject(program)} }).style`);
-			const component = stylexComponentEmission(styleExpression, context);
+					? `${stylexBinding}.create(${programObject(program)})`
+					: `${stylexBinding}.create({ style: ${programObject(program)} }).style`);
+			const component = stylexComponentEmission(styleExpression, context, stylexBinding);
 			if (component !== undefined)
 				return {
 					...component,
-					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					imports: targetImports,
 					...(conditionalEmission.residuals.length === 0
 						? {}
 						: { residuals: conditionalEmission.residuals }),
@@ -1782,7 +1799,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			)
 				return {
 					text: "",
-					imports: ['import * as stylex from "@stylexjs/stylex";'],
+					imports: targetImports,
 					residuals: [
 						{
 							kind: StyleProgramResidualKindTag.HostFramework,
@@ -1796,7 +1813,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				// string. Named programs keep their map; an unnamed program gets a
 				// stable local `style` key so it can be consumed by stylex.props.
 				text: styleExpression,
-				imports: ['import * as stylex from "@stylexjs/stylex";'],
+				imports: targetImports,
 				...(conditionalEmission.residuals.length === 0
 					? {}
 					: { residuals: conditionalEmission.residuals }),

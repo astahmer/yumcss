@@ -382,8 +382,8 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("[color:red]");
-		expect(result.code).not.toContain("styled-system/css");
+		expect(result.code).toContain('import "styled-system/css";');
 		expect(result.validations.every(({ valid }) => valid)).toBe(true);
-		expect(result.code).toMatchInlineSnapshot(`" export const card = "[color:red]";"`);
+		expect(result.code).toMatchInlineSnapshot(`"import "styled-system/css"; export const card = "[color:red]";"`);
 	});
 });

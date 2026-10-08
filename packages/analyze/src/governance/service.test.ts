@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { analyzeTokenGovernance } from "./service.ts";
+import { buildGovernancePruneChangeset } from "./prune-changeset.ts";
 import type { TokenPolicySnapshot } from "./contracts.ts";
 
 const policy: TokenPolicySnapshot = {
@@ -104,8 +105,8 @@ describe("analyzeTokenGovernance", () => {
 			    "defined": 2,
 			    "notRemovable": 0,
 			    "rawAllowed": 0,
-			    "reviewRequired": 0,
-			    "safeToRemove": 1,
+			    "reviewRequired": 1,
+			    "safeToRemove": 0,
 			    "strictViolations": 1,
 			    "suggestions": 1,
 			    "unknownStrictness": 0,
@@ -114,9 +115,13 @@ describe("analyzeTokenGovernance", () => {
 			  },
 			  "unusedCandidates": [
 			    {
-			      "boundaries": [],
-			      "reasons": [],
-			      "safety": "safe-to-remove",
+			      "boundaries": [
+			        "dynamic-expression",
+			      ],
+			      "reasons": [
+			        "coverage boundary: dynamic-expression",
+			      ],
+			      "safety": "review-required",
 			      "tokenId": "colors::legacy",
 			    },
 			  ],
@@ -162,6 +167,24 @@ describe("analyzeTokenGovernance", () => {
 		expect(report.summary.strictViolations).toBe(0);
 	});
 
+	it("requires review before pruning tokens behind comment-adjacent dynamic values", () => {
+		const report = analyzeTokenGovernance({
+			root: "/repo",
+			files: [
+				{
+					file: "src/app.tsx",
+					content: 'import { css } from "yumcss"; css({ /* } */ color: dynamicColor });',
+				},
+			],
+			policy,
+			generatedAt: "2026-01-01T00:00:00.000Z",
+			tokenContext: { tokenGroups: { colors: { brand: "#e11d48" } } },
+		});
+		const candidate = report.unusedCandidates.find((item) => item.tokenId === "colors::brand");
+		expect(candidate?.safety).toBe("review-required");
+		expect(candidate?.boundaries).toContain("dynamic-expression");
+	});
+
 	it("downgrades candidates when configuration fails", () => {
 		const report = analyzeTokenGovernance({
 			root: "/repo",
@@ -175,4 +198,94 @@ describe("analyzeTokenGovernance", () => {
 		expect(report.unusedCandidates[0]).toMatchObject({ safety: "review-required" });
 		expect(report.diagnostics.some((d) => d.boundary === "configuration-failure")).toBe(true);
 	});
+});
+
+it.each([
+	"color",
+	"theme[name]",
+	"resolveColor()",
+	'active ? "$brand" : "blue"',
+	'"$" + tokenName',
+])("does not recommend removal with unresolved dynamic usage: %s", (expression) => {
+	const report = analyzeTokenGovernance({
+		root: "/repo",
+		files: [
+			{
+				file: "src/card.tsx",
+				content: `const color=active ? "$brand" : "blue"; css({color:${expression}});`,
+			},
+		],
+		tokenContext: { tokenGroups: { colors: { brand: "red" } } },
+	});
+	expect(report.summary.boundaries["dynamic-expression"]).toBe(1);
+	expect(report.unusedCandidates).toEqual([
+		expect.objectContaining({
+			tokenId: "colors::brand",
+			safety: "review-required",
+			boundaries: ["dynamic-expression"],
+		}),
+	]);
+	expect(buildGovernancePruneChangeset(report)).toEqual({ count: 0, content: null });
+});
+
+it.each(["color", "...styles"])(
+	"withholds token removal for shorthand and spread styles: %s",
+	(properties) => {
+		const report = analyzeTokenGovernance({
+			root: "/repo",
+			files: [{ file: "src/card.tsx", content: `css({${properties}});` }],
+			tokenContext: { tokenGroups: { colors: { brand: "red" } } },
+		});
+		expect(report.summary.boundaries["dynamic-expression"]).toBe(1);
+		expect(report.unusedCandidates[0]?.safety).toBe("review-required");
+		expect(buildGovernancePruneChangeset(report).count).toBe(0);
+	},
+);
+
+it("withholds token removal when a source file cannot be parsed", () => {
+	const report = analyzeTokenGovernance({
+		root: "/repo",
+		files: [
+			{
+				file: "src/broken.tsx",
+				content: 'const broken = ; css({ color: "$colors.brand" });',
+			},
+		],
+		tokenContext: { tokenGroups: { colors: { brand: "red" } } },
+	});
+
+	expect(report.summary.boundaries["unscanned-file"]).toBe(1);
+	expect(report.unusedCandidates).toEqual([
+		expect.objectContaining({
+			tokenId: "colors::brand",
+			safety: "review-required",
+			boundaries: ["unscanned-file"],
+		}),
+	]);
+	expect(buildGovernancePruneChangeset(report)).toEqual({ count: 0, content: null });
+});
+
+it("scans every CSS object argument and marks indirect arguments as dynamic", () => {
+	const report = analyzeTokenGovernance({
+		root: "/repo",
+		files: [
+			{
+				file: "src/card.tsx",
+				content:
+					'const style = { color: "$colors.brand" }; css(style, { backgroundColor: "$colors.accent" });',
+			},
+		],
+		tokenContext: { tokenGroups: { colors: { brand: "red", accent: "blue" } } },
+	});
+
+	expect(report.summary.boundaries["dynamic-expression"]).toBe(1);
+	expect(report.usage.map((usage) => usage.tokenId)).toContain("colors::accent");
+	expect(report.unusedCandidates).toEqual([
+		expect.objectContaining({
+			tokenId: "colors::brand",
+			safety: "review-required",
+			boundaries: ["dynamic-expression"],
+		}),
+	]);
+	expect(buildGovernancePruneChangeset(report)).toEqual({ count: 0, content: null });
 });

@@ -54,8 +54,8 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,8 +243,8 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -280,7 +279,6 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,8 +317,8 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +353,6 @@ test("compiled -> chakra-ui -> compiled: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,8 +406,8 @@ test("compiled -> chakra-ui -> compiled: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@compiled/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -445,7 +442,6 @@ test("compiled -> chakra-ui -> compiled: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
-
 		export const card = css({ "color": "#2a57c8", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

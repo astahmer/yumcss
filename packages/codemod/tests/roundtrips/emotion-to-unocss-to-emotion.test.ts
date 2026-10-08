@@ -52,7 +52,8 @@ test("emotion -> unocss -> emotion: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,6 +89,7 @@ test("emotion -> unocss -> emotion: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "@emotion/css";
 		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -126,7 +128,8 @@ test("emotion -> unocss -> emotion: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -162,6 +165,7 @@ test("emotion -> unocss -> emotion: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "@emotion/css";
 		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -216,7 +220,8 @@ test("emotion -> unocss -> emotion: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb] [padding:1rem]";",
+		      "code": "import "@emotion/css";
+		export const card = "[color:#2563eb] [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -288,7 +293,8 @@ test("emotion -> unocss -> emotion: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand [padding:1rem]";",
+		      "code": "import "@emotion/css";
+		export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -375,7 +381,8 @@ test("emotion -> unocss -> emotion: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:1rem]";",
+		    "code": "import "@emotion/css";
+		export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

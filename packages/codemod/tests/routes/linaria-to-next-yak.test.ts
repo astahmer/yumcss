@@ -266,7 +266,8 @@ test("linaria -> next-yak: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import { css } from "@linaria/core";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,

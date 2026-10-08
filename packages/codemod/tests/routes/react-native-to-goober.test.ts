@@ -48,7 +48,8 @@ test("react-native -> goober: migrates concrete react-native syntax to goober", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> goober: carries a documented secondary react-native API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("react-native -> goober: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("react-native -> goober: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("react-native -> goober: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("react-native -> goober: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { StyleSheet } from "react-native";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

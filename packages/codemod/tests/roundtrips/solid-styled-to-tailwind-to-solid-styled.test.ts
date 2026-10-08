@@ -52,7 +52,8 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		    "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
@@ -90,6 +91,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves an actionable concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
+		import "solid-styled-components";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -130,7 +132,8 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		    "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
@@ -168,6 +171,7 @@ test("solid-styled -> tailwind -> solid-styled: retains the documented secondary
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
+		import "solid-styled-components";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:red] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -224,7 +228,8 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		      "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:#2563eb] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 1,
@@ -262,6 +267,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "// yumcss:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
+		import "solid-styled-components";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["[color:#2563eb] [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -289,7 +295,8 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		      "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		      "converted": 1,
@@ -327,6 +334,7 @@ test("solid-styled -> tailwind -> solid-styled: preserves concrete theme and pro
 		    "reverse": {
 		      "changed": true,
 		      "code": "// yumcss:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
+		import "solid-styled-components";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -369,7 +377,8 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
+		    "code": "import "solid-styled-components";
+		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
 		    "converted": 1,
@@ -407,6 +416,7 @@ test("solid-styled -> tailwind -> solid-styled: resolves token values across bot
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (route: tailwind -> solid-styled | parse-residual: dynamic)
+		import "solid-styled-components";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={["text-brand [padding:1rem]", local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",

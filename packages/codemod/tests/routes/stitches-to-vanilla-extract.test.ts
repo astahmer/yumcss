@@ -276,7 +276,8 @@ test("stitches -> vanilla-extract: preserves malformed concrete stitches input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { css } from "@stitches/react";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

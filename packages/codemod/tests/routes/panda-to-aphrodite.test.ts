@@ -48,7 +48,8 @@ test("panda -> aphrodite: migrates concrete panda syntax to aphrodite", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "styled-system/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +191,8 @@ test("panda -> aphrodite: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +241,8 @@ test("panda -> aphrodite: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "styled-system/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +288,8 @@ test("panda -> aphrodite: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { css } from "styled-system/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

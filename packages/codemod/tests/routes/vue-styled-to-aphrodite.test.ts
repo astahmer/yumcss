@@ -48,7 +48,8 @@ test("vue-styled -> aphrodite: migrates concrete vue-styled syntax to aphrodite"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("vue-styled -> aphrodite: carries a documented secondary vue-styled API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("vue-styled -> aphrodite: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("vue-styled -> aphrodite: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet, css } from "aphrodite";
+		    "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("vue-styled -> aphrodite: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -281,7 +286,8 @@ test("vue-styled -> aphrodite: preserves malformed concrete vue-styled input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
+		  "code": "import styled from "vue-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

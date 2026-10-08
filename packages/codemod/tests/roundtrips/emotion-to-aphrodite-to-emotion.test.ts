@@ -52,7 +52,8 @@ test("emotion -> aphrodite -> emotion: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("emotion -> aphrodite -> emotion: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("emotion -> aphrodite -> emotion: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("emotion -> aphrodite -> emotion: retains the documented secondary API with
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("emotion -> aphrodite -> emotion: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> aphrodite -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("emotion -> aphrodite -> emotion: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +356,8 @@ test("emotion -> aphrodite -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("emotion -> aphrodite -> emotion: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +446,8 @@ test("emotion -> aphrodite -> emotion: resolves token values across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

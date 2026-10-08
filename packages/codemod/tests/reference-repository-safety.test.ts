@@ -100,6 +100,7 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.code).toContain("<button className={css.class({");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import React from "react";
+			import "styled-system/jsx";
 			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 
@@ -119,7 +120,8 @@ export const Button = () =>
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandaStyled");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "styled-system/jsx";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 
 			export const Button = () =>

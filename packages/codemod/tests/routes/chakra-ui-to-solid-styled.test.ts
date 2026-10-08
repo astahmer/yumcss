@@ -282,7 +282,8 @@ test("chakra-ui -> solid-styled: preserves malformed concrete chakra-ui input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "solid-styled-components";
 		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

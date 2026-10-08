@@ -90,7 +90,6 @@ test("fela -> yumcss -> fela: preserves an actionable concrete round trip", asyn
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -143,7 +142,8 @@ test("fela -> yumcss -> fela: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "react-fela";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const Card = css.class({ color: "red" });",
 		    "converted": 1,
@@ -178,7 +178,7 @@ test("fela -> yumcss -> fela: retains the documented secondary API without silen
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import "react-fela";
 		export const Card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -284,7 +284,6 @@ test("fela -> yumcss -> fela: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -362,7 +361,6 @@ test("fela -> yumcss -> fela: preserves concrete theme and project context varia
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
-
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -456,7 +454,6 @@ test("fela -> yumcss -> fela: resolves token values across both concrete legs", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
-
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

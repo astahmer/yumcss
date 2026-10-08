@@ -89,7 +89,8 @@ test("next-yak -> react-native -> next-yak: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "react-native";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -259,7 +260,8 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "react-native";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +335,8 @@ test("next-yak -> react-native -> next-yak: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "react-native";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -422,7 +425,8 @@ test("next-yak -> react-native -> next-yak: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "react-native";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

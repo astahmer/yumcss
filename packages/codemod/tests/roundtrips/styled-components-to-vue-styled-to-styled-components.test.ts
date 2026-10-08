@@ -87,7 +87,8 @@ test("styled-components -> vue-styled -> styled-components: preserves an actiona
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +173,8 @@ test("styled-components -> vue-styled -> styled-components: retains the document
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -273,7 +275,8 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -345,7 +348,8 @@ test("styled-components -> vue-styled -> styled-components: preserves concrete t
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -432,7 +436,8 @@ test("styled-components -> vue-styled -> styled-components: resolves token value
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -93,7 +93,8 @@ test("fela -> mui: carries a documented secondary fela API explicitly", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@mui/system";
+		  "code": "import "react-fela";
+		import { styled } from "@mui/system";
 		export const Card = styled("button")({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

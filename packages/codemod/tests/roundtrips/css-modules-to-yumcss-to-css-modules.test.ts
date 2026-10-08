@@ -245,7 +245,6 @@ test("css-modules -> yumcss -> css-modules: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import __yumcssstyle0Styles from "./Card.module.yumcss-pw-style0-1hi03k1.module.css";
-
 		export const styles = { "card": __yumcssstyle0Styles["pw-style0-1hi03k1"] };
 		export default styles;",
 		      "converted": 1,
@@ -327,7 +326,6 @@ test("css-modules -> yumcss -> css-modules: preserves concrete theme and project
 		    "reverse": {
 		      "changed": true,
 		      "code": "import __yumcssstyle0Styles from "./Card.module.yumcss-pw-style0-1hi03k1.module.css";
-
 		export const styles = { "card": __yumcssstyle0Styles["pw-style0-1hi03k1"] };
 		export default styles;",
 		      "converted": 1,
@@ -424,7 +422,6 @@ test("css-modules -> yumcss -> css-modules: resolves token values across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import __yumcssstyle0Styles from "./Card.module.yumcss-pw-style0-1hi03k1.module.css";
-
 		export const styles = { "card": __yumcssstyle0Styles["pw-style0-1hi03k1"] };
 		export default styles;",
 		    "converted": 1,

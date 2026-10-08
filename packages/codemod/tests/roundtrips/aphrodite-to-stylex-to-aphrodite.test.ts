@@ -52,7 +52,8 @@ test("aphrodite -> stylex -> aphrodite: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("aphrodite -> stylex -> aphrodite: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("aphrodite -> stylex -> aphrodite: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "aphrodite";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

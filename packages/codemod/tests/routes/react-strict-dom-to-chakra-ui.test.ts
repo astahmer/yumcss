@@ -50,7 +50,7 @@ test("react-strict-dom -> chakra-ui: migrates concrete react-strict-dom syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -153,7 +153,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -189,7 +189,7 @@ test("react-strict-dom -> chakra-ui: loads concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -237,7 +237,7 @@ test("react-strict-dom -> chakra-ui: resolves concrete token values with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -282,7 +282,7 @@ test("react-strict-dom -> chakra-ui: preserves malformed concrete react-strict-d
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;

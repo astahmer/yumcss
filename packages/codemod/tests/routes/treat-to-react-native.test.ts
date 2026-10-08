@@ -281,7 +281,8 @@ test("treat -> react-native: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { style } from "treat";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red", "padding": 8 });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

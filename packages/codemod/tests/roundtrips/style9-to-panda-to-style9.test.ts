@@ -52,7 +52,8 @@ test("style9 -> panda -> style9: preserves an actionable concrete round trip", a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("style9 -> panda -> style9: preserves an actionable concrete round trip", a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("style9 -> panda -> style9: retains the documented secondary API without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +175,8 @@ test("style9 -> panda -> style9: retains the documented secondary API without si
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -261,7 +265,8 @@ test("style9 -> panda -> style9: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -295,7 +300,8 @@ test("style9 -> panda -> style9: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -334,7 +340,8 @@ test("style9 -> panda -> style9: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -368,7 +375,8 @@ test("style9 -> panda -> style9: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import style9 from "style9";
+		      "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -423,7 +431,8 @@ test("style9 -> panda -> style9: resolves token values across both concrete legs
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -457,7 +466,8 @@ test("style9 -> panda -> style9: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "styled-system/css";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

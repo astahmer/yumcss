@@ -48,7 +48,8 @@ test("vanilla-extract -> compiled: migrates concrete vanilla-extract syntax to c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -156,7 +157,8 @@ test("vanilla-extract -> compiled: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -192,7 +194,8 @@ test("vanilla-extract -> compiled: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("vanilla-extract -> compiled: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -285,7 +289,8 @@ test("vanilla-extract -> compiled: preserves malformed concrete vanilla-extract 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

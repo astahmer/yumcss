@@ -52,6 +52,7 @@ export default defineCodemodAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["@linaria/core", "@linaria/react"],
+	sourceModulesSideEffectFree: ["@linaria/core", "@linaria/react"],
 	configFiles: ["linaria.config.js", "package.json"],
 	migration: {
 		targetPolicy: {

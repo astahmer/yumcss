@@ -88,7 +88,8 @@ test("stylex -> style9 -> stylex: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "red", padding: "8px" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +177,8 @@ test("stylex -> style9 -> stylex: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "red" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +282,8 @@ test("stylex -> style9 -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +358,8 @@ test("stylex -> style9 -> stylex: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +449,8 @@ test("stylex -> style9 -> stylex: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": stylex.create({ style: { color: "#2563eb", padding: "8px" } }).style };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -276,7 +276,8 @@ test("jss -> solid-styled: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { css } from "solid-styled-components";
 		export const useStyles = { "card": css({ "color": "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

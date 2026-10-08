@@ -48,7 +48,8 @@ test("style9 -> jss: migrates concrete style9 syntax to jss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> jss: carries a documented secondary style9 API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> jss: loads concrete theme and project context variants", async (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> jss: loads concrete theme and project context variants", async (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> jss: resolves concrete token values with project context", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> jss: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import style9 from "style9";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

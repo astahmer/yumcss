@@ -50,7 +50,8 @@ test("react-native -> chakra-ui: migrates concrete react-native syntax to chakra
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("react-native -> chakra-ui: carries a documented secondary react-native API
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "8px", backgroundColor: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +147,8 @@ test("react-native -> chakra-ui: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +182,8 @@ test("react-native -> chakra-ui: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -225,7 +229,8 @@ test("react-native -> chakra-ui: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -268,7 +273,8 @@ test("react-native -> chakra-ui: preserves malformed concrete react-native input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { StyleSheet } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

@@ -52,7 +52,8 @@ test("vanilla-extract -> tailwind -> vanilla-extract: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "[color:red] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -221,7 +222,8 @@ test("vanilla-extract -> tailwind -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb] [padding:8px]";",
+		      "code": "import "@vanilla-extract/css";
+		export const card = "[color:#2563eb] [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,7 +297,8 @@ test("vanilla-extract -> tailwind -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand [padding:8px]";",
+		      "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -384,7 +387,8 @@ test("vanilla-extract -> tailwind -> vanilla-extract: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

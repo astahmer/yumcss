@@ -254,8 +254,7 @@ test("unocss -> yumcss -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,8 +328,7 @@ test("unocss -> yumcss -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
-		export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -419,8 +417,7 @@ test("unocss -> yumcss -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => <div className={"text-brand p-card"}/>;",
+		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -29,6 +29,7 @@ const amberProject = createAdapterRouteProject(CodemodAdapterId.YumCSS, CodemodA
 
 test("yumcss -> vue-styled: migrates concrete yumcss syntax to vue-styled", () => {
 	const result = route.run({ source: happySource, file: "styles.ts", semantic: sourceSemantic });
+	expect(result.code).not.toContain("createUnsafeCss");
 	expect(result.converted + result.skipped).toBeGreaterThan(0);
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
@@ -49,7 +50,6 @@ test("yumcss -> vue-styled: migrates concrete yumcss syntax to vue-styled", () =
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +148,6 @@ test("yumcss -> vue-styled: loads concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #f97316; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +184,6 @@ test("yumcss -> vue-styled: loads concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,7 +232,6 @@ test("yumcss -> vue-styled: resolves concrete token values with project context"
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -279,8 +276,8 @@ test("yumcss -> vue-styled: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,
@@ -316,4 +313,3 @@ test("yumcss -> vue-styled: preserves malformed concrete yumcss input", () => {
 		}
 	`)
 });
-

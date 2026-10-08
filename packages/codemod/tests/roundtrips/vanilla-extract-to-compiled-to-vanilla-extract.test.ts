@@ -52,7 +52,8 @@ test("vanilla-extract -> compiled -> vanilla-extract: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("vanilla-extract -> compiled -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("vanilla-extract -> compiled -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("vanilla-extract -> compiled -> vanilla-extract: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@compiled/react";
 		export const card = css({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

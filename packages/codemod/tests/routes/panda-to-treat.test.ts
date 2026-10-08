@@ -48,7 +48,8 @@ test("panda -> treat: migrates concrete panda syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +191,8 @@ test("panda -> treat: loads concrete theme and project context variants", async 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +241,8 @@ test("panda -> treat: resolves concrete token values with project context", asyn
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +288,8 @@ test("panda -> treat: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import { css } from "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

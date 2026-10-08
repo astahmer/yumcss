@@ -48,7 +48,8 @@ test("emotion -> stylex: migrates concrete emotion syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("emotion -> stylex: carries a documented secondary emotion API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("emotion -> stylex: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("emotion -> stylex: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("emotion -> stylex: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb", padding: "1rem" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("emotion -> stylex: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "@emotion/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

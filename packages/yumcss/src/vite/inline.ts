@@ -1,3 +1,4 @@
+import { bindingIsShadowedInAncestors } from "./css-literal-scope.ts";
 import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 /**
  * Pure helpers for the yumcss vite plugin — shared, unit-testable, and free
@@ -28,6 +29,7 @@ import {
 	type LiteralConstantScope,
 	type OxcNode,
 	walk,
+	walkWithParent,
 } from "../tw/literal.ts";
 import { collectModuleConstants, type ConstantScope } from "./cx-inline.ts";
 import {
@@ -340,15 +342,11 @@ export function inlineTwCalls(
 		options?.parsedProgram === undefined
 			? SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
 			: { program: options.parsedProgram };
-	// evalLiteral consumes RAW constant values, not the {value, declStart}
-	// records the cx evaluator uses for its TDZ position guard.
 	const importedScope: ConstantScope = importedConstants ?? new Map();
+	const moduleConstants = collectModuleConstants(result.program as OxcNode);
 	const consts: LiteralConstantScope = new Map([
-		// Cross-module imported constants sit under same-module declarations.
 		...[...importedScope].map(([name, known]) => [name, known.value] as const),
-		...[...collectModuleConstants(result.program as OxcNode)].map(
-			([name, known]) => [name, known.value] as const,
-		),
+		...[...moduleConstants].map(([name, known]) => [name, known.value] as const),
 	]);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
@@ -358,7 +356,7 @@ export function inlineTwCalls(
 	const lines = checkUnresolved ? createLineIndex(code) : undefined;
 	const unresolved: UnresolvedToken[] = [];
 
-	walk(result.program, (node) => {
+	walkWithParent(result.program, (node, _parent, ancestors) => {
 		if (node.type !== NodeKind.CallExpression) return;
 		// SAFETY: the checked CallExpression node has the call fields used below.
 		const call = node as unknown as CallNode;
@@ -367,7 +365,33 @@ export function inlineTwCalls(
 		if (callee?.type !== NodeKind.Identifier || !twNames.has(calleeName ?? "")) {
 			return;
 		}
+		if (bindingIsShadowedInAncestors(calleeName ?? "", ancestors)) return;
 		if (call.arguments.length !== 1) return;
+		let unsafeConstantRead = false;
+		walkWithParent(call.arguments[0], (reference, parent) => {
+			if (reference.type !== NodeKind.Identifier) return;
+			const name = (reference as { name?: string }).name;
+			if (name === undefined || !consts.has(name)) return;
+			if (
+				parent?.type === NodeKind.Property &&
+				(parent as { key?: OxcNode; computed?: boolean; shorthand?: boolean }).key === reference &&
+				(parent as { computed?: boolean }).computed !== true &&
+				(parent as { shorthand?: boolean }).shorthand !== true
+			)
+				return;
+			if (
+				parent?.type === NodeKind.MemberExpression &&
+				(parent as { property?: OxcNode; computed?: boolean }).property === reference &&
+				(parent as { computed?: boolean }).computed !== true
+			)
+				return;
+			if (
+				bindingIsShadowedInAncestors(name, ancestors) ||
+				(moduleConstants.get(name)?.declStart ?? 0) >= call.start
+			)
+				unsafeConstantRead = true;
+		});
+		if (unsafeConstantRead) return;
 		const styles = evalLiteral(call.arguments[0] as Expression, consts);
 		if (typeof styles !== "object" || styles === null || Array.isArray(styles)) {
 			// Not a proven literal: fall back to finite candidate discovery.

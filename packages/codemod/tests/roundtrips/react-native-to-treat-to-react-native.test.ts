@@ -52,7 +52,8 @@ test("react-native -> treat -> react-native: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "react-native";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> treat -> react-native: retains the documented secondary AP
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "react-native";
+		import { style } from "treat";
 		export const styles = { "card": style({ "padding": "8px", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +248,8 @@ test("react-native -> treat -> react-native: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "react-native";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +325,8 @@ test("react-native -> treat -> react-native: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "react-native";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +417,8 @@ test("react-native -> treat -> react-native: resolves token values across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "react-native";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

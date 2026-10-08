@@ -52,7 +52,8 @@ test("aphrodite -> tokenami -> aphrodite: preserves an actionable concrete round
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +232,8 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -304,7 +306,8 @@ test("aphrodite -> tokenami -> aphrodite: preserves concrete theme and project c
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +396,8 @@ test("aphrodite -> tokenami -> aphrodite: resolves token values across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

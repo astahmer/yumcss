@@ -89,6 +89,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves an actionable c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "@emotion/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -290,6 +291,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "@emotion/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -367,6 +369,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: preserves concrete theme 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { html } from "react-strict-dom";
+		import "@emotion/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -459,6 +462,7 @@ test("react-strict-dom -> emotion -> react-strict-dom: resolves token values acr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { html } from "react-strict-dom";
+		import "@emotion/css";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",

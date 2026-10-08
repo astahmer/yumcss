@@ -54,8 +54,8 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@emotion/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,8 +139,8 @@ test("emotion -> chakra-ui -> emotion: retains the documented secondary API with
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@emotion/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +175,6 @@ test("emotion -> chakra-ui -> emotion: retains the documented secondary API with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,8 +240,8 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@emotion/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -278,7 +276,6 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#2a57c8", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -315,8 +312,8 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@emotion/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,7 +348,6 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#2a57c8", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -403,8 +399,8 @@ test("emotion -> chakra-ui -> emotion: resolves token values across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@emotion/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,7 +435,6 @@ test("emotion -> chakra-ui -> emotion: resolves token values across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@emotion/css";
-
 		export const card = css({ color: "#2a57c8", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -88,7 +88,6 @@ test("linaria -> yumcss -> linaria: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +175,6 @@ test("linaria -> yumcss -> linaria: retains the documented secondary API without
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const Card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +278,6 @@ test("linaria -> yumcss -> linaria: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +352,6 @@ test("linaria -> yumcss -> linaria: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +441,6 @@ test("linaria -> yumcss -> linaria: resolves token values across both concrete l
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

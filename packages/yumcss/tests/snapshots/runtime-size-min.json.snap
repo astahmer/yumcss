@@ -3,46 +3,46 @@
     "min": 6532
   },
   "createCss(minimal preset), fallback": {
-    "min": 16615
+    "min": 16619
   },
   "createCss(csstypePreset)": {
-    "min": 21152
+    "min": 21156
   },
   "createCss(tailwindPreset)": {
-    "min": 43874
+    "min": 43878
   },
   "createCss(chakraPreset)": {
-    "min": 54733
+    "min": 54737
   },
   "createCss(shadcnPreset)": {
-    "min": 33184
+    "min": 33188
   },
   "createCss(pandaPreset)": {
-    "min": 47991
+    "min": 47995
   },
   "createCss(defaultPreset)": {
-    "min": 27665
+    "min": 27669
   },
   "createCss(fixturePreset)": {
-    "min": 30976
+    "min": 30980
   },
   "createDesignCss(fixturePreset), fallback": {
-    "min": 39090
+    "min": 39094
   },
   "createCss(fixturePreset) + tw()": {
-    "min": 35220
+    "min": 35224
   },
   "createCss(fixturePreset) + cx()": {
-    "min": 38374
+    "min": 38481
   },
   "createCss(fixturePreset) + tw() + cx()": {
-    "min": 42608
+    "min": 42716
   },
   "createUnsafeCss(), fallback": {
-    "min": 12973
+    "min": 12977
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 40390
+    "min": 43026
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81
@@ -51,7 +51,7 @@
     "min": 37
   },
   "createUnsafeCss(), dynamic fallback": {
-    "min": 12961
+    "min": 12965
   },
   "createUnsafeCss(), compiler-pruned call": {
     "min": 6535
@@ -84,30 +84,30 @@
     "min": 9148
   },
   "createUnsafeCss(), generated all": {
-    "min": 12244
+    "min": 12248
   },
   "tw": {
     "min": 4374
   },
   "cx, plain": {
-    "min": 7482
+    "min": 7585
   },
   "cx": {
-    "min": 20346
+    "min": 20453
   },
   "all (createUnsafeCss+tw+cx)": {
-    "min": 24597
+    "min": 24706
   },
   "stylesheet generator (build-time only)": {
-    "min": 30281
+    "min": 31272
   },
   "unsafe css subpath only": {
-    "min": 12981
+    "min": 12985
   },
   "root barrel, tw only": {
     "min": 4374
   },
   "root barrel, cx + unsafe css": {
-    "min": 20346
+    "min": 20453
   }
 }

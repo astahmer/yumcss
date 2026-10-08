@@ -281,7 +281,7 @@ test("react-strict-dom -> tailwind: preserves malformed concrete react-strict-do
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { html } from "react-strict-dom";
+		  "code": "import { css, html } from "react-strict-dom";
 		const styles = { "card": "[color:red] [padding:1rem]" };
 		export const Card = () => <html.div style={styles.card} />;
 		const unfinished = { /* unfinished react-strict-dom */",

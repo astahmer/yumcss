@@ -276,7 +276,8 @@ test("jss -> vanilla-extract: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { style } from "@vanilla-extract/css";
 		export const useStyles = { "card": style({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

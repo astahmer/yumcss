@@ -129,7 +129,7 @@ describe("adapter route round-trip contract", () => {
 		expect(reverse.code).toContain("button");
 	});
 
-	test("removes an aliased Panda generated import without shadowing YumCSS css", () => {
+	test("retains an unverified Panda generated import without shadowing YumCSS css", () => {
 		const result = migrate(
 			'import { css } from "@/styled-system/css";\nconst card = css({ color: "red" });',
 			CodemodAdapterId.Panda,
@@ -140,9 +140,10 @@ describe("adapter route round-trip contract", () => {
 
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);
-		expect(result.code).not.toContain("styled-system/css");
+		expect(result.code).toContain('import "@/styled-system/css";');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			"import "@/styled-system/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			const card = css.class({ color: "red" });"
 		`);
@@ -170,7 +171,6 @@ describe("adapter route round-trip contract", () => {
 		expect(reverse.code).not.toContain("createCss");
 		expect(reverse.code).toMatchInlineSnapshot(`
 			"import { css } from "@emotion/css";
-
 			const card = css({ color: "red" });"
 		`);
 	});

@@ -52,7 +52,8 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "react-native";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +143,8 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "react-native";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "padding": "8px", "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("react-native -> solid-styled -> react-native: retains the documented secon
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +250,8 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "react-native";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -282,7 +287,8 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "solid-styled-components";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +328,8 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "react-native";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +365,8 @@ test("react-native -> solid-styled -> react-native: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "solid-styled-components";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +421,8 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "react-native";
+		import { css } from "solid-styled-components";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +458,8 @@ test("react-native -> solid-styled -> react-native: resolves token values across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "solid-styled-components";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

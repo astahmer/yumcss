@@ -54,8 +54,8 @@ test("bamboo -> chakra-ui -> bamboo: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("bamboo -> chakra-ui -> bamboo: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -225,8 +224,8 @@ test("bamboo -> chakra-ui -> bamboo: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,7 +260,6 @@ test("bamboo -> chakra-ui -> bamboo: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,8 +296,8 @@ test("bamboo -> chakra-ui -> bamboo: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -334,7 +332,6 @@ test("bamboo -> chakra-ui -> bamboo: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2a57c8" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -386,8 +383,8 @@ test("bamboo -> chakra-ui -> bamboo: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -422,7 +419,6 @@ test("bamboo -> chakra-ui -> bamboo: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],

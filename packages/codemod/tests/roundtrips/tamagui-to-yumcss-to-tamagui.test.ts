@@ -92,7 +92,6 @@ test("tamagui -> yumcss -> tamagui: preserves an actionable concrete round trip"
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
-
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,
@@ -261,7 +260,6 @@ test("tamagui -> yumcss -> tamagui: preserves concrete theme and project context
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
-
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -338,7 +336,6 @@ test("tamagui -> yumcss -> tamagui: preserves concrete theme and project context
 		      "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
-
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		      "converted": 1,
@@ -430,7 +427,6 @@ test("tamagui -> yumcss -> tamagui: resolves token values across both concrete l
 		    "code": "import { View } from "tamagui";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
-
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		export const App = () => <View className={Card} />;",
 		    "converted": 1,

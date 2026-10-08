@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+	<meta charset="utf-8" />
+	<title>Selector scope regression</title>
+	<style>
+		.generated :checked,
+		.generated[data-selected] {
+			color: red;
+		}
+	</style>
+	<div id="generated" class="generated" tabindex="0">
+		<input id="inside" type="checkbox" />
+	</div>
+	<input id="outside" type="checkbox" />
+	<script>
+		window.selectorProof = () => {
+			document.getElementById("inside").checked = true;
+			document.getElementById("outside").checked = true;
+			return {
+				inside: getComputedStyle(document.getElementById("inside")).color,
+				outside: getComputedStyle(document.getElementById("outside")).color,
+				generated: getComputedStyle(document.getElementById("generated")).color,
+			};
+		};
+	</script>
+</html>

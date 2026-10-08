@@ -50,7 +50,8 @@ test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -151,7 +152,8 @@ test("vanilla-extract -> chakra-ui: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -185,7 +187,8 @@ test("vanilla-extract -> chakra-ui: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +234,8 @@ test("vanilla-extract -> chakra-ui: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", padding: "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -274,7 +278,8 @@ test("vanilla-extract -> chakra-ui: preserves malformed concrete vanilla-extract
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

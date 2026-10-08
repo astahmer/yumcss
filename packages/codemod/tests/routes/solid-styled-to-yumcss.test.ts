@@ -48,7 +48,8 @@ test("solid-styled -> yumcss: migrates concrete solid-styled syntax to yumcss", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Dynamic } from "solid-js/web";
+		  "code": "import "solid-styled-components";
+		import { Dynamic } from "solid-js/web";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -96,7 +97,8 @@ test("solid-styled -> yumcss: carries a documented secondary solid-styled API ex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Dynamic } from "solid-js/web";
+		  "code": "import "solid-styled-components";
+		import { Dynamic } from "solid-js/web";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
@@ -153,7 +155,8 @@ test("solid-styled -> yumcss: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -196,7 +199,8 @@ test("solid-styled -> yumcss: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -251,7 +255,8 @@ test("solid-styled -> yumcss: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "solid-styled-components";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		import { __yumcssSlot } from "./__yumcss/solid-slot";
 		const cx = createCx();
@@ -303,7 +308,8 @@ test("solid-styled -> yumcss: preserves malformed concrete solid-styled input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Dynamic } from "solid-js/web";
+		  "code": "import { styled } from "solid-styled-components";
+		import { Dynamic } from "solid-js/web";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();

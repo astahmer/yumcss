@@ -48,7 +48,8 @@ test("react-native -> tokenami: migrates concrete react-native syntax to tokenam
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("react-native -> tokenami: carries a documented secondary react-native API 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--padding": "8px", "--background-color": "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("react-native -> tokenami: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("react-native -> tokenami: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("react-native -> tokenami: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("react-native -> tokenami: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { StyleSheet } from "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

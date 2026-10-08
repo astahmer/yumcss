@@ -52,7 +52,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "red", padding: "8px" });",
 		    "converted": 0,
@@ -139,7 +141,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: retains the docum
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createGlobalStyle } from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import { createGlobalStyle } from "styled-components";
 		createGlobalStyle\`body { margin: 0; }\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -241,7 +244,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -275,7 +279,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
@@ -315,7 +320,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +355,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
@@ -404,7 +411,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -438,7 +446,8 @@ test("vanilla-extract -> styled-components -> vanilla-extract: resolves token va
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@vanilla-extract/css";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: component)
 		export const card = styled.div({ color: "#2563eb", padding: "8px" });",
 		    "converted": 0,

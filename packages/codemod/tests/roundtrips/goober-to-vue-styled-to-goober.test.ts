@@ -87,7 +87,8 @@ test("goober -> vue-styled -> goober: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "vue-styled-components";
+		import { css } from "goober";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -175,7 +176,8 @@ test("goober -> vue-styled -> goober: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "vue-styled-components";
+		import { css } from "goober";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -279,7 +281,8 @@ test("goober -> vue-styled -> goober: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "vue-styled-components";
+		import { css } from "goober";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -354,7 +357,8 @@ test("goober -> vue-styled -> goober: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "vue-styled-components";
+		import { css } from "goober";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -444,7 +448,8 @@ test("goober -> vue-styled -> goober: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "vue-styled-components";
+		import { css } from "goober";
 		import { defineComponent, h } from "vue";
 		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,

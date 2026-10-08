@@ -88,7 +88,6 @@ test("jss -> yumcss -> jss: preserves an actionable concrete round trip", async 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +175,6 @@ test("jss -> yumcss -> jss: retains the documented secondary API without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -280,7 +278,6 @@ test("jss -> yumcss -> jss: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +352,6 @@ test("jss -> yumcss -> jss: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -445,7 +441,6 @@ test("jss -> yumcss -> jss: resolves token values across both concrete legs", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

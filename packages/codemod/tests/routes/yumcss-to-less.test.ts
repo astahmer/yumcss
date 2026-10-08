@@ -49,7 +49,6 @@ test("yumcss -> less: migrates concrete yumcss syntax to less", () => {
 		{
 		  "changed": true,
 		  "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -100,7 +99,6 @@ test("yumcss -> less: carries a documented secondary yumcss API explicitly", () 
 		{
 		  "changed": true,
 		  "code": "import "./styles.styles.less";
-
 		export const styles = { "card": "pw-styles-card-1trzka1", "muted": "pw-styles-muted-1kk79fq" };",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -159,7 +157,6 @@ test("yumcss -> less: loads concrete theme and project context variants", async 
 		  "amber": {
 		    "changed": true,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -201,7 +198,6 @@ test("yumcss -> less: loads concrete theme and project context variants", async 
 		  "blue": {
 		    "changed": true,
 		    "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		    "converted": 1,
 		    "generatedFiles": [
@@ -255,7 +251,6 @@ test("yumcss -> less: resolves concrete token values with project context", asyn
 		{
 		  "changed": true,
 		  "code": "import "./styles.styles.less";
-
 		export const card = "pw-card-8cd0mc";",
 		  "converted": 1,
 		  "generatedFiles": [
@@ -305,8 +300,8 @@ test("yumcss -> less: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import "./styles.styles.less";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import "./styles.styles.less";
 		export const card = "pw-card-8cd0mc";
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

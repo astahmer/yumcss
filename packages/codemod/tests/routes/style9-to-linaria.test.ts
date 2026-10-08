@@ -48,7 +48,8 @@ test("style9 -> linaria: migrates concrete style9 syntax to linaria", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> linaria: carries a documented secondary style9 API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red;\`, "muted": css\`opacity: 0.5;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> linaria: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> linaria: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> linaria: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb;\` };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> linaria: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import style9 from "style9";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

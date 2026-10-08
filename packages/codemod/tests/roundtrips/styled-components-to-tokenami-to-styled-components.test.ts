@@ -86,8 +86,8 @@ test("styled-components -> tokenami -> styled-components: preserves an actionabl
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(styled.div({ color: "red", padding: "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -171,8 +171,8 @@ test("styled-components -> tokenami -> styled-components: retains the documented
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(styled.div({ color: "red", padding: "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -272,8 +272,8 @@ test("styled-components -> tokenami -> styled-components: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(styled.div({ color: "#2563eb", padding: "1rem" }), propsStyle)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -344,8 +344,8 @@ test("styled-components -> tokenami -> styled-components: preserves concrete the
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(styled.div({ color: "#2563eb", padding: "1rem" }), propsStyle)} />; };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -431,8 +431,8 @@ test("styled-components -> tokenami -> styled-components: resolves token values 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { css } from "@tokenami/css";
+		import styled from "styled-components";
 		export const Card = (props) => { const { as: propsAs, style: propsStyle, ...rest } = props; const Component = propsAs ?? "div"; return <Component {...rest} style={css(styled.div({ color: "#2563eb", padding: "1rem" }), propsStyle)} />; };",
 		    "converted": 1,
 		    "generatedFiles": [],

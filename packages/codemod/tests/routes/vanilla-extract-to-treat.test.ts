@@ -48,7 +48,8 @@ test("vanilla-extract -> treat: migrates concrete vanilla-extract syntax to trea
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "@vanilla-extract/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@vanilla-extract/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("vanilla-extract -> treat: loads concrete theme and project context variant
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "@vanilla-extract/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("vanilla-extract -> treat: resolves concrete token values with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "@vanilla-extract/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("vanilla-extract -> treat: preserves malformed concrete vanilla-extract inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import { style } from "@vanilla-extract/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

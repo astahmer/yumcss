@@ -115,7 +115,7 @@ test("css gen simple prop", () => {
 		.\\&\\[data-attr\\=\\'test\\'\\]__color__green[data-attr='test']{color:green}
 		.\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test']:disabled, .\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .bx2erf[data-attr='test']:disabled, .target .bx2erf[data-attr='test'][aria-disabled=true]{color:cyan}
-		.target .\\31 jr1onx[data-attr='test']:active, .target .\\31 jr1onx[data-attr='test'][data-active=true],.target .\\31 jr1onx[data-attr='test']:disabled, .target .\\31 jr1onx[data-attr='test'][aria-disabled=true]{color:orange}
+		.target .\\31 jr1onx[data-attr='test']:active:disabled, .target .\\31 jr1onx[data-attr='test']:active[aria-disabled=true], .target .\\31 jr1onx[data-attr='test'][data-active=true]:disabled, .target .\\31 jr1onx[data-attr='test'][data-active=true][aria-disabled=true]{color:orange}
 		@media (min-width: 1280px){.target .vt3lu0[data-attr='test']:disabled, .target .vt3lu0[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 
@@ -137,7 +137,7 @@ test("css gen simple prop", () => {
 		.dfl2kn[data-attr='test']{color:green}
 		.\\31 my53z8[data-attr='test']:disabled, .\\31 my53z8[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .\\31 ubbxbh[data-attr='test']:disabled, .target .\\31 ubbxbh[data-attr='test'][aria-disabled=true]{color:cyan}
-		.target .\\31 ujpm8g[data-attr='test']:active, .target .\\31 ujpm8g[data-attr='test'][data-active=true],.target .\\31 ujpm8g[data-attr='test']:disabled, .target .\\31 ujpm8g[data-attr='test'][aria-disabled=true]{color:orange}
+		.target .\\31 ujpm8g[data-attr='test']:active:disabled, .target .\\31 ujpm8g[data-attr='test']:active[aria-disabled=true], .target .\\31 ujpm8g[data-attr='test'][data-active=true]:disabled, .target .\\31 ujpm8g[data-attr='test'][data-active=true][aria-disabled=true]{color:orange}
 		@media (min-width: 1280px){.target .\\35 zgdlv[data-attr='test']:disabled, .target .\\35 zgdlv[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 });

@@ -277,7 +277,8 @@ test("stitches -> aphrodite: preserves malformed concrete stitches input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import { css } from "@stitches/react";
+		import { StyleSheet } from "aphrodite";
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

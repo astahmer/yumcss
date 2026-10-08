@@ -271,7 +271,8 @@ test("jss -> tailwind: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const useStyles = { "card": "[color:red]" };
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = { "card": "[color:red]" };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "generatedFiles": [],

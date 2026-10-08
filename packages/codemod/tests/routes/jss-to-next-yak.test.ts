@@ -266,7 +266,8 @@ test("jss -> next-yak: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { css } from "next-yak";
 		export const useStyles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

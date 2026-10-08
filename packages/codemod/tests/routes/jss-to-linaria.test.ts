@@ -276,7 +276,8 @@ test("jss -> linaria: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { css } from "@linaria/core";
 		export const useStyles = { "card": css\`color: red;\` };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

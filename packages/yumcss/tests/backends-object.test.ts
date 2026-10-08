@@ -14,8 +14,30 @@ import { describe, expect, test } from "vitest";
 import { createObjectBackend } from "../src/backends/object.ts";
 import { createObjectCx } from "../src/backends/object-surface.ts";
 import { createOpentuiBackend } from "../src/backends/opentui.ts";
+import { createRnBackend } from "../src/backends/react-native.ts";
 
 describe("object backend", () => {
+	test("native backends resolve property-first conditions with the same gating", () => {
+		let hover = true;
+		let breakpoint = true;
+		for (const backend of [
+			createRnBackend({ conditions: { hover: () => hover, md: () => breakpoint } }),
+			createOpentuiBackend({ conditions: { hover: () => hover, md: () => breakpoint } }),
+		]) {
+			hover = true;
+			breakpoint = true;
+			expect(backend.resolve({ color: { _hover: "red" } })).toEqual({ color: "red" });
+			expect(backend.resolve({ color: { md: { _hover: "red" } } })).toEqual(
+				backend.resolve({ md: { _hover: { color: "red" } } }),
+			);
+			hover = false;
+			expect(backend.resolve({ color: { _hover: "red" } })).toEqual({});
+			hover = true;
+			breakpoint = false;
+			expect(backend.resolve({ color: { md: { _hover: "red" } } })).toEqual({});
+			expect(() => backend.resolve({ color: { _unknown: "red" } })).toThrow(/_unknown/);
+		}
+	});
 	test("resolve lowers flat declarations through convert (default pass-through)", () => {
 		const backend = createObjectBackend({ name: "test" });
 		expect(backend.resolve({ color: "red" })).toEqual({ color: "red" });

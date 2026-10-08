@@ -52,7 +52,8 @@ test("panda -> stitches -> panda: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -229,7 +230,8 @@ test("panda -> stitches -> panda: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,7 +304,8 @@ test("panda -> stitches -> panda: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +393,8 @@ test("panda -> stitches -> panda: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "styled-system/css";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

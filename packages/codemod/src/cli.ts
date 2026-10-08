@@ -7,8 +7,20 @@
  * produces the same plan without changing files. `tokens` remains a separate
  * data-format conversion command.
  */
-import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { basename, dirname, extname, isAbsolute, relative, resolve } from "node:path";
+import {
+	closeSync,
+	constants,
+	existsSync,
+	fstatSync,
+	ftruncateSync,
+	mkdirSync,
+	openSync,
+	readFileSync,
+	statSync,
+	unlinkSync,
+	writeFileSync,
+} from "node:fs";
+import { dirname, isAbsolute, posix, relative, resolve } from "node:path";
 import { cac, type CAC, type Command } from "cac";
 import { createSourceWorkspace } from "yumcss/source/workspace";
 import { createEmptyYumCSSMeta, loadMetaFromSourcesAsync, type YumCSSMeta } from "./meta.ts";
@@ -39,6 +51,8 @@ import { extractArbitraryValueProposals } from "./arbitrary-values.ts";
 import { sortStaticClassSource } from "./class-sorter.ts";
 import { configureMigrateCommand } from "./swap/cli-args.ts";
 import { createYumCSSProjectSupport, type YumCSSProjectSupport } from "./swap/project-bootstrap.ts";
+import { createProjectPathBoundary, normalizeProjectRelativePath } from "./swap/project-path.ts";
+import { deduplicateStaticStyleCalls } from "./swap/static-style-dedup.ts";
 import { PACKAGE_INSTALLER, type PackageInstallResult } from "./package-installer.ts";
 import {
 	AdapterDependencyKindTag,
@@ -47,19 +61,60 @@ import {
 } from "./swap/adapter-contract.ts";
 export { unifiedDiff } from "./diff.ts";
 
+function assertSingleLinkProjectFile(absolutePath: string, linkCount: number): void {
+	if (linkCount > 1)
+		throw new Error(
+			`codemod: refusing to overwrite hard-linked project file ${absolutePath} (${linkCount} links)`,
+		);
+	if (linkCount !== 1)
+		throw new Error(`codemod: refusing to overwrite detached project file ${absolutePath}`);
+}
+
+function assertPathIsNotHardLinked(absolutePath: string): void {
+	const info = statSync(absolutePath);
+	if (!info.isFile()) throw new Error(`codemod: refusing to overwrite non-file ${absolutePath}`);
+	assertSingleLinkProjectFile(absolutePath, info.nlink);
+}
+
+function writeExistingProjectFile(absolutePath: string, content: string): void {
+	const flags = constants.O_WRONLY | (constants.O_NOFOLLOW ?? 0);
+	const descriptor = openSync(absolutePath, flags);
+	try {
+		const info = fstatSync(descriptor);
+		if (!info.isFile()) throw new Error(`codemod: refusing to overwrite non-file ${absolutePath}`);
+		assertSingleLinkProjectFile(absolutePath, info.nlink);
+		ftruncateSync(descriptor, 0);
+		writeFileSync(descriptor, content);
+	} finally {
+		closeSync(descriptor);
+	}
+}
+
+function writeNewProjectFile(absolutePath: string, content: string): void {
+	const flags =
+		constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
+	const descriptor = openSync(absolutePath, flags, 0o666);
+	try {
+		writeFileSync(descriptor, content);
+	} finally {
+		closeSync(descriptor);
+	}
+}
+
 function writeGeneratedFiles(
-	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly { readonly path: string; readonly content: string }[],
 	overwrite = false,
 ): void {
 	const resolved = files.map((file) => ({
 		...file,
-		absolutePath: resolve(root, file.path),
+		absolutePath: pathBoundary.resolve(file.path),
 	}));
 	if (overwrite) {
 		for (const file of resolved) {
 			mkdirSync(dirname(file.absolutePath), { recursive: true });
-			writeFileSync(file.absolutePath, file.content);
+			if (existsSync(file.absolutePath)) writeExistingProjectFile(file.absolutePath, file.content);
+			else writeNewProjectFile(file.absolutePath, file.content);
 		}
 		return;
 	}
@@ -74,33 +129,35 @@ function writeGeneratedFiles(
 	for (const file of resolved) {
 		if (existsSync(file.absolutePath)) continue;
 		mkdirSync(dirname(file.absolutePath), { recursive: true });
-		writeFileSync(file.absolutePath, file.content, { flag: "wx" });
+		writeNewProjectFile(file.absolutePath, file.content);
 	}
 }
 
 function validatePlannedGeneratedFiles(
-	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly { readonly path: string; readonly content: string }[],
 	planned: Map<string, string>,
 	overwrite = false,
 ): void {
 	for (const file of files) {
-		const plannedContent = planned.get(file.path);
-		if (planned.has(file.path) && plannedContent !== file.content)
-			throw new Error(`codemod: conflicting generated file ${file.path} in one migration run`);
-		planned.set(file.path, file.content);
-		const absolutePath = resolve(root, file.path);
+		const path = normalizeProjectRelativePath(file.path);
+		const absolutePath = pathBoundary.resolve(path);
+		const plannedContent = planned.get(absolutePath);
+		if (planned.has(absolutePath) && plannedContent !== file.content)
+			throw new Error(`codemod: conflicting generated file ${path} in one migration run`);
+		planned.set(absolutePath, file.content);
 		if (
 			!overwrite &&
 			existsSync(absolutePath) &&
 			readFileSync(absolutePath, "utf8") !== file.content
 		)
 			throw new Error(`codemod: refusing to overwrite conflicting generated file ${absolutePath}`);
+		if (overwrite && existsSync(absolutePath)) assertPathIsNotHardLinked(absolutePath);
 	}
 }
 
 function validatePlannedFileChanges(
-	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly {
 		readonly path: string;
 		readonly content: string;
@@ -109,27 +166,26 @@ function validatePlannedFileChanges(
 	planned: Map<string, string>,
 ): void {
 	for (const file of files) {
-		const path = file.path.replaceAll("\\", "/");
-		if (path.startsWith("/") || /^[A-Za-z]:\//u.test(path) || path.split("/").includes(".."))
-			throw new Error(`codemod: file change must be project-relative: ${file.path}`);
-		const plannedContent = planned.get(path);
-		if (planned.has(path) && plannedContent !== file.content)
+		const path = normalizeProjectRelativePath(file.path);
+		const absolutePath = pathBoundary.resolve(path);
+		const plannedContent = planned.get(absolutePath);
+		if (planned.has(absolutePath) && plannedContent !== file.content)
 			throw new Error(`codemod: conflicting file change ${path} in one migration run`);
-		planned.set(path, file.content);
-		const absolutePath = resolve(root, path);
+		planned.set(absolutePath, file.content);
 		if (!existsSync(absolutePath))
 			throw new Error(`codemod: file change target does not exist ${absolutePath}`);
 		const current = readFileSync(absolutePath, "utf8");
 		if (file.expectedContent !== undefined && current !== file.expectedContent)
 			throw new Error(`codemod: refusing stale file change ${absolutePath}`);
+		assertPathIsNotHardLinked(absolutePath);
 	}
 }
 
 function applyFileChanges(
-	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly { readonly path: string; readonly content: string }[],
 ): void {
-	for (const file of files) writeFileSync(resolve(root, file.path), file.content);
+	for (const file of files) writeExistingProjectFile(pathBoundary.resolve(file.path), file.content);
 }
 
 type CliOptions = Readonly<Record<string, unknown>>;
@@ -151,14 +207,23 @@ const sourceWorkspace = createSourceWorkspace();
 const expandPatterns = (
 	patterns: readonly string[],
 	baseDir: string,
+	pathBoundary?: ReturnType<typeof createProjectPathBoundary>,
 	includeUnsupported = false,
-): string[] => [...sourceWorkspace.files(patterns, baseDir, { includeUnsupported })];
+): string[] =>
+	[...sourceWorkspace.files(patterns, baseDir, { includeUnsupported })].map((file) =>
+		pathBoundary === undefined ? file : pathBoundary.resolve(pathBoundary.relative(file)),
+	);
 
 const readProjectFile =
-	(root: string) =>
+	(root: string, pathBoundary?: ReturnType<typeof createProjectPathBoundary>) =>
 	(file: string): string | undefined => {
-		const absolute = isAbsolute(file) ? file : resolve(root, file);
 		try {
+			const absolute =
+				pathBoundary === undefined
+					? isAbsolute(file)
+						? file
+						: resolve(root, file)
+					: pathBoundary.resolve(isAbsolute(file) ? relative(root, file) : file);
 			return readFileSync(absolute, "utf8");
 		} catch {
 			return undefined;
@@ -292,10 +357,11 @@ const projectAdapterFor = (
 	args: swapImport.MigrateCliArgs,
 	filePaths: readonly string[],
 	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 ): string | undefined => {
 	if (isExternalAdapterId(args.from)) return args.from;
 	for (const file of filePaths) {
-		const source = readProjectFile(root)(file);
+		const source = readProjectFile(root, pathBoundary)(file);
 		if (source === undefined) continue;
 		const detected = detectExternalSource(source, file.slice(root.length + 1), root);
 		if (detected !== undefined) return detected;
@@ -314,7 +380,8 @@ const printPackageInstall = (result: PackageInstallResult): void => {
 
 async function mainMigrate(argv: string[]): Promise<void> {
 	const args = swapImport.parseMigrateArgs(argv);
-	const root = migrationRoot(args);
+	const pathBoundary = createProjectPathBoundary(migrationRoot(args));
+	const root = pathBoundary.root;
 	const packageJson = readPackageJson(root);
 	const projectMigration = swapImport.getProjectMigrationCommand(args.from);
 	const ownsProjectRoute = projectMigration?.targets.includes(args.to) ?? false;
@@ -322,6 +389,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 	const candidateFilePaths = expandPatterns(
 		args.patterns,
 		root,
+		pathBoundary,
 		explicitlyExternal || args.from === SwapSourceId.Auto,
 	);
 	const autoExternal =
@@ -332,7 +400,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			args.to === SwapTargetId.Dss ||
 			args.to === SwapTargetId.Tw) &&
 		candidateFilePaths.some((file) => {
-			const source = readProjectFile(root)(file);
+			const source = readProjectFile(root, pathBoundary)(file);
 			if (source === undefined) return false;
 			const detected = detectExternalSource(source, file.slice(root.length + 1), root);
 			return (
@@ -341,7 +409,9 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			);
 		});
 	const external = explicitlyExternal || autoExternal;
-	const filePaths = external ? candidateFilePaths : expandPatterns(args.patterns, root);
+	const filePaths = external
+		? candidateFilePaths
+		: expandPatterns(args.patterns, root, pathBoundary);
 	if (external) {
 		let meta: YumCSSMeta | undefined;
 		let project: YumCSSProjectSupport | undefined;
@@ -374,21 +444,21 @@ async function mainMigrate(argv: string[]): Promise<void> {
 			}
 		}
 		if (meta === undefined && shouldBootstrapYumCSSProject(args)) {
-			const sourceAdapter = projectAdapterFor(args, filePaths, root);
+			const sourceAdapter = projectAdapterFor(args, filePaths, root, pathBoundary);
 			if (sourceAdapter !== undefined) {
 				project = await createYumCSSProjectSupport({
 					root,
 					sourceAdapter,
 					targetAdapter: args.to,
 					outputDirectory: projectOutputDirectory(root, args.outDir || "yumcss"),
-					readFile: readProjectFile(root),
+					readFile: readProjectFile(root, pathBoundary),
 					listFiles: projectFiles,
 					...(packageJson === undefined ? {} : { packageJson }),
 				});
 				meta = project.meta;
 			}
 		}
-		await runAdapterRoute(args, filePaths, root, meta, project, packageJson);
+		await runAdapterRoute(args, filePaths, root, pathBoundary, meta, project, packageJson);
 		return;
 	}
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "examples/example/src";
@@ -499,7 +569,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		const relative = file.slice(root.length + 1);
 		let source: string;
 		try {
-			source = readFileSync(file, "utf8");
+			source = readFileSync(pathBoundary.resolve(relative), "utf8");
 		} catch {
 			continue;
 		}
@@ -534,7 +604,7 @@ async function mainMigrate(argv: string[]): Promise<void> {
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (!args.dryRun) writeFileSync(file, result.code);
+		if (!args.dryRun) writeExistingProjectFile(pathBoundary.resolve(relative), result.code);
 		if (args.reportFormat !== "json")
 			console.log(
 				`${relative}: ${args.dryRun ? "would change" : "written"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
@@ -618,6 +688,7 @@ async function runAdapterRoute(
 	args: swapImport.MigrateCliArgs,
 	filePaths: Array<string>,
 	root: string,
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	meta?: YumCSSMeta,
 	project?: YumCSSProjectSupport,
 	packageJson?: Readonly<Record<string, unknown>>,
@@ -643,6 +714,9 @@ async function runAdapterRoute(
 		process.exitCode = 1;
 		return;
 	}
+	const targetAdapter =
+		swapImport.BUILTIN_CODEMOD_CATALOG.registry.get(target) ??
+		swapImport.BUILTIN_CODEMOD_CATALOG.registry.getDialect(target);
 
 	let totalConverted = 0;
 	let totalSkipped = 0;
@@ -674,9 +748,13 @@ async function runAdapterRoute(
 	const plannedFileChanges = new Map<string, string>();
 	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 	let projectGeneratedFiles = project?.files ?? [];
-	const projectFileChanges = project?.fileChanges ?? [];
+	const projectFileChanges =
+		project?.fileChanges.map((change) => ({
+			...change,
+			path: pathBoundary.relative(change.path),
+		})) ?? [];
 	const projectFileChangeByPath = new Map(
-		projectFileChanges.map((change) => [change.path, change]),
+		projectFileChanges.map((change) => [normalizeProjectRelativePath(change.path), change]),
 	);
 	const targetDependencies: AdapterDependencies[] =
 		project === undefined
@@ -688,16 +766,16 @@ async function runAdapterRoute(
 				];
 	const dependencies: AdapterDependencies[] = [...targetDependencies];
 	const pendingWrites: Array<{
-		file: string;
-		outputFile: string;
 		relative: string;
+		outputRelative: string;
 		result: Awaited<ReturnType<typeof swapImport.runAdapterMigrationAsync>>;
 	}> = [];
 	for (const file of filePaths) {
-		const relative = file.slice(root.length + 1);
+		const relative = normalizeProjectRelativePath(file.slice(root.length + 1));
+		const inputFile = pathBoundary.resolve(relative);
 		let source: string;
 		try {
-			source = readFileSync(file, "utf8");
+			source = readFileSync(inputFile, "utf8");
 		} catch {
 			continue;
 		}
@@ -711,12 +789,12 @@ async function runAdapterRoute(
 		const projectFileChange = projectFileChangeByPath.get(relative);
 		const migrationSource =
 			projectFileChange?.expectedContent === source ? projectFileChange.content : source;
-		const result = await swapImport.STYLE_MIGRATION_USE_CASE.runAsync(migrationSource, {
+		const migrationResult = await swapImport.STYLE_MIGRATION_USE_CASE.runAsync(migrationSource, {
 			from,
 			to: target,
 			file: relative,
 			root,
-			readFile: readProjectFile(root),
+			readFile: readProjectFile(root, pathBoundary),
 			listFiles: () => projectFiles,
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
@@ -726,14 +804,36 @@ async function runAdapterRoute(
 			tokenReferenceFormat: args.tokenReferenceFormat,
 			hoistStaticStyles: args.hoistStaticStyles,
 		});
+		const deduplicatedCode = args.dedup
+			? deduplicateStaticStyleCalls({
+					source: migrationResult.code,
+					file: relative,
+					staticStyleCalls: (targetAdapter?.staticStyleCalls ?? []).map((call) => ({
+						moduleSpecifier:
+							call.resolveModuleSpecifier?.({ file: relative, project: project?.bindings }) ??
+							call.moduleSpecifier,
+						importedName: call.importedName,
+					})),
+				})
+			: migrationResult.code;
+		const result =
+			deduplicatedCode === migrationResult.code
+				? migrationResult
+				: { ...migrationResult, code: deduplicatedCode, changed: true };
 		const codeChanged = result.code !== source;
-		const outputFile =
+		const outputRelative =
 			result.outputExtension === undefined
-				? file
-				: resolve(dirname(file), `${basename(file, extname(file))}${result.outputExtension}`);
+				? relative
+				: normalizeProjectRelativePath(
+						posix.join(
+							posix.dirname(relative),
+							`${posix.basename(relative, posix.extname(relative))}${result.outputExtension}`,
+						),
+					);
+		const outputFile = pathBoundary.resolve(outputRelative);
 		reportEntries.push({
 			file: relative,
-			...(outputFile === file ? {} : { outputFile: outputFile.slice(root.length + 1) }),
+			...(outputRelative === relative ? {} : { outputFile: outputRelative }),
 			generatedFiles: result.generatedFiles.map((generatedFile) => generatedFile.path),
 			from,
 			converted: result.converted,
@@ -778,16 +878,19 @@ async function runAdapterRoute(
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (outputFile !== file && existsSync(outputFile))
+		if (outputRelative !== relative && existsSync(outputFile))
 			throw new Error(
 				`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
 			);
-		validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles, args.force);
-		validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
+		validatePlannedGeneratedFiles(
+			pathBoundary,
+			result.generatedFiles,
+			plannedGeneratedFiles,
+			args.force,
+		);
 		pendingWrites.push({
-			file,
-			outputFile,
 			relative,
+			outputRelative,
 			result,
 		});
 		if (args.dryRun && args.reportFormat !== "json")
@@ -802,10 +905,14 @@ async function runAdapterRoute(
 			}
 		}
 	}
+	if (projectFileChanges.length > 0 && totalSkipped > 0)
+		throw new Error(
+			"codemod: refusing project-wide stylesheet or build changes while source migrations remain unresolved",
+		);
 	const runtimeCssModule = project?.bindings.runtimeCssModule;
 	if (runtimeCssModule !== undefined) {
-		const runtimeUsed = pendingWrites.some(({ file, result }) =>
-			usesProjectModule(file.slice(root.length + 1), runtimeCssModule, result.code),
+		const runtimeUsed = pendingWrites.some(({ relative, result }) =>
+			usesProjectModule(relative, runtimeCssModule, result.code),
 		);
 		if (!runtimeUsed)
 			projectGeneratedFiles = projectGeneratedFiles.filter(
@@ -813,21 +920,54 @@ async function runAdapterRoute(
 			);
 	}
 	if (pendingWrites.length > 0 && projectGeneratedFiles.length > 0) {
-		validatePlannedGeneratedFiles(root, projectGeneratedFiles, plannedGeneratedFiles, args.force);
+		validatePlannedGeneratedFiles(
+			pathBoundary,
+			projectGeneratedFiles,
+			plannedGeneratedFiles,
+			args.force,
+		);
 	}
-	if (pendingWrites.length > 0 && projectFileChanges.length > 0) {
-		validatePlannedFileChanges(root, projectFileChanges, plannedFileChanges);
+	const composedModuleChanges = swapImport.MigrationFilePlan.compose({
+		changes: pendingWrites.flatMap((pending) => pending.result.fileChanges),
+		canonicalizePath: pathBoundary.relative,
+	});
+	const composedFileChanges = swapImport.MigrationFilePlan.compose({
+		changes: [...projectFileChanges, ...composedModuleChanges],
+		canonicalizePath: pathBoundary.relative,
+	});
+	validatePlannedFileChanges(pathBoundary, composedFileChanges, plannedFileChanges);
+	const migratedFiles = new Set(pendingWrites.map((pending) => pending.relative));
+	const changesByPath = new Map(composedModuleChanges.map((change) => [change.path, change]));
+	for (const pending of pendingWrites) {
+		const change = changesByPath.get(pending.relative);
+		if (change === undefined) continue;
+		pending.result = {
+			...pending.result,
+			code: swapImport.MigrationFilePlan.rewrite({
+				file: pending.relative,
+				source: pending.result.code,
+				change,
+			}),
+		};
 	}
+	if (!args.dryRun)
+		for (const pending of pendingWrites)
+			if (pending.outputRelative === pending.relative)
+				assertPathIsNotHardLinked(pathBoundary.resolve(pending.relative));
 	if (!args.dryRun) {
 		if (pendingWrites.length > 0 || args.force)
-			writeGeneratedFiles(root, projectGeneratedFiles, args.force);
-		applyFileChanges(root, projectFileChanges);
+			writeGeneratedFiles(pathBoundary, projectGeneratedFiles, args.force);
+		applyFileChanges(
+			pathBoundary,
+			composedFileChanges.filter((change) => !migratedFiles.has(change.path)),
+		);
 		for (const pending of pendingWrites) {
-			writeGeneratedFiles(root, pending.result.generatedFiles, args.force);
-			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);
+			writeGeneratedFiles(pathBoundary, pending.result.generatedFiles, args.force);
+			if (pending.outputRelative === pending.relative)
+				writeExistingProjectFile(pathBoundary.resolve(pending.relative), pending.result.code);
 			else {
-				writeFileSync(pending.outputFile, pending.result.code, { flag: "wx" });
-				unlinkSync(pending.file);
+				writeNewProjectFile(pathBoundary.resolve(pending.outputRelative), pending.result.code);
+				unlinkSync(pathBoundary.resolveEntry(pending.relative));
 			}
 			if (args.reportFormat !== "json")
 				console.log(
@@ -835,7 +975,6 @@ async function runAdapterRoute(
 						`${pending.result.skipped} skipped, ${pending.result.residuals.length} residual(s)`,
 				);
 		}
-		for (const pending of pendingWrites) applyFileChanges(root, pending.result.fileChanges);
 		if (
 			args.install &&
 			pendingWrites.length > 0 &&

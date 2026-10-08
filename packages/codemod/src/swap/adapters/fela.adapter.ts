@@ -191,6 +191,7 @@ const fela = makeExtraAdapter({
 		ssrHooks: ["renderer.renderToMarkup", "renderer.renderToSheetList"],
 	},
 	modules: ["fela", "react-fela"],
+	sourceModulesSideEffectFree: ["fela"],
 	packages: {
 		packages: [
 			{ name: "fela", kind: AdapterDependencyKindTag.Runtime },

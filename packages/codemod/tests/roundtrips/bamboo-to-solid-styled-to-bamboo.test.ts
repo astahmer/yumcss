@@ -52,7 +52,8 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("bamboo -> solid-styled -> bamboo: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("bamboo -> solid-styled -> bamboo: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "styled-system/css";
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "solid-styled-components";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +356,8 @@ test("bamboo -> solid-styled -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "solid-styled-components";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +446,8 @@ test("bamboo -> solid-styled -> bamboo: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "solid-styled-components";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("aphrodite -> jss -> aphrodite: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -222,7 +223,8 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -297,7 +299,8 @@ test("aphrodite -> jss -> aphrodite: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("aphrodite -> jss -> aphrodite: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "aphrodite";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

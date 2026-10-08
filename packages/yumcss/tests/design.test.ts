@@ -242,6 +242,7 @@ test("design class strings match the generated stylesheet", () => {
 		$text: { color: "$red-300" },
 		_hover: { $frame: { fill: "$blue-600" } },
 	});
+	expect(Object.getPrototypeOf(styles)).toBe(Object.prototype);
 
 	expect(sheet.process([styles])).toMatchInlineSnapshot(`
 		Map {

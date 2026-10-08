@@ -52,7 +52,8 @@ test("react-native -> vanilla-extract -> react-native: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("react-native -> vanilla-extract -> react-native: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +143,8 @@ test("react-native -> vanilla-extract -> react-native: retains the documented se
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "8px", backgroundColor: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("react-native -> vanilla-extract -> react-native: retains the documented se
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 8, "backgroundColor": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +250,8 @@ test("react-native -> vanilla-extract -> react-native: preserves concrete theme 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -282,7 +287,8 @@ test("react-native -> vanilla-extract -> react-native: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +328,8 @@ test("react-native -> vanilla-extract -> react-native: preserves concrete theme 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -358,7 +365,8 @@ test("react-native -> vanilla-extract -> react-native: preserves concrete theme 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +421,8 @@ test("react-native -> vanilla-extract -> react-native: resolves token values acr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -449,7 +458,8 @@ test("react-native -> vanilla-extract -> react-native: resolves token values acr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": 8 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

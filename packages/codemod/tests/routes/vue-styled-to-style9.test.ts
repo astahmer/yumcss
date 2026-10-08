@@ -48,7 +48,8 @@ test("vue-styled -> style9: migrates concrete vue-styled syntax to style9", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("vue-styled -> style9: carries a documented secondary vue-styled API explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("vue-styled -> style9: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("vue-styled -> style9: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import style9 from "style9";
+		    "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("vue-styled -> style9: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style)] }, slots.default?.()));",
 		  "converted": 1,
@@ -281,7 +286,8 @@ test("vue-styled -> style9: preserves malformed concrete vue-styled input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import styled from "vue-styled-components";
+		import style9 from "style9";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style)] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

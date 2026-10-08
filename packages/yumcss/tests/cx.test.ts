@@ -27,6 +27,24 @@ const designCx = createCx({
 });
 
 describe("tw class merging across calls", () => {
+	test("important utilities retain a separate conflict scope", () => {
+		expect(cx("bg-red-500! bg-blue-500")).toBe("bg-red-500! bg-blue-500");
+		expect(cx("bg-red-500 bg-blue-500!")).toBe("bg-red-500 bg-blue-500!");
+		expect(cx("bg-red-500! bg-blue-500!")).toBe("bg-blue-500!");
+		expect(cx("!bg-red-500 !bg-blue-500")).toBe("!bg-blue-500");
+		expect(cx("hover:bg-red-500! hover:bg-blue-500")).toBe("hover:bg-red-500! hover:bg-blue-500");
+	});
+
+	test("multiple variants merge within their complete scope", () => {
+		expect(cx("hover:focus:bg-red-500 hover:focus:bg-blue-500")).toBe("hover:focus:bg-blue-500");
+		expect(cx("hover:focus:bg-red-500 hover:bg-blue-500")).toBe(
+			"hover:focus:bg-red-500 hover:bg-blue-500",
+		);
+		expect(cx("hover:[&:focus]:bg-red-500 hover:[&:focus]:bg-blue-500")).toBe(
+			"hover:[&:focus]:bg-blue-500",
+		);
+		expect(cx("hover:focus:bg-red-500! hover:focus:bg-blue-500!")).toBe("hover:focus:bg-blue-500!");
+	});
 	test("later class wins per property", () => {
 		expect(cx("bg-red-500", "bg-blue-500")).toBe("bg-blue-500");
 		expect(cx("bg-blue-500", "bg-red-500")).toBe("bg-red-500");

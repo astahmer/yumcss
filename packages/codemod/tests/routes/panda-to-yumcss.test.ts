@@ -48,7 +48,8 @@ test("panda -> yumcss: migrates concrete panda syntax to yumcss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", _hover: { color: "blue" } });",
 		  "converted": 1,
@@ -92,7 +93,8 @@ test("panda -> yumcss: carries a documented secondary panda API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/recipes";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 		const css = createUnsafeCss();
 		export const button = __yumcsscreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
@@ -150,7 +152,8 @@ test("panda -> yumcss: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
@@ -185,7 +188,8 @@ test("panda -> yumcss: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		    "converted": 1,
@@ -232,7 +236,8 @@ test("panda -> yumcss: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "brand", _hover: { color: "brand" } });",
 		  "converted": 1,
@@ -276,7 +281,8 @@ test("panda -> yumcss: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		  "code": "import { css } from "styled-system/css";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const card = css.class({ color: "red", _hover: { color: "blue" } });
 		const unfinished = { /* unfinished panda */",

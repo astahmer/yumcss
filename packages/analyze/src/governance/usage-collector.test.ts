@@ -78,6 +78,37 @@ describe("collectTokenUsage", () => {
 		expect(result.boundaryHits["dynamic-expression"]).toEqual(["a.tsx", "a.tsx"]);
 	});
 
+	it("ignores braces inside block comments when collecting dynamic sites", () => {
+		const result = collectTokenUsage(
+			[
+				{
+					file: "src/app.tsx",
+					content: 'import { css } from "yumcss"; css({ /* } */ color: dynamicColor });',
+				},
+			],
+			resolvedPolicy,
+		);
+		expect(result.usage).toEqual([]);
+		expect(result.dynamicSites).toHaveLength(1);
+		expect(result.boundaryHits["dynamic-expression"]).toEqual(["src/app.tsx"]);
+	});
+
+	it("keeps uppercase literal-like identifiers dynamic", () => {
+		const result = collectTokenUsage(
+			[
+				{
+					file: "a.tsx",
+					content:
+						"const values = [tw({ color: TRUE }), tw({ color: FALSE }), tw({ color: NULL }), tw({ color: true }), tw({ color: false }), tw({ color: null }), tw({ color: 1E3 })];",
+				},
+			],
+			resolvedPolicy,
+		);
+
+		expect(result.dynamicSites.map((usage) => usage.rawValue)).toEqual(["TRUE", "FALSE", "NULL"]);
+		expect(result.usage.map((usage) => usage.rawValue)).toEqual(["true", "false", "null", "1E3"]);
+	});
+
 	it("keeps an unresolved policy report-only (fail-open)", () => {
 		const result = collectTokenUsage([{ file: "a.tsx", content: 'tw({ color: "#fff" })' }], {
 			owner: "x",

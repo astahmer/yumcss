@@ -52,7 +52,8 @@ test("vue-styled -> styled-components -> vue-styled: preserves an actionable con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -137,7 +138,8 @@ test("vue-styled -> styled-components -> vue-styled: retains the documented seco
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +240,8 @@ test("vue-styled -> styled-components -> vue-styled: preserves concrete theme an
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -310,7 +313,8 @@ test("vue-styled -> styled-components -> vue-styled: preserves concrete theme an
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -397,7 +401,8 @@ test("vue-styled -> styled-components -> vue-styled: resolves token values acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "vue-styled-components";
+		import styled from "styled-components";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

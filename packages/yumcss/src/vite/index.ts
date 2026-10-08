@@ -118,6 +118,7 @@ export interface Resolver {
 interface ImportInfo {
 	localNames: Set<string>;
 	sources: string[];
+	bindingSources: Map<string, string>;
 	program: OxcNode;
 }
 
@@ -131,11 +132,16 @@ function findTwImports(
 		return {
 			localNames: new Set(),
 			sources: [],
+			bindingSources: new Map(),
 			program: { type: NodeKind.Program, body: [] } as OxcNode,
 		};
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 	const program = toOxcNode(result.program);
-	const info = { localNames: new Set<string>(), sources: [] as string[] };
+	const info = {
+		localNames: new Set<string>(),
+		sources: [] as string[],
+		bindingSources: new Map<string, string>(),
+	};
 
 	walk(program, (node) => {
 		if (node.type !== NodeKind.ImportDeclaration) return;
@@ -148,6 +154,7 @@ function findTwImports(
 			if (imported === "tw" && typeof local === "string") {
 				info.localNames.add(local);
 				info.sources.push(source);
+				info.bindingSources.set(local, source);
 			}
 		}
 	});
@@ -433,28 +440,33 @@ export function createInlineTwPluginCore(options: YumCSSViteOptions = {}): Inlin
 				remember(id, code, result);
 				return result;
 			}
-			let config = localTw?.config;
-			if (config === undefined) {
+			const configurations = new Map<TwConfig, Set<string>>();
+			if (localTw !== undefined) configurations.set(localTw.config, new Set([localTw.name]));
+			else {
 				if (resolver === undefined) return null;
-				// Sequential short-circuit: stop at the first source that resolves
-				// to a generated tw module. Promise.all would load them needlessly.
-				for (const source of imports.sources) {
-					config = await loadConfig(resolver, id, source);
-					if (config !== undefined) break;
+				for (const [name, source] of imports.bindingSources) {
+					const metadata = await loadConfig(resolver, id, source);
+					if (metadata === undefined) continue;
+					const names = configurations.get(metadata) ?? new Set<string>();
+					names.add(name);
+					configurations.set(metadata, names);
 				}
 			}
-			if (config === undefined) return null;
-
+			if (configurations.size === 0) return null;
+			const config = configurations.keys().next().value!;
 			let working = code;
-			// Cross-module constant propagation: resolve this module's import
-			// bindings against the per-build exported-const registry (HMR-aware).
 			const importedConstants = crossModuleResolver.importedScope(id, imports.program);
-			const result = inlineTwCalls(working, id, config, twNames, importedConstants, {
-				...unresolvedOptions,
-				parsedProgram: imports.program,
-			});
-			working = result.code;
-			if (result.candidates?.length) reportCandidates(result.candidates);
+			const result = { inlined: 0, unresolved: [] as UnresolvedToken[] };
+			for (const [metadata, names] of configurations) {
+				const transformed = inlineTwCalls(working, id, metadata, names, importedConstants, {
+					...unresolvedOptions,
+					...(result.inlined === 0 ? { parsedProgram: imports.program } : {}),
+				});
+				working = transformed.code;
+				result.inlined += transformed.inlined;
+				result.unresolved.push(...(transformed.unresolved ?? []));
+				if (transformed.candidates?.length) reportCandidates(transformed.candidates);
+			}
 
 			// cx pass runs on the post-tw code: folded tw() strings then
 			// participate as plain string arguments to cx(). With css folding
@@ -468,7 +480,7 @@ export function createInlineTwPluginCore(options: YumCSSViteOptions = {}): Inlin
 			);
 			let inlined = result.inlined;
 			let cxUnresolved: UnresolvedToken[] = [];
-			if (cxImportsAfterTw.localNames.size > 0) {
+			if (cxImportsAfterTw.localNames.size > 0 && configurations.size === 1) {
 				let cxOptions: Parameters<typeof inlineCxCalls>[4] = {
 					importedConstants,
 					onUnresolved: unresolvedMode,

@@ -52,7 +52,8 @@ test("mui -> stitches -> mui: preserves an actionable concrete round trip", asyn
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "red", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("mui -> stitches -> mui: preserves an actionable concrete round trip", asyn
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "red", padding: "16px" });",
 		    "converted": 0,
@@ -139,7 +141,8 @@ test("mui -> stitches -> mui: retains the documented secondary API without silen
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "@mui/system";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +243,8 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#f97316", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +280,8 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#f97316", padding: "16px" });",
 		      "converted": 0,
@@ -314,7 +319,8 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -350,7 +356,8 @@ test("mui -> stitches -> mui: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		      "converted": 0,
@@ -403,7 +410,8 @@ test("mui -> stitches -> mui: resolves token values across both concrete legs", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,7 +447,8 @@ test("mui -> stitches -> mui: resolves token values across both concrete legs", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		// yumcss:migrate-skip (route: stitches -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 0,

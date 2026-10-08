@@ -48,7 +48,8 @@ test("bamboo -> stylex: migrates concrete bamboo syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("bamboo -> stylex: carries a documented secondary bamboo API explicitly", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { display: "flex", gap: "4" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("bamboo -> stylex: loads concrete theme and project context variants", asyn
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("bamboo -> stylex: loads concrete theme and project context variants", asyn
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("bamboo -> stylex: resolves concrete token values with project context", as
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "#2563eb" } }).style;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> stylex: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "styled-system/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red" } }).style;
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

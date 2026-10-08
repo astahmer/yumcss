@@ -52,7 +52,8 @@ test("vue-styled -> fela -> vue-styled: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("vue-styled -> fela -> vue-styled: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "red", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -244,7 +246,8 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,7 +322,8 @@ test("vue-styled -> fela -> vue-styled: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -409,7 +413,8 @@ test("vue-styled -> fela -> vue-styled: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, renderer.renderRule({ "color": "#2563eb", "padding": "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
 		    "generatedFiles": [],

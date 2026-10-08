@@ -273,7 +273,8 @@ test("tokenami -> vue-styled: preserves malformed concrete tokenami input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { css } from "@tokenami/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red; gap: 1rem;\`;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,

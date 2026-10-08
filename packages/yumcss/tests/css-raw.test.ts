@@ -45,7 +45,7 @@ test("$raw follows normal source order when merged with typed declarations", () 
 	expect(createStylesheet(preset, { debug: true }).generate([raw])).toContain("padding:8px");
 });
 
-test("flat raw styles merge into a detached null-prototype result", () => {
+test("flat raw styles merge into a detached ordinary object", () => {
 	const css = createCss(preset, { debug: true });
 	const base = { display: "flex", padding: 4, $raw: { color: "red" } };
 	const override = { padding: 8, $raw: { color: "blue" } };
@@ -53,7 +53,7 @@ test("flat raw styles merge into a detached null-prototype result", () => {
 	const raw = css.raw(base, override);
 
 	expect(raw).toEqual({ display: "flex", padding: 8, color: "blue" });
-	expect(Object.getPrototypeOf(raw)).toBeNull();
+	expect(Object.getPrototypeOf(raw)).toBe(Object.prototype);
 	expect(base).toEqual({ display: "flex", padding: 4, $raw: { color: "red" } });
 	expect(override).toEqual({ padding: 8, $raw: { color: "blue" } });
 });

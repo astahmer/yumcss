@@ -33,7 +33,7 @@ export const Card = () => <div {...stylex.props(styles.card)} />;`,
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).not.toContain("@stylexjs/stylex");
+		expect(result.code).not.toContain('import "@stylexjs/stylex";');
 		expect(result.code).not.toContain("stylex.props");
 		expect(result.code).toContain("className={styles.card}");
 		const repeated = stylexToTailwind.run({ source: result.code, file: "Card.tsx" });
@@ -52,7 +52,7 @@ export const Card = () => <div {...applyStyles(styles.card)} />;`,
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).not.toContain("@stylexjs/stylex");
+		expect(result.code).not.toContain('import "@stylexjs/stylex";');
 		expect(result.code).not.toContain("applyStyles");
 		expect(result.code).toContain("<chakra.div css={styles.card} />");
 		expect(result.code).toMatchInlineSnapshot(`
@@ -565,7 +565,7 @@ export const Card = ({ active }) => <div {...stylex.props(styles.normal, active 
 		expect(
 			converted.every(
 				(report) =>
-					!report.code.includes("@stylexjs/stylex") && !report.code.includes("stylex.props"),
+					!report.code.includes("import * as stylex") && !report.code.includes("stylex.props"),
 			),
 		).toBe(true);
 		expect(

@@ -276,7 +276,8 @@ test("goober -> stitches: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { css } from "goober";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

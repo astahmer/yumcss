@@ -276,7 +276,8 @@ test("stylex -> react-strict-dom: preserves malformed concrete stylex input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

@@ -136,7 +136,8 @@ test("mui -> mantine -> mui: retains the documented secondary API without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
+		    "code": "import "@mui/system";
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -169,7 +170,8 @@ test("mui -> mantine -> mui: retains the documented secondary API without silent
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// yumcss:migrate-skip (route: mantine -> mui | parse-residual: dynamic | available: named-map, residual)
+		    "code": "import "@mui/system";
+		// yumcss:migrate-skip (route: mantine -> mui | parse-residual: dynamic | available: named-map, residual)
 		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
 		    "converted": 0,
 		    "generatedFiles": [],

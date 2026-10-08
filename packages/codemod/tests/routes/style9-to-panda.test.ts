@@ -48,7 +48,8 @@ test("style9 -> panda: migrates concrete style9 syntax to panda", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("style9 -> panda: carries a documented secondary style9 API explicitly", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("style9 -> panda: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("style9 -> panda: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("style9 -> panda: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "brand.500" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("style9 -> panda: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import style9 from "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ color: "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

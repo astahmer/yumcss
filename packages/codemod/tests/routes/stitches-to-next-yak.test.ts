@@ -275,7 +275,8 @@ test("stitches -> next-yak: preserves malformed concrete stitches input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
+		  "code": "import { css } from "@stitches/react";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished stitches */",
 		  "converted": 1,

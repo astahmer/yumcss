@@ -144,15 +144,19 @@ let svPrefix = "";
 let svRest = "";
 const splitVariants = (token: string): boolean => {
 	let depth = 0;
+	let separator = -1;
 	for (let i = 0; i < token.length; i++) {
 		const char = token[i];
 		if (char === "[") depth++;
 		else if (char === "]") depth--;
 		else if (char === ":" && depth === 0) {
-			svPrefix = token.slice(0, i);
-			svRest = token.slice(i + 1);
-			return true;
+			separator = i;
 		}
+	}
+	if (separator !== -1) {
+		svPrefix = token.slice(0, separator);
+		svRest = token.slice(separator + 1);
+		return true;
 	}
 	svPrefix = "";
 	svRest = token;
@@ -313,8 +317,11 @@ const signatureFromTwClass = (
 	utilIndex: Map<string, string[]>,
 ): string[] | null => {
 	splitVariants(token);
-	const prefix = svPrefix;
-	const rest = svRest;
+	const important = svRest.startsWith("!") || svRest.endsWith("!");
+	const prefix = important ? `${svPrefix}!` : svPrefix;
+	const rest = important
+		? svRest.slice(svRest.startsWith("!") ? 1 : 0, svRest.endsWith("!") ? -1 : undefined)
+		: svRest;
 
 	// Typed arbitrary `[prop:value]` — its own conflict group per property,
 	// disjoint from theme utilities (`px-4` and `[padding-left:2px]`

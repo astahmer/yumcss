@@ -52,7 +52,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -86,7 +87,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -145,7 +147,8 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -179,7 +182,8 @@ test("solid-styled -> tamagui -> solid-styled: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "red", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -254,7 +258,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -288,7 +293,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -334,7 +340,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		      "converted": 1,
@@ -368,7 +375,8 @@ test("solid-styled -> tamagui -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
@@ -429,7 +437,8 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",
 		    "converted": 1,
@@ -463,7 +472,8 @@ test("solid-styled -> tamagui -> solid-styled: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "solid-styled-components";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> solid-styled | lowering-residual: emission-empty, host-framework | available: static, named-map, residual)
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "1rem" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };",

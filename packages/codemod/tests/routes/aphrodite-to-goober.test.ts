@@ -48,7 +48,8 @@ test("aphrodite -> goober: migrates concrete aphrodite syntax to goober", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "aphrodite";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("aphrodite -> goober: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "aphrodite";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("aphrodite -> goober: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "aphrodite";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("aphrodite -> goober: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import "aphrodite";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("aphrodite -> goober: preserves malformed concrete aphrodite input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "goober";
 		export const styles = { "card": css({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

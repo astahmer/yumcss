@@ -48,7 +48,8 @@ test("aphrodite -> treat: migrates concrete aphrodite syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -148,7 +149,8 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -184,7 +186,8 @@ test("aphrodite -> treat: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("aphrodite -> treat: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "#2563eb", "padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -277,7 +281,8 @@ test("aphrodite -> treat: preserves malformed concrete aphrodite input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { style } from "treat";
 		export const styles = { "card": style({ "color": "red", "padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

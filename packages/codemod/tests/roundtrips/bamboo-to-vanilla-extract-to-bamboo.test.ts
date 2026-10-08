@@ -52,7 +52,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("bamboo -> vanilla-extract -> bamboo: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("bamboo -> vanilla-extract -> bamboo: retains the documented secondary API 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -349,7 +356,8 @@ test("bamboo -> vanilla-extract -> bamboo: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("bamboo -> vanilla-extract -> bamboo: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -437,7 +446,8 @@ test("bamboo -> vanilla-extract -> bamboo: resolves token values across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -1,0 +1,14 @@
+{
+  "runtime-cx.ts": {
+    "min": 20449,
+    "gz": 7825
+  },
+  "runtime-cx-plain.ts": {
+    "min": 7585,
+    "gz": 3258
+  },
+  "runtime-css-sheet.ts": {
+    "min": 40518,
+    "gz": 14719
+  }
+}

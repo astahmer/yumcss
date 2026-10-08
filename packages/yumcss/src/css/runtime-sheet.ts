@@ -49,6 +49,20 @@ interface RuntimeRuleBatch {
 	readonly previousCount: number;
 }
 
+const runtimeTokenManifestRegistrationsKey = Symbol.for(
+	"yumcss.runtime.token-manifest-registrations",
+);
+type RuntimeTokenManifestRegistration = (
+	manifest: ReadonlyMap<string, string>,
+	tokens: string,
+) => void;
+type RuntimeTokenManifestGlobal = typeof globalThis & {
+	[runtimeTokenManifestRegistrationsKey]?: WeakMap<object, RuntimeTokenManifestRegistration>;
+};
+const runtimeGlobal = globalThis as RuntimeTokenManifestGlobal;
+const runtimeTokenManifestRegistrations = (runtimeGlobal[runtimeTokenManifestRegistrationsKey] ??=
+	new WeakMap());
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
@@ -66,6 +80,11 @@ const isRuntimeRule = (value: unknown): value is RuntimeRule =>
 	isNonEmptyString(value.id) &&
 	isSafeText(value.css) &&
 	Number.isFinite(value.priority);
+
+const isRuntimeTokenManifestEntry = (
+	value: unknown,
+): value is { readonly name: string; readonly fingerprint: string } =>
+	isRecord(value) && isNonEmptyString(value.name) && isNonEmptyString(value.fingerprint);
 
 const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => {
 	if (!isRecord(value)) return false;
@@ -181,6 +200,8 @@ export function createRuntimeSheet(
 		options.document !== undefined || (globalThis as { document?: unknown }).document !== undefined;
 	const autoMount = options.autoMount ?? (ports.sink !== undefined || hasDocument);
 	let tokens = "";
+	let tokenManifest = new Map<string, string>();
+	let tokenManifestKnown = true;
 	let generation = 0;
 	let renderedGeneration = -1;
 	let rendered = "";
@@ -261,13 +282,57 @@ export function createRuntimeSheet(
 		if (!isSafeString(value)) return;
 		if (tokens === value) return;
 		tokens = value;
+		tokenManifest = new Map();
+		tokenManifestKnown = value === "";
 		invalidate();
 		refresh();
 	};
-	const snapshot = (): RuntimeSheetSnapshot => ({ tokens, rules: orderedRules().slice() });
+	const registerTokens = (manifest: ReadonlyMap<string, string>, value: string): void => {
+		if (value === "" || manifest.size === 0) return;
+		if (!tokenManifestKnown && tokens !== "" && tokens !== value)
+			throw new Error("yumcss: cannot combine runtime tokens with an unverified token prelude");
+		let hasNewVariable = false;
+		for (const [name, fingerprint] of manifest) {
+			const existing = tokenManifest.get(name);
+			if (existing !== undefined && existing !== fingerprint)
+				throw new Error(`yumcss: conflicting runtime token variable '--${name}'`);
+			if (existing === undefined) hasNewVariable = true;
+		}
+		let nextTokens = tokens;
+		if (hasNewVariable)
+			nextTokens = tokens === "" || tokens === value ? value : `${tokens}\n${value}`;
+		for (const [name, fingerprint] of manifest) tokenManifest.set(name, fingerprint);
+		tokenManifestKnown = true;
+		if (tokens === nextTokens) return;
+		tokens = nextTokens;
+		invalidate();
+		refresh();
+	};
+	const snapshot = (): RuntimeSheetSnapshot => ({
+		tokens,
+		rules: orderedRules().slice(),
+		...(tokenManifestKnown
+			? {
+					tokenManifest: Array.from(tokenManifest, ([name, fingerprint]) => ({
+						name,
+						fingerprint,
+					})).toSorted((left, right) => left.name.localeCompare(right.name)),
+				}
+			: {}),
+	});
 	const hydrate = (value: RuntimeSheetSnapshot): void => {
 		if (!isRecord(value) || !isSafeString(value.tokens) || !Array.isArray(value.rules)) return;
 		tokens = value.tokens;
+		const manifest = value.tokenManifest;
+		if (Array.isArray(manifest) && manifest.every(isRuntimeTokenManifestEntry)) {
+			const nextManifest = new Map(manifest.map((entry) => [entry.name, entry.fingerprint]));
+			tokenManifestKnown =
+				nextManifest.size === manifest.length && (value.tokens === "" || nextManifest.size > 0);
+			tokenManifest = tokenManifestKnown ? nextManifest : new Map();
+		} else {
+			tokenManifest = new Map();
+			tokenManifestKnown = value.tokens === "";
+		}
 		store.replace(value.rules.filter(isRuntimeRule));
 		invalidate();
 		refresh();
@@ -284,7 +349,7 @@ export function createRuntimeSheet(
 		);
 	};
 
-	return {
+	const sheet = {
 		id: options.id ?? "yumcss",
 		css,
 		register,
@@ -301,7 +366,20 @@ export function createRuntimeSheet(
 			mounted = false;
 		},
 	};
+	runtimeTokenManifestRegistrations.set(sheet, registerTokens);
+	return sheet;
 }
 
 /** The live sheet returned by {@link createRuntimeSheet}. */
 export type RuntimeSheet = ReturnType<typeof createRuntimeSheet>;
+
+export const registerRuntimeTokenManifest = (
+	sheet: RuntimeSheet,
+	manifest: ReadonlyMap<string, string>,
+	tokens: string,
+): void => {
+	const register = runtimeTokenManifestRegistrations.get(sheet);
+	if (register === undefined)
+		throw new Error("yumcss: runtime sheet cannot accept token manifests");
+	register(manifest, tokens);
+};

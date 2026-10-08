@@ -89,7 +89,8 @@ test("goober -> react-native -> goober: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "react-native";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -266,7 +267,8 @@ test("goober -> react-native -> goober: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "react-native";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -342,7 +344,8 @@ test("goober -> react-native -> goober: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "react-native";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -433,7 +436,8 @@ test("goober -> react-native -> goober: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "react-native";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

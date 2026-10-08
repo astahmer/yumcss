@@ -52,7 +52,8 @@ test("solid-styled -> emotion -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("solid-styled -> emotion -> solid-styled: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@emotion/styled";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +140,8 @@ test("solid-styled -> emotion -> solid-styled: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +175,8 @@ test("solid-styled -> emotion -> solid-styled: retains the documented secondary 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@emotion/styled";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("solid-styled -> emotion -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -274,7 +279,8 @@ test("solid-styled -> emotion -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "import "@emotion/styled";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +319,8 @@ test("solid-styled -> emotion -> solid-styled: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "@emotion/styled";
+		      "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +354,8 @@ test("solid-styled -> emotion -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "import "@emotion/styled";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +409,8 @@ test("solid-styled -> emotion -> solid-styled: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -435,7 +444,8 @@ test("solid-styled -> emotion -> solid-styled: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@emotion/styled";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "#2563eb", "padding": "1rem" }));",
 		    "converted": 1,
 		    "generatedFiles": [],

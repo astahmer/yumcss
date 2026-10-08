@@ -52,7 +52,8 @@ test("bamboo -> react-native -> bamboo: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,7 +90,8 @@ test("bamboo -> react-native -> bamboo: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +141,8 @@ test("bamboo -> react-native -> bamboo: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,7 +179,8 @@ test("bamboo -> react-native -> bamboo: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,7 +246,8 @@ test("bamboo -> react-native -> bamboo: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -279,7 +284,8 @@ test("bamboo -> react-native -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +322,8 @@ test("bamboo -> react-native -> bamboo: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
+		      "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -353,7 +360,8 @@ test("bamboo -> react-native -> bamboo: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -405,7 +413,8 @@ test("bamboo -> react-native -> bamboo: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -442,7 +451,8 @@ test("bamboo -> react-native -> bamboo: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "react-native";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

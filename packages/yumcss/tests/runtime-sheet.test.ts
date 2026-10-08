@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { typeValue } from "./type-fixtures.ts";
 import { createCss } from "../src/css/create-css.ts";
 import {
@@ -7,10 +7,17 @@ import {
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import {
+	createConditionsBucket,
+	genCSSRule,
+	parseCondition,
+} from "../src/css/stylesheet-lowering.ts";
 import { createNamedAtomsStrategy } from "../src/css/named-atoms-strategy.ts";
 import { createStyleXAdapter } from "../src/css/stylex-adapter.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
+import { firstThatWorks } from "../src/css/first-that-works.ts";
 import { defaultPreset } from "../src/preset/default.ts";
+import { define } from "../src/types/define-preset.export.ts";
 import { examplePreset } from "@yumcss/example-preset";
 import type {
 	RuntimeDeclaration,
@@ -31,6 +38,321 @@ type RuntimeContractSurface = {
 	serializer: RuntimeRuleSerializer;
 	sink: RuntimeStyleElementSink;
 };
+
+test("shared runtime sheets retain each dynamic carrier namespace", () => {
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const first = createRuntimeCss(defaultPreset, { sheet, namespace: "first" });
+	const second = createRuntimeCss(defaultPreset, { sheet, namespace: "second" });
+	const firstCarrier = first.vars({ color: "red" });
+	const secondCarrier = second.vars({ color: "blue" });
+	expect(firstCarrier.class).toBe("first-color");
+	expect(secondCarrier.class).toBe("second-color");
+	expect(sheet.css()).toContain(".first-color{color: var(--first-c-color)}");
+	expect(sheet.css()).toContain(".second-color{color: var(--second-c-color)}");
+	expect(sheet.snapshot().rules).toHaveLength(2);
+	first.vars({ color: "green" });
+	expect(sheet.snapshot().rules).toHaveLength(2);
+	const hydrated = createRuntimeSheet({ autoMount: false });
+	hydrated.hydrate(sheet.snapshot());
+	createRuntimeCss(defaultPreset, { sheet: hydrated, namespace: "first" }).vars({ color: "black" });
+	expect(hydrated.snapshot().rules).toHaveLength(2);
+	expect(hydrated.css()).toContain(".second-color");
+});
+
+test("shared runtime sheets compose disjoint preset tokens and preserve hydration", () => {
+	const firstPreset = define.preset(
+		{ config: {}, tokens: { colors: { $first: "red" } } },
+		{ strict: true, conditions: {}, properties: { color: { $tokens: "colors", $strict: false } } },
+	);
+	const secondPreset = define.preset(
+		{ config: {}, tokens: { colors: { $second: "blue" } } },
+		{ strict: true, conditions: {}, properties: { color: { $tokens: "colors", $strict: false } } },
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const first = createRuntimeCss(firstPreset, { sheet });
+	const second = createRuntimeCss(secondPreset, { sheet });
+	first.class({ color: "$first" });
+	second.class({ color: "$second" });
+	expect(sheet.snapshot().tokens).toContain(": red;");
+	expect(sheet.snapshot().tokens).toContain(": blue;");
+	const combined = sheet.css();
+	createRuntimeCss(firstPreset, { sheet }).class({ color: "$first" });
+	expect(sheet.css()).toBe(combined);
+	const hydrated = createRuntimeSheet({ autoMount: false });
+	hydrated.hydrate(sheet.snapshot());
+	createRuntimeCss(firstPreset, { sheet: hydrated }).class({ color: "$first" });
+	expect(hydrated.css()).toBe(combined);
+});
+
+test("shared runtime sheets reject conflicting definitions for one token variable", () => {
+	const presetFor = (color: string) =>
+		define.preset(
+			{ config: {}, tokens: { colors: { $same: color } } },
+			{
+				strict: true,
+				conditions: {},
+				properties: { color: { $tokens: "colors", $strict: false } },
+			},
+		);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(presetFor("red"), { sheet }).class({ color: "$same" });
+	const before = sheet.css();
+	const conflicting = createRuntimeCss(presetFor("blue"), { sheet });
+
+	expect(() => conflicting.class({ color: "$same" })).toThrow("conflicting runtime token variable");
+	expect(sheet.css()).toBe(before);
+});
+
+test("runtime token manifests register across duplicate module instances", async () => {
+	const firstRuntimeSheetModule = await vi.importActual<
+		typeof import("../src/css/runtime-sheet.ts")
+	>("../src/css/runtime-sheet.ts?copy=first");
+	const secondRuntimeSheetModule = await vi.importActual<
+		typeof import("../src/css/runtime-sheet.ts")
+	>("../src/css/runtime-sheet.ts?copy=second");
+	const sheet = firstRuntimeSheetModule.createRuntimeSheet({ autoMount: false });
+
+	expect(() =>
+		secondRuntimeSheetModule.registerRuntimeTokenManifest(
+			sheet,
+			new Map([["colors.$same", "same-token"]]),
+			":root{--same:red}",
+		),
+	).not.toThrow();
+});
+
+test("runtime style registration can recover after a token conflict is cleared", () => {
+	const presetFor = (color: string) =>
+		define.preset(
+			{ config: {}, tokens: { colors: { $same: color } } },
+			{
+				strict: true,
+				conditions: {},
+				properties: {
+					color: { $tokens: "colors", $strict: false },
+					backgroundColor: { $tokens: "colors", $strict: false },
+				},
+			},
+		);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(presetFor("red"), { sheet }).class({ backgroundColor: "$same" });
+	const conflicting = createRuntimeCss(presetFor("blue"), { sheet });
+
+	expect(() => conflicting.class({ color: "$same" })).toThrow("conflicting runtime token variable");
+	sheet.setTokens("");
+
+	const className = conflicting.class({ color: "$same" });
+
+	expect(className).toBeTruthy();
+	expect(sheet.css()).toMatch(/[{;]color:var\(/u);
+});
+
+test("failed runtime style processing does not register preset tokens", () => {
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const css = createRuntimeCss(examplePreset, {
+		sheet,
+		className: {
+			name: "opaque",
+			sheetBacked: false,
+			toClassName: () => null,
+		},
+	});
+
+	expect(() => css.class({ display: firstThatWorks("flex", "block") })).toThrow(
+		"firstThatWorks requires the atomic stylesheet",
+	);
+	expect(sheet.snapshot().tokens).toBe("");
+	expect(sheet.snapshot().rules).toEqual([]);
+});
+
+test("failed multi-property runtime calls discard declarations staged before the error", () => {
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const css = createRuntimeCss(examplePreset, {
+		sheet,
+		className: {
+			name: "opaque",
+			sheetBacked: false,
+			toClassName: () => null,
+		},
+	});
+
+	expect(() => css.class({ color: "red", display: firstThatWorks("flex", "block") })).toThrow(
+		"firstThatWorks requires the atomic stylesheet",
+	);
+	expect(sheet.snapshot().tokens).toBe("");
+	expect(sheet.snapshot().rules).toEqual([]);
+
+	css.class({ color: "blue" });
+	expect(sheet.css()).not.toMatch(/color:red/u);
+	expect(sheet.css()).toMatch(/color:blue/u);
+	expect(sheet.snapshot().rules).toHaveLength(1);
+});
+
+test("empty runtime style calls do not claim conflicting token manifests", () => {
+	const presetFor = (color: string) =>
+		define.preset(
+			{ config: {}, tokens: { colors: { $same: color } } },
+			{
+				strict: true,
+				conditions: {},
+				properties: { color: { $tokens: "colors", $strict: false } },
+			},
+		);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const red = createRuntimeCss(presetFor("red"), { sheet });
+	const blue = createRuntimeCss(presetFor("blue"), { sheet });
+	red.class({ color: "$same" });
+	const before = sheet.css();
+
+	expect(() => blue.class({})).not.toThrow();
+	expect(() => blue.vars({})).not.toThrow();
+	expect(sheet.css()).toBe(before);
+	expect(() => blue.class({ color: "$same" })).toThrow("conflicting runtime token variable");
+});
+
+test("shared runtime sheets reject conflicts in conditional token definitions", () => {
+	const presetFor = (dark: string) =>
+		define.preset(
+			{ config: {}, tokens: { colors: { $same: { base: "red", dark } } } },
+			{
+				strict: true,
+				conditions: { dark: "@media (prefers-color-scheme: dark)" },
+				properties: { color: { $tokens: "colors", $strict: false } },
+			},
+		);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(presetFor("black"), { sheet }).class({ color: "$same" });
+	const before = sheet.css();
+	const conflicting = createRuntimeCss(presetFor("white"), { sheet });
+
+	expect(() => conflicting.class({ color: "$same" })).toThrow("conflicting runtime token variable");
+	expect(sheet.css()).toBe(before);
+});
+
+test("shared runtime sheets reject conflicting custom property registrations", () => {
+	const presetFor = (initialValue: string) =>
+		define.preset(
+			{ config: {}, tokens: {} },
+			{
+				strict: true,
+				conditions: {},
+				properties: { color: { $strict: false } },
+				cssVariables: {
+					progress: { syntax: "<number>", inherits: false, initialValue },
+				},
+			},
+		);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(presetFor("0"), { sheet }).class({ color: "red" });
+	const before = sheet.css();
+	const conflicting = createRuntimeCss(presetFor("1"), { sheet });
+
+	expect(() => conflicting.class({ color: "blue" })).toThrow("conflicting runtime token variable");
+	expect(sheet.css()).toBe(before);
+});
+
+test("shared runtime sheets accept identical token definitions", () => {
+	const preset = define.preset(
+		{ config: {}, tokens: { colors: { $same: "red" } } },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $tokens: "colors", $strict: false } },
+		},
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(preset, { sheet }).class({ color: "$same" });
+	const before = sheet.css();
+	createRuntimeCss(preset, { sheet }).class({ color: "$same" });
+
+	expect(sheet.css()).toBe(before);
+	expect(sheet.snapshot().tokenManifest).not.toHaveLength(0);
+});
+
+test("shared runtime sheets reject an unverified raw token prelude", () => {
+	const preset = define.preset(
+		{ config: {}, tokens: { colors: { $same: "red" } } },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $tokens: "colors", $strict: false } },
+		},
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	sheet.setTokens(":root{--foreign:red}");
+	const css = createRuntimeCss(preset, { sheet });
+
+	expect(() => css.class({ color: "$same" })).toThrow("unverified token prelude");
+	expect(sheet.css()).toBe(":root{--foreign:red}");
+});
+
+test("disjoint runtime tokens are appended even when one value contains their prelude", () => {
+	const secondPreset = define.preset(
+		{ config: {}, tokens: {} },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $strict: false } },
+			cssVariables: { new: "red" },
+		},
+	);
+	const secondPrelude = createStylesheet(secondPreset).gen.tokens();
+	const firstPreset = define.preset(
+		{ config: {}, tokens: {} },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $strict: false } },
+			cssVariables: { payload: secondPrelude },
+		},
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	createRuntimeCss(firstPreset, { sheet }).class({ color: "red" });
+	createRuntimeCss(secondPreset, { sheet }).class({ color: "blue" });
+
+	expect(sheet.snapshot().tokens.split(secondPrelude)).toHaveLength(3);
+});
+
+test("runtime token declarations are revalidated after a sheet token reset", () => {
+	const preset = define.preset(
+		{ config: {}, tokens: { colors: { $same: "red" } } },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $tokens: "colors", $strict: false } },
+		},
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	const css = createRuntimeCss(preset, { sheet });
+	css.class({ color: "$same" });
+	const rulesBeforeReset = sheet.snapshot().rules;
+	sheet.setTokens(":root{--manual:red}");
+
+	expect(() => css.class({ color: "$same" })).toThrow("unverified token prelude");
+	expect(sheet.snapshot().tokens).toBe(":root{--manual:red}");
+	expect(sheet.snapshot().rules).toEqual(rulesBeforeReset);
+});
+
+test("hydration rejects an empty manifest beside an unverified token prelude", () => {
+	const preset = define.preset(
+		{ config: {}, tokens: { colors: { $same: "red" } } },
+		{
+			strict: true,
+			conditions: {},
+			properties: { color: { $tokens: "colors", $strict: false } },
+		},
+	);
+	const sheet = createRuntimeSheet({ autoMount: false });
+	sheet.hydrate({
+		tokens: ":root{--foreign:red}",
+		rules: [],
+		tokenManifest: [],
+	});
+	const css = createRuntimeCss(preset, { sheet });
+
+	expect(() => css.class({ color: "$same" })).toThrow("unverified token prelude");
+	expect(sheet.css()).toBe(":root{--foreign:red}");
+});
 
 test("runtime contract surface remains type-addressable", () => {
 	const surface = typeValue<RuntimeContractSurface>();
@@ -298,10 +620,8 @@ describe("runtime CSS-in-JS sheet", () => {
 
 		runtime.class(styles);
 
-		expect(sheet.snapshot()).toEqual({
-			tokens: full.gen.tokens(),
-			rules: full.gen.atomicEntries(),
-		});
+		expect(sheet.snapshot().tokens).toBe(full.gen.tokens());
+		expect(sheet.snapshot().rules).toEqual(full.gen.atomicEntries());
 		const nestedRule = [...full.gen.atomicEntries().values()].find((rule) =>
 			rule.css.includes(".child"),
 		);
@@ -605,6 +925,39 @@ describe("runtime CSS-in-JS sheet", () => {
 			},
 		]);
 		expect(client.css()).toBe(server.css());
+	});
+
+	test("serializes relative selector branches like stylesheet lowering", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "style",
+				selector: ".generated",
+				conditions: [":checked, &[data-selected]"],
+				declarations: [{ property: "color", value: "red" }],
+			},
+		]);
+
+		expect(sheet.css()).toBe(".generated :checked, .generated[data-selected]{color:red}");
+	});
+
+	test("serializes bare type selectors in selector lists like stylesheet lowering", () => {
+		const input = "button, &:focus";
+		const conditions = createConditionsBucket({ className: ".generated" });
+		parseCondition(input, conditions);
+		const compiled = genCSSRule("color:red", conditions);
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "style",
+				selector: ".generated",
+				conditions: [input],
+				declarations: [{ property: "color", value: "red" }],
+			},
+		]);
+
+		expect(sheet.css()).toBe(compiled);
+		expect(compiled).toBe(".generated button, .generated:focus{color:red}");
 	});
 
 	test("deduplicates identical semantic rules registered in separate batches", () => {

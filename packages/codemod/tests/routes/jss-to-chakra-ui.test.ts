@@ -268,7 +268,8 @@ test("jss -> chakra-ui: preserves malformed concrete jss input", async () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const useStyles = { "card": defaultSystem.css({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

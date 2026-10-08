@@ -88,7 +88,8 @@ test("stitches -> aphrodite -> stitches: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -258,7 +259,8 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +335,8 @@ test("stitches -> aphrodite -> stitches: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@stitches/react";
+		      "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -423,7 +426,8 @@ test("stitches -> aphrodite -> stitches: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "aphrodite";
+		import { css } from "@stitches/react";
 		export const card = css({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

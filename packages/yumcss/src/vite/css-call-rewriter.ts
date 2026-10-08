@@ -217,7 +217,11 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		});
 		const firstThatWorksNames = findFirstThatWorksBindings(toOxcNode(parsed));
 		const evaluateCall = createFirstThatWorksEvaluator(firstThatWorksNames);
-		const resolveLiteralScope = createCssLiteralScopeResolver(toOxcNode(parsed), evaluateCall);
+		const resolveLiteralScope = createCssLiteralScopeResolver(
+			toOxcNode(parsed),
+			evaluateCall,
+			names,
+		);
 		const firstThatWorksValueNames = findCssFallbackValueNames(
 			toOxcNode(parsed),
 			firstThatWorksNames,
@@ -272,6 +276,12 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		walkWithParent(parsed, (node, parent, ancestors) => {
 			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
+			const binding =
+				call.callee?.type === NodeKind.Identifier
+					? (call.callee as { name?: string }).name
+					: (call.callee as { object?: { name?: string } })?.object?.name;
+			const literalConstants = resolveLiteralScope(call, ancestors);
+			if (binding !== undefined && literalConstants.isShadowed(binding)) return;
 			if (consumedCallStarts.has(call.start)) return;
 			const helperCall = staticHelperCalls.get(call.start);
 			if (helperCall !== undefined && helperCall.end === call.end) {
@@ -287,7 +297,6 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				}
 				return;
 			}
-			const literalConstants = resolveLiteralScope(call, ancestors);
 			const evaluateCssLiteral = (value: Parameters<LiteralCallEvaluator>[0] | undefined) =>
 				evalLiteral(value, literalConstants, evaluateCall);
 			const callee = call.callee;

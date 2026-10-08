@@ -52,7 +52,8 @@ test("bamboo -> goober -> bamboo: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("bamboo -> goober -> bamboo: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "display": "flex", "gap": "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("bamboo -> goober -> bamboo: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("bamboo -> goober -> bamboo: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("bamboo -> goober -> bamboo: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

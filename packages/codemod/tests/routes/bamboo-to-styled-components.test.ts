@@ -48,7 +48,8 @@ test("bamboo -> styled-components: migrates concrete bamboo syntax to styled-com
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("bamboo -> styled-components: carries a documented secondary bamboo API exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("bamboo -> styled-components: loads concrete theme and project context vari
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("bamboo -> styled-components: loads concrete theme and project context vari
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("bamboo -> styled-components: resolves concrete token values with project c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("bamboo -> styled-components: preserves malformed concrete bamboo input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { css } from "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

@@ -92,7 +92,8 @@ test("fela -> tamagui: carries a documented secondary fela API explicitly", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "react-fela";
+		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "button"} />; };",
 		  "converted": 1,

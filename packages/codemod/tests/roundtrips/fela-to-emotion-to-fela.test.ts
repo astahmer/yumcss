@@ -89,6 +89,7 @@ test("fela -> emotion -> fela: preserves an actionable concrete round trip", asy
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "@emotion/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -141,7 +142,8 @@ test("fela -> emotion -> fela: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "react-fela";
+		import styled from "@emotion/styled";
 		export const Card = styled("button")({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +177,8 @@ test("fela -> emotion -> fela: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "react-fela";
+		import styled from "@emotion/styled";
 		// yumcss:migrate-skip (route: emotion -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = styled("button")({ color: "red" });",
 		    "converted": 0,
@@ -281,6 +284,7 @@ test("fela -> emotion -> fela: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "@emotion/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -357,6 +361,7 @@ test("fela -> emotion -> fela: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "@emotion/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -448,6 +453,7 @@ test("fela -> emotion -> fela: resolves token values across both concrete legs",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "@emotion/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

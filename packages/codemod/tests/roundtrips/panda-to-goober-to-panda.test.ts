@@ -52,7 +52,8 @@ test("panda -> goober -> panda: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "&:hover": { "color": "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -224,7 +225,8 @@ test("panda -> goober -> panda: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +300,8 @@ test("panda -> goober -> panda: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("panda -> goober -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "styled-system/css";
+		import { css } from "goober";
 		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

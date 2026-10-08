@@ -266,7 +266,8 @@ test("compiled -> styled-components: preserves malformed concrete compiled input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { css } from "@compiled/react";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

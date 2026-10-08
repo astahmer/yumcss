@@ -48,7 +48,8 @@ test("emotion -> styled-components: migrates concrete emotion syntax to styled-c
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("emotion -> styled-components: carries a documented secondary emotion API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("emotion -> styled-components: loads concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("emotion -> styled-components: loads concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("emotion -> styled-components: resolves concrete token values with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("emotion -> styled-components: preserves malformed concrete emotion input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { css } from "@emotion/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

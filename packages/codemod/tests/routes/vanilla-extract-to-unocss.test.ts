@@ -48,7 +48,8 @@ test("vanilla-extract -> unocss: migrates concrete vanilla-extract syntax to uno
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:8px]";",
+		  "code": "import "@vanilla-extract/css";
+		export const card = "[color:red] [padding:8px]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -147,7 +148,8 @@ test("vanilla-extract -> unocss: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const card = "[color:#2563eb] [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "[color:#2563eb] [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -182,7 +184,8 @@ test("vanilla-extract -> unocss: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const card = "text-brand [padding:8px]";",
+		    "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -229,7 +232,8 @@ test("vanilla-extract -> unocss: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "text-brand [padding:8px]";",
+		  "code": "import "@vanilla-extract/css";
+		export const card = "text-brand [padding:8px]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -273,7 +277,8 @@ test("vanilla-extract -> unocss: preserves malformed concrete vanilla-extract in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:8px]";
+		  "code": "import { style } from "@vanilla-extract/css";
+		export const card = "[color:red] [padding:8px]";
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -53,8 +53,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -92,8 +92,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves an actionable concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
@@ -149,8 +149,8 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
 		",
@@ -188,8 +188,8 @@ test("solid-styled -> vue-styled -> solid-styled: retains the documented seconda
 		  "reverse": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: red; padding: 1rem;\`;
 		</script>
@@ -261,8 +261,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -300,8 +300,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		    "reverse": {
 		      "changed": true,
 		      "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
@@ -344,8 +344,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		    "forward": {
 		      "changed": true,
 		      "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -383,8 +383,8 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		    "reverse": {
 		      "changed": true,
 		      "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
@@ -442,8 +442,8 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>
 		",
@@ -481,8 +481,8 @@ test("solid-styled -> vue-styled -> solid-styled: resolves token values across b
 		  "reverse": {
 		    "changed": true,
 		    "code": "<script setup>
+		import "solid-styled-components";
 		import styled from "vue-styled-components";
-
 		// yumcss:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
 		export const Card = styled.div\`color: #2563eb; padding: 1rem;\`;
 		</script>

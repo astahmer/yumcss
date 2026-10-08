@@ -50,8 +50,8 @@ test("bamboo -> chakra-ui: migrates concrete bamboo syntax to chakra-ui", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,8 +152,8 @@ test("bamboo -> chakra-ui: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#2a57c8" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,8 +187,8 @@ test("bamboo -> chakra-ui: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -234,8 +234,8 @@ test("bamboo -> chakra-ui: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -278,8 +278,8 @@ test("bamboo -> chakra-ui: preserves malformed concrete bamboo input", async () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import { css } from "styled-system/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

@@ -91,7 +91,8 @@ test("mui -> mantine: carries a documented secondary mui API explicitly", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
+		  "code": "import "@mui/system";
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: 8 }, ...props.style }} />;",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [

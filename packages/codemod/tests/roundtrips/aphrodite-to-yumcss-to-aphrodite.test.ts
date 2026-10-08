@@ -52,7 +52,8 @@ test("aphrodite -> yumcss -> aphrodite: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
@@ -88,7 +89,6 @@ test("aphrodite -> yumcss -> aphrodite: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +140,8 @@ test("aphrodite -> yumcss -> aphrodite: retains the documented secondary API wit
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+		    "code": "import "aphrodite";
+		import { createRuntimeCss } from "yumcss/css/runtime";
 		import { defaultPreset } from "yumcss/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
 		export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
@@ -176,7 +177,8 @@ test("aphrodite -> yumcss -> aphrodite: retains the documented secondary API wit
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+		    "code": "import "aphrodite";
+		import { createRuntimeCss } from "yumcss/css/runtime";
 		import { defaultPreset } from "yumcss/preset/default";
 		const runtimeCss = createRuntimeCss(defaultPreset);
 		// yumcss:migrate-skip (route: yumcss -> aphrodite | capability-blocked: rule-level: 1 semantic rules; font-face: font-face rule | available: static, named-map, residual)
@@ -247,7 +249,8 @@ test("aphrodite -> yumcss -> aphrodite: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
@@ -283,7 +286,6 @@ test("aphrodite -> yumcss -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +324,8 @@ test("aphrodite -> yumcss -> aphrodite: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		      "converted": 1,
@@ -358,7 +361,6 @@ test("aphrodite -> yumcss -> aphrodite: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +415,8 @@ test("aphrodite -> yumcss -> aphrodite: resolves token values across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const styles = { "card": css.class({ color: "brand", padding: "8px" }) };",
 		    "converted": 1,
@@ -449,7 +452,6 @@ test("aphrodite -> yumcss -> aphrodite: resolves token values across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

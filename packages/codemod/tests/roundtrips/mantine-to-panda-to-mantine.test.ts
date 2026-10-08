@@ -88,6 +88,7 @@ test("mantine -> panda -> mantine: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "styled-system/css";
 		export const App = () => <Box className={{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -251,6 +252,7 @@ test("mantine -> panda -> mantine: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "styled-system/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,6 +325,7 @@ test("mantine -> panda -> mantine: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
+		import "styled-system/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -410,6 +413,7 @@ test("mantine -> panda -> mantine: resolves token values across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import "styled-system/css";
 		export const App = () => <Box className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale))" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

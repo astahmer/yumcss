@@ -52,8 +52,7 @@ test("yumcss -> tailwind -> yumcss: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red] [padding:1rem]";",
+		    "code": "export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -90,7 +89,6 @@ test("yumcss -> tailwind -> yumcss: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,8 +138,7 @@ test("yumcss -> tailwind -> yumcss: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
+		    "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -178,7 +175,6 @@ test("yumcss -> tailwind -> yumcss: retains the documented secondary API without
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: "0.5" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -243,8 +239,7 @@ test("yumcss -> tailwind -> yumcss: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand [padding:1rem]";",
+		      "code": "export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -282,7 +277,6 @@ test("yumcss -> tailwind -> yumcss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -319,8 +313,7 @@ test("yumcss -> tailwind -> yumcss: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand [padding:1rem]";",
+		      "code": "export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -358,7 +351,6 @@ test("yumcss -> tailwind -> yumcss: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -410,8 +402,7 @@ test("yumcss -> tailwind -> yumcss: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -449,7 +440,6 @@ test("yumcss -> tailwind -> yumcss: resolves token values across both concrete l
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

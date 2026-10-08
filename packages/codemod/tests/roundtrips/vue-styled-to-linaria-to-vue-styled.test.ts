@@ -52,7 +52,8 @@ test("vue-styled -> linaria -> vue-styled: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -141,7 +142,8 @@ test("vue-styled -> linaria -> vue-styled: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -246,7 +248,8 @@ test("vue-styled -> linaria -> vue-styled: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
@@ -322,7 +325,8 @@ test("vue-styled -> linaria -> vue-styled: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
@@ -413,7 +417,8 @@ test("vue-styled -> linaria -> vue-styled: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "vue-styled-components";
+		import { css } from "@linaria/core";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,

@@ -52,7 +52,8 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves an actionable con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +231,8 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +307,8 @@ test("vanilla-extract -> linaria -> vanilla-extract: preserves concrete theme an
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -395,7 +398,8 @@ test("vanilla-extract -> linaria -> vanilla-extract: resolves token values acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

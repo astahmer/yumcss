@@ -93,7 +93,8 @@ test("fela -> styled-components: carries a documented secondary fela API explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "react-fela";
+		import styled from "styled-components";
 		export const Card = styled("button")({ color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -1,0 +1,27 @@
+{
+  "toolIcon": {
+    "_tag": "website",
+    "pageUrl": "http://localhost:4383/?proof=fixture"
+  },
+  "value": {
+    "after": {
+      "first": "rgb(255, 0, 0)",
+      "rules": 4,
+      "second": "rgb(0, 0, 255)",
+      "solid": "<div title=\"after title\" class=\"flex gap-8 after\">after children</div>",
+      "tokenFirst": "rgb(255, 0, 0)",
+      "tokenSecond": "rgb(0, 0, 255)",
+      "tokens": ":root {--\\31 6p9ifv: red;}\n:root {--\\37 vfkh3: blue;}"
+    },
+    "assertions": "all passed",
+    "before": {
+      "first": "rgb(255, 0, 0)",
+      "rules": 4,
+      "second": "rgb(0, 0, 255)",
+      "solid": "<div title=\"before title\" class=\"flex gap-4 before\">before children</div>",
+      "tokenFirst": "rgb(255, 0, 0)",
+      "tokenSecond": "rgb(0, 0, 255)",
+      "tokens": ":root {--\\31 6p9ifv: red;}\n:root {--\\37 vfkh3: blue;}"
+    }
+  }
+}

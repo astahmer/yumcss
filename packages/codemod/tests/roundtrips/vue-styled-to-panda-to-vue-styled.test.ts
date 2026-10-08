@@ -52,7 +52,8 @@ test("vue-styled -> panda -> vue-styled: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "vue-styled-components";
+		import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "red", padding: "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -87,7 +88,8 @@ test("vue-styled -> panda -> vue-styled: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "styled-system/css";
+		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -139,7 +141,8 @@ test("vue-styled -> panda -> vue-styled: retains the documented secondary API wi
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "vue-styled-components";
+		import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "red", padding: "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -174,7 +177,8 @@ test("vue-styled -> panda -> vue-styled: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "styled-system/css";
+		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: red; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,
@@ -242,7 +246,8 @@ test("vue-styled -> panda -> vue-styled: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "vue-styled-components";
+		import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "#2563eb", padding: "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -277,7 +282,8 @@ test("vue-styled -> panda -> vue-styled: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "styled-system/css";
+		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
@@ -316,7 +322,8 @@ test("vue-styled -> panda -> vue-styled: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "vue-styled-components";
+		import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "brand.500", padding: "1rem" })] }, slots.default?.()));",
 		      "converted": 1,
@@ -351,7 +358,8 @@ test("vue-styled -> panda -> vue-styled: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "styled-system/css";
+		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		      "converted": 1,
@@ -406,7 +414,8 @@ test("vue-styled -> panda -> vue-styled: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "vue-styled-components";
+		import { css } from "styled-system/css";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, css({ color: "brand.500", padding: "1rem" })] }, slots.default?.()));",
 		    "converted": 1,
@@ -441,7 +450,8 @@ test("vue-styled -> panda -> vue-styled: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "styled-system/css";
+		import { defineComponent, h } from "vue";
 		import styled from "vue-styled-components";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, styled.div\`color: #2563eb; padding: 1rem;\`] }, slots.default?.()));",
 		    "converted": 1,

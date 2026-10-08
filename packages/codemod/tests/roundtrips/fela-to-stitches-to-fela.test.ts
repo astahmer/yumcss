@@ -143,7 +143,8 @@ test("fela -> stitches -> fela: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "react-fela";
+		import { styled } from "@stitches/react";
 		export const Card = styled("button", { color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +180,8 @@ test("fela -> stitches -> fela: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@stitches/react";
+		    "code": "import "react-fela";
+		import { styled } from "@stitches/react";
 		// yumcss:migrate-skip (route: stitches -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = styled("button", { color: "red" });",
 		    "converted": 0,

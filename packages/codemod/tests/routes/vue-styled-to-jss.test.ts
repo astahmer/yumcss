@@ -48,7 +48,8 @@ test("vue-styled -> jss: migrates concrete vue-styled syntax to jss", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import jss from "jss";
+		  "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		  "converted": 1,
@@ -94,7 +95,8 @@ test("vue-styled -> jss: carries a documented secondary vue-styled API explicitl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import jss from "jss";
+		  "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		  "converted": 1,
@@ -149,7 +151,8 @@ test("vue-styled -> jss: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 1,
@@ -186,7 +189,8 @@ test("vue-styled -> jss: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		    "converted": 1,
@@ -235,7 +239,8 @@ test("vue-styled -> jss: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import jss from "jss";
+		  "code": "import "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "#2563eb", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));",
 		  "converted": 1,
@@ -281,7 +286,8 @@ test("vue-styled -> jss: preserves malformed concrete vue-styled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import jss from "jss";
+		  "code": "import styled from "vue-styled-components";
+		import jss from "jss";
 		import { defineComponent, h } from "vue";
 		export const Card = defineComponent((props, { attrs, slots }) => () => h("div", { ...props, ...attrs, class: [attrs.class, jss.createStyleSheet({ style: { color: "red", padding: "1rem" } }).attach().classes.style] }, slots.default?.()));
 		const unfinished = { /* unfinished vue-styled */",

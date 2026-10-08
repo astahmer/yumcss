@@ -52,7 +52,8 @@ test("bamboo -> react-strict-dom -> bamboo: preserves an actionable concrete rou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("bamboo -> react-strict-dom -> bamboo: retains the documented secondary API
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("bamboo -> react-strict-dom -> bamboo: preserves concrete theme and project
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("bamboo -> react-strict-dom -> bamboo: preserves concrete theme and project
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("bamboo -> react-strict-dom -> bamboo: resolves token values across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],

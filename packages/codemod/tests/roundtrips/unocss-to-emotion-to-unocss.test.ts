@@ -249,7 +249,8 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "@emotion/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -321,7 +322,8 @@ test("unocss -> emotion -> unocss: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "@emotion/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -408,7 +410,8 @@ test("unocss -> emotion -> unocss: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		    "code": "import "@emotion/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

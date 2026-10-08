@@ -531,7 +531,7 @@ describe("userland adversarial contracts", () => {
 		expect(Object.hasOwn(compiled, "constructor")).toBe(true);
 		expect(Object.hasOwn(raw, "__proto__")).toBe(true);
 		expect(Object.getPrototypeOf(compiled)).toBeNull();
-		expect(Object.getPrototypeOf(raw)).toBeNull();
+		expect(Object.getPrototypeOf(raw)).toBe(Object.prototype);
 		expect(({} as { polluted?: boolean }).polluted).toBeUndefined();
 	});
 
@@ -821,7 +821,7 @@ describe("userland adversarial contracts", () => {
 			},
 		]);
 
-		expect(sheet.css()).toContain(".item[data-state=checked]{color:red}");
+		expect(sheet.css()).toContain(".item [data-state=checked]{color:red}");
 		expect(sheet.css()).toContain('[data-theme="dark"] .item{color:white}');
 	});
 

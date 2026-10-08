@@ -282,7 +282,8 @@ test("goober -> react-strict-dom: preserves malformed concrete goober input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { css } from "goober";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

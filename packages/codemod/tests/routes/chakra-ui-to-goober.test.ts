@@ -282,7 +282,8 @@ test("chakra-ui -> goober: preserves malformed concrete chakra-ui input", async 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "goober";
 		export const App = () => css({ "background": "#fecaca", "padding": "1rem" });
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

@@ -14,11 +14,9 @@ export const createFirstThatWorksEvaluator =
 	(node: Expression, consts?: LiteralConstantScope): FirstThatWorksValue | undefined => {
 		if (node.type !== NodeKind.CallExpression) return undefined;
 		const callee = node.callee;
-		if (
-			callee?.type !== NodeKind.Identifier ||
-			!names.has((callee as { name?: string }).name ?? "")
-		)
-			return undefined;
+		if (callee?.type !== NodeKind.Identifier) return undefined;
+		const name = (callee as { name?: string }).name ?? "";
+		if (!names.has(name) || consts?.isShadowed?.(name)) return undefined;
 		const values: Array<string | number> = [];
 		for (const argument of node.arguments) {
 			if (argument.type === NodeKind.SpreadElement) return undefined;

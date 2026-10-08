@@ -266,7 +266,8 @@ test("treat -> tokenami: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { style } from "treat";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

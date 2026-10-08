@@ -52,7 +52,8 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 0,
@@ -139,7 +141,8 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "import "@mui/system";
+		import { styled } from "solid-styled-components";
 		export const Card = styled("div")(() => ({ "color": "red", "padding": 8 }));",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +178,8 @@ test("mui -> solid-styled -> mui: retains the documented secondary API without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
+		    "code": "import "solid-styled-components";
+		import { styled } from "@mui/system";
 		export const Card = styled("div")({ color: "red", padding: 8 });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +244,8 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -276,7 +281,8 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 0,
@@ -314,7 +320,8 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -350,7 +357,8 @@ test("mui -> solid-styled -> mui: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "solid-styled-components";
+		      "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 0,
@@ -403,7 +411,8 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -439,7 +448,8 @@ test("mui -> solid-styled -> mui: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "@mui/material";
+		import { css } from "solid-styled-components";
 		// yumcss:migrate-skip (route: solid-styled -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 0,

@@ -48,7 +48,8 @@ test("style9 -> react-strict-dom: migrates concrete style9 syntax to react-stric
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> react-strict-dom: carries a documented secondary style9 API expl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red" }), "muted": css.create({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> react-strict-dom: loads concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> react-strict-dom: loads concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> react-strict-dom: resolves concrete token values with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "#2563eb" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> react-strict-dom: preserves malformed concrete style9 input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import style9 from "style9";
+		import { css } from "react-strict-dom";
 		export const styles = { "card": css.create({ color: "red" }) };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

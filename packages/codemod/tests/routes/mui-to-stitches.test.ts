@@ -48,7 +48,8 @@ test("mui -> stitches: migrates concrete mui syntax to stitches", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "red", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("mui -> stitches: carries a documented secondary mui API explicitly", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { styled } from "@stitches/react";
+		  "code": "import "@mui/system";
+		import { styled } from "@stitches/react";
 		export const Card = styled("div", { color: "red", padding: 8 });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -146,7 +148,8 @@ test("mui -> stitches: loads concrete theme and project context variants", async
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#f97316", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -182,7 +185,8 @@ test("mui -> stitches: loads concrete theme and project context variants", async
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
+		    "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -230,7 +234,8 @@ test("mui -> stitches: resolves concrete token values with project context", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "#2563eb", padding: "16px" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,7 +280,8 @@ test("mui -> stitches: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+		  "code": "import { Box } from "@mui/material";
+		import { css } from "@stitches/react";
 		export const App = () => css({ color: "red", padding: "16px" });
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

@@ -48,7 +48,8 @@ test("bamboo -> tamagui: migrates concrete bamboo syntax to tamagui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -90,7 +91,8 @@ test("bamboo -> tamagui: carries a documented secondary bamboo API explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { display: "flex", gap: "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -141,7 +143,8 @@ test("bamboo -> tamagui: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +177,8 @@ test("bamboo -> tamagui: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -219,7 +223,8 @@ test("bamboo -> tamagui: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -261,7 +266,8 @@ test("bamboo -> tamagui: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { css } from "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

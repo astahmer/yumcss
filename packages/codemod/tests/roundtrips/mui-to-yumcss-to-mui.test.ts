@@ -52,7 +52,8 @@ test("mui -> yumcss -> mui: preserves an actionable concrete round trip", async 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
 		    "converted": 1,
@@ -87,7 +88,8 @@ test("mui -> yumcss -> mui: preserves an actionable concrete round trip", async 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		// yumcss:migrate-skip (route: yumcss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
@@ -139,7 +141,8 @@ test("mui -> yumcss -> mui: retains the documented secondary API without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/system";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -177,7 +180,8 @@ test("mui -> yumcss -> mui: retains the documented secondary API without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/system";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
@@ -247,7 +251,8 @@ test("mui -> yumcss -> mui: preserves concrete theme and project context variant
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		      "converted": 1,
@@ -282,7 +287,8 @@ test("mui -> yumcss -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		// yumcss:migrate-skip (route: yumcss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
@@ -321,7 +327,8 @@ test("mui -> yumcss -> mui: preserves concrete theme and project context variant
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		      "converted": 1,
@@ -356,7 +363,8 @@ test("mui -> yumcss -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		// yumcss:migrate-skip (route: yumcss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
@@ -410,7 +418,8 @@ test("mui -> yumcss -> mui: resolves token values across both concrete legs", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",
 		    "converted": 1,
@@ -445,7 +454,8 @@ test("mui -> yumcss -> mui: resolves token values across both concrete legs", as
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		// yumcss:migrate-skip (route: yumcss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => <div className={css.class({ color: "brand", padding: "16px" })} />;",

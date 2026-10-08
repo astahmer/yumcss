@@ -89,6 +89,7 @@ test("tamagui -> mui -> tamagui: preserves an actionable concrete round trip", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
+		import "@mui/system";
 		import { styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };
@@ -256,6 +257,7 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
+		import "@mui/system";
 		import { styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as} />; };

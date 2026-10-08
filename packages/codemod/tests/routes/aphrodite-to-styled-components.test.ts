@@ -48,7 +48,8 @@ test("aphrodite -> styled-components: migrates concrete aphrodite syntax to styl
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("aphrodite -> styled-components: loads concrete theme and project context v
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +188,8 @@ test("aphrodite -> styled-components: loads concrete theme and project context v
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -232,7 +235,8 @@ test("aphrodite -> styled-components: resolves concrete token values with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -275,7 +279,8 @@ test("aphrodite -> styled-components: preserves malformed concrete aphrodite inp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -276,7 +276,8 @@ test("treat -> vanilla-extract: preserves malformed concrete treat input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { style } from "treat";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

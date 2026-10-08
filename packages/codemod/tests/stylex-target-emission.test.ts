@@ -22,7 +22,6 @@ export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = stylex.create({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -80,7 +79,6 @@ export const card = css.class({ color: "red", _hover: { color: "blue" }, _focusV
 		{
 		  "changed": true,
 		  "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const card = stylex.create({
 			style: {
 				color: {

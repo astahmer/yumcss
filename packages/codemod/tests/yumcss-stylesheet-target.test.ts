@@ -82,7 +82,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.css";
-
 			export const card = "pw-card-124ugb9";",
 			    "converted": 1,
 			    "residuals": [],
@@ -104,7 +103,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import __yumcsscardStyles from "./Card.yumcss-pw-card-124ugb9.module.css";
-
 			export const card = __yumcsscardStyles["pw-card-124ugb9"];",
 			    "converted": 1,
 			    "residuals": [],
@@ -126,7 +124,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.less";
-
 			export const card = "pw-card-124ugb9";",
 			    "converted": 1,
 			    "residuals": [],
@@ -148,7 +145,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.scss";
-
 			export const card = "pw-card-124ugb9";",
 			    "converted": 1,
 			    "residuals": [],
@@ -308,7 +304,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.css";
-
 			export const styles = { "card": "pw-styles-card-1raj28m", "muted": "pw-styles-muted-58cpf3" };",
 			    "converted": 1,
 			    "residuals": [],
@@ -331,7 +326,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import __yumcssstylesStyles from "./Card.yumcss-pw-group0-gxa0u.module.css";
-
 			export const styles = { "card": __yumcssstylesStyles["pw-styles-card-1raj28m"], "muted": __yumcssstylesStyles["pw-styles-muted-58cpf3"] };",
 			    "converted": 1,
 			    "residuals": [],
@@ -354,7 +348,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.less";
-
 			export const styles = { "card": "pw-styles-card-1raj28m", "muted": "pw-styles-muted-58cpf3" };",
 			    "converted": 1,
 			    "residuals": [],
@@ -377,7 +370,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.scss";
-
 			export const styles = { "card": "pw-styles-card-1raj28m", "muted": "pw-styles-muted-58cpf3" };",
 			    "converted": 1,
 			    "residuals": [],
@@ -438,7 +430,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.css";
-
 			export const fade = "pw-kf-keyframes0-1ek0lvs";",
 			    "converted": 1,
 			    "residuals": [],
@@ -477,7 +468,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.less";
-
 			export const fade = "pw-kf-keyframes0-1ek0lvs";",
 			    "converted": 1,
 			    "residuals": [],
@@ -499,7 +489,6 @@ describe("YumCSS stylesheet targets", () => {
 			      },
 			    ],
 			    "code": "import "./Card.styles.scss";
-
 			export const fade = "pw-kf-keyframes0-1ek0lvs";",
 			    "converted": 1,
 			    "residuals": [],
@@ -725,7 +714,6 @@ describe("YumCSS stylesheet targets", () => {
 			  ],
 			  "code": "import "./Card.styles.css";
 			import "./Card-panel.styles.css";
-
 			export const card = "pw-card-124ugb9";
 			export const panel = "pw-panel-qoe6jv";",
 			  "converted": 2,

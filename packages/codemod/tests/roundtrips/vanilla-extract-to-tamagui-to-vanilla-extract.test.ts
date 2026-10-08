@@ -52,7 +52,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +86,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves an actionable con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red", padding: "8px" });",
 		    "converted": 0,
@@ -227,7 +229,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -260,7 +263,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
@@ -305,7 +309,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,7 +343,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: preserves concrete theme an
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		      "converted": 0,
@@ -398,7 +404,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -431,7 +438,8 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token values acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@vanilla-extract/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> vanilla-extract | lowering-residual: component | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb", padding: "8px" });",
 		    "converted": 0,

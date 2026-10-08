@@ -52,7 +52,8 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -87,7 +88,8 @@ test("mui -> vue-styled -> mui: preserves an actionable concrete round trip", as
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		    "converted": 0,
@@ -138,7 +140,8 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/system";
+		import styled from "vue-styled-components";
 		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -173,7 +176,8 @@ test("mui -> vue-styled -> mui: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/system";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> mui | lowering-residual: host-framework, validation)
 		export const Card = styled.div\`color: red; padding: 8;\`;",
 		    "converted": 0,
@@ -252,7 +256,8 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,7 +292,8 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		      "converted": 0,
@@ -325,7 +331,8 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,7 +367,8 @@ test("mui -> vue-styled -> mui: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
+		      "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		      "converted": 0,
@@ -413,7 +421,8 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -448,7 +457,8 @@ test("mui -> vue-styled -> mui: resolves token values across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		// yumcss:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 0,

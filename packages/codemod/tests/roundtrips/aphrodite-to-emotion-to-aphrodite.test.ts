@@ -52,7 +52,8 @@ test("aphrodite -> emotion -> aphrodite: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("aphrodite -> emotion -> aphrodite: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +228,8 @@ test("aphrodite -> emotion -> aphrodite: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -260,7 +263,8 @@ test("aphrodite -> emotion -> aphrodite: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,7 +303,8 @@ test("aphrodite -> emotion -> aphrodite: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
+		      "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +338,8 @@ test("aphrodite -> emotion -> aphrodite: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "aphrodite";
+		      "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +393,8 @@ test("aphrodite -> emotion -> aphrodite: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+		    "code": "import "aphrodite";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -421,7 +428,8 @@ test("aphrodite -> emotion -> aphrodite: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "@emotion/css";
+		import { StyleSheet } from "aphrodite";
 		export const styles = { "card": StyleSheet.create({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

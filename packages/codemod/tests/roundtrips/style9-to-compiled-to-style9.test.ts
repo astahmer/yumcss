@@ -52,7 +52,8 @@ test("style9 -> compiled -> style9: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -140,7 +141,8 @@ test("style9 -> compiled -> style9: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "red" }), "muted": css({ "opacity": 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -265,7 +267,8 @@ test("style9 -> compiled -> style9: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +343,8 @@ test("style9 -> compiled -> style9: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
+		      "code": "import "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -430,7 +434,8 @@ test("style9 -> compiled -> style9: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
+		    "code": "import "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "color": "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("react-native -> stylex -> react-native: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> stylex -> react-native: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "8px", backgroundColor: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +248,8 @@ test("react-native -> stylex -> react-native: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +325,8 @@ test("react-native -> stylex -> react-native: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +417,8 @@ test("react-native -> stylex -> react-native: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

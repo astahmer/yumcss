@@ -282,7 +282,8 @@ test("goober -> vanilla-extract: preserves malformed concrete goober input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
+		  "code": "import { css } from "goober";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

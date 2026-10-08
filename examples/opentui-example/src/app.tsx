@@ -26,7 +26,7 @@ export function App({ dark = false }: AppProps) {
 	return (
 		<box
 			style={{
-				...dss({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] } }),
+				...dss({ $frame: { fill: "$blue-500", pad: [4, 8] } }),
 				width: 46,
 				flexDirection: "column",
 				gap: 1,

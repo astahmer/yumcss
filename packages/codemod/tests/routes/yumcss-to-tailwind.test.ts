@@ -48,8 +48,7 @@ test("yumcss -> tailwind: migrates concrete yumcss syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "[color:red] [padding:1rem]";",
+		  "code": "export const card = "[color:red] [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -93,8 +92,7 @@ test("yumcss -> tailwind: carries a documented secondary yumcss API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
+		  "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -146,8 +144,7 @@ test("yumcss -> tailwind: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -183,8 +180,7 @@ test("yumcss -> tailwind: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -232,8 +228,7 @@ test("yumcss -> tailwind: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const card = "text-brand [padding:1rem]";",
+		  "code": "export const card = "text-brand [padding:1rem]";",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -278,7 +273,7 @@ test("yumcss -> tailwind: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

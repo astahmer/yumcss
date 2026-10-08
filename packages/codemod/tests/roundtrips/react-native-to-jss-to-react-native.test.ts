@@ -52,7 +52,8 @@ test("react-native -> jss -> react-native: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "red", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> jss -> react-native: retains the documented secondary API 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: "8px", backgroundColor: "red" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +248,8 @@ test("react-native -> jss -> react-native: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +325,8 @@ test("react-native -> jss -> react-native: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +417,8 @@ test("react-native -> jss -> react-native: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { color: "#2563eb", padding: "8px" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

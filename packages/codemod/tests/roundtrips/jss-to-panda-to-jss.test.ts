@@ -86,7 +86,8 @@ test("jss -> panda -> jss: preserves an actionable concrete round trip", async (
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +173,8 @@ test("jss -> panda -> jss: retains the documented secondary API without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const sheet = { "card": createUseStyles({ color: "red" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -274,7 +276,8 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +350,8 @@ test("jss -> panda -> jss: preserves concrete theme and project context variants
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
+		      "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -435,7 +439,8 @@ test("jss -> panda -> jss: resolves token values across both concrete legs", asy
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
+		    "code": "import "styled-system/css";
+		import { createUseStyles } from "react-jss";
 		export const useStyles = { "card": createUseStyles({ color: "#2563eb" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],

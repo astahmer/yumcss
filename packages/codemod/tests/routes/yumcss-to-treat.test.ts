@@ -49,7 +49,6 @@ test("yumcss -> treat: migrates concrete yumcss syntax to treat", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -158,7 +157,6 @@ test("yumcss -> treat: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -196,7 +194,6 @@ test("yumcss -> treat: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +243,6 @@ test("yumcss -> treat: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { style } from "treat";
-
 		export const card = style({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -292,8 +288,8 @@ test("yumcss -> treat: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "treat";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

@@ -86,7 +86,8 @@ test("linaria -> panda -> linaria: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -252,7 +253,8 @@ test("linaria -> panda -> linaria: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,7 +327,8 @@ test("linaria -> panda -> linaria: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +416,8 @@ test("linaria -> panda -> linaria: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "styled-system/css";
+		import { css } from "@linaria/core";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

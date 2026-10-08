@@ -89,7 +89,6 @@ test("react-strict-dom -> yumcss -> react-strict-dom: preserves an actionable co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,
@@ -294,7 +293,6 @@ test("react-strict-dom -> yumcss -> react-strict-dom: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
@@ -371,7 +369,6 @@ test("react-strict-dom -> yumcss -> react-strict-dom: preserves concrete theme a
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		      "converted": 1,
@@ -463,7 +460,6 @@ test("react-strict-dom -> yumcss -> react-strict-dom: resolves token values acro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		const styles = { "card": css.create({ color: "#2563eb", padding: "1rem" }) };
 		export const Card = () => <div className={styles.card} />;",
 		    "converted": 1,

@@ -49,7 +49,6 @@ test("yumcss -> style9: migrates concrete yumcss syntax to style9", () => {
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -95,7 +94,6 @@ test("yumcss -> style9: carries a documented secondary yumcss API explicitly", (
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const styles = { "card": style9.create({ "color": "red" }), "muted": style9.create({ "opacity": 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +147,6 @@ test("yumcss -> style9: loads concrete theme and project context variants", asyn
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#f97316", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -187,7 +184,6 @@ test("yumcss -> style9: loads concrete theme and project context variants", asyn
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +233,6 @@ test("yumcss -> style9: resolves concrete token values with project context", as
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-
 		export const card = style9.create({ "color": "#2563eb", "padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -283,8 +278,8 @@ test("yumcss -> style9: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

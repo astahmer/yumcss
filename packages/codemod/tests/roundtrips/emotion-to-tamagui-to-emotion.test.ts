@@ -52,7 +52,8 @@ test("emotion -> tamagui -> emotion: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +86,8 @@ test("emotion -> tamagui -> emotion: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View } from "@tamagui/core";
 		import styled from "@emotion/styled";
 		export const card = styled(View)({ color: "red", padding: "1rem" });",
 		    "converted": 1,
@@ -136,7 +138,8 @@ test("emotion -> tamagui -> emotion: retains the documented secondary API withou
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -169,7 +172,8 @@ test("emotion -> tamagui -> emotion: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View } from "@tamagui/core";
 		import styled from "@emotion/styled";
 		export const card = styled(View)({ color: "red", padding: "1rem" });",
 		    "converted": 1,
@@ -236,7 +240,8 @@ test("emotion -> tamagui -> emotion: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -269,7 +274,8 @@ test("emotion -> tamagui -> emotion: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
+		      "code": "import "@emotion/css";
+		import { View } from "@tamagui/core";
 		import styled from "@emotion/styled";
 		export const card = styled(View)({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
@@ -307,7 +313,8 @@ test("emotion -> tamagui -> emotion: preserves concrete theme and project contex
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +347,8 @@ test("emotion -> tamagui -> emotion: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View } from "@tamagui/core";
+		      "code": "import "@emotion/css";
+		import { View } from "@tamagui/core";
 		import styled from "@emotion/styled";
 		export const card = styled(View)({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
@@ -393,7 +401,8 @@ test("emotion -> tamagui -> emotion: resolves token values across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +435,8 @@ test("emotion -> tamagui -> emotion: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import "@emotion/css";
+		import { View } from "@tamagui/core";
 		import styled from "@emotion/styled";
 		export const card = styled(View)({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,

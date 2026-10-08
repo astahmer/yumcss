@@ -255,7 +255,8 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "text-brand p-card";",
+		      "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -329,7 +330,8 @@ test("unocss -> solid-styled -> unocss: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => "text-brand p-card";",
+		      "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -418,7 +420,8 @@ test("unocss -> solid-styled -> unocss: resolves token values across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => "text-brand p-card";",
+		    "code": "import "solid-styled-components";
+		export const App = () => "text-brand p-card";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

@@ -48,7 +48,8 @@ test("style9 -> tailwind: migrates concrete style9 syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]" };",
+		  "code": "import "style9";
+		export const styles = { "card": "[color:red]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -92,7 +93,8 @@ test("style9 -> tailwind: carries a documented secondary style9 API explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
+		  "code": "import "style9";
+		export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -145,7 +147,8 @@ test("style9 -> tailwind: loads concrete theme and project context variants", as
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:#2563eb]" };",
+		    "code": "import "style9";
+		export const styles = { "card": "[color:#2563eb]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -180,7 +183,8 @@ test("style9 -> tailwind: loads concrete theme and project context variants", as
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand" };",
+		    "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -227,7 +231,8 @@ test("style9 -> tailwind: resolves concrete token values with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "text-brand" };",
+		  "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		  "converted": 1,
 		  "generatedFiles": [],
 		  "loweringPlans": [
@@ -271,7 +276,8 @@ test("style9 -> tailwind: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const styles = { "card": "[color:red]" };
+		  "code": "import style9 from "style9";
+		export const styles = { "card": "[color:red]" };
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "generatedFiles": [],

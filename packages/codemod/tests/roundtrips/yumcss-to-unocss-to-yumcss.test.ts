@@ -52,8 +52,7 @@ test("yumcss -> unocss -> yumcss: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "[color:red] [padding:1rem]";",
+		    "code": "export const card = "[color:red] [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -89,7 +88,6 @@ test("yumcss -> unocss -> yumcss: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
-
 		export const card = "[color:red] [padding:1rem]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -224,8 +222,7 @@ test("yumcss -> unocss -> yumcss: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand [padding:1rem]";",
+		      "code": "export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -263,7 +260,6 @@ test("yumcss -> unocss -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -300,8 +296,7 @@ test("yumcss -> unocss -> yumcss: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
-		export const card = "text-brand [padding:1rem]";",
+		      "code": "export const card = "text-brand [padding:1rem]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -339,7 +334,6 @@ test("yumcss -> unocss -> yumcss: preserves concrete theme and project context v
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -391,8 +385,7 @@ test("yumcss -> unocss -> yumcss: resolves token values across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const card = "text-brand [padding:1rem]";",
+		    "code": "export const card = "text-brand [padding:1rem]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -430,7 +423,6 @@ test("yumcss -> unocss -> yumcss: resolves token values across both concrete leg
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

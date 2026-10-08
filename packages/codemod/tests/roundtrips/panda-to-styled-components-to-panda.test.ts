@@ -52,7 +52,8 @@ test("panda -> styled-components -> panda: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -221,7 +222,8 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -298,7 +300,8 @@ test("panda -> styled-components -> panda: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +393,8 @@ test("panda -> styled-components -> panda: resolves token values across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "styled-components";
 		export const card = styled.div({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red] hover:[color:blue]";",
+		    "code": "import "styled-system/css";
+		export const card = "[color:red] hover:[color:blue]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -88,6 +89,7 @@ test("panda -> unocss -> panda: preserves an actionable concrete round trip", as
 		  "reverse": {
 		    "changed": true,
 		    "code": "// yumcss:migrate-skip (configuration-residual: configuration)
+		import "styled-system/css";
 		export const card = "[color:red] hover:[color:blue]";",
 		    "converted": 0,
 		    "generatedFiles": [],
@@ -217,7 +219,8 @@ test("panda -> unocss -> panda: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand hover:[color:#f97316]";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#f97316]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -290,7 +293,8 @@ test("panda -> unocss -> panda: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -378,7 +382,8 @@ test("panda -> unocss -> panda: resolves token values across both concrete legs"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand hover:[color:#2563eb]";",
+		    "code": "import "styled-system/css";
+		export const card = "text-brand hover:[color:#2563eb]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

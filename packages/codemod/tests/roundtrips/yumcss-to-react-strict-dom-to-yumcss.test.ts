@@ -53,7 +53,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves an actionable concrete rou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -91,7 +90,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +140,6 @@ test("yumcss -> react-strict-dom -> yumcss: retains the documented secondary API
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		export const styles = { "card": css.create({ color: "red" }), "muted": css.create({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("yumcss -> react-strict-dom -> yumcss: retains the documented secondary API
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 2,
 		    "generatedFiles": [],
@@ -265,7 +261,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#f97316", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -303,7 +298,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,7 +335,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves concrete theme and project
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,7 +372,6 @@ test("yumcss -> react-strict-dom -> yumcss: preserves concrete theme and project
 		      "changed": true,
 		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -432,7 +424,6 @@ test("yumcss -> react-strict-dom -> yumcss: resolves token values across both co
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "react-strict-dom";
-
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -470,7 +461,6 @@ test("yumcss -> react-strict-dom -> yumcss: resolves token values across both co
 		    "changed": true,
 		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

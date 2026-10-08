@@ -48,7 +48,8 @@ test("mui -> vue-styled: migrates concrete mui syntax to vue-styled", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: red; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +93,8 @@ test("mui -> vue-styled: carries a documented secondary mui API explicitly", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "@mui/system";
+		import styled from "vue-styled-components";
 		export const Card = styled.div\`color: red; padding: 8;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -144,7 +146,8 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #f97316; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +182,8 @@ test("mui -> vue-styled: loads concrete theme and project context variants", asy
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +230,8 @@ test("mui -> vue-styled: resolves concrete token values with project context", a
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: #2563eb; padding: 16px;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,7 +275,8 @@ test("mui -> vue-styled: preserves malformed concrete mui input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { Box } from "@mui/material";
+		import styled from "vue-styled-components";
 		export const App = () => styled.div\`color: red; padding: 16px;\`;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,

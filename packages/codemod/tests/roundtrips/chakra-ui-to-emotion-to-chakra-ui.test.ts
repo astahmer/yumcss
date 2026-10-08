@@ -90,6 +90,7 @@ test("chakra-ui -> emotion -> chakra-ui: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "@emotion/css";
 		export const App = () => <Box css={{ background: "red.200", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -255,6 +256,7 @@ test("chakra-ui -> emotion -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "@emotion/css";
 		export const App = () => <Box css={{ background: "#f97316", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,6 +329,7 @@ test("chakra-ui -> emotion -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "@emotion/css";
 		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -414,6 +417,7 @@ test("chakra-ui -> emotion -> chakra-ui: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "@emotion/css";
 		export const App = () => <Box css={{ background: "brand.500", padding: "4" }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

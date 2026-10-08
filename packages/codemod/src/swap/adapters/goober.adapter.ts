@@ -21,6 +21,7 @@ const goober = makeExtraAdapter({
 		ssrHooks: ["extractCss"],
 	},
 	modules: ["goober"],
+	sourceModulesSideEffectFree: ["goober"],
 	packages: { packages: [{ name: "goober", kind: AdapterDependencyKindTag.Runtime }] },
 	detect: [/from\s+["']goober["']/g, /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*(?:\(\s*\{|`)/g],
 	call: /\b(?:css\s*(?:\(\s*\{|`)|styled\.[A-Za-z_$][\w$]*\s*`)/g,

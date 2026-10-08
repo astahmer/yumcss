@@ -52,7 +52,8 @@ test("emotion -> react-strict-dom -> emotion: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@emotion/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -138,7 +139,8 @@ test("emotion -> react-strict-dom -> emotion: retains the documented secondary A
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@emotion/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -240,7 +242,8 @@ test("emotion -> react-strict-dom -> emotion: preserves concrete theme and proje
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "@emotion/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -313,7 +316,8 @@ test("emotion -> react-strict-dom -> emotion: preserves concrete theme and proje
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "react-strict-dom";
+		      "code": "import "@emotion/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -401,7 +405,8 @@ test("emotion -> react-strict-dom -> emotion: resolves token values across both 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "@emotion/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

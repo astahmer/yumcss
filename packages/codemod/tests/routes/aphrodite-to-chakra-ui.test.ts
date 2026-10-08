@@ -50,7 +50,8 @@ test("aphrodite -> chakra-ui: migrates concrete aphrodite syntax to chakra-ui", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -159,7 +160,8 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -193,7 +195,8 @@ test("aphrodite -> chakra-ui: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -239,7 +242,8 @@ test("aphrodite -> chakra-ui: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -282,7 +286,8 @@ test("aphrodite -> chakra-ui: preserves malformed concrete aphrodite input", asy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

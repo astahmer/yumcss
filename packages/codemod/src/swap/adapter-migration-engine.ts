@@ -8,10 +8,12 @@ import {
 } from "./semantic-ir.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import {
+	SOURCE_SCANNER_SERVICE,
 	SourceBindings,
 	createSourceProjectBindingIndex,
 	type SourceBindingIndex,
 } from "yumcss/source";
+import { NodeKind, walk } from "yumcss/tw/literal";
 import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
 import {
 	inspectAdapterCapabilities,
@@ -65,9 +67,7 @@ import {
 	hostFrameworkConversion,
 	loweringRegistryForRoute,
 	normalizeAsyncMigrationResult,
-	normalizeForeignCssBinding,
 	normalizeSourceCssBinding,
-	sourceImportsModule,
 	sourceImportsBinding,
 	targetAcceptsSourceFramework,
 	targetHostFramework,
@@ -80,8 +80,106 @@ import {
 	type PreparedAdapterMigration,
 } from "./adapter-migration-preparation.ts";
 
-const generatedCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createUnsafeCss\(\)/u;
-const runtimeCssBindingPattern = /\b(?:css|targetCss|pwCss)\s*=\s*createRuntimeCss\(/u;
+const generatedCssBindingPattern = /\b(?:css|targetCss\d*|pwCss\d*)\s*=\s*createUnsafeCss\(\)/u;
+const runtimeCssBindingPattern = /\b(?:css|targetCss\d*|pwCss\d*)\s*=\s*createRuntimeCss\(/u;
+const hasLocalCssBinding = (source: string): boolean => {
+	try {
+		const document = SOURCE_SCANNER_SERVICE.scan({ file: "migration.tsx", source });
+		if (document.program === undefined) return true;
+		const bindings = SourceBindings.fromProgram(document.program);
+		if (
+			bindings.declaredNames.has("css") ||
+			bindings.bindings.some((binding) => binding.localName === "css")
+		)
+			return true;
+		let hasTypeBinding = false;
+		walk(document.program, (node) => {
+			if (
+				(node.type === "TSEnumDeclaration" ||
+					node.type === "TSInterfaceDeclaration" ||
+					node.type === "TSModuleDeclaration" ||
+					node.type === "TSTypeAliasDeclaration") &&
+				"id" in node
+			)
+				{
+					const identifier = node.id;
+					if (
+						identifier !== null &&
+						typeof identifier === "object" &&
+						"type" in identifier &&
+						identifier.type === "Identifier" &&
+						"name" in identifier &&
+						identifier.name === "css"
+					)
+						hasTypeBinding = true;
+				}
+		});
+		return hasTypeBinding;
+	} catch {
+		return true;
+	}
+};
+
+const jsxOutputExtension = (file: string, source: string): string | undefined => {
+	const extension = file.endsWith(".ts") ? ".tsx" : file.endsWith(".js") ? ".jsx" : undefined;
+	if (extension === undefined) return undefined;
+	const jsxFile = file.slice(0, file.lastIndexOf(".")) + extension;
+	try {
+		const parsed = SOURCE_SCANNER_SERVICE.parse({ file: jsxFile, source });
+		if (parsed.errors.length > 0) return undefined;
+		let containsJsx = false;
+		walk(parsed.program, (node) => {
+			if (node.type === NodeKind.JSXElement || node.type === NodeKind.JSXFragment)
+				containsJsx = true;
+		});
+		return containsJsx ? extension : undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const sourceProgramMaterializationFailure = (
+	source: string,
+	options: AdapterMigrationOptions,
+	ports: AdapterMigrationPorts,
+): AdapterMigrationResult | undefined => {
+	if (!ports.sourceScanner.isScriptFile(options.file)) return undefined;
+	try {
+		const parsed = ports.sourceScanner.parse({ file: options.file, source });
+		void parsed.program;
+		return undefined;
+	} catch (error) {
+		const detail = error instanceof Error ? error.message : "unknown parser error";
+		return {
+			code: source,
+			changed: false,
+			converted: 0,
+			skipped: 1,
+			reports: [],
+			validations: [],
+			dependencies: [],
+			generatedFiles: [],
+			fileChanges: [],
+			residuals: [
+				{
+					kind: StyleProgramResidualKindTag.Parse,
+					text: source,
+					hint: `source AST could not be materialized safely: ${detail}`,
+				},
+			],
+			loweringPlans: [],
+			outcomes: [
+				{
+					sourceStart: 0,
+					sourceText: source,
+					outcome: StyleMigrationOutcome.Residual,
+					representation: StyleRepresentationKind.Residual,
+					detail: "source AST could not be materialized safely",
+				},
+			],
+		};
+	}
+};
 
 const sourceModuleOwnership = (
 	adapter: import("./adapter-contract.ts").StyleAdapter,
@@ -90,6 +188,8 @@ const sourceModuleOwnership = (
 	adapter.resolveSourceModuleOwnership?.(config) ?? {
 		modules: adapter.sourceModules,
 		matchers: adapter.sourceModuleMatchers,
+		sideEffectFreeModules: adapter.sourceModulesSideEffectFree,
+		sideEffectFreeMatchers: adapter.sourceModuleSideEffectFreeMatchers,
 	};
 
 const targetConfigForMigration = (
@@ -111,12 +211,8 @@ const canonicalizeGeneratedCssBinding = (
 	binding: string,
 ): { text: string; imports: readonly string[] } => {
 	if (binding === "css") return emission;
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const rename = (value: string) =>
-		value
-			.replace(new RegExp(`\\b${escaped}(?=\\s*[.({,;}])`, "gu"), "css")
-			.replace(new RegExp(`\\b${escaped}(?=\\s*=)`, "gu"), "css")
-			.replace(/\bcss\s+as\s+css\b/gu, "css");
+		SourcePass.renameIdentifier(value, "migration.tsx", binding, "css");
 	return { text: rename(emission.text), imports: emission.imports.map(rename) };
 };
 
@@ -181,18 +277,6 @@ function runAdapterMigrationInternal(
 	}
 	const sourceOwnership = sourceModuleOwnership(sourceAdapter, config);
 	const targetOwnership = sourceModuleOwnership(targetAdapter, targetConfig);
-	if (
-		targetAdapter.id === CodemodAdapterId.YumCSS &&
-		sourceImportsModule(source, sourceOwnership.modules, sourceOwnership.matchers)
-	) {
-		source = normalizeForeignCssBinding(
-			source,
-			sourceOwnership.modules,
-			sourceOwnership.matchers,
-			targetOwnership.modules,
-			targetOwnership.matchers,
-		);
-	}
 	const document = ports.sourceScanner.scan({
 		file: options.file,
 		source,
@@ -344,9 +428,10 @@ function runAdapterMigrationInternal(
 	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
+	const adapterSourceModulesToRemove = sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? [];
 	const sourceModulesForRemoval = [
 		...new Set([
-			...(sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? []),
+			...adapterSourceModulesToRemove,
 			...sourceOwnership.modules,
 		]),
 	];
@@ -1707,6 +1792,8 @@ function runAdapterMigrationInternal(
 		generatedFiles.clear();
 		outputExtension = undefined;
 	}
+	if (converted > 0 && outputExtension === undefined)
+		outputExtension = jsxOutputExtension(options.file, [runtimeEdited, ...generatedStatements].join("\n"));
 	// Prune only source bindings that are no longer referenced. This is safe even
 	// when another match remains residual: used Chakra/Panda bindings stay in the
 	// file, while dead layout imports do not keep the old runtime surface alive.
@@ -1714,9 +1801,14 @@ function runAdapterMigrationInternal(
 	if (converted > 0) {
 		code = MigrationOutput.removeSourceImports(
 			code,
-			[...sourceModulesForRemoval, ...sourceModulesToRemove],
-			sourceOwnership.matchers,
-			support.generatedBindings(imports),
+			{
+				modules: [...sourceModulesForRemoval, ...sourceModulesToRemove],
+				moduleMatchers: sourceOwnership.matchers,
+				reservedBindings: support.generatedBindings(imports),
+				sideEffectFreeModules: sourceOwnership.sideEffectFreeModules,
+				sideEffectFreeMatchers: sourceOwnership.sideEffectFreeMatchers,
+				file: support.fileWithExtension(options.file, outputExtension),
+			},
 		);
 	}
 	if (converted > 0 && skipped === 0 && residuals.length === 0) {
@@ -1735,18 +1827,29 @@ function runAdapterMigrationInternal(
 		// target dialect never calls.
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, [...demotedFactoryHosts]);
 	}
-	if (
+	const targetUsesYumCSSCss =
+		imports.has('import { createUnsafeCss } from "yumcss/unsafe/css";') ||
+		imports.has('import { createRuntimeCss } from "yumcss/css/runtime";');
+	const sourceCssSurvives =
 		converted > 0 &&
-		skipped === 0 &&
-		residuals.length === 0 &&
-		!sourceImportsBinding(code, "css", [], [() => true])
-	) {
+		targetUsesYumCSSCss &&
+		!sourceImportsBinding(code, "css", targetOwnership.modules, targetOwnership.matchers) &&
+		sourceImportsBinding(code, "css", sourceOwnership.modules, sourceOwnership.matchers);
+	const originalUsesGeneratedCssAlias = /\b(?:targetCss|pwCss)\d*\b/u.test(source);
+	const hasOtherCssBinding =
+		sourceImportsBinding(code, "css", [], [() => true]) || hasLocalCssBinding(code);
+	if (converted > 0 && skipped === 0 && residuals.length === 0) {
 		const generatedTargetBinding =
-			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+			/\b(?:const|let|var)\s+(targetCss\d*|pwCss\d*)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss\d*|pwCss\d*)\b/u.exec(
 				[code, ...imports, ...generatedStatements].join("\n"),
 			);
 		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
-		if (binding !== undefined) {
+		if (
+			binding !== undefined &&
+			!sourceCssSurvives &&
+			!hasOtherCssBinding &&
+			!originalUsesGeneratedCssAlias
+		) {
 			const canonical = canonicalizeGeneratedCssBinding(
 				{ text: code, imports: [...imports] },
 				binding,
@@ -1777,9 +1880,6 @@ function runAdapterMigrationInternal(
 		if (converted > 0 && skipped === 0 && residuals.length === 0 && runtimeUsesSameBinding)
 			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	}
-	const targetUsesYumCSSCss =
-		imports.has('import { createUnsafeCss } from "yumcss/unsafe/css";') ||
-		imports.has('import { createRuntimeCss } from "yumcss/css/runtime";');
 	if (converted > 0 && skipped === 0 && residuals.length === 0 && !targetUsesYumCSSCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createUnsafeCss();"]);
 	const outputFile = support.fileWithExtension(options.file, outputExtension);
@@ -1787,22 +1887,37 @@ function runAdapterMigrationInternal(
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
 	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = support.ensureGeneratedStatement(code, statement, outputFile);
-	const sourceCssSurvives =
-		converted > 0 &&
-		!sourceImportsBinding(code, "css", targetOwnership.modules, targetOwnership.matchers) &&
-		sourceImportsBinding(code, "css", sourceOwnership.modules, sourceOwnership.matchers);
 	if (sourceCssSurvives) {
 		code = normalizeSourceCssBinding(code, sourceOwnership.modules, sourceOwnership.matchers);
-		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, ["sourceCss"]);
-	} else {
 		const generatedTargetBinding =
-			/\b(?:const|let|var)\s+(targetCss|pwCss)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss|pwCss)\b/u.exec(
+			/\b(?:const|let|var)\s+(targetCss\d*|pwCss\d*)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss\d*|pwCss\d*)\b/u.exec(
 				code,
 			);
 		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
-		if (binding !== undefined && !sourceImportsBinding(code, "css", [], [() => true]))
+		if (
+			binding !== undefined &&
+			!sourceImportsBinding(code, "css", [], [() => true]) &&
+			!hasLocalCssBinding(code) &&
+			!originalUsesGeneratedCssAlias
+		)
 			code = canonicalizeGeneratedCssBinding({ text: code, imports: [] }, binding).text;
-		code = code.replace(/\bcss\s+as\s+css\b/gu, "css");
+	} else {
+		const generatedTargetBinding =
+			/\b(?:const|let|var)\s+(targetCss\d*|pwCss\d*)\s*=\s*createUnsafeCss\(|\bcss\s+as\s+(targetCss\d*|pwCss\d*)\b/u.exec(
+				code,
+			);
+		const binding = generatedTargetBinding?.[1] ?? generatedTargetBinding?.[2];
+		if (
+			binding !== undefined &&
+			!sourceImportsBinding(code, "css", [], [() => true]) &&
+			!hasLocalCssBinding(code) &&
+			!originalUsesGeneratedCssAlias
+		)
+			code = canonicalizeGeneratedCssBinding({ text: code, imports: [] }, binding).text;
+		code = code.replace(
+			/(?<![$_\p{ID_Continue}\u200c\u200d])css\s+as\s+css(?![$_\p{ID_Continue}\u200c\u200d])/gu,
+			"css",
+		);
 	}
 	if (targetAdapter.id === CodemodAdapterId.YumCSS)
 		code = simplifyYumCSSStaticStyles(code, outputFile, {
@@ -1815,6 +1930,49 @@ function runAdapterMigrationInternal(
 			outputExtension = moduleFileOutputExtension;
 		else moduleFileRenameChanges.clear();
 	}
+	if (converted > 0) {
+		const explicitlyRemovedSourceModules = new Set([
+			...adapterSourceModulesToRemove,
+			...sourceModulesToRemove,
+		]);
+		const targetOwnsSourceModule = (moduleSpecifier: string): boolean =>
+			targetOwnership.modules.includes(moduleSpecifier) ||
+			(targetOwnership.matchers ?? []).some((matcher) => matcher(moduleSpecifier));
+		const finalSourceModules = [
+			...adapterSourceModulesToRemove,
+			...sourceOwnership.modules.filter((moduleSpecifier) => !targetOwnsSourceModule(moduleSpecifier)),
+			...sourceModulesToRemove,
+		];
+		const finalSourceMatchers = (sourceOwnership.matchers ?? []).map(
+			(matcher) =>
+				(moduleSpecifier: string) =>
+					matcher(moduleSpecifier) &&
+					(!targetOwnsSourceModule(moduleSpecifier) ||
+						explicitlyRemovedSourceModules.has(moduleSpecifier)),
+		);
+		code = MigrationOutput.removeSourceImports(
+			code,
+			{
+				modules: finalSourceModules,
+				moduleMatchers: finalSourceMatchers,
+				reservedBindings: support.generatedBindings(imports),
+				sideEffectFreeModules: sourceOwnership.sideEffectFreeModules?.filter(
+					(moduleSpecifier) =>
+						!targetOwnsSourceModule(moduleSpecifier) ||
+						explicitlyRemovedSourceModules.has(moduleSpecifier),
+				),
+				sideEffectFreeMatchers: (sourceOwnership.sideEffectFreeMatchers ?? []).map(
+					(matcher) =>
+						(moduleSpecifier) =>
+							matcher(moduleSpecifier) &&
+							(!targetOwnsSourceModule(moduleSpecifier) ||
+								explicitlyRemovedSourceModules.has(moduleSpecifier)),
+				),
+				file: outputFile,
+			},
+		);
+	}
+	code = MigrationOutput.removeRedundantSideEffectImports(code, outputFile);
 	return {
 		code,
 		...(outputExtension === undefined ? {} : { outputExtension }),
@@ -1836,15 +1994,22 @@ export function createAdapterMigrationEngine(
 	ports: AdapterMigrationPorts,
 ): StyleMigrationImplementation {
 	return {
-		run: (source, options) =>
-			runAdapterMigrationInternal(
+		run: (source, options) => {
+			const parseFailure = sourceProgramMaterializationFailure(source, options, ports);
+			if (parseFailure !== undefined) return parseFailure;
+			return runAdapterMigrationInternal(
 				source,
 				{
 					...options,
 					adapterRegistry: options.adapterRegistry ?? ports.adapterRegistry,
 				},
 				ports,
-			),
-		runAsync: (source, options) => runAdapterMigrationAsyncInternal(source, options, ports),
+			);
+		},
+		runAsync: async (source, options) => {
+			const parseFailure = sourceProgramMaterializationFailure(source, options, ports);
+			if (parseFailure !== undefined) return parseFailure;
+			return runAdapterMigrationAsyncInternal(source, options, ports);
+		},
 	};
 }

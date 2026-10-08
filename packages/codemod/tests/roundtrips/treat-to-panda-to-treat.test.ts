@@ -86,7 +86,8 @@ test("treat -> panda -> treat: preserves an actionable concrete round trip", asy
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -172,7 +173,8 @@ test("treat -> panda -> treat: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "red", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -274,7 +276,8 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -347,7 +350,8 @@ test("treat -> panda -> treat: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "treat";
+		      "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -436,7 +440,8 @@ test("treat -> panda -> treat: resolves token values across both concrete legs",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "treat";
+		    "code": "import "styled-system/css";
+		import { style } from "treat";
 		export const card = style({ "color": "#2563eb", "padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

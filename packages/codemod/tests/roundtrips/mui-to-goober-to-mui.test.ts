@@ -52,7 +52,8 @@ test("mui -> goober -> mui: preserves an actionable concrete round trip", async 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/material";
+		import { css } from "goober";
 		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("mui -> goober -> mui: preserves an actionable concrete round trip", async 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/material";
+		import { css } from "goober";
 		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "red", "padding": "16px" });",
 		    "converted": 0,
@@ -139,7 +141,8 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/system";
+		import { css } from "goober";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		export const Card = (() => { type __yumcssCardProps<C extends __yumcssCardElementType> = Omit<__yumcssCardPropsWithoutRef<C>, "as" | "forwardedAs" | "className" | "style"> & { as?: C; forwardedAs?: C; className?: string; style?: import("react").CSSProperties }; type __yumcssCardComponent = <C extends __yumcssCardElementType = "div">(props: __yumcssCardProps<C> & { ref?: __yumcssCardRefProp<__yumcssCardRef<C>> }) => __yumcssCardReactElement | null; type __yumcssCardRuntimeProps = Record<string, any>; return __yumcssCardForwardRef<__yumcssCardRef<"div">, __yumcssCardRuntimeProps>((props, ref) => { const Component = props.as ?? props.forwardedAs ?? "div"; const { as: _as, forwardedAs: _forwardedAs, ...rest } = props; return <Component {...rest} ref={ref} className={[css({ "color": "red", "padding": 8 }), props.className].filter(Boolean).join(" ")} />; }) as __yumcssCardComponent; })();",
@@ -177,7 +180,8 @@ test("mui -> goober -> mui: retains the documented secondary API without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/system";
+		import { css } from "goober";
 		import { forwardRef as __yumcssCardForwardRef } from "react";
 		import type { ComponentPropsWithoutRef as __yumcssCardPropsWithoutRef, ComponentRef as __yumcssCardRef, ElementType as __yumcssCardElementType, ReactElement as __yumcssCardReactElement, Ref as __yumcssCardRefProp } from "react";
 		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
@@ -245,7 +249,8 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@mui/material";
+		import { css } from "goober";
 		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -281,7 +286,8 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@mui/material";
+		import { css } from "goober";
 		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#f97316", "padding": "16px" });",
 		      "converted": 0,
@@ -319,7 +325,8 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@mui/material";
+		import { css } from "goober";
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +362,8 @@ test("mui -> goober -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
+		      "code": "import "@mui/material";
+		import { css } from "goober";
 		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		      "converted": 0,
@@ -408,7 +416,8 @@ test("mui -> goober -> mui: resolves token values across both concrete legs", as
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/material";
+		import { css } from "goober";
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -444,7 +453,8 @@ test("mui -> goober -> mui: resolves token values across both concrete legs", as
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
+		    "code": "import "@mui/material";
+		import { css } from "goober";
 		// yumcss:migrate-skip (route: goober -> mui | lowering-residual: host-framework | available: static, named-map, residual)
 		export const App = () => css({ "color": "#2563eb", "padding": "16px" });",
 		    "converted": 0,

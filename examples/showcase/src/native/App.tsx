@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Text, View } from "react-native";
 import { createDesignCss } from "yumcss/react-native";
 import { examplePreset } from "@yumcss/example-preset";
-import { body, header, status } from "../shared-styles.ts";
+import { body, bodyCorners, header, headerCorners, status } from "../shared-styles.ts";
 
 let isDark = false;
 
@@ -24,13 +24,13 @@ export function ShowcaseNative() {
 
 	return (
 		<View testID="native-root" style={{ flexDirection: "row", gap: 12 }}>
-			<View testID="native-header" style={dss(header)}>
+			<View testID="native-header" style={dss(header, headerCorners)}>
 				<Text>native header</Text>
 			</View>
 			<View testID="native-status" style={dss(status)}>
 				<Text>native status</Text>
 			</View>
-			<View testID="native-body" style={dss(body)}>
+			<View testID="native-body" style={dss(body, bodyCorners)}>
 				<Text>native body</Text>
 			</View>
 			<View testID="native-dark-toggle">

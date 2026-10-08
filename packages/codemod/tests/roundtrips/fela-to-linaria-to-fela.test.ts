@@ -143,7 +143,8 @@ test("fela -> linaria -> fela: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@linaria/react";
+		    "code": "import "react-fela";
+		import { styled } from "@linaria/react";
 		export const Card = styled("button")\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -179,7 +180,8 @@ test("fela -> linaria -> fela: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "@linaria/react";
+		    "code": "import "react-fela";
+		import { styled } from "@linaria/react";
 		// yumcss:migrate-skip (route: linaria -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = styled("button")\`color: red;\`;",
 		    "converted": 0,

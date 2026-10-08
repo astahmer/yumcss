@@ -53,7 +53,6 @@ test("yumcss -> aphrodite -> yumcss: preserves an actionable concrete round trip
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -89,9 +88,9 @@ test("yumcss -> aphrodite -> yumcss: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -142,7 +141,6 @@ test("yumcss -> aphrodite -> yumcss: retains the documented secondary API withou
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -178,9 +176,9 @@ test("yumcss -> aphrodite -> yumcss: retains the documented secondary API withou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +244,6 @@ test("yumcss -> aphrodite -> yumcss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#f97316", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -283,9 +280,9 @@ test("yumcss -> aphrodite -> yumcss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -323,7 +320,6 @@ test("yumcss -> aphrodite -> yumcss: preserves concrete theme and project contex
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -360,9 +356,9 @@ test("yumcss -> aphrodite -> yumcss: preserves concrete theme and project contex
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -415,7 +411,6 @@ test("yumcss -> aphrodite -> yumcss: resolves token values across both concrete 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet } from "aphrodite";
-
 		export const card = StyleSheet.create({ "color": "#2563eb", "padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -452,9 +447,9 @@ test("yumcss -> aphrodite -> yumcss: resolves token values across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "aphrodite";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
-
 		export const card = css.class({ color: "brand", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

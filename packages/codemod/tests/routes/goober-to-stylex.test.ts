@@ -277,7 +277,8 @@ test("goober -> stylex: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
+		  "code": "import { css } from "goober";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,

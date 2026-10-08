@@ -89,6 +89,7 @@ test("tamagui -> emotion -> tamagui: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
+		import "@emotion/css";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "red", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
@@ -256,6 +257,7 @@ test("tamagui -> emotion -> tamagui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
+		import "@emotion/css";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
@@ -331,6 +333,7 @@ test("tamagui -> emotion -> tamagui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
+		import "@emotion/css";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
@@ -421,6 +424,7 @@ test("tamagui -> emotion -> tamagui: resolves token values across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
+		import "@emotion/css";
 		import { View, styled } from "@tamagui/core";
 		const __CardTamagui = styled(View, { color: "#2563eb", padding: "$4" });
 		export const Card = (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__CardTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };

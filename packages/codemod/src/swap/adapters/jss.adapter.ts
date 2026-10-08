@@ -114,6 +114,7 @@ export default defineCodemodAdapter({
 	}),
 	detectPatterns: [/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
 	sourceModules: ["jss", "react-jss"],
+	sourceModulesSideEffectFree: ["jss", "react-jss"],
 	configFiles: ["jss.config.js", "package.json"],
 	sourceObjectOptions: { namedRuleObjects: true },
 	migration: {

@@ -52,7 +52,8 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,7 +219,8 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "#2563eb", "--padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,7 +293,8 @@ test("vanilla-extract -> tokenami -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,7 +382,8 @@ test("vanilla-extract -> tokenami -> vanilla-extract: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "8px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

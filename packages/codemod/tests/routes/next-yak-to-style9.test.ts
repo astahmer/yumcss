@@ -278,7 +278,8 @@ test("next-yak -> style9: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
+		  "code": "import { css } from "next-yak";
+		import style9 from "style9";
 		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

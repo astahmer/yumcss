@@ -141,7 +141,8 @@ test("fela -> next-yak -> fela: retains the documented secondary API without sil
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
+		    "code": "import "react-fela";
+		import { styled } from "next-yak";
 		export const Card = styled("button")\`color: red;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -175,7 +176,8 @@ test("fela -> next-yak -> fela: retains the documented secondary API without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "next-yak";
+		    "code": "import "react-fela";
+		import { styled } from "next-yak";
 		// yumcss:migrate-skip (route: next-yak -> fela | capability-blocked: components: component subject: styled("button") | available: static, named-map, residual)
 		export const Card = styled("button")\`color: red;\`;",
 		    "converted": 0,

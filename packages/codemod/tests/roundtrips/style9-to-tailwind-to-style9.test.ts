@@ -52,7 +52,8 @@ test("style9 -> tailwind -> style9: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red]" };",
+		    "code": "import "style9";
+		export const styles = { "card": "[color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -139,7 +140,8 @@ test("style9 -> tailwind -> style9: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
+		    "code": "import "style9";
+		export const styles = { "card": "[color:red]", "muted": "[opacity:0.5]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -242,7 +244,8 @@ test("style9 -> tailwind -> style9: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[color:#2563eb]" };",
+		      "code": "import "style9";
+		export const styles = { "card": "[color:#2563eb]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -316,7 +319,8 @@ test("style9 -> tailwind -> style9: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "text-brand" };",
+		      "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -405,7 +409,8 @@ test("style9 -> tailwind -> style9: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand" };",
+		    "code": "import "style9";
+		export const styles = { "card": "text-brand" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

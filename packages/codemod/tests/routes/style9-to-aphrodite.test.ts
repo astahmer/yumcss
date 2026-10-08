@@ -48,7 +48,8 @@ test("style9 -> aphrodite: migrates concrete style9 syntax to aphrodite", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +94,8 @@ test("style9 -> aphrodite: carries a documented secondary style9 API explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "red" }, "muted": { "opacity": 0.5 } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +149,8 @@ test("style9 -> aphrodite: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +186,8 @@ test("style9 -> aphrodite: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
+		    "code": "import "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +235,8 @@ test("style9 -> aphrodite: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +281,8 @@ test("style9 -> aphrodite: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
+		  "code": "import style9 from "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "color": "red" } });
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

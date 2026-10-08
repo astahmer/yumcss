@@ -48,7 +48,8 @@ test("panda -> react-strict-dom: migrates concrete panda syntax to react-strict-
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", "&:hover": { color: "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -147,7 +148,8 @@ test("panda -> react-strict-dom: loads concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#f97316", "&:hover": { color: "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -183,7 +185,8 @@ test("panda -> react-strict-dom: loads concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "react-strict-dom";
+		    "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -231,7 +234,8 @@ test("panda -> react-strict-dom: resolves concrete token values with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "#2563eb", "&:hover": { color: "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -276,7 +280,8 @@ test("panda -> react-strict-dom: preserves malformed concrete panda input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "react-strict-dom";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "react-strict-dom";
 		export const card = css.create({ color: "red", "&:hover": { color: "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

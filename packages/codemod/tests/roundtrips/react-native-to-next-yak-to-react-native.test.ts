@@ -52,7 +52,8 @@ test("react-native -> next-yak -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -139,7 +140,8 @@ test("react-native -> next-yak -> react-native: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -242,7 +244,8 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -316,7 +319,8 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -405,7 +409,8 @@ test("react-native -> next-yak -> react-native: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],

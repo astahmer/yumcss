@@ -93,6 +93,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves an actionable concrete roun
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "aphrodite";
 		export const App = () => <Box css={{ "style": { background: "red.200", padding: "4" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -263,6 +264,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "aphrodite";
 		export const App = () => <Box css={{ "style": { background: "#f97316", padding: "4" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,6 +340,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import "aphrodite";
 		export const App = () => <Box css={{ "style": { background: "brand.500", padding: "4" } }}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -428,6 +431,7 @@ test("chakra-ui -> aphrodite -> chakra-ui: resolves token values across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import "aphrodite";
 		export const App = () => <Box css={{ "style": { background: "brand.500", padding: "4" } }}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],

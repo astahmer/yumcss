@@ -88,7 +88,8 @@ test("tokenami -> vanilla-extract -> tokenami: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -254,7 +255,8 @@ test("tokenami -> vanilla-extract -> tokenami: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +329,8 @@ test("tokenami -> vanilla-extract -> tokenami: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -415,7 +418,8 @@ test("tokenami -> vanilla-extract -> tokenami: resolves token values across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

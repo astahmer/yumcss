@@ -48,7 +48,8 @@ test("bamboo -> vue-styled: migrates concrete bamboo syntax to vue-styled", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -92,7 +93,8 @@ test("bamboo -> vue-styled: carries a documented secondary bamboo API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`display: flex; gap: 4;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +147,8 @@ test("bamboo -> vue-styled: loads concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +183,8 @@ test("bamboo -> vue-styled: loads concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "import "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +231,8 @@ test("bamboo -> vue-styled: resolves concrete token values with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: #2563eb;\`;",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -271,7 +276,8 @@ test("bamboo -> vue-styled: preserves malformed concrete bamboo input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
+		  "code": "import { css } from "styled-system/css";
+		import styled from "vue-styled-components";
 		export const card = styled.div\`color: red;\`;
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

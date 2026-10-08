@@ -52,7 +52,8 @@ test("vanilla-extract -> next-yak -> vanilla-extract: preserves an actionable co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +227,8 @@ test("vanilla-extract -> next-yak -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -299,7 +301,8 @@ test("vanilla-extract -> next-yak -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -387,7 +390,8 @@ test("vanilla-extract -> next-yak -> vanilla-extract: resolves token values acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 8px;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

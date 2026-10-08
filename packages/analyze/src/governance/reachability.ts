@@ -35,6 +35,8 @@ export interface ReachabilityOutcome {
 export function classifyReachability(inputs: ReachabilityInputs): ReachabilityOutcome {
 	const usedIds = new Set(inputs.usage.map((u) => u.tokenId).filter((id) => id !== ""));
 	const boundaryHits = inputs.boundaryHits ?? {};
+	const definitionIds = new Set(inputs.definitions.map((definition) => definition.id));
+	const definitionNames = new Set(inputs.definitions.map((definition) => definition.name));
 	const diagnostics: GovernanceDiagnostic[] = [];
 	const candidates: UnusedTokenCandidate[] = [];
 
@@ -44,11 +46,21 @@ export function classifyReachability(inputs: ReachabilityInputs): ReachabilityOu
 		const reasons: string[] = [];
 		for (const boundary of Object.keys(boundaryHits) as GovernanceCoverageBoundary[]) {
 			const hits = boundaryHits[boundary] ?? [];
-			if (!hits.includes(def.id) && !hits.includes(def.name) && !hits.includes("*")) continue;
+			const unscopedDynamic =
+				boundary === "dynamic-expression" &&
+				hits.some((hit) => !definitionIds.has(hit) && !definitionNames.has(hit));
+			const unscannedFile = boundary === "unscanned-file" && hits.length > 0;
+			if (
+				!unscopedDynamic &&
+				!unscannedFile &&
+				!hits.includes(def.id) &&
+				!hits.includes(def.name) &&
+				!hits.includes("*")
+			)
+				continue;
 			boundaries.push(boundary);
 		}
-		// A boundary hit by file-level events (dynamic sites carry file names)
-		// downgrades every candidate to review-required when unscoped.
+		// Unscoped file-level coverage events downgrade every candidate.
 		let safety: UnusedTokenCandidate["safety"] = "safe-to-remove";
 		if (def.group === "css-var") {
 			safety = "review-required";

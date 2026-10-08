@@ -53,7 +53,6 @@ test("yumcss -> vue-styled -> yumcss: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,12 +87,12 @@ test("yumcss -> vue-styled -> yumcss: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -226,7 +225,6 @@ test("yumcss -> vue-styled -> yumcss: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #f97316; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -262,12 +260,12 @@ test("yumcss -> vue-styled -> yumcss: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -305,7 +303,6 @@ test("yumcss -> vue-styled -> yumcss: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -341,12 +338,12 @@ test("yumcss -> vue-styled -> yumcss: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defineComponent, h } from "vue";
+		      "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -399,7 +396,6 @@ test("yumcss -> vue-styled -> yumcss: resolves token values across both concrete
 		  "forward": {
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
-
 		export const card = styled.div\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -435,12 +431,12 @@ test("yumcss -> vue-styled -> yumcss: resolves token values across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defineComponent, h } from "vue";
+		    "code": "import "vue-styled-components";
+		import { defineComponent, h } from "vue";
 		import { createUnsafeCss } from "yumcss/unsafe/css";
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-
 		export const card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],

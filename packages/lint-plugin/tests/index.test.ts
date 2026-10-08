@@ -1709,3 +1709,47 @@ describe("YumCSS Oxlint scaling", () => {
 		);
 	});
 });
+
+describe("adversarial lexical API binding regressions", () => {
+	test.each([
+		'{ const cx=(value)=>value+"changed"; cx("hello"); }',
+		'{ const {cx}=local; cx("hello"); }',
+		'const render=()=>{ {var cx=(value)=>value+"changed";} cx("hello"); };',
+		'try { throw local; } catch (cx) { cx("hello"); }',
+		'for (const cx of callbacks) { cx("hello"); }',
+	])("ignores shadowed local calls in %s", (body) => {
+		const source = `import {cx} from "yumcss"; ${body} cx("real");`;
+		const reports = runRule("no-redundant-cx", source);
+		expect(reports).toHaveLength(1);
+	});
+	test("does not shadow a name merely because it appears as a destructuring key", () => {
+		const source = 'import {cx} from "yumcss"; const render=({cx:other})=>cx("hello");';
+		expect(runRule("no-redundant-cx", source)).toHaveLength(1);
+	});
+	test("ignores nested namespace method calls through a shadowed root", () => {
+		const source =
+			'import * as namespace from "yumcss"; { const namespace=local; namespace.css.class({color:dynamic}); }';
+		expect(runRule("no-dynamic-values", source)).toEqual([]);
+	});
+	test("ignores class-expression name references inside the class body", () => {
+		const source =
+			'import {cx} from "yumcss"; const Local=class cx { method(){ cx(dynamic); } }; cx(dynamic);';
+		expect(runRule("no-dynamic-values", source)).toHaveLength(1);
+	});
+	test.each(["ForOfStatement", "ForInStatement"])(
+		"resolves %s right-hand expressions outside the loop binding scope",
+		(loop) => {
+			const source =
+				`import {tw} from "yumcss"; const dynamicColor = getColor(); ` +
+				(loop === "ForOfStatement"
+					? "for (const tw of tw({color: dynamicColor})) {}"
+					: "for (const tw in tw({color: dynamicColor})) {}");
+			expect(runRule("no-dynamic-values", source)).toHaveLength(1);
+		},
+	);
+	test("keeps class static-block var declarations out of the enclosing function scope", () => {
+		const source =
+			'import {tw} from "yumcss"; const dynamicColor = getColor(); function render() { class Local { static { var tw = 0; } } return tw({color: dynamicColor}); }';
+		expect(runRule("no-dynamic-values", source)).toHaveLength(1);
+	});
+});

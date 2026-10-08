@@ -273,7 +273,8 @@ test("linaria -> fela: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		  "code": "import { css } from "@linaria/core";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "generatedFiles": [],

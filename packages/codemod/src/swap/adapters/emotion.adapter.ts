@@ -129,6 +129,15 @@ function canRewriteEmotionHost(program: StyleProgram): boolean {
 	return staticClass?.[2]?.includes("\\") !== true;
 }
 
+const emotionBindingCallPattern = (binding: SourceBinding, suffix: string): RegExp => {
+	const localName = binding.localName.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+	const callee = binding.kind === SourceBindingKind.Namespace ? `${localName}\\.css` : localName;
+	return new RegExp(
+		`(?<![$\\p{ID_Continue}\\u200c\\u200d])${callee}(?![$\\p{ID_Continue}\\u200c\\u200d])${suffix}`,
+		"gu",
+	);
+};
+
 function rewriteEmotionHost({
 	code,
 	program,
@@ -266,13 +275,7 @@ const emotionAdapter = defineCodemodAdapter({
 				{ source: "@emotion/react", imported: "css" },
 			],
 			regexForBinding: (binding: SourceBinding) =>
-				new RegExp(
-					`\\b${(binding.kind === SourceBindingKind.Namespace
-						? `${binding.localName}.css`
-						: binding.localName
-					).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\\(\\s*\\{`,
-					"g",
-				),
+				emotionBindingCallPattern(binding, "\\s*\\(\\s*\\{"),
 		},
 		{
 			name: "css-template",
@@ -282,14 +285,7 @@ const emotionAdapter = defineCodemodAdapter({
 				{ source: "@emotion/css", imported: "css" },
 				{ source: "@emotion/react", imported: "css" },
 			],
-			regexForBinding: (binding: SourceBinding) =>
-				new RegExp(
-					`\\b${(binding.kind === SourceBindingKind.Namespace
-						? `${binding.localName}.css`
-						: binding.localName
-					).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\``,
-					"g",
-				),
+			regexForBinding: (binding: SourceBinding) => emotionBindingCallPattern(binding, "\\s*`"),
 		},
 		{
 			name: "styled",
@@ -374,6 +370,7 @@ const emotionAdapter = defineCodemodAdapter({
 	detectPatterns: [/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
 	detect: detectEmotion,
 	sourceModules: ["@emotion/css", "@emotion/react", "@emotion/styled"],
+	sourceModulesSideEffectFree: ["@emotion/react"],
 	configFiles: [".emotionrc", "emotion.config.js", "package.json"],
 	sourceObjectOptions: (_source, context) => {
 		const references = importedStaticValues(context, context.source);

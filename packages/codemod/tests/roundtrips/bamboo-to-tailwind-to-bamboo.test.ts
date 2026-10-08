@@ -52,7 +52,8 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[color:red]";",
+		    "code": "import "styled-system/css";
+		export const card = "[color:red]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -137,7 +138,8 @@ test("bamboo -> tailwind -> bamboo: retains the documented secondary API without
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "[display:flex] [gap:4]";",
+		    "code": "import "styled-system/css";
+		export const card = "[display:flex] [gap:4]";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -238,7 +240,8 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "[color:#2563eb]";",
+		      "code": "import "styled-system/css";
+		export const card = "[color:#2563eb]";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -310,7 +313,8 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const card = "text-brand";",
+		      "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -397,7 +401,8 @@ test("bamboo -> tailwind -> bamboo: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const card = "text-brand";",
+		    "code": "import "styled-system/css";
+		export const card = "text-brand";",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

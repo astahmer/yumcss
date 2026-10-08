@@ -278,7 +278,8 @@ test("next-yak -> goober: preserves malformed concrete next-yak input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
+		  "code": "import { css } from "next-yak";
+		import { css } from "goober";
 		export const card = css({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

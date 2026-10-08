@@ -1,0 +1,11 @@
+{
+  "input": ":checked, &[data-selected]",
+  "css": ".generated :checked, .generated[data-selected]{color:red}",
+  "computed": {
+    "checkedInsideGeneratedScope": "rgb(255, 0, 0)",
+    "checkedOutsideGeneratedScope": "rgb(0, 0, 0)",
+    "generatedRoot": "rgb(0, 0, 0)"
+  },
+  "fixture": "selector-scope-browser-fixture.html",
+  "browser": "T3 collaborative preview, isolated local fixture on port 4341"
+}

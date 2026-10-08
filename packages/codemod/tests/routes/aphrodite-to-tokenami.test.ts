@@ -48,7 +48,8 @@ test("aphrodite -> tokenami: migrates concrete aphrodite syntax to tokenami", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -157,7 +158,8 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "#2563eb", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -191,7 +193,8 @@ test("aphrodite -> tokenami: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -237,7 +240,8 @@ test("aphrodite -> tokenami: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "var(--color_brand)", "--padding": "8px" }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -280,7 +284,8 @@ test("aphrodite -> tokenami: preserves malformed concrete aphrodite input", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { StyleSheet } from "aphrodite";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ "--color": "red", "--padding": "8px" }) };
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

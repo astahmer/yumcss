@@ -88,8 +88,8 @@ test("chakra-ui -> next-yak -> chakra-ui: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "red.200", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -253,8 +253,8 @@ test("chakra-ui -> next-yak -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "#f97316", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -325,8 +325,8 @@ test("chakra-ui -> next-yak -> chakra-ui: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "brand.500", padding: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -412,8 +412,8 @@ test("chakra-ui -> next-yak -> chakra-ui: resolves token values across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "next-yak";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => defaultSystem.css({ background: "brand.500", padding: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],

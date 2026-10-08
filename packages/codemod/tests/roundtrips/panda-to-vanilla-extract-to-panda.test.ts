@@ -52,7 +52,8 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "red", selectors: { "&:hover": { color: "blue" } } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -88,7 +89,8 @@ test("panda -> vanilla-extract -> panda: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", "&:hover": { color: "blue" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -229,7 +231,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#f97316", selectors: { "&:hover": { color: "#f97316" } } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -265,7 +268,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -302,7 +306,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", selectors: { "&:hover": { color: "#2563eb" } } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -338,7 +343,8 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
+		      "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -390,7 +396,8 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import "styled-system/css";
+		import { style } from "@vanilla-extract/css";
 		export const card = style({ color: "#2563eb", selectors: { "&:hover": { color: "#2563eb" } } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +433,8 @@ test("panda -> vanilla-extract -> panda: resolves token values across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "brand.500", "&:hover": { color: "brand.500" } });",
 		    "converted": 1,
 		    "generatedFiles": [],

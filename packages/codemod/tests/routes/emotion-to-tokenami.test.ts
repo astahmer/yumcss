@@ -48,7 +48,8 @@ test("emotion -> tokenami: migrates concrete emotion syntax to tokenami", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("emotion -> tokenami: carries a documented secondary emotion API explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("emotion -> tokenami: loads concrete theme and project context variants", a
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "#2563eb", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("emotion -> tokenami: loads concrete theme and project context variants", a
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("emotion -> tokenami: resolves concrete token values with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("emotion -> tokenami: preserves malformed concrete emotion input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@tokenami/css";
+		  "code": "import { css } from "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "1rem" });
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,

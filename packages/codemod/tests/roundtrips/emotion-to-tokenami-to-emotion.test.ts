@@ -52,7 +52,8 @@ test("emotion -> tokenami -> emotion: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -136,7 +137,8 @@ test("emotion -> tokenami -> emotion: retains the documented secondary API witho
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -236,7 +238,8 @@ test("emotion -> tokenami -> emotion: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "#2563eb", "--padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -307,7 +310,8 @@ test("emotion -> tokenami -> emotion: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -393,7 +397,8 @@ test("emotion -> tokenami -> emotion: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "@emotion/css";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--padding": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

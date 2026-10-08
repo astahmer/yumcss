@@ -1,122 +1,396 @@
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, walk } from "yumcss/tw/literal";
 import { SourcePass } from "../source-pass-utils.ts";
 import { StyleRuleKindTag, type StyleProgram } from "./semantic-ir.ts";
 
+const decodedIdentifierName = (name: string): string | undefined => {
+	try {
+		return name.replace(
+			/\\u(?:([0-9a-fA-F]{4})|\{([0-9a-fA-F]{1,6})\})/gu,
+			(_escape, fixed: string | undefined, braced: string | undefined) =>
+				String.fromCodePoint(Number.parseInt(fixed ?? braced ?? "", 16)),
+		);
+	} catch {
+		return undefined;
+	}
+};
+
+const jsxTagBindingName = (node: unknown, isMember = false): string | undefined => {
+	if (node === null || typeof node !== "object") return undefined;
+	const value = node as {
+		readonly type?: string;
+		readonly name?: unknown;
+		readonly object?: unknown;
+	};
+	if (value.type === NodeKind.JSXIdentifier && typeof value.name === "string")
+		return isMember || /^[a-z]/u.test(value.name) === false ? value.name : undefined;
+	if (value.type === NodeKind.JSXMemberExpression) return jsxTagBindingName(value.object, true);
+	return undefined;
+};
+
+const identifierNames = (
+	source: string,
+	file = "migration-output.tsx",
+): ReadonlySet<string> | undefined => {
+	try {
+		const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
+		if (parsed.errors.length > 0) return undefined;
+		const names = new Set<string>();
+		walk(parsed.program, (node) => {
+			if (node.type === NodeKind.Identifier && typeof node.name === "string") names.add(node.name);
+			if (node.type === NodeKind.JSXOpeningElement) {
+				const localName = jsxTagBindingName((node as { readonly name?: unknown }).name);
+				if (localName !== undefined) names.add(localName);
+			}
+		});
+		return names;
+	} catch {
+		return undefined;
+	}
+};
+
+const excludedSourceRanges = (source: string) => {
+	try {
+		return SourcePass.computeExcludedRanges(source, "yumcss-migration-output.ts");
+	} catch {
+		return undefined;
+	}
+};
+
+const codeMatches = (
+	source: string,
+	pattern: RegExp,
+	excluded: ReturnType<typeof SourcePass.computeExcludedRanges>,
+): RegExpMatchArray[] =>
+	[...source.matchAll(pattern)].filter((match) => !excluded.isExcluded(match.index ?? -1));
+
+const removeMatches = (source: string, matches: readonly RegExpMatchArray[]): string =>
+	SourcePass.applyEdits(
+		source,
+		matches.map((match) => {
+			const start = match.index ?? 0;
+			return { start, end: start + match[0].length, text: "" };
+		}),
+	);
+
+const importDeclarationPattern = /\bimport\s+(?:[^;]*?\s+from\s+)?["'][^"']+["'][ \t]*;?/gu;
+
 /** Output mechanics shared by migration and differential proof use cases. */
+export interface SourceImportCleanupOptions {
+	readonly modules: readonly string[];
+	readonly moduleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	readonly reservedBindings?: readonly string[];
+	readonly sideEffectFreeModules?: readonly string[];
+	readonly sideEffectFreeMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
+	readonly file?: string;
+}
+
 export class MigrationOutput {
-	static removeSourceImports(
-		code: string,
-		modules: readonly string[],
-		moduleMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
-		reservedBindings: readonly string[] = [],
-	): string {
-		const ownedModules = new Set(modules);
-		const reserved = new Set(reservedBindings);
-		// Keep line breaks for reduced imports, but remove the complete source
-		// line when no specifier survives.
-		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["'][ \t]*;?/g;
-		const edits: Array<{ start: number; end: number; text: string }> = [];
-		const body = code
-			.replace(imports, "")
-			// JSX attribute names are not references to an imported binding. This
-			// matters for source `css` imports when a target owns a `css` prop.
-			.replace(/\b(?:className|class|css)\s*=/gu, "");
-		let excluded: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
+	static removeSourceImports(code: string, options: SourceImportCleanupOptions): string {
+		const ownedModules = new Set(options.modules);
+		const sideEffectFreeModules = new Set(options.sideEffectFreeModules ?? []);
+		const reserved = new Set(options.reservedBindings ?? []);
+		let parsed: ReturnType<typeof SOURCE_SCANNER_SERVICE.parse>;
 		try {
-			excluded = SourcePass.computeExcludedRanges(body, "yumcss-migration-output.ts");
+			parsed = SOURCE_SCANNER_SERVICE.parse({ file: options.file ?? "migration-output.tsx", source: code });
+			if (parsed.errors.length > 0) return code;
 		} catch {
-			// Import cleanup remains conservative for incomplete snippets.
+			return code;
 		}
-		for (const match of code.matchAll(imports)) {
-			const moduleSpecifier = match[1];
+		type SourceRange = { readonly start: number; readonly end: number };
+		type ImportDeclarationNode = {
+			readonly importKind?: string;
+			readonly source?: unknown;
+			readonly specifiers?: unknown;
+		};
+		const sourceRange = (node: unknown): SourceRange | undefined => {
+			if (node === null || typeof node !== "object") return undefined;
+			const value = node as { readonly start?: unknown; readonly end?: unknown };
+			return typeof value.start === "number" && typeof value.end === "number"
+				? { start: value.start, end: value.end }
+				: undefined;
+		};
+		const imports: Array<{
+			readonly declaration: ImportDeclarationNode;
+			readonly range: SourceRange;
+			readonly end: number;
+		}> = [];
+		let invalidImportRange = false;
+		try {
+			walk(parsed.program, (node) => {
+				if (node.type !== NodeKind.ImportDeclaration) return;
+				const range = sourceRange(node);
+				if (range === undefined) {
+					invalidImportRange = true;
+					return;
+				}
+				const end = range.end + (code[range.end] === ";" ? 1 : 0);
+				imports.push({ declaration: node as ImportDeclarationNode, range, end });
+			});
+		} catch {
+			return code;
+		}
+		if (invalidImportRange) return code;
+		const bodyWithoutImports = SourcePass.applyEdits(
+			code,
+			imports.map(({ range, end }) => ({ start: range.start, end, text: "" })),
+		);
+		const references = identifierNames(bodyWithoutImports, options.file ?? "migration-output.tsx");
+		if (references === undefined) return code;
+		const edits: Array<{ start: number; end: number; text: string }> = [];
+		for (const { declaration, range, end } of imports) {
+			const sourceNode = declaration.source;
+			if (sourceNode === null || typeof sourceNode !== "object") continue;
+			const source = sourceNode as { readonly value?: unknown };
+			const moduleSpecifier = source.value;
 			if (
-				moduleSpecifier === undefined ||
+				typeof moduleSpecifier !== "string" ||
 				(!ownedModules.has(moduleSpecifier) &&
-					!moduleMatchers.some((matcher) => matcher(moduleSpecifier)))
+					!(options.moduleMatchers ?? []).some((matcher) => matcher(moduleSpecifier)))
 			)
 				continue;
-			const statement = match[0];
-			const clause = /^import\s+([\s\S]+?)\s+from\s+(["'][^"']+["'])/u.exec(statement);
-			const start = match.index ?? 0;
-			if (clause === null) {
-				const lineStart = code.lastIndexOf("\n", start) + 1;
-				const lineEnd = code.indexOf("\n", start + statement.length);
+			const moduleIsSideEffectFree =
+				sideEffectFreeModules.has(moduleSpecifier) ||
+				(options.sideEffectFreeMatchers ?? []).some((matcher) => matcher(moduleSpecifier));
+			const sourceSpan = sourceRange(sourceNode);
+			if (sourceSpan === undefined) return code;
+			const used = (binding: string | undefined): boolean => {
+				if (binding === undefined) return true;
+				const localName = decodedIdentifierName(binding) ?? binding;
+				return !reserved.has(binding) && !reserved.has(localName) && references.has(localName);
+			};
+			const specifiers = Array.isArray(declaration.specifiers)
+				? (declaration.specifiers as Array<{
+						readonly type?: string;
+						readonly importKind?: string;
+						readonly local?: unknown;
+					}>)
+				: [];
+			if (specifiers.length === 0) {
+				if (!moduleIsSideEffectFree) continue;
+				const lineStart = code.lastIndexOf("\n", range.start) + 1;
+				const lineEnd = code.indexOf("\n", end);
 				const isStandaloneLine =
-					code.slice(lineStart, start).trim() === "" &&
-					(lineEnd === -1 || code.slice(start + statement.length, lineEnd).trim() === "");
+					code.slice(lineStart, range.start).trim() === "" &&
+					(lineEnd === -1 || code.slice(end, lineEnd).trim() === "");
 				edits.push({
-					start: isStandaloneLine ? lineStart : start,
-					end: isStandaloneLine && lineEnd !== -1 ? lineEnd + 1 : start + statement.length,
+					start: isStandaloneLine ? lineStart : range.start,
+					end: isStandaloneLine && lineEnd !== -1 ? lineEnd + 1 : end,
 					text: "",
 				});
 				continue;
 			}
-			const used = (binding: string): boolean =>
-				!reserved.has(binding) &&
-				[
-					...body.matchAll(
-						new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gu"),
-					),
-				].some((reference) => !excluded?.isExcluded(reference.index ?? -1));
-			const imported = clause[1]!.trim();
-			const namedMatch = /\{([^}]*)\}/u.exec(imported);
-			const named =
-				(namedMatch?.[1] ?? "")
-					.split(",")
-					.map((part) => part.trim())
-					.filter((part) => part !== "") ?? [];
-			const defaultPart = imported.split(",")[0]!.trim();
-			const keptDefault =
-				/^[A-Za-z_$][\w$]*$/u.test(defaultPart) && used(defaultPart) ? defaultPart : undefined;
-			const keptNamed = named.filter((part) => {
-				const binding = part
-					.split(/\s+as\s+/u)
-					.pop()!
-					.trim();
-				return used(binding);
-			});
-			const namespace = /\*\s+as\s+([A-Za-z_$][\w$]*)/u.exec(imported)?.[1];
-			if (namespace !== undefined && used(namespace)) {
-				edits.push({ start, end: start + statement.length, text: statement });
-				continue;
+			const kept: Array<{
+				readonly type: string;
+				readonly importKind?: string;
+				readonly text: string;
+			}> = [];
+			for (const specifier of specifiers) {
+				const specifierRange = sourceRange(specifier);
+				if (specifierRange === undefined) return code;
+				const local = specifier.local;
+				const localName =
+					local !== null && typeof local === "object" && "name" in local
+						? (local as { readonly name?: unknown }).name
+						: undefined;
+				const binding = typeof localName === "string" ? localName : undefined;
+				if (!used(binding)) continue;
+				kept.push({
+					type: specifier.type ?? "",
+					importKind: specifier.importKind,
+					text: code.slice(specifierRange.start, specifierRange.end).trim(),
+				});
 			}
-			const specifier = [
-				keptDefault,
-				keptNamed.length === 0 ? undefined : `{ ${keptNamed.join(", ")} }`,
+			if (kept.length === specifiers.length) continue;
+			const defaultSpecifier = kept.find(
+				(specifier) => specifier.type === NodeKind.ImportDefaultSpecifier,
+			);
+			const namespaceSpecifier = kept.find(
+				(specifier) => specifier.type === NodeKind.ImportNamespaceSpecifier,
+			);
+			const namedSpecifiers = kept.filter(
+				(specifier) => specifier.type === NodeKind.ImportSpecifier,
+			);
+			const importClause = [
+				defaultSpecifier?.text,
+				namespaceSpecifier?.text,
+				namedSpecifiers.length === 0
+					? undefined
+					: "{ " + namedSpecifiers.map((specifier) => specifier.text).join(", ") + " }",
+				...kept
+					.filter(
+						(specifier) =>
+							specifier.type !== NodeKind.ImportDefaultSpecifier &&
+							specifier.type !== NodeKind.ImportNamespaceSpecifier &&
+							specifier.type !== NodeKind.ImportSpecifier,
+					)
+					.map((specifier) => specifier.text),
 			].filter((part): part is string => part !== undefined);
+			const keepsModuleEvaluation =
+				declaration.importKind !== "type" &&
+				specifiers.some(
+					(specifier) =>
+						specifier.type !== NodeKind.ImportSpecifier || specifier.importKind !== "type",
+				);
+			const keptBindingsKeepModuleEvaluation =
+				declaration.importKind !== "type" &&
+				kept.some(
+					(specifier) =>
+						specifier.type !== NodeKind.ImportSpecifier || specifier.importKind !== "type",
+				);
+			const lineStart = code.lastIndexOf("\n", range.start) + 1;
+			const lineEnd = code.indexOf("\n", end);
 			const isStandaloneLine =
-				code.slice(code.lastIndexOf("\n", start) + 1, start).trim() === "" &&
-				(code.indexOf("\n", start + statement.length) === -1 ||
-					code
-						.slice(start + statement.length, code.indexOf("\n", start + statement.length))
-						.trim() === "");
-			const lineEnd = code.indexOf("\n", start + statement.length);
+				code.slice(lineStart, range.start).trim() === "" &&
+				(lineEnd === -1 || code.slice(end, lineEnd).trim() === "");
+			const preserveSideEffectImport =
+				!moduleIsSideEffectFree &&
+				keepsModuleEvaluation &&
+				!keptBindingsKeepModuleEvaluation;
+			const rewrittenImport =
+				importClause.length === 0
+					? ""
+					: "import " +
+							(declaration.importKind === "type" ? "type " : "") +
+							importClause.join(", ") +
+							" from " +
+							code.slice(sourceSpan.start, sourceSpan.end) +
+							code.slice(sourceSpan.end, end);
 			edits.push({
 				start:
-					specifier.length === 0 && isStandaloneLine ? code.lastIndexOf("\n", start) + 1 : start,
+					importClause.length === 0 && !preserveSideEffectImport && isStandaloneLine
+					? lineStart
+					: range.start,
 				end:
-					specifier.length === 0 && isStandaloneLine && lineEnd !== -1
+					importClause.length === 0 && !preserveSideEffectImport && isStandaloneLine && lineEnd !== -1
 						? lineEnd + 1
-						: start + statement.length,
-				text: specifier.length === 0 ? "" : `import ${specifier.join(", ")} from ${clause[2]!};`,
+						: end,
+				text: preserveSideEffectImport
+					? importClause.length === 0
+						? "import " + code.slice(sourceSpan.start, end)
+						: rewrittenImport + "\nimport " + code.slice(sourceSpan.start, end)
+					: rewrittenImport,
 			});
 		}
 		for (const edit of edits.toReversed())
 			code = code.slice(0, edit.start) + edit.text + code.slice(edit.end);
 		return code;
 	}
+
+	static removeRedundantSideEffectImports(code: string, file = "migration-output.tsx"): string {
+		let parsed: ReturnType<typeof SOURCE_SCANNER_SERVICE.parse>;
+		try {
+			parsed = SOURCE_SCANNER_SERVICE.parse({ file, source: code });
+			if (parsed.errors.length > 0) return code;
+		} catch {
+			return code;
+		}
+		type SourceRange = { readonly start: number; readonly end: number };
+		type ImportDeclarationNode = {
+			readonly importKind?: string;
+			readonly source?: unknown;
+			readonly specifiers?: unknown;
+		};
+		const sourceRange = (node: unknown): SourceRange | undefined => {
+			if (node === null || typeof node !== "object") return undefined;
+			const value = node as { readonly start?: unknown; readonly end?: unknown };
+			return typeof value.start === "number" && typeof value.end === "number"
+				? { start: value.start, end: value.end }
+				: undefined;
+		};
+		const imports: Array<{
+			readonly range: SourceRange;
+			readonly end: number;
+			readonly key: string;
+			readonly runtime: boolean;
+			readonly sideEffectOnly: boolean;
+		}> = [];
+		let invalidImportRange = false;
+		try {
+			walk(parsed.program, (node) => {
+				if (node.type !== NodeKind.ImportDeclaration) return;
+				const range = sourceRange(node);
+				const declaration = node as ImportDeclarationNode;
+				const source = sourceRange(declaration.source);
+				if (range === undefined || source === undefined) {
+					invalidImportRange = true;
+					return;
+				}
+				const sourceNode = declaration.source as { readonly value?: unknown };
+				if (typeof sourceNode.value !== "string") {
+					invalidImportRange = true;
+					return;
+				}
+				const end = range.end + (code[range.end] === ";" ? 1 : 0);
+				const importSuffix = code
+					.slice(source.end, range.end)
+					.replace(/;\s*$/u, "")
+					.trim();
+				const specifiers = Array.isArray(declaration.specifiers)
+					? (declaration.specifiers as Array<{
+							readonly type?: string;
+							readonly importKind?: string;
+						}>)
+					: [];
+				const runtime =
+					declaration.importKind !== "type" &&
+					specifiers.some(
+						(specifier) =>
+							specifier.type !== NodeKind.ImportSpecifier || specifier.importKind !== "type",
+					);
+				imports.push({
+					range,
+					end,
+					key: `${sourceNode.value}\u0000${importSuffix}`,
+					runtime,
+					sideEffectOnly: declaration.importKind !== "type" && specifiers.length === 0,
+				});
+			});
+		} catch {
+			return code;
+		}
+		if (invalidImportRange) return code;
+		const runtimeImports = new Set(imports.filter((item) => item.runtime).map((item) => item.key));
+		const seenSideEffectImports = new Set<string>();
+		const edits: Array<{ readonly start: number; readonly end: number }> = [];
+		for (const item of imports) {
+			if (!item.sideEffectOnly) continue;
+			if (!runtimeImports.has(item.key) && !seenSideEffectImports.has(item.key)) {
+				seenSideEffectImports.add(item.key);
+				continue;
+			}
+			const lineStart = code.lastIndexOf("\n", item.range.start) + 1;
+			const lineEnd = code.indexOf("\n", item.end);
+			const isStandaloneLine =
+				code.slice(lineStart, item.range.start).trim() === "" &&
+				(lineEnd === -1 || code.slice(item.end, lineEnd).trim() === "");
+			edits.push({
+				start: isStandaloneLine ? lineStart : item.range.start,
+				end: isStandaloneLine && lineEnd !== -1 ? lineEnd + 1 : item.end,
+			});
+		}
+		for (const edit of edits.toReversed()) code = code.slice(0, edit.start) + code.slice(edit.end);
+		return code;
+	}
+
 	/** Remove import specifiers whose binding name no longer appears in the
 	 * module body; a statement left with no specifiers is removed with its line. */
 	static removeUnreferencedImportSpecifiers(code: string, candidates: readonly string[]): string {
 		let result = code;
 		for (const candidate of candidates) {
-			const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 			// Judge references against the module with import statements stripped,
 			// so the candidate's own declaration never keeps itself alive.
-			const body = result.replace(/import\s*\{[^}]*\}\s*from\s*("[^"]+"|'[^']+')/gu, "");
-			if (new RegExp(`\\b${escaped}\\b`, "u").test(body)) continue;
+			const sourceExcluded = excludedSourceRanges(result);
+			if (sourceExcluded === undefined) return result;
+			const body = removeMatches(
+				result,
+				codeMatches(result, importDeclarationPattern, sourceExcluded),
+			);
+			const references = identifierNames(body);
+			if (references === undefined || references.has(candidate)) continue;
 			const importPattern = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*("[^"]+"|'[^']+')`, "g");
 			const edits: Array<{ start: number; end: number; text: string }> = [];
-			for (const match of result.matchAll(importPattern)) {
+			for (const match of codeMatches(result, importPattern, sourceExcluded)) {
 				const start = match.index ?? 0;
 				const clause = match[1] ?? "";
 				let removed = false;
@@ -153,21 +427,25 @@ export class MigrationOutput {
 	): string {
 		const owned = new Set(modules);
 		const pattern = /import\s*\{([^}]*)\}\s*from\s*(["'])([^"']+)\2[ \t]*;?/gu;
+		const sourceExcluded = excludedSourceRanges(code);
+		if (sourceExcluded === undefined) return code;
+		const body = removeMatches(code, codeMatches(code, importDeclarationPattern, sourceExcluded));
+		const references = identifierNames(body);
+		if (references === undefined) return code;
+		const isReferenced = (binding: string): boolean => references.has(binding);
 		const edits: Array<{ start: number; end: number; text: string }> = [];
-		for (const match of code.matchAll(pattern)) {
+		for (const match of codeMatches(code, pattern, sourceExcluded)) {
 			if (match[3] === undefined || !owned.has(match[3])) continue;
 			const kept = match[1]!
 				.split(",")
 				.map((part) => part.trim())
-				.filter(
-					(part) =>
-						!candidates.includes(
-							part
-								.split(/\s+as\s+/u)
-								.pop()!
-								.trim(),
-						),
-				);
+				.filter((part) => {
+					const localName = part
+						.split(/\s+as\s+/u)
+						.pop()!
+						.trim();
+					return !candidates.includes(localName) || isReferenced(localName);
+				});
 			if (kept.length === match[1]!.split(",").filter((part) => part.trim() !== "").length)
 				continue;
 			const start = match.index ?? 0;

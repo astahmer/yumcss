@@ -49,7 +49,6 @@ test("yumcss -> panda: migrates concrete yumcss syntax to panda", () => {
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -93,7 +92,6 @@ test("yumcss -> panda: carries a documented secondary yumcss API explicitly", ()
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const styles = { "card": css({ color: "red" }), "muted": css({ opacity: 0.5 }) };",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -145,7 +143,6 @@ test("yumcss -> panda: loads concrete theme and project context variants", async
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -180,7 +177,6 @@ test("yumcss -> panda: loads concrete theme and project context variants", async
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -227,7 +223,6 @@ test("yumcss -> panda: resolves concrete token values with project context", asy
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-
 		export const card = css({ color: "brand.500", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -270,8 +265,8 @@ test("yumcss -> panda: preserves malformed concrete yumcss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		import { css } from "styled-system/css";
 		export const card = css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished yumcss */",
 		  "converted": 1,

@@ -147,7 +147,8 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "react-fela";
+		import styled from "styled-components";
 		export const Card = styled("button")({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -181,7 +182,8 @@ test("fela -> styled-components -> fela: retains the documented secondary API wi
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
+		    "code": "import "react-fela";
+		export const Card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

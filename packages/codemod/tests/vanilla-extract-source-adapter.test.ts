@@ -29,7 +29,8 @@ describe("Vanilla Extract source adapter", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": true,
-			  "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			  "code": "import "@vanilla-extract/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const tone = { "regular": css.class({ color: "red" }), "quiet": css.class({ color: "gray" }) };",
 			  "converted": 1,
@@ -268,7 +269,7 @@ describe("Vanilla Extract source adapter", () => {
 		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).not.toContain("@vanilla-extract/css");
+		expect(result.code).toContain('import "@vanilla-extract/css";');
 		expect(result.code).toContain('const progress = "--pw-progress";');
 		expect(result.code).toContain('kind: "property"');
 		expect(result.code).toContain('name: "--pw-progress"');

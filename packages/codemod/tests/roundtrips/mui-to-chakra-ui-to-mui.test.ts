@@ -118,7 +118,8 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
+		    "code": "import "@mui/system";
+		import { chakra } from "@chakra-ui/react";
 		export const Card = (props) => <chakra.div {...props} css={{ color: "red", padding: "8px" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -152,7 +153,7 @@ test("mui -> chakra-ui -> mui: retains the documented secondary API without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
+		    "code": "import "@mui/system";
 		import { Box } from "@mui/material";
 		export const Card = (props) => <Box component="chakra.div" {...props} sx={{ color: "red", padding: "8px" }} />;",
 		    "converted": 1,

@@ -48,7 +48,8 @@ test("bamboo -> react-native: migrates concrete bamboo syntax to react-native", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -94,7 +95,8 @@ test("bamboo -> react-native: carries a documented secondary bamboo API explicit
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "display": "flex", "gap": "4" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -149,7 +151,8 @@ test("bamboo -> react-native: loads concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -186,7 +189,8 @@ test("bamboo -> react-native: loads concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
+		    "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -235,7 +239,8 @@ test("bamboo -> react-native: resolves concrete token values with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "#2563eb" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -281,7 +286,8 @@ test("bamboo -> react-native: preserves malformed concrete bamboo input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
+		  "code": "import { css } from "styled-system/css";
+		import { StyleSheet } from "react-native";
 		export const card = StyleSheet.create({ "color": "red" });
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,

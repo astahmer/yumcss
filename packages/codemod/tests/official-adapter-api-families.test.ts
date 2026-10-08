@@ -232,7 +232,8 @@ describe("official adapter API families", () => {
 			{
 			  "aphrodite/array composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "aphrodite";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = css.vars({ card: [{ color: "red" }, { padding: 8 }] });",
 			    "converted": 1,
@@ -267,7 +268,8 @@ describe("official adapter API families", () => {
 			  },
 			  "aphrodite/font-face array value": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "aphrodite";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const styles = { "fonts": (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  })) };",
@@ -469,7 +471,8 @@ describe("official adapter API families", () => {
 			  },
 			  "bamboo/styled-system object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ display: "flex", gap: "4" });",
 			    "converted": 1,
@@ -1064,7 +1067,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/injectGlobal tagged template": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "@emotion/css";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			() => (runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: "0" }], children: [] }]), null);",
@@ -1100,7 +1104,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/keyframes object": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "@emotion/css";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
@@ -1136,7 +1141,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/styled component object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@emotion/styled";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -1174,7 +1180,8 @@ describe("official adapter API families", () => {
 			  },
 			  "emotion/tagged css template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -1209,7 +1216,8 @@ describe("official adapter API families", () => {
 			  },
 			  "fela/createComponent": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "react-fela";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -1880,7 +1888,8 @@ describe("official adapter API families", () => {
 			  },
 			  "mui/styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@mui/system";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -2025,7 +2034,8 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/cva recipe": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/recipes";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
 			export const button = __yumcsscreateRecipe(css, { base: { color: "red" }, variants: { "size": { "sm": { padding: "2" } } } });",
@@ -2090,7 +2100,8 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled JSX style props": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/jsx";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Button = () => <button className={css.class({ color: "red" })} />;",
 			    "converted": 1,
@@ -2125,7 +2136,8 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/generated styled component": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/jsx";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -2176,7 +2188,8 @@ describe("official adapter API families", () => {
 			  },
 			  "panda/sva slot recipe": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/recipes";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createSlotRecipe as __yumcsscreateSlotRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
 			export const card = __yumcsscreateSlotRecipe(css, { slots: { "root": { color: "red" }, "label": {  } }, slotVariants: {  } });",
@@ -2263,7 +2276,8 @@ describe("official adapter API families", () => {
 			  },
 			  "react-native/StyleSheet named map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "react-native";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ padding: "8px", backgroundColor: "red" }) };",
 			    "converted": 1,
@@ -2593,7 +2607,8 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/prop callback": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "solid-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: ((props) => props.color)(props) }); const attrs = {}; const Component = attrs.as ?? props.as ?? "button"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Component {...forwarded} className={css.props(staticClass, dynamic, "pw-1fn70s4", attrs.className, props.className).className} style={{ ...props.style, ...dynamic.style, ...attrs.style }} />; }; component.__yumcssClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
@@ -2628,7 +2643,8 @@ describe("official adapter API families", () => {
 			  },
 			  "solid-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "solid-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -2791,7 +2807,6 @@ describe("official adapter API families", () => {
 			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createRecipe as __yumcsscreateRecipe } from "./__yumcss/recipe";
 			const css = createUnsafeCss();
-
 			export const button = __yumcsscreateRecipe(css, { base: { compoundVariants: [{ size: "sm", css: { color: "red" } }] }, variants: { "size": { "sm": { padding: 4 } } } });",
 			    "converted": 1,
 			    "generatedFiles": [
@@ -2830,7 +2845,8 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/named style map": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "style9";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -2867,7 +2883,8 @@ describe("official adapter API families", () => {
 			  },
 			  "style9/style9 call composition": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "style9";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -3869,7 +3886,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/createVar": {
 			    "changed": true,
-			    "code": "export const brand = "--pw-brand";",
+			    "code": "import "@vanilla-extract/css";
+			export const brand = "--pw-brand";",
 			    "converted": 1,
 			    "generatedFiles": [],
 			    "loweringPlans": [
@@ -3890,7 +3908,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/fontFace": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "@vanilla-extract/css";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const inter = (runtimeCss.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), runtimeCss.group({  }));",
@@ -3926,7 +3945,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/globalStyle": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "@vanilla-extract/css";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			(runtimeCss.sheet.registerSemanticRules([{ kind: "global", selector: "body", conditions: [], declarations: [{ property: "margin", value: 0 }], children: [] }]), null);",
@@ -3962,7 +3982,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/keyframes": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "yumcss/css/runtime";
+			    "code": "import "@vanilla-extract/css";
+			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 			export const pulse = (() => { const name = "pw-kf-pulse"; runtimeCss.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
@@ -4039,7 +4060,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/styleVariants": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@vanilla-extract/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const variants = { "primary": css.class({ color: "red" }) };",
 			    "converted": 1,
@@ -4108,7 +4130,8 @@ describe("official adapter API families", () => {
 			  },
 			  "vue-styled/static component template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "vue-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -4147,12 +4170,12 @@ describe("official adapter API families", () => {
 			  "vue-styled/theme callback": {
 			    "changed": true,
 			    "code": "<script setup>
+			import styled from "vue-styled-components";
 			import { forwardRef as __yumcssForwardRef } from "react";
 			import { createRuntimeCss } from "yumcss/css/runtime";
 			import { defaultPreset } from "yumcss/preset/default";
 			import type * as React from "react";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-
 			const Card = __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: (props => props.color)(props) }); const attrs: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });
 			</script>
 			<template><Card color="red" /></template>",

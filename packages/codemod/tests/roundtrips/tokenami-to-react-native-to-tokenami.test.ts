@@ -89,7 +89,8 @@ test("tokenami -> react-native -> tokenami: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "red", "--gap": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -258,7 +259,8 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -333,7 +335,8 @@ test("tokenami -> react-native -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
+		      "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "16px" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -423,7 +426,8 @@ test("tokenami -> react-native -> tokenami: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
+		    "code": "import "react-native";
+		import { css } from "@tokenami/css";
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "16px" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -276,7 +276,8 @@ test("compiled -> jss: preserves malformed concrete compiled input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
+		  "code": "import { css } from "@compiled/react";
+		import { createUseStyles } from "react-jss";
 		export const card = createUseStyles({ color: "red", padding: "8px" });
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,

@@ -1,7 +1,7 @@
 /**
- * TUI target — the SAME shared vocabulary through yumcss/opentui.
- * Terminal cells: fill -> span backgrounds, corners -> border model,
- * pad [4, 8] -> per-side cell expansion. `_dark` resolves at boot.
+ * TUI target — the shared base vocabulary through yumcss/opentui.
+ * Terminal cells keep fill and per-side padding; CSS radius stays web/native.
+ * `_dark` resolves at boot.
  */
 import { createDesignCss } from "yumcss/opentui";
 import { examplePreset } from "@yumcss/example-preset";

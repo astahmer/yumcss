@@ -267,7 +267,8 @@ test("chakra-ui -> tamagui: preserves malformed concrete chakra-ui input", async
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { View, styled } from "@tamagui/core";
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { View, styled } from "@tamagui/core";
 		const __componentTamagui = styled(View, { background: "#fecaca", padding: "1rem" });
 		export const App = () => (props) => { const attrs = {}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...forwardedAttrs } = attrs; return <__componentTamagui {...rest} {...forwardedAttrs} render={attrs.as ?? props.as ?? "div"} />; };
 		const unfinished = { /* unfinished chakra-ui */",

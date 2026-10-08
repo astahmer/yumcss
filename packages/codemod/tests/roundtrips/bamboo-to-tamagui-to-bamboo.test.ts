@@ -52,7 +52,8 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -85,7 +86,8 @@ test("bamboo -> tamagui -> bamboo: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "red" });",
 		    "converted": 0,
@@ -136,7 +138,8 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { display: "flex", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -169,7 +172,8 @@ test("bamboo -> tamagui -> bamboo: retains the documented secondary API without 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { display: "flex", gap: "4" });",
 		    "converted": 0,
@@ -236,7 +240,8 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -269,7 +274,8 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
@@ -307,7 +313,8 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -340,7 +347,8 @@ test("bamboo -> tamagui -> bamboo: preserves concrete theme and project context 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { View, styled } from "@tamagui/core";
+		      "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		      "converted": 0,
@@ -393,7 +401,8 @@ test("bamboo -> tamagui -> bamboo: resolves token values across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -426,7 +435,8 @@ test("bamboo -> tamagui -> bamboo: resolves token values across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
+		    "code": "import "styled-system/css";
+		import { View, styled } from "@tamagui/core";
 		// yumcss:migrate-skip (route: tamagui -> bamboo | capability-blocked: components: component subject: styled(View) | available: static, named-map, residual)
 		export const card = styled(View, { color: "#2563eb" });",
 		    "converted": 0,

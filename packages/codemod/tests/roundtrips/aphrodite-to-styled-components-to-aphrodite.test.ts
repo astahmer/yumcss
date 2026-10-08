@@ -52,7 +52,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -86,7 +87,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves an actionable concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };",
 		    "converted": 0,
@@ -227,7 +229,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -261,7 +264,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "aphrodite";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
@@ -301,7 +305,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -335,7 +340,8 @@ test("aphrodite -> styled-components -> aphrodite: preserves concrete theme and 
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
+		      "code": "import "aphrodite";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		      "converted": 0,
@@ -390,7 +396,8 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -424,7 +431,8 @@ test("aphrodite -> styled-components -> aphrodite: resolves token values across 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import "aphrodite";
+		import styled from "styled-components";
 		// yumcss:migrate-skip (route: styled-components -> aphrodite | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		export const styles = { "card": styled.div({ color: "#2563eb", padding: "8px" }) };",
 		    "converted": 0,

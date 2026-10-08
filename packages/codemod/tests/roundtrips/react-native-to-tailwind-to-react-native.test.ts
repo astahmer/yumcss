@@ -52,7 +52,8 @@ test("react-native -> tailwind -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[color:red] [padding:8px]" };",
+		    "code": "import "react-native";
+		export const styles = { "card": "[color:red] [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -140,7 +141,8 @@ test("react-native -> tailwind -> react-native: retains the documented secondary
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "[padding:8px] [background-color:red]" };",
+		    "code": "import "react-native";
+		export const styles = { "card": "[padding:8px] [background-color:red]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -244,7 +246,8 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
+		      "code": "import "react-native";
+		export const styles = { "card": "[color:#2563eb] [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -319,7 +322,8 @@ test("react-native -> tailwind -> react-native: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		      "code": "import "react-native";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -409,7 +413,8 @@ test("react-native -> tailwind -> react-native: resolves token values across bot
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": "text-brand [padding:8px]" };",
+		    "code": "import "react-native";
+		export const styles = { "card": "text-brand [padding:8px]" };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

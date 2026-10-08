@@ -39,6 +39,7 @@ test("bamboo -> panda -> bamboo: preserves an actionable concrete round trip", a
 	if (first.skipped === 0) {
 		expect(first.converted).toBeGreaterThan(0);
 		expect(first.residuals).toEqual([]);
+		expect(first.code).toContain('import { css } from "styled-system/css";');
 		expect(first.validations.every((validation) => validation.valid)).toBe(true);
 	} else {
 		expect(first.residuals.length).toBeGreaterThan(0);
@@ -463,4 +464,3 @@ test("bamboo -> panda -> bamboo: resolves token values across both concrete legs
 		}
 	`)
 });
-

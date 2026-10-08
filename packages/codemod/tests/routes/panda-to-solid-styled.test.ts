@@ -48,7 +48,8 @@ test("panda -> solid-styled: migrates concrete panda syntax to solid-styled", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "&:hover": { "color": "blue" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -152,7 +153,8 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#f97316", "&:hover": { "color": "#f97316" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -189,7 +191,8 @@ test("panda -> solid-styled: loads concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "solid-styled-components";
+		    "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -238,7 +241,8 @@ test("panda -> solid-styled: resolves concrete token values with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "#2563eb", "&:hover": { "color": "#2563eb" } });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -284,7 +288,8 @@ test("panda -> solid-styled: preserves malformed concrete panda input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "solid-styled-components";
+		  "code": "import { css } from "styled-system/css";
+		import { css } from "solid-styled-components";
 		export const card = css({ "color": "red", "&:hover": { "color": "blue" } });
 		const unfinished = { /* unfinished panda */",
 		  "converted": 1,

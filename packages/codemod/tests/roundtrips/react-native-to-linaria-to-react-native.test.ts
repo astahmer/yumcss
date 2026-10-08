@@ -52,7 +52,8 @@ test("react-native -> linaria -> react-native: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: red; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -141,7 +142,8 @@ test("react-native -> linaria -> react-native: retains the documented secondary 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 8px; background-color: red;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -246,7 +248,8 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -322,7 +325,8 @@ test("react-native -> linaria -> react-native: preserves concrete theme and proj
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@linaria/core";
+		      "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -413,7 +417,8 @@ test("react-native -> linaria -> react-native: resolves token values across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
+		    "code": "import "react-native";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`color: #2563eb; padding: 8px;\` };",
 		    "converted": 1,
 		    "generatedFiles": [],

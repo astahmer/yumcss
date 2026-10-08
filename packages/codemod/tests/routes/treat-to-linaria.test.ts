@@ -276,7 +276,8 @@ test("treat -> linaria: preserves malformed concrete treat input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
+		  "code": "import { style } from "treat";
+		import { css } from "@linaria/core";
 		export const card = css\`color: red; padding: 8px;\`;
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,

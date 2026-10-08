@@ -90,7 +90,8 @@ describe("official primary API forms", () => {
 			{
 			  "aphrodite/StyleSheet.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "aphrodite";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
@@ -159,7 +160,8 @@ describe("official primary API forms", () => {
 			  },
 			  "bamboo/styled-system css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,
@@ -300,7 +302,8 @@ describe("official primary API forms", () => {
 			  },
 			  "emotion/@emotion/css object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@emotion/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,
@@ -511,7 +514,8 @@ describe("official primary API forms", () => {
 			  },
 			  "mantine/Mantine style props": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@mantine/core";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 			    "converted": 1,
@@ -546,7 +550,8 @@ describe("official primary API forms", () => {
 			  },
 			  "mui/MUI sx prop": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@mui/material";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const App = () => <div className={css.class({ color: "red", padding: "16px" })} />;",
 			    "converted": 1,
@@ -616,7 +621,8 @@ describe("official primary API forms", () => {
 			  },
 			  "panda/generated styled-system css": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "styled-system/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", _hover: { color: "blue" } });",
 			    "converted": 1,
@@ -651,7 +657,8 @@ describe("official primary API forms", () => {
 			  },
 			  "react-native/React Native StyleSheet": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "react-native";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const styles = { "card": css.class({ color: "red", padding: "8px" }) };",
 			    "converted": 1,
@@ -756,7 +763,8 @@ describe("official primary API forms", () => {
 			  },
 			  "solid-styled/solid styled template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "solid-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -829,7 +837,8 @@ describe("official primary API forms", () => {
 			  },
 			  "style9/style9.create": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "style9";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			import { createCx } from "yumcss/cx";
 			const cx = createCx();
 			const css = createUnsafeCss();
@@ -1116,7 +1125,8 @@ describe("official primary API forms", () => {
 			  },
 			  "vanilla-extract/style object": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "@vanilla-extract/css";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const card = css.class({ color: "red", padding: "8px" });",
 			    "converted": 1,
@@ -1151,7 +1161,8 @@ describe("official primary API forms", () => {
 			  },
 			  "vue-styled/vue styled template": {
 			    "changed": true,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			    "code": "import "vue-styled-components";
+			import { createUnsafeCss } from "yumcss/unsafe/css";
 			const css = createUnsafeCss();
 			export const Card = css.class({ color: "red", padding: "1rem" });",
 			    "converted": 1,

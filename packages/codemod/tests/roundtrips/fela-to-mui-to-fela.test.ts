@@ -118,7 +118,8 @@ test("fela -> mui -> fela: retains the documented secondary API without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "@mui/system";
+		    "code": "import "react-fela";
+		import { styled } from "@mui/system";
 		export const Card = styled("button")({ color: "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -152,7 +153,9 @@ test("fela -> mui -> fela: retains the documented secondary API without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const Card = renderer.renderRule({ "color": "red" });",
+		    "code": "import "react-fela";
+		import "@mui/system";
+		export const Card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

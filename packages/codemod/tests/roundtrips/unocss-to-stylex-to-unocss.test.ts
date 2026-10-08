@@ -277,7 +277,8 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => { "style": "text-brand p-card" }.style;",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => { "style": "text-brand p-card" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -351,7 +352,8 @@ test("unocss -> stylex -> unocss: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => { "style": "text-brand p-card" }.style;",
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => { "style": "text-brand p-card" }.style;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -440,7 +442,8 @@ test("unocss -> stylex -> unocss: resolves token values across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => { "style": "text-brand p-card" }.style;",
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const App = () => { "style": "text-brand p-card" }.style;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

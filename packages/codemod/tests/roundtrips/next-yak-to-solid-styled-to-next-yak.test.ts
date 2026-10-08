@@ -88,7 +88,8 @@ test("next-yak -> solid-styled -> next-yak: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "solid-styled-components";
+		import { css } from "next-yak";
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -174,7 +175,8 @@ test("next-yak -> solid-styled -> next-yak: retains the documented secondary API
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "solid-styled-components";
+		import { css } from "next-yak";
 		import { children as __yumcssCardChildren, splitProps as __yumcssCardSplitProps } from "solid-js";
 		import type { JSX as __yumcssCardJSX } from "solid-js";
 		export const Card = (() => { type __yumcssCardProps = __yumcssCardJSX.IntrinsicElements["div"]; return (props: __yumcssCardProps) => { const [local, forwarded] = __yumcssCardSplitProps(props, ["class", "children", "ref"]); const resolvedChildren = __yumcssCardChildren(() => local.children); return <div {...forwarded} ref={local.ref} class={[css\`color: red; padding: 1rem;\`, local.class].filter(Boolean).join(" ")}>{resolvedChildren()}</div>; }; })();",
@@ -278,7 +280,8 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "solid-styled-components";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -351,7 +354,8 @@ test("next-yak -> solid-styled -> next-yak: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
+		      "code": "import "solid-styled-components";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -439,7 +443,8 @@ test("next-yak -> solid-styled -> next-yak: resolves token values across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
+		    "code": "import "solid-styled-components";
+		import { css } from "next-yak";
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

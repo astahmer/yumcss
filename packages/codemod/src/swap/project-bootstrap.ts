@@ -1059,7 +1059,9 @@ export async function createYumCSSProjectSupport(
 		? derivedFiles
 		: undefined;
 	const hasGeneratedTw = derivedFiles.some((file) => file.path === projectFile(directory, "tw.ts"));
-	const viteIntegration = rewriteYumCSSViteConfigs(request, sourceConfig, directory);
+	const viteIntegration = configurationFailed
+		? { enabled: false, fileChanges: [] }
+		: rewriteYumCSSViteConfigs(request, sourceConfig, directory);
 	const viteConfigChanges = viteIntegration.fileChanges;
 	const pandaStylesheetImport = nextIntegration.enabled
 		? YUMCSS_NEXT_CSS_ID
@@ -1090,15 +1092,17 @@ export async function createYumCSSProjectSupport(
 				: { twModule: projectFile(directory, "tw.ts") }),
 		},
 		files: outputFiles,
-		fileChanges: [
-			...rewriteTailwindStylesheets(request, sourceConfig),
-			...removeTailwindStylesheetImports(request, sourceConfig),
-			...removePandaStylesheetImports(request, sourceConfig, pandaStylesheetImport),
-			...removeUnoStylesheetImports(request, sourceConfig),
-			...normalizedHostChanges,
-			...viteConfigChanges,
-			...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
-		],
+		fileChanges: configurationFailed
+			? []
+			: [
+					...rewriteTailwindStylesheets(request, sourceConfig),
+					...removeTailwindStylesheetImports(request, sourceConfig),
+					...removePandaStylesheetImports(request, sourceConfig, pandaStylesheetImport),
+					...removeUnoStylesheetImports(request, sourceConfig),
+					...normalizedHostChanges,
+					...viteConfigChanges,
+					...enableTypeScriptExtensionImports(request, viteConfigChanges.length > 0),
+				],
 		...(metaFiles === undefined
 			? {}
 			: {

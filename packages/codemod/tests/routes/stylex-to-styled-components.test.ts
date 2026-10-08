@@ -266,7 +266,8 @@ test("stylex -> styled-components: preserves malformed concrete stylex input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ color: "red", padding: "8px" }) };
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

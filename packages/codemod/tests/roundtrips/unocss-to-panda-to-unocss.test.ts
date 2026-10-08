@@ -249,7 +249,8 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -322,7 +323,8 @@ test("unocss -> panda -> unocss: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		      "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -410,7 +412,8 @@ test("unocss -> panda -> unocss: resolves token values across both concrete legs
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "export const App = () => <div className={"text-brand p-card"}/>;",
+		    "code": "import "styled-system/css";
+		export const App = () => <div className={"text-brand p-card"}/>;",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

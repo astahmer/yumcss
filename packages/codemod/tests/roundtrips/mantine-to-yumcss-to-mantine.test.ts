@@ -52,7 +52,8 @@ test("mantine -> yumcss -> mantine: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mantine/core";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		    "converted": 1,
@@ -87,7 +88,7 @@ test("mantine -> yumcss -> mantine: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import "@mantine/core";
 		export const App = () => <div className={{ color: "blue", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -215,7 +216,8 @@ test("mantine -> yumcss -> mantine: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mantine/core";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		      "converted": 1,
@@ -250,7 +252,7 @@ test("mantine -> yumcss -> mantine: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import "@mantine/core";
 		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -287,7 +289,8 @@ test("mantine -> yumcss -> mantine: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		      "code": "import "@mantine/core";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		      "converted": 1,
@@ -322,7 +325,7 @@ test("mantine -> yumcss -> mantine: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import "@mantine/core";
 		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" }} />;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -374,7 +377,8 @@ test("mantine -> yumcss -> mantine: resolves token values across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+		    "code": "import "@mantine/core";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div className={css.class({ color: "brand", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" })} />;",
 		    "converted": 1,
@@ -409,7 +413,7 @@ test("mantine -> yumcss -> mantine: resolves token values across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import "@mantine/core";
 		export const App = () => <div className={{ color: "var(--mantine-color-brand-0)", marginInline: "auto", maxWidth: "calc(25rem * var(--mantine-scale, 1))" }} />;",
 		    "converted": 1,
 		    "generatedFiles": [],

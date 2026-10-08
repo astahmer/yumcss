@@ -88,7 +88,6 @@ test("next-yak -> yumcss -> next-yak: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -176,8 +175,7 @@ test("next-yak -> yumcss -> next-yak: retains the documented secondary API witho
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		import { createCx } from "yumcss/cx";
+		    "code": "import { createCx } from "yumcss/cx";
 		import { css } from "next-yak";
 		const cx = createCx();
 		const __yumcssSlot = ({ defaultComponent, style, stableClass, inheritedClass, classAttribute, filteredPropPrefixes, attrs, joinClass }) => { const component = (props) => { const Component = attrs.as ?? props.as ?? defaultComponent; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = filteredPropPrefixes.length === 0 ? { ...rest, ...attrsProps } : Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !filteredPropPrefixes.some((prefix) => key.startsWith(prefix)))); return <Component {...forwarded} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, attrs[classAttribute], props[classAttribute]) }} />; }; component.__yumcssClassName = stableClass; return component; };
@@ -282,7 +280,6 @@ test("next-yak -> yumcss -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -355,7 +352,6 @@ test("next-yak -> yumcss -> next-yak: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -443,7 +439,6 @@ test("next-yak -> yumcss -> next-yak: resolves token values across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-
 		export const card = css\`color: #2563eb; padding: 1rem;\`;",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -273,7 +273,8 @@ test("goober -> unocss: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "export const card = "[color:red] [padding:1rem]";
+		  "code": "import { css } from "goober";
+		export const card = "[color:red] [padding:1rem]";
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "generatedFiles": [],

@@ -54,8 +54,8 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "red", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -90,7 +90,6 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ "--color": "red", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -218,8 +217,8 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "#f97316", gap: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -254,7 +253,6 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -291,8 +289,8 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		      "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -327,7 +325,6 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		      "converted": 1,
 		      "generatedFiles": [],
@@ -379,8 +376,8 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { css } from "@tokenami/css";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const card = defaultSystem.css({ color: "brand.500", gap: "4" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -415,7 +412,6 @@ test("tokenami -> chakra-ui -> tokenami: resolves token values across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-
 		export const card = css({ "--color": "var(--color_brand)", "--gap": "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],

@@ -52,7 +52,8 @@ test("aphrodite -> fela -> aphrodite: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -221,7 +222,8 @@ test("aphrodite -> fela -> aphrodite: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
+		      "code": "import "aphrodite";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -295,7 +297,8 @@ test("aphrodite -> fela -> aphrodite: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
+		      "code": "import "aphrodite";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -384,7 +387,8 @@ test("aphrodite -> fela -> aphrodite: resolves token values across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
+		    "code": "import "aphrodite";
+		export const styles = { "card": renderer.renderRule({ "color": "#2563eb", "padding": "8px" }) };",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

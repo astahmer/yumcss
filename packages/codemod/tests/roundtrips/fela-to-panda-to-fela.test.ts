@@ -89,6 +89,7 @@ test("fela -> panda -> fela: preserves an actionable concrete round trip", async
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "styled-system/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red" });",
 		    "converted": 1,
@@ -258,6 +259,7 @@ test("fela -> panda -> fela: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "styled-system/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -334,6 +336,7 @@ test("fela -> panda -> fela: preserves concrete theme and project context varian
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createRenderer } from "fela";
+		import "styled-system/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		      "converted": 1,
@@ -426,6 +429,7 @@ test("fela -> panda -> fela: resolves token values across both concrete legs", a
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { createRenderer } from "fela";
+		import "styled-system/css";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "#2563eb" });",
 		    "converted": 1,

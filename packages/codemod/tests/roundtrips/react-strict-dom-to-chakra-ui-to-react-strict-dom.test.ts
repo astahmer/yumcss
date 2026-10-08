@@ -54,7 +54,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "red", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -90,7 +90,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "red", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -229,7 +229,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { html } from "react-strict-dom";
+		      "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "#2a57c8", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -265,7 +265,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { html } from "react-strict-dom";
+		      "code": "import { css, html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -306,7 +306,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { html } from "react-strict-dom";
+		      "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -342,7 +342,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { html } from "react-strict-dom";
+		      "code": "import { css, html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -398,7 +398,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { defaultSystem } from "@chakra-ui/react";
 		const styles = { "card": defaultSystem.css({ color: "brand.500", padding: "4" }) };
 		export const Card = () => <html.div style={styles.card} />;",
@@ -434,7 +434,7 @@ test("react-strict-dom -> chakra-ui -> react-strict-dom: resolves token values a
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { html } from "react-strict-dom";
+		    "code": "import { css, html } from "react-strict-dom";
 		import { css } from "react-strict-dom";
 		const styles = { "card": css.create({ color: "#2a57c8", padding: "1rem" }) };
 		export const Card = () => <html.div style={styles.card} />;",

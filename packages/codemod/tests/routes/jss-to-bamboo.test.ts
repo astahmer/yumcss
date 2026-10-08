@@ -266,7 +266,8 @@ test("jss -> bamboo: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
+		  "code": "import { createUseStyles } from "react-jss";
+		import { css } from "styled-system/css";
 		export const useStyles = { "card": css({ color: "red" }) };
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

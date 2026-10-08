@@ -48,7 +48,8 @@ test("solid-styled -> emotion: migrates concrete solid-styled syntax to emotion"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -91,7 +92,8 @@ test("solid-styled -> emotion: carries a documented secondary solid-styled API e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -143,7 +145,8 @@ test("solid-styled -> emotion: loads concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -177,7 +180,8 @@ test("solid-styled -> emotion: loads concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "@emotion/styled";
+		    "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		    "converted": 1,
 		    "generatedFiles": [],
@@ -223,7 +227,8 @@ test("solid-styled -> emotion: resolves concrete token values with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "#2563eb", padding: "1rem" });",
 		  "converted": 1,
 		  "generatedFiles": [],
@@ -266,7 +271,8 @@ test("solid-styled -> emotion: preserves malformed concrete solid-styled input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "@emotion/styled";
+		  "code": "import { styled } from "solid-styled-components";
+		import styled from "@emotion/styled";
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,
