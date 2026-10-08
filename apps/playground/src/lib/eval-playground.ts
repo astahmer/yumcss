@@ -1527,7 +1527,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		classifySourceFold(prepared.evalCode, prepared.consts) ??
 		classifyFold(exprText, prepared.consts);
 	const sheets = runtimeInstances
-		.filter((instance) => instance.sheetBacked)
+		.filter((instance) => instance.sheetBacked || instance.sheet.snapshot().rules.length > 0)
 		.map((instance) => {
 			const snapshot = instance.sheet.snapshot();
 			return {

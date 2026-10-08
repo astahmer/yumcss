@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import { yumcssExtractVite } from "yumcss/vite";
 import { defineConfig } from "vite";
 import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";
+import { previewEngineAssetsPlugin } from "./preview-engine-assets-plugin.ts";
 import { dss } from "./src/css.ts";
 import { css } from "./src/ui-css.ts";
 
@@ -23,6 +24,7 @@ const wasiBindingDir = dirname(
 
 export default defineConfig({
 	plugins: [
+		previewEngineAssetsPlugin,
 		tailwindDefaultCssPlugin,
 		yumcssExtractVite(dss, { cssSources: ["css"] }),
 		yumcssExtractVite(css, {
@@ -36,6 +38,21 @@ export default defineConfig({
 		// exercises current source during dev instead of a stale dist build.
 		conditions: ["yumcss"],
 		alias: [
+			// PostCSS's browser entry needs real path/url implementations and source-map-js.
+			// These alias-only dependency entrypoints are documented in Knip's app exclusions.
+			{
+				find: /^(?:node:)?path$/,
+				replacement: createRequire(import.meta.url).resolve("path-browserify"),
+			},
+			{ find: /^(?:node:)?url$/, replacement: createRequire(import.meta.url).resolve("url/") },
+			{
+				find: /^@babel\/standalone$/,
+				replacement: createRequire(import.meta.url).resolve("@babel/standalone"),
+			},
+			{
+				find: /^source-map-js$/,
+				replacement: createRequire(import.meta.url).resolve("source-map-js"),
+			},
 			{
 				// Oxc's browser entry imports this undeclared dependency across pnpm's isolated package boundary.
 				find: /^@oxc-parser\/binding-wasm32-wasi$/,

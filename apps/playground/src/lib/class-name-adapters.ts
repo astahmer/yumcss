@@ -1,79 +1,83 @@
 import { createNamedAtomsStrategy } from "yumcss/css/named";
-import { createPandaAdapter } from "yumcss/css/panda";
-import { createStyleXAdapter } from "yumcss/css/stylex";
-import { createUnoCssAdapter } from "yumcss/css/unocss";
-import type { ClassNameStrategy } from "yumcss/css";
-import { examplePreset } from "@yumcss/example-preset";
-import { twAdapter } from "../bridge.ts";
+import {
+	PREVIEW_ENGINE_SCHEMA,
+	PreviewEngineId,
+	PreviewEngineRegistry,
+	type PreviewEngine,
+} from "./preview-engine.ts";
+import { yumcssPreviewEngine } from "./preview-engines/yumcss.ts";
 
 /** Runtime-selectable class-name strategies shown by the own-API playground. */
-export const ClassNameAdapterId = {
-	Atomic: "atomic",
-	NamedAtoms: "named-atoms",
-	Tailwind: "tailwind",
-	UnoCSS: "unocss",
-	Panda: "panda",
-	StyleX: "stylex",
-} as const;
-
-export type ClassNameAdapterId = (typeof ClassNameAdapterId)[keyof typeof ClassNameAdapterId];
-
 export interface ClassNameAdapterDefinition {
-	id: ClassNameAdapterId;
+	id: PreviewEngineId;
 	label: string;
 	description: string;
-	/** `undefined` selects YumCSS's normal hashed atomic output. */
-	strategy: ClassNameStrategy | undefined;
+	engine: PreviewEngine;
 }
-
-const strategies: Readonly<Record<ClassNameAdapterId, ClassNameStrategy | undefined>> = {
-	[ClassNameAdapterId.Atomic]: undefined,
-	[ClassNameAdapterId.NamedAtoms]: createNamedAtomsStrategy(),
-	[ClassNameAdapterId.Tailwind]: twAdapter,
-	[ClassNameAdapterId.UnoCSS]: createUnoCssAdapter({ preset: examplePreset }),
-	[ClassNameAdapterId.Panda]: createPandaAdapter({ conditions: examplePreset.conditions }),
-	[ClassNameAdapterId.StyleX]: createStyleXAdapter({ conditions: examplePreset.conditions }),
-};
 
 export const CLASS_NAME_ADAPTERS: readonly ClassNameAdapterDefinition[] = [
 	{
-		id: ClassNameAdapterId.Atomic,
+		id: PreviewEngineId.Atomic,
 		label: "YumCSS atomic",
 		description: "hashed classes and a YumCSS-owned runtime sheet",
-		strategy: strategies[ClassNameAdapterId.Atomic],
+		engine: yumcssPreviewEngine(PreviewEngineId.Atomic, null),
 	},
 	{
-		id: ClassNameAdapterId.NamedAtoms,
+		id: PreviewEngineId.NamedAtoms,
 		label: "YumCSS named atoms",
 		description: "readable classes and a YumCSS-owned runtime sheet",
-		strategy: strategies[ClassNameAdapterId.NamedAtoms],
+		engine: yumcssPreviewEngine(PreviewEngineId.NamedAtoms, createNamedAtomsStrategy()),
 	},
 	{
-		id: ClassNameAdapterId.Tailwind,
+		id: PreviewEngineId.Tailwind,
 		label: "Tailwind CSS",
 		description: "Tailwind utility candidates for Tailwind's compiler",
-		strategy: strategies[ClassNameAdapterId.Tailwind],
+		engine: {
+			schema: PREVIEW_ENGINE_SCHEMA,
+			id: PreviewEngineId.Tailwind,
+			createSession: async (signal) =>
+				(await import("./preview-engines/tailwind.ts")).tailwindPreviewEngine.createSession(signal),
+		},
 	},
 	{
-		id: ClassNameAdapterId.UnoCSS,
+		id: PreviewEngineId.UnoCSS,
 		label: "UnoCSS",
 		description: "UnoCSS arbitrary-property candidates",
-		strategy: strategies[ClassNameAdapterId.UnoCSS],
+		engine: {
+			schema: PREVIEW_ENGINE_SCHEMA,
+			id: PreviewEngineId.UnoCSS,
+			createSession: async (signal) =>
+				(await import("./preview-engines/unocss.ts")).unocssPreviewEngine.createSession(signal),
+		},
 	},
 	{
-		id: ClassNameAdapterId.Panda,
+		id: PreviewEngineId.Panda,
 		label: "Panda",
-		description: "Panda-shaped atomic class names",
-		strategy: strategies[ClassNameAdapterId.Panda],
+		description: "Panda generator and generated runtime",
+		engine: {
+			schema: PREVIEW_ENGINE_SCHEMA,
+			id: PreviewEngineId.Panda,
+			createSession: async (signal) =>
+				(await import("./preview-engines/panda.ts")).pandaPreviewEngine.createSession(signal),
+		},
 	},
 	{
-		id: ClassNameAdapterId.StyleX,
+		id: PreviewEngineId.StyleX,
 		label: "StyleX",
-		description: "StyleX-shaped classes with a YumCSS-owned sheet",
-		strategy: strategies[ClassNameAdapterId.StyleX],
+		description: "StyleX browser compiler and runtime",
+		engine: {
+			schema: PREVIEW_ENGINE_SCHEMA,
+			id: PreviewEngineId.StyleX,
+			createSession: async (signal) =>
+				(await import("./preview-engines/stylex.ts")).stylexPreviewEngine.createSession(signal),
+		},
 	},
 ];
 
 export function classNameAdapterById(id: string | null | undefined): ClassNameAdapterDefinition {
 	return CLASS_NAME_ADAPTERS.find((adapter) => adapter.id === id) ?? CLASS_NAME_ADAPTERS[0]!;
 }
+
+export const previewEngineRegistry = new PreviewEngineRegistry(
+	CLASS_NAME_ADAPTERS.map((adapter) => adapter.engine),
+);

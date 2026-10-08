@@ -176,7 +176,9 @@ Then("the page contains the text {string}", async ({ page }, text: string) => {
 });
 
 Then("the component-token preview uses background {string}", async ({ page }, color: string) => {
-	const preview = page.locator('[data-preview-kind="card"] > article');
+	const preview = page
+		.frameLocator('iframe[title="Live preview document"]')
+		.locator('[data-preview-kind="card"] > article');
 	await expect(preview).toHaveCSS("background-color", color);
 	await expect(page.locator("body")).toContainText(`card uses component.state.emptyBg (${color})`);
 });
@@ -184,7 +186,9 @@ Then("the component-token preview uses background {string}", async ({ page }, co
 Then(
 	"the variant preview button uses background {string} and padding {string}",
 	async ({ page }, background: string, padding: string) => {
-		const preview = page.locator('[data-preview-kind="button"] > button');
+		const preview = page
+			.frameLocator('iframe[title="Live preview document"]')
+			.locator('[data-preview-kind="button"] > button');
 		await expect(preview).toHaveCSS("background-color", background);
 		await expect(preview).toHaveCSS("padding", padding);
 	},

@@ -39,6 +39,20 @@ adapter falls back to hyphenated property names. It supports non-hashed names
 with Panda's default `_` separator; custom separators and hash mode are unsupported.
 Pass Panda's own token spellings when consuming its generated stylesheet.
 
+The playground executes the selected engine in the browser: Panda's generated
+`css()` runtime and official generator, Tailwind's compiler, UnoCSS's generator,
+or StyleX's Babel compiler and `stylex.props`. Atomic and named atoms use the
+YumCSS runtime sheet. Its isolated preview document receives the actual emitted
+CSS, including native layers, resets, variables and conditions. Compiler errors
+replace the preview; unsupported semantics are not simulated with inline styles.
+
+The example preset is explicit playground configuration. Panda's configuration
+and runtime artifacts are generated from the official resolved presets plus
+the example's property bindings and conditions. Tailwind uses the generated
+example theme; UnoCSS uses `preset-wind3`; StyleX compiles resolved example values.
+The playground's native StyleX engine is separate from the library's lightweight
+sheet-backed `createStyleXAdapter` strategy described above.
+
 ## Writing your own
 
 ```ts

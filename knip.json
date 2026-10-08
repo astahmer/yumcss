@@ -155,6 +155,10 @@
 		},
 		"apps/playground": {
 			"entry": [
+				"src/lib/preview-engines/*.ts!",
+				"scripts/generate-panda-metadata.mjs!",
+				"preview-engine-assets-plugin.ts!",
+				"vite.config.ts!",
 				"src/{main,index,App}.{ts,tsx}!",
 				"src/lib/format-playground-code.ts!",
 				"src/tw.runtime.ts!",
@@ -163,7 +167,7 @@
 				"src/ui-theme.ts!"
 			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "e2e/**/*.ts"],
-			"ignoreDependencies": ["@yumcss/codemod"]
+			"ignoreDependencies": ["@yumcss/codemod", "path-browserify", "source-map-js", "url"]
 		},
 		"examples/*": {
 			"entry": ["src/{main,index,App}.{ts,tsx}!", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"],

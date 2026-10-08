@@ -22,14 +22,16 @@ import { examplePreset } from "@yumcss/example-preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
 import {
 	CLASS_NAME_ADAPTERS,
-	ClassNameAdapterId,
 	classNameAdapterById,
 	type ClassNameAdapterDefinition,
+	previewEngineRegistry,
 } from "../lib/class-name-adapters.ts";
 import { EditorPane } from "./EditorPane.tsx";
 import { ResultsPane } from "./ResultsPane.tsx";
 import { GhostButton, ResizableSplitter } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
+
+import { PreviewEngineId, PreviewExecution, type PreviewEngine } from "../lib/preview-engine.ts";
 
 const COMPACT_PLAYGROUND_QUERY = "(max-width: 900px)";
 const PLAYGROUND_SPLITTER = uiCss.class({ flex: "1 1 0%" });
@@ -105,7 +107,7 @@ function variantUrl(
 ): string {
 	const params = new URLSearchParams();
 	if (def.variants.length > 1) params.set("api", api);
-	if (api !== PlaygroundApi.Tw && adapterId !== ClassNameAdapterId.Atomic) {
+	if (api !== PlaygroundApi.Tw && adapterId !== PreviewEngineId.Atomic) {
 		params.set("adapter", adapterId);
 	}
 	const search = params.toString();
@@ -118,9 +120,8 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const initialAdapter = adapterFromUrl();
 	const [api, setApi] = useState<ExampleVariant["api"]>(initialVariant.api);
 	const activeVariant = props.def.variants.find((variant) => variant.api === api) ?? initialVariant;
-	const [classNameAdapterId, setClassNameAdapterId] = useState(initialAdapter.id);
+	const [classNameAdapterId, setPreviewEngineId] = useState(initialAdapter.id);
 	const activeClassNameAdapter = classNameAdapterById(classNameAdapterId);
-	const classNameStrategy = activeClassNameAdapter.strategy ?? null;
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
 		if (hash !== "") {
@@ -135,48 +136,41 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const [previewControlValues, setPreviewControlValues] = useState(() =>
 		initialPreviewControlValues(props.def.preview.controls),
 	);
-	const [evaluation, setEvaluation] = useState<PlaygroundEvaluation>(() =>
-		evaluatePlayground(
-			files,
-			activeVariant,
-			classNameStrategy,
-			props.def.preview.controls,
-			previewControlValues,
-		),
+	const [evaluation, setEvaluation] = useState<PlaygroundResult | undefined>();
+	const execution = useRef(new PreviewExecution());
+	const evaluate = useCallback(
+		(sources: readonly string[]) => {
+			setEvaluation(undefined);
+			void execution.current.run(
+				(signal) =>
+					evaluatePlayground(
+						sources,
+						activeVariant,
+						previewEngineRegistry.resolve(
+							activeVariant.api === PlaygroundApi.Tw
+								? PreviewEngineId.Tailwind
+								: activeClassNameAdapter.id,
+						),
+						props.def.preview.controls,
+						previewControlValues,
+						signal,
+					),
+				setEvaluation,
+			);
+		},
+		[activeClassNameAdapter.id, activeVariant, previewControlValues, props.def.preview.controls],
 	);
 	useEffect(() => {
 		setPreviewControlValues(initialPreviewControlValues(props.def.preview.controls));
 	}, [props.def.path]);
 	useEffect(() => {
-		try {
-			setEvaluation(
-				evaluatePlayground(
-					files,
-					activeVariant,
-					classNameStrategy,
-					props.def.preview.controls,
-					previewControlValues,
-				),
-			);
-		} catch (error) {
-			setEvaluation(failedEvaluation(error));
-		}
-	}, [activeClassNameAdapter, activeVariant, classNameStrategy, previewControlValues, props.def]);
+		evaluate(files);
+		return () => execution.current.cancel();
+	}, [evaluate]);
+	useEffect(() => () => execution.current.cancel(), []);
 	const run = useCallback(
 		(sources: readonly string[]) => {
-			try {
-				setEvaluation(
-					evaluatePlayground(
-						sources,
-						activeVariant,
-						classNameStrategy,
-						props.def.preview.controls,
-						previewControlValues,
-					),
-				);
-			} catch (error) {
-				setEvaluation(failedEvaluation(error));
-			}
+			evaluate(sources);
 			const hash =
 				sources[0]!.trim() === activeVariant.files[0]!.code.trim()
 					? ""
@@ -187,7 +181,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				variantUrl(props.def, activeVariant.api, hash, activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, activeVariant, classNameStrategy, previewControlValues, props.def],
+		[activeClassNameAdapter, activeVariant, evaluate, props.def],
 	);
 
 	const selectApi = useCallback(
@@ -198,28 +192,19 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setApi(nextVariant.api);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setEvaluation(
-				evaluatePlayground(
-					nextFiles,
-					nextVariant,
-					classNameStrategy,
-					props.def.preview.controls,
-					previewControlValues,
-				),
-			);
 			history.replaceState(
 				null,
 				"",
 				variantUrl(props.def, nextVariant.api, "", activeClassNameAdapter.id),
 			);
 		},
-		[activeClassNameAdapter, classNameStrategy, previewControlValues, props.def],
+		[activeClassNameAdapter, props.def],
 	);
 
 	const selectClassNameAdapter = useCallback(
 		(nextId: string) => {
 			const nextAdapter = classNameAdapterById(nextId);
-			setClassNameAdapterId(nextAdapter.id);
+			setPreviewEngineId(nextAdapter.id);
 			history.replaceState(null, "", variantUrl(props.def, activeVariant.api, "", nextAdapter.id));
 		},
 		[activeVariant, props.def],
@@ -231,7 +216,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			const nextAdapter = adapterFromUrl();
 			const nextFiles = nextVariant.files.map((file) => file.code);
 			setApi(nextVariant.api);
-			setClassNameAdapterId(nextAdapter.id);
+			setPreviewEngineId(nextAdapter.id);
 			setFiles(nextFiles);
 			setActiveTab(0);
 		};
@@ -507,8 +492,7 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 						initialSize: 50,
 						content: (
 							<ResultsPane
-								result={evaluation.result}
-								previewResult={evaluation.previewResult}
+								result={evaluation}
 								preview={props.def.preview}
 								previewControlValues={previewControlValues}
 								onPreviewControlChange={onPreviewControlChange}
@@ -570,36 +554,42 @@ function makeInput(
 	};
 }
 
-interface PlaygroundEvaluation {
-	result: PlaygroundResult;
-	previewResult: PlaygroundResult;
-}
-
-function failedEvaluation(error: unknown): PlaygroundEvaluation {
-	const result: PlaygroundResult = {
-		ok: false,
-		error: error instanceof Error ? error.message : String(error),
-	};
-	return { result, previewResult: result };
-}
-
-function evaluatePlayground(
+async function evaluatePlayground(
 	sources: readonly string[],
 	variant: ExampleVariant,
-	strategy: ClassNameStrategy | null,
+	engine: PreviewEngine,
 	controls: ExampleDef["preview"]["controls"],
 	controlValues: Readonly<Record<string, string>>,
-): PlaygroundEvaluation {
-	const previewSource = applyPreviewControls(sources[0]!, controls, controlValues);
+	signal: AbortSignal,
+): Promise<PlaygroundResult> {
+	const session = await engine.createSession(signal);
+	signal.throwIfAborted();
+	const source = applyPreviewControls(sources[0]!, controls, controlValues);
 	const result = evalPlayground(
-		makeInput(previewSource, evalSiblings(sources, variant, strategy), strategy),
+		makeInput(source, evalSiblings(sources, variant, session.strategy), session.strategy),
 	);
-	if (!result.ok || result.sheets.length > 0 || strategy === null) {
-		return { result, previewResult: result };
-	}
-
-	const previewResult = evalPlayground(
-		makeInput(previewSource, evalSiblings(sources, variant, null), null),
-	);
-	return { result, previewResult };
+	if (!result.ok) return result;
+	const generated = await session.compile(result);
+	signal.throwIfAborted();
+	return {
+		...result,
+		sheets:
+			session.strategy === null || session.strategy.sheetBacked === true
+				? result.sheets
+				: [
+						...result.sheets,
+						{
+							strategy: generated.engine,
+							css: generated.css,
+							tokens: "",
+							rules:
+								generated.css === "" ? [] : [{ id: engine.id, css: generated.css, priority: 0 }],
+						},
+					],
+		execution: {
+			...result.execution,
+			verified: [...result.execution.verified, "engine-css"],
+			note: `${generated.engine} ${generated.version} executed in the browser. Preview uses its emitted stylesheet without declaration overrides.`,
+		},
+	};
 }

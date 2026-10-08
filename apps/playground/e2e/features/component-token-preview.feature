@@ -7,4 +7,4 @@ Feature: Theme-aware component token preview
     When I click the "light" button
     Then the component-token preview uses background "rgb(229, 231, 235)"
     When I click the "dark" button
-    Then the component-token preview uses background "rgb(55, 65, 81)"
+    Then the component-token preview uses background "rgb(44, 82, 130)"

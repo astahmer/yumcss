@@ -1375,3 +1375,27 @@ provider transitions or all framework support. The configured audit is separate
 fixture-port evidence. Identity captures do not count as cross-adapter canonicality.
 Knip's `jj` binary allowance belongs to these proof scripts' source revision capture;
 it does not suppress unused application code or dependency findings.
+
+## Playground compiler execution
+
+`PreviewEngine` and `PreviewEngineSession` are the versioned application ports
+for class generation and actual stylesheet compilation. `PreviewEngineRegistry`
+is assembled in `class-name-adapters.ts`; each lazy engine module owns its
+configuration, native runtime/compiler and failure boundary. A minimal registered
+engine proves substitution without changing the page orchestration.
+
+`PreviewExecution` owns replacement and cancellation. Only the current operation
+may publish, and compiler failures replace the preview. `PreviewDocument` renders
+the evaluated source tree in an isolated document with the compiler's unchanged
+stylesheet. The DOM classes and inspector come from the same evaluation; no
+second atomic evaluation or declaration override simulates external engines.
+
+Panda artifacts are generated and checked through the official resolved config
+and generator, retaining preset function closures by import identity. Tailwind's
+stylesheet loader receives package CSS and the generated theme from a Vite
+filesystem provider; compilation itself runs in the browser. UnoCSS and StyleX
+likewise execute their installed official packages. Production Knip entries
+include the lazy compiler modules and Panda artifact generator explicitly.
+The `path-browserify`, `url` and `source-map-js` dependency exclusions document
+the exact alias entrypoints in `vite.config.ts`: PostCSS imports them indirectly,
+so Knip cannot infer their ownership from ordinary source imports.
