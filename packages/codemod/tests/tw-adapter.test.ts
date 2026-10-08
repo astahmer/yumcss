@@ -47,13 +47,24 @@ const THEME_ENTRY = `
 }
 `;
 
-async function setUp() {
+const loadGeneratedConfig = async () => {
 	const bridge = await generateUtilityBridge(THEME_ENTRY, BASE);
-	const { twTs, twRuntimeTs, twConflictsTs, twBuildTs } = await generateDesignSystem(
-		THEME_ENTRY,
-		BASE,
-	);
-	const config = extractTwConfigFromSources([twTs, twRuntimeTs, twConflictsTs, twBuildTs])!;
+	const generated = await generateDesignSystem(THEME_ENTRY, BASE);
+	const config = extractTwConfigFromSources([
+		generated.twTs,
+		generated.twRuntimeTs,
+		generated.twConflictsTs,
+		generated.twBuildTs,
+	]);
+	if (config === undefined) throw new Error("Tailwind test fixture generated no adapter config");
+	return { bridge, config };
+};
+
+let generatedConfig: ReturnType<typeof loadGeneratedConfig> | undefined;
+
+const setUp = async () => {
+	generatedConfig ??= loadGeneratedConfig();
+	const { bridge, config } = await generatedConfig;
 	const adapter = createTwAdapter({ preset: examplePreset, variants: config.variants, bridge });
 	const css = createCss(examplePreset, { className: adapter });
 	const unsafeCss = createUnsafeCss({ className: adapter });
@@ -66,7 +77,7 @@ async function setUp() {
 	const tw = (styles: Parameters<typeof compileStyles>[0]) =>
 		compileStyles(styles, config.variants, config.conflicts, config.compose);
 	return { bridge, config, adapter, css, unsafeCss, dss, cx, tw };
-}
+};
 
 describe("the tailwind adapter", () => {
 	test("setup generates a bridge with the expected entries", async () => {
