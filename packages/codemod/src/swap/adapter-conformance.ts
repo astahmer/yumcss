@@ -8,6 +8,7 @@ import {
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
 import { AdapterConformanceContext } from "./adapter-conformance-context.ts";
+import { matchesAdapterValidationExpectation } from "./adapter-validation-expectation.ts";
 
 /** Versioned contract for direct adapter and ordered-route evidence. */
 export const ADAPTER_CONFORMANCE_SCHEMA = "yumcss.adapter-conformance/1" as const;
@@ -161,12 +162,19 @@ function directEvidence(
 					emitted++;
 					if (scenario !== "happy") continue;
 					const validation = adapter.validate(match.program, match.program, emission.residuals);
-					if (!validation.valid)
+					if (
+						!matchesAdapterValidationExpectation({
+							expectedResiduals: fixture.expectedResiduals,
+							emittedResiduals: emission.residuals,
+							validation,
+						})
+					)
 						failures.push(
 							failure(
 								adapter.id,
 								"validation",
-								validation.differences.join("; ") || "self-validation failed",
+								validation.differences.join("; ") ||
+									"fixture did not match its expected validation result",
 							),
 						);
 					else validated++;

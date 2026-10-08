@@ -2,11 +2,12 @@ import { fixtureAdapterRegistry } from "./route-spec-support.ts";
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
 	createAdapterContractSuite,
 	createStyleAdapterRegistry,
 	StyleProgramResidualKindTag,
 	type AdapterContractFixture,
-} from "../src/swap/index.ts";
+} from "@yumcss/codemod/swap";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const fixture = (adapter: string, source: string): AdapterContractFixture => ({
@@ -69,10 +70,35 @@ describe("adapter contract suite", () => {
 	});
 
 	test("requires every built-in adapter to pass a representative parse contract", () => {
-		const registry = fixtureAdapterRegistry;
+		const registry = createBuiltinCodemodCatalog().registry;
 		const report = createAdapterContractSuite().run(registry, adapterContractFixtures);
 		expect(report.failed, JSON.stringify(report.failures, null, 2)).toBe(0);
 		expect(report.passed).toBe(registry.adapters.length);
+	});
+
+	test("rejects the default UnoCSS residual when its expectation is omitted", () => {
+		const defaultRegistry = createBuiltinCodemodCatalog().registry;
+		const unoAdapter = defaultRegistry.get(CodemodAdapterId.UnoCSS);
+		const unoFixture = adapterContractFixtures.find(
+			(fixture) => fixture.adapter === CodemodAdapterId.UnoCSS,
+		);
+		if (unoAdapter === undefined || unoFixture === undefined)
+			throw new Error("default UnoCSS adapter fixture is missing");
+		const registry = createStyleAdapterRegistry([unoAdapter]);
+		const fixtureWithoutExpectation = {
+			adapter: unoFixture.adapter,
+			file: unoFixture.file,
+			source: unoFixture.source,
+		};
+		const report = createAdapterContractSuite().run(registry, [fixtureWithoutExpectation]);
+
+		expect(report.failed).toBe(1);
+		expect(report.failures).toContainEqual(
+			expect.objectContaining({
+				adapter: CodemodAdapterId.UnoCSS,
+				phase: "validation",
+			}),
+		);
 	});
 
 	test("requires every adapter to expose normalized project-config provenance", () => {

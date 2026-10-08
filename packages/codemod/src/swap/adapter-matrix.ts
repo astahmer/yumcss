@@ -2,6 +2,7 @@ import type { AdapterParseContext } from "./adapter-contract.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import { runAdapterMigration } from "./adapter-migration.ts";
 import type { AdapterMigrationResult } from "./adapter-migration-contract.ts";
+import type { ExpectedAdapterResidual } from "./adapter-validation-expectation.ts";
 
 /** Versioned contract for the complete registered source/target route matrix. */
 export const ADAPTER_MATRIX_SCHEMA = "yumcss.adapter-matrix/1" as const;
@@ -14,6 +15,7 @@ export interface AdapterMatrixFixture {
 	readonly source: string;
 	readonly scenario?: AdapterMatrixScenario;
 	readonly semantic?: AdapterParseContext["semantic"];
+	readonly expectedResiduals?: readonly ExpectedAdapterResidual[];
 }
 
 export interface AdapterMatrixCase {

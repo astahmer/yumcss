@@ -9,6 +9,10 @@ import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type { AdapterCapabilityReport } from "./capabilities.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
 import { AdapterConformanceContext } from "./adapter-conformance-context.ts";
+import {
+	matchesAdapterValidationExpectation,
+	type ExpectedAdapterResidual,
+} from "./adapter-validation-expectation.ts";
 
 export interface AdapterContractFixture {
 	readonly adapter: string;
@@ -18,6 +22,7 @@ export interface AdapterContractFixture {
 	readonly requireMatch?: boolean;
 	/** Optional host metadata needed to exercise framework-aware adapters. */
 	readonly semantic?: AdapterParseContext["semantic"];
+	readonly expectedResiduals?: readonly ExpectedAdapterResidual[];
 }
 
 export type AdapterContractPhase =
@@ -246,12 +251,19 @@ export function createAdapterContractSuite(): AdapterContractSuite {
 							);
 							continue;
 						}
-						if (!validation.valid)
+						if (
+							!matchesAdapterValidationExpectation({
+								expectedResiduals: fixture.expectedResiduals,
+								emittedResiduals: emittedResult.residuals,
+								validation,
+							})
+						)
 							failures.push(
 								contractFailure(
 									adapter.id,
 									"validation",
-									validation.differences.join("; ") || "fixture validation failed",
+									validation.differences.join("; ") ||
+										"fixture did not match its expected validation result",
 								),
 							);
 						else validated++;

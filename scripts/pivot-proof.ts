@@ -51,17 +51,34 @@ interface ProofMatrix {
 	readonly fixtureOnlyAdapters?: readonly string[];
 }
 
-function parseFixtureEvidence(
+async function parseFixtureEvidence(
 	registry: ReturnType<typeof createBuiltinCodemodCatalog>["registry"],
 	fixture: AdapterContractFixture,
-): AdapterCoverageEvidence {
+): Promise<AdapterCoverageEvidence> {
 	const adapter = registry.get(fixture.adapter);
 	if (adapter === undefined)
 		throw new Error(`coverage fixture references unregistered adapter ${fixture.adapter}`);
-	const config = adapter.loadConfig({ file: fixture.file, source: fixture.source });
+	const configContext = {
+		file: fixture.file,
+		source: fixture.source,
+		...(fixture.root === undefined
+			? {}
+			: {
+					root: fixture.root,
+					listFiles: (directory: string) => {
+						const configFile = join(directory, "uno.config.ts");
+						return existsSync(configFile) ? [configFile] : [];
+					},
+				}),
+	};
+	const config =
+		fixture.root !== undefined && adapter.loadConfigAsync !== undefined
+			? await adapter.loadConfigAsync(configContext)
+			: adapter.loadConfig(configContext);
 	const parsed = adapter.parse(fixture.source, {
 		file: fixture.file,
 		source: fixture.source,
+		...(fixture.root === undefined ? {} : { root: fixture.root }),
 		config,
 	});
 	return {
@@ -108,7 +125,7 @@ function parseProductionProofEvidence(claim: ProofMatrixClaim): AdapterCoverageE
 	};
 }
 
-function runOfflineGate(): void {
+async function runOfflineGate(): Promise<void> {
 	const catalog = createBuiltinCodemodCatalog();
 	const contract = createAdapterContractSuite().run(catalog.registry, adapterContractFixtures);
 	if (contract.failed > 0)
@@ -145,9 +162,16 @@ function runOfflineGate(): void {
 			`semantic contract corpus is missing families: ${missingSemanticFamilies.join(", ")}`,
 		);
 
-	const evidence: AdapterCoverageEvidence[] = adapterContractFixtures.map((fixture) =>
-		parseFixtureEvidence(catalog.registry, fixture),
-	);
+	const unocssProjectFixture: AdapterContractFixture = {
+		adapter: CodemodAdapterId.UnoCSS,
+		file: "unocss.tsx",
+		source: '<div className="yumcss-proof-red" />',
+		root: resolve(root, "packages/codemod/proof/fixtures/unocss"),
+	};
+	const evidence = await Promise.all([
+		...adapterContractFixtures.map((fixture) => parseFixtureEvidence(catalog.registry, fixture)),
+		parseFixtureEvidence(catalog.registry, unocssProjectFixture),
+	]);
 	const matrix = readCheckedInProofMatrix();
 	const fixtureOnlyAdapters = new Set(matrix.fixtureOnlyAdapters ?? []);
 	const references = createRealRepositoryCorpus().references;
@@ -257,4 +281,4 @@ function runReferenceProof(): void {
 }
 
 if (process.argv.includes("--prepare")) runReferenceProof();
-runOfflineGate();
+await runOfflineGate();

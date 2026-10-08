@@ -1,5 +1,5 @@
-import { CodemodAdapterId } from "../src/swap/index.ts";
-import type { AdapterContractFixture } from "../src/swap/index.ts";
+import { CodemodAdapterId, StyleProgramResidualKindTag } from "@yumcss/codemod/swap";
+import type { AdapterContractFixture } from "@yumcss/codemod/swap";
 
 /** One representative source shape for every built-in adapter. */
 export const adapterContractFixtures: readonly AdapterContractFixture[] = [
@@ -146,6 +146,13 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		adapter: CodemodAdapterId.UnoCSS,
 		file: "unocss.tsx",
 		source: '<div className="[color:red] [padding:1rem]" />',
+		expectedResiduals: [
+			{
+				kind: StyleProgramResidualKindTag.Configuration,
+				text: "unocss.tsx",
+				hint: "UnoCSS output requires the target project's official config and generator",
+			},
+		],
 	},
 	{
 		adapter: CodemodAdapterId.Tamagui,

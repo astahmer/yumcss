@@ -1,5 +1,5 @@
-import { CodemodAdapterId } from "../src/swap/index.ts";
-import type { AdapterContractFixture, AdapterMatrixFixture } from "../src/swap/index.ts";
+import { CodemodAdapterId } from "@yumcss/codemod/swap";
+import type { AdapterContractFixture, AdapterMatrixFixture } from "@yumcss/codemod/swap";
 import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
 
 function semanticFor(adapter: string): AdapterContractFixture["semantic"] {
@@ -78,6 +78,9 @@ export const completeAdapterMatrixFixtures: readonly AdapterMatrixFixture[] =
 				source: happy.source,
 				scenario: "happy" as const,
 				semantic: semanticFor(fixture.adapter),
+				...(fixture.expectedResiduals === undefined
+					? {}
+					: { expectedResiduals: fixture.expectedResiduals }),
 			},
 			{
 				sourceAdapter: fixture.adapter,

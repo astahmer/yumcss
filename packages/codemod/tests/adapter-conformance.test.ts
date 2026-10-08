@@ -8,7 +8,7 @@ import {
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 	StyleHostRepresentationKind,
-} from "../src/swap/index.ts";
+} from "@yumcss/codemod/swap";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
@@ -52,6 +52,22 @@ describe("registered adapter conformance", () => {
 			{ adapter: CodemodAdapterId.Emotion, detected: true, configured: true, parsed: 3 },
 		]);
 		expect(report.routes.cases).toHaveLength(2 * 3);
+	});
+
+	test("accepts the expected default UnoCSS configuration residual", () => {
+		const unoAdapter = catalog.registry.get(CodemodAdapterId.UnoCSS);
+		if (unoAdapter === undefined) throw new Error("default UnoCSS adapter is missing");
+		const fixtures = completeAdapterMatrixFixtures.filter(
+			(fixture) => fixture.sourceAdapter === CodemodAdapterId.UnoCSS,
+		);
+		const report = createAdapterConformanceSuite(createStyleAdapterRegistry([unoAdapter]), {
+			readFile: () => undefined,
+		}).run(fixtures);
+
+		expect(report.failures, JSON.stringify(report.failures, null, 2)).toEqual([]);
+		expect(report.direct).toMatchObject([
+			{ adapter: CodemodAdapterId.UnoCSS, detected: true, configured: true, validated: 1 },
+		]);
 	});
 
 	test("exercises every adapter-owned migration policy hook directly", () => {
