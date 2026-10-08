@@ -419,6 +419,7 @@ function linkWorkspacePackages(sandbox: string, repositoryRoot: string): void {
 	] as const) {
 		const link = join(sandbox, "node_modules", name);
 		if (existsSync(link)) continue;
+		mkdirSync(dirname(link), { recursive: true });
 		symlinkSync(join(repositoryRoot, "packages", directory), link);
 	}
 }
