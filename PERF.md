@@ -12,8 +12,8 @@ These are the repo-owned package, example-app, and public-API records.
 
 | Workload                              | Instantiations | Memory (KiB) | Check (s) |
 | ------------------------------------- | -------------: | -----------: | --------: |
-| package (2026-09-23)                  |        546,218 |      369,343 |     0.202 |
-| example app (2026-09-16)              |        172,628 |      311,726 |     0.365 |
+| package (2026-10-08)                  |        770,211 |      417,451 |     0.342 |
+| example app (2026-10-08)              |        246,812 |      377,642 |     0.222 |
 | API css.real-world.usage (2026-10-08) |        127,853 |       95,004 |     0.134 |
 | API app (2026-10-08)                  |         75,435 |       93,809 |     0.048 |
 | API css.dynamic (2026-10-08)          |         73,589 |       76,072 |     0.042 |

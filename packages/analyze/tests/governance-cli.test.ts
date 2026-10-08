@@ -33,7 +33,8 @@ function seed(files: Record<string, string>) {
 describe("runCli --governance", () => {
 	test("emits the versioned governance document with policy + changeset", async () => {
 		seed({
-			"a.tsx": 'import { tw } from "yumcss"; export const a = tw({ bgColor: "red-500", padding: "4" });',
+			"a.tsx":
+				'import { tw } from "yumcss"; export const a = tw({ bgColor: "red-500", padding: "4" });',
 			"design.ts": 'export const brand = "$colors.brand";',
 			"preset.mjs": `export default {
 				strict: true,

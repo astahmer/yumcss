@@ -7,13 +7,13 @@
     "platform": "darwin",
     "arch": "arm64"
   },
-  "updatedAt": "2026-09-16",
+  "updatedAt": "2026-10-08",
   "metrics": {
-    "files": 840,
-    "instantiations": 172628,
-    "memoryUsedKiB": 311726,
-    "checkTimeSeconds": 0.365,
-    "totalTimeSeconds": 0.497
+    "files": 934,
+    "instantiations": 246812,
+    "memoryUsedKiB": 377642,
+    "checkTimeSeconds": 0.222,
+    "totalTimeSeconds": 0.301
   },
   "tolerances": {
     "instantiations": 0.1,
