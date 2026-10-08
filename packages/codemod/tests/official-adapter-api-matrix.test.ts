@@ -649,32 +649,6 @@ describe("official primary API forms", () => {
 			      },
 			    ],
 			  },
-			  "yumcss/css.class object": {
-			    "changed": false,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
-			const css = createUnsafeCss();
-			export const card = css.class({ color: "red", padding: "1rem" });",
-			    "converted": 0,
-			    "generatedFiles": [],
-			    "loweringPlans": [],
-			    "outcomes": [],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [],
-			  },
-			  "yumcss/css.vars object": {
-			    "changed": false,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
-			const css = createUnsafeCss();
-			export const card = css.vars({ color: "var(--card-color)" });",
-			    "converted": 0,
-			    "generatedFiles": [],
-			    "loweringPlans": [],
-			    "outcomes": [],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [],
-			  },
 			  "react-native/React Native StyleSheet": {
 			    "changed": true,
 			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
@@ -1209,6 +1183,32 @@ describe("official primary API forms", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "yumcss/css.class object": {
+			    "changed": false,
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			const css = createUnsafeCss();
+			export const card = css.class({ color: "red", padding: "1rem" });",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [],
+			  },
+			  "yumcss/css.vars object": {
+			    "changed": false,
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			const css = createUnsafeCss();
+			export const card = css.vars({ color: "var(--card-color)" });",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [],
 			  },
 			}
 		`);

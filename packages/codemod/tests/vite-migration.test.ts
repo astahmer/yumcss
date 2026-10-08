@@ -63,7 +63,7 @@ describe("virtual Vite migrations", () => {
 			",
 			  "map": SourceMap {
 			    "file": undefined,
-			    "mappings": "AAAA,MAAM,CAAC;AAAA;AAAA;AAAA,giCAKN;;AAED,MAAM,CAAC,QAAQ,CAAC,GAAG,CAAC,CAAC,CAAC;AACtB,CAAC,MAAM,CAAC,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC,IAAI,CAAC;AAC5B;",
+			    "mappings": "AAAA,MAAM,CAAC;AAAA;AAAA;AAAA,ogCAKN;;AAED,MAAM,CAAC,QAAQ,CAAC,GAAG,CAAC,CAAC,CAAC;AACtB,CAAC,MAAM,CAAC,CAAC,IAAI,CAAC,OAAO,CAAC,CAAC,IAAI,CAAC;AAC5B;",
 			    "names": [],
 			    "sources": [
 			      "/virtual/project/src/Card.tsx",

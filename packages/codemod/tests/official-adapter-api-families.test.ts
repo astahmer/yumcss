@@ -2227,19 +2227,6 @@ describe("official adapter API families", () => {
 			    "skipped": 0,
 			    "validations": [],
 			  },
-			  "yumcss/css.group named map": {
-			    "changed": false,
-			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
-			const css = createUnsafeCss();
-			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
-			    "converted": 0,
-			    "generatedFiles": [],
-			    "loweringPlans": [],
-			    "outcomes": [],
-			    "residuals": [],
-			    "skipped": 0,
-			    "validations": [],
-			  },
 			  "react-native/Platform.select context": {
 			    "changed": true,
 			    "code": "import { Platform } from "react-native";
@@ -4198,6 +4185,19 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "yumcss/css.group named map": {
+			    "changed": false,
+			    "code": "import { createUnsafeCss } from "yumcss/unsafe/css";
+			const css = createUnsafeCss();
+			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+			    "converted": 0,
+			    "generatedFiles": [],
+			    "loweringPlans": [],
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [],
 			  },
 			}
 		`);

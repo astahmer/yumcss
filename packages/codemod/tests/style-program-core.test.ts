@@ -58,7 +58,7 @@ describe("StyleProgramCore", () => {
 		expect(artifact).toMatchInlineSnapshot(`
 			{
 			  "coreVersion": "1",
-			  "fingerprint": "sp-1qmdgar",
+			  "fingerprint": "sp-zcy9bg",
 			  "program": {
 			    "canonicalization": undefined,
 			    "compositions": [],
