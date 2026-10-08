@@ -162,6 +162,9 @@ function relativeStubModules(
 	sourceModules: readonly { readonly code: string; readonly path: string }[],
 ): Record<string, string> {
 	const modules = new Map<string, Set<string>>();
+	const ownedPaths = new Set(
+		sourceModules.map(({ path }) => path.replace(/\.(?:js|mjs|ts|tsx)$/u, "")),
+	);
 	const add = (path: string, name: string): void => {
 		const names = modules.get(path) ?? new Set<string>();
 		if (name !== "") names.add(name);
@@ -185,7 +188,9 @@ function relativeStubModules(
 			);
 			const target = match[4]!;
 			const normalized = target.replace(/\.(?:js|mjs|ts|tsx)$/, "");
-			const file = `${normalize(join(dirname(importer), normalized))}.ts`;
+			const targetPath = normalize(join(dirname(importer), normalized));
+			if (ownedPaths.has(targetPath)) continue;
+			const file = `${targetPath}.ts`;
 			for (const name of names) add(file, name);
 		}
 	}
@@ -456,7 +461,7 @@ async function verifyReference(reference: {
 		moduleLoader: harnessModuleLoader,
 		semantic: { source: { file: reference.path, framework: reference.framework } },
 	});
-	const migratedPath = `src/${reference.path.replace(/\.[^.]+$/u, ".tsx")}`;
+	const migratedPath = `src/${migration.converted === 0 ? reference.path : reference.path.replace(/\.[^.]+$/u, ".tsx")}`;
 	const generatedModules = migration.generatedFiles.map((file) => ({
 		code: file.content,
 		path: `src/${file.path}`,
@@ -465,7 +470,7 @@ async function verifyReference(reference: {
 		migration.generatedFiles.map((file) => {
 			let specifier = normalize(relative(dirname(reference.path), file.path));
 			if (!specifier.startsWith(".")) specifier = `./${specifier}`;
-			return specifier;
+			return specifier.replace(/\.(?:js|mjs|ts|tsx)$/u, "");
 		}),
 	);
 	const moduleText = typecheckSourceText(reference.id, migration.code);
@@ -521,6 +526,7 @@ async function verifyReference(reference: {
 		sandboxPackages,
 		{
 			[migratedPath]: moduleText,
+			"src/proof-host.ts": "export {};",
 			...Object.fromEntries(generatedModules.map(({ code, path }) => [path, code])),
 			...Object.fromEntries(
 				partition.stubs.map((specifier, index) => [
