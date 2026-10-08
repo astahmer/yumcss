@@ -663,6 +663,17 @@ function parseCalls(
 					: [{ start, end: tag.end }];
 			});
 	});
+	const templateRanges = patterns.flatMap((pattern) => {
+		if (pattern.form !== CodemodCallPatternFormTag.Template) return [];
+		if (pattern.sourceGuard !== undefined && !pattern.sourceGuard(source, context)) return [];
+		return regexesFor(pattern).flatMap(matchesFor).flatMap(({ match }) => {
+			const start = match.index ?? 0;
+			if (mask?.isExcluded(start)) return [];
+			const firstTick = source.indexOf("`", start);
+			const lastTick = findTemplateLiteralEnd(source, firstTick);
+			return firstTick < 0 || lastTick === undefined ? [] : [{ start, end: lastTick + 1 }];
+		});
+	});
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
 	for (const pattern of patterns) {
@@ -841,7 +852,10 @@ function parseCalls(
 					// A JSX style host owns the complete tagged template. Do not parse the
 					// nested `css\`...\`` again: doing so creates residuals for the same
 					// source site and makes a valid host migration look incomplete.
-					if (isInsideHostRange(start)) continue;
+					if (
+						isInsideHostRange(start) ||
+						templateRanges.some((range) => start > range.start && start < range.end)
+					) continue;
 					if (source.slice(start, firstTick).includes("=>")) {
 						residuals.push({
 							kind: StyleProgramResidualKindTag.Capability,
