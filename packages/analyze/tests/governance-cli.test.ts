@@ -33,15 +33,20 @@ function seed(files: Record<string, string>) {
 describe("runCli --governance", () => {
 	test("emits the versioned governance document with policy + changeset", async () => {
 		seed({
-			"a.tsx": 'export const a = tw({ bgColor: "red-500", padding: "4" });',
+			"a.tsx": 'import { tw } from "yumcss"; export const a = tw({ bgColor: "red-500", padding: "4" });',
 			"design.ts": 'export const brand = "$colors.brand";',
+			"preset.mjs": `export default {
+				strict: true,
+				tokens: { colors: { "red-500": "#ef4444", brand: "#e11d48" }, spacing: { "4": "1rem" } },
+				properties: { bgColor: { $tokens: "colors" }, padding: { $tokens: "spacing" } },
+			};`,
 		});
 		const output = await runCli([
 			"--governance",
 			"--json",
 			"**/*.ts*",
 			"--preset",
-			DEFAULT_GOVERNANCE_PRESET,
+			"./preset.mjs",
 			"--root",
 			root,
 		]);
