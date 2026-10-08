@@ -165,8 +165,8 @@ describe("packed YumCSS consumer", () => {
 			});
 
 			const distDirectory = join(consumerDir, "dist");
-			const cssFile = readdirSync(distDirectory, { recursive: true }).find((file) =>
-				file.endsWith(".css"),
+			const cssFile = readdirSync(distDirectory, { recursive: true, encoding: "utf8" }).find(
+				(file) => file.endsWith(".css"),
 			);
 			if (cssFile === undefined) throw new Error("Vite consumer build emitted no CSS file");
 			expect(readFileSync(join(distDirectory, cssFile), "utf8")).toContain("#123456");
