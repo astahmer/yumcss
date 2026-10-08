@@ -84,6 +84,22 @@ test("mantine -> yumcss: migrates concrete mantine syntax to yumcss", () => {
 	`)
 });
 
+test("mantine -> yumcss: keeps scaled spacing valid without Mantine global styles", () => {
+	const source = `import { Box } from "@mantine/core";
+export const App = () => <Box data-proof c="#123456" bg="#ffffff" p="16px" bdrs="8px" fw={700}>Mantine proof</Box>;`;
+	const result = route.run({ source, file: "App.tsx", semantic: sourceSemantic });
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('padding: "calc(1rem * var(--mantine-scale, 1))"');
+	expect(result.code).not.toContain("@mantine/core");
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div data-proof className={css.class({ color: "#123456", backgroundColor: "#ffffff", padding: "calc(1rem * var(--mantine-scale, 1))", borderRadius: "8px", fontWeight: 700 })}>Mantine proof</div>;"
+	`);
+});
+
 test("mantine -> yumcss: carries a documented secondary mantine API explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "App.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
@@ -305,4 +321,3 @@ test("mantine -> yumcss: preserves malformed concrete mantine input", () => {
 		}
 	`)
 });
-
