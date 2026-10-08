@@ -28,6 +28,26 @@ describe("react-strict-dom codemod adapter", () => {
 		expect(result.code).not.toContain("<html.");
 	});
 
+	test("rewrites JSX hosts in JavaScript source files", () => {
+		const result = migrate(
+			'import { css, html } from "react-strict-dom";\nexport const Card = () => <html.div style={styles.card} />;\nconst styles = css.create({ card: { color: "red" } });',
+			CodemodAdapterId.ReactStrictDom,
+			CodemodAdapterId.YumCSS,
+			"Card.js",
+		);
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("<div className={styles.card} />");
+		expect(result.code).not.toContain("style={styles.card}");
+		expect(result.code).toContain('css.class({ color: "red" })');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createUnsafeCss } from "yumcss/unsafe/css";
+			const css = createUnsafeCss();
+			export const Card = () => <div className={styles.card} />;
+			const styles = { "card": css.class({ color: "red" }) };"
+		`);
+	});
+
 	test("emits real RSD css.create and html style syntax from YumCSS", () => {
 		const result = migrate(
 			'import { createUnsafeCss } from "yumcss/unsafe/css";\nconst css = createUnsafeCss();\nexport const Card = () => <div className={css.class({ color: "red", padding: "1rem" })} />;',
