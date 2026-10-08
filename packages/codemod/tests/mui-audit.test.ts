@@ -59,6 +59,23 @@ export const App = () => <Box sx={{ width: 0.5, maxWidth: 1, minHeight: 0.25, bo
 	`);
 });
 
+test("MUI sizing values above one become CSS pixel lengths", () => {
+	const source = `import { Box } from "@mui/material";
+export const App = () => <Box data-proof sx={{ width: 100, height: 100 }} />;`;
+	const result = muiToYumCSS.run({ source, file: "App.tsx", semantic: reactSemantic });
+
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain('width: "100px"');
+	expect(result.code).toContain('height: "100px"');
+	expect(result.code).not.toContain("@mui/material");
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		const css = createUnsafeCss();
+		export const App = () => <div data-proof className={css.class({ width: "100px", height: "100px" })} />;"
+	`);
+});
+
 test("MUI numeric shadow tokens need the effective source theme", () => {
 	const source = `import { Box } from "@mui/material";
 export const App = () => <Box sx={{ boxShadow: 1, zIndex: "modal", maxWidth: "md" }} />;`;
