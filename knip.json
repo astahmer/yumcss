@@ -2,7 +2,7 @@
 	"$schema": "https://unpkg.com/knip@6/schema.json",
 	"workspaces": {
 		".": {
-			"entry": ["scripts/**/*.{ts,mts,mjs}!"],
+			"entry": ["scripts/**/*.{ts,mts,mjs}"],
 			"project": ["scripts/**/*.{ts,mts,mjs}"]
 		},
 		"packages/codemod": {
@@ -147,7 +147,7 @@
 		},
 		"packages/lint-plugin": {
 			"entry": ["src/index.ts!"],
-			"project": ["src/**/*.ts"]
+			"project": ["src/**/*.ts!"]
 		},
 		"apps/*": {
 			"entry": ["src/{main,index,App}.{ts,tsx}!", "vite.config.ts", "vite.config.ts!"],
@@ -253,8 +253,14 @@
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
 		},
 		"apps/inspector": {
-			"entry": ["src/main.tsx!", "vite.config.ts!"],
-			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
+			"entry": [
+				"src/main.tsx!",
+				"vite.config.ts!",
+				"src/server/analytics-history.ts!",
+				"src/server/gather.ts!",
+				"src/server/history.ts!"
+			],
+			"project": ["src/**/*.{ts,tsx}!", "!src/**/*.test.{ts,tsx}!", "vite.config.ts!"]
 		}
 	},
 	"ignoreDependencies": [

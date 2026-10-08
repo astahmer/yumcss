@@ -10,7 +10,7 @@ import {
 } from "@yumcss/codemod/swap/token-document/serializer";
 
 /** Export only the source-validated generated token snapshot. */
-export function tokensToDtcg(data: InspectorPayload): string {
+function tokensToDtcg(data: InspectorPayload): string {
 	const tokens = data.interopTokens;
 	if (tokens?.state !== "available") {
 		throw new Error(tokens?.diagnostics.join("; ") ?? "No validated token snapshot is available.");
@@ -19,14 +19,14 @@ export function tokensToDtcg(data: InspectorPayload): string {
 }
 
 /** Resolver data stays in its own DTCG sidecar document. */
-export function tokensResolverToDtcg(data: InspectorPayload): string | undefined {
+function tokensResolverToDtcg(data: InspectorPayload): string | undefined {
 	const tokens = data.interopTokens;
 	if (tokens?.state !== "available" || tokens.document.resolver === undefined) return undefined;
 	return serializeTokenResolverDocument(tokens.document.resolver);
 }
 
 /** @theme vars as a plain `:root` custom-properties stylesheet. */
-export function themeVarsToCss(data: InspectorPayload): string {
+function themeVarsToCss(data: InspectorPayload): string {
 	const groups = new Map<string, Array<ThemeVar>>();
 	for (const variable of data.designSystem.themeVars) {
 		const scope = variable.scope ?? ":root";
@@ -43,7 +43,7 @@ export function themeVarsToCss(data: InspectorPayload): string {
 }
 
 /** Utility unions summary (counts, samples, open-ended flags). */
-export function utilitiesToJson(data: InspectorPayload): string {
+function utilitiesToJson(data: InspectorPayload): string {
 	const doc = {
 		variantCount: data.designSystem.variantCount,
 		conflictUtilities: data.designSystem.conflictUtilities,
@@ -61,7 +61,7 @@ export function utilitiesToJson(data: InspectorPayload): string {
 }
 
 /** The coverage/stats slice verbatim (machine-readable). */
-export function coverageToJson(data: InspectorPayload): string {
+function coverageToJson(data: InspectorPayload): string {
 	return `${JSON.stringify(data.coverage, null, "\t")}\n`;
 }
 
@@ -71,7 +71,7 @@ const csvCell = (value: string | number): string => {
 };
 
 /** Per-file fold and authored-value coverage for spreadsheets and CI artifacts. */
-export function coverageToCsv(data: InspectorPayload): string {
+function coverageToCsv(data: InspectorPayload): string {
 	const coverageByFile = new Map(
 		(data.analytics?.fileValueCoverage ?? []).map((coverage) => [coverage.file, coverage]),
 	);
@@ -106,7 +106,7 @@ export function coverageToCsv(data: InspectorPayload): string {
 }
 
 /** Human-readable Markdown report: summary, per-file stats, warnings. */
-export function coverageToMarkdown(data: InspectorPayload): string {
+function coverageToMarkdown(data: InspectorPayload): string {
 	const c = data.coverage;
 	const lines: Array<string> = ["# yumcss inspector report", ""];
 
@@ -155,7 +155,7 @@ export function coverageToMarkdown(data: InspectorPayload): string {
 }
 
 /** Client-side file download via Blob + anchor click. UI-only. */
-export function downloadFile(filename: string, content: string, mime = "application/json"): void {
+function downloadFile(filename: string, content: string, mime = "application/json"): void {
 	const blob = new Blob([content], { type: mime });
 	const url = URL.createObjectURL(blob);
 	const anchor = document.createElement("a");
@@ -172,7 +172,7 @@ const htmlEsc = (value: string): string =>
  * Self-contained HTML report (wallace-style): the whole Inspector payload
  * rendered into one static file — shareable offline, no server needed.
  */
-export function coverageToHtml(data: InspectorPayload, generatedAt: string): string {
+function coverageToHtml(data: InspectorPayload, generatedAt: string): string {
 	const c = data.coverage;
 	const row = (cells: Array<string>): string =>
 		`<tr>${cells.map((cell) => `<td>${htmlEsc(cell)}</td>`).join("")}</tr>`;

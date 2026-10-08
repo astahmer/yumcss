@@ -1,15 +1,6 @@
 /** Export serializer tests — DTCG mapping, css vars, markdown, round-trip. */
 import { afterEach, describe, expect, test, vi } from "vitest";
-import {
-	coverageToCsv,
-	coverageToJson,
-	coverageToMarkdown,
-	downloadFile,
-	themeVarsToCss,
-	tokensToDtcg,
-	tokensResolverToDtcg,
-	utilitiesToJson,
-} from "./export.ts";
+import { InspectorExport } from "./export.ts";
 import {
 	parseDtcgResolverDocument,
 	parseDtcgTokenDocument,
@@ -131,7 +122,7 @@ afterEach(() => {
 
 describe("tokensToDtcg", () => {
 	test("exports the validated hierarchy and authored DTCG types without shape guessing", () => {
-		const doc = JSON.parse(tokensToDtcg(payload)) as {
+		const doc = JSON.parse(InspectorExport.tokensToDtcg(payload)) as {
 			colors: { $type: string; $description: string; "blue-500": { $value: { hex: string } } };
 			spacing: { gutter: { $type: string; $value: { value: number; unit: string } } };
 		};
@@ -152,7 +143,7 @@ describe("tokensToDtcg", () => {
 				diagnostics: ["stale artifact"],
 			},
 		};
-		expect(() => tokensToDtcg(unavailable)).toThrow("stale artifact");
+		expect(() => InspectorExport.tokensToDtcg(unavailable)).toThrow("stale artifact");
 	});
 
 	test("exports DTCG Resolver contexts in a separate sidecar", () => {
@@ -173,12 +164,12 @@ describe("tokensToDtcg", () => {
 				},
 			},
 		};
-		expect(tokensResolverToDtcg(withResolver)).toContain('"resolutionOrder"');
+		expect(InspectorExport.tokensResolverToDtcg(withResolver)).toContain('"resolutionOrder"');
 	});
 });
 
 test("themeVarsToCss emits a :root block with all vars", () => {
-	const css = themeVarsToCss(payload);
+	const css = InspectorExport.themeVarsToCss(payload);
 	expect(css).toContain(":root {");
 	expect(css).toContain("\t--color-blue-500: #3b82f6;");
 	expect(css).toContain("\t--text-sm: 0.875rem;");
@@ -196,7 +187,7 @@ test("themeVarsToCss preserves external selector scopes", () => {
 			],
 		},
 	};
-	const css = themeVarsToCss(scoped);
+	const css = InspectorExport.themeVarsToCss(scoped);
 	expect(css).toMatchInlineSnapshot(`
 		":root {\n\t--color-base: #fff;\n}\n[data-theme="dark"] {\n\t--color-base: #111;\n}\n"
 	`);
@@ -204,7 +195,7 @@ test("themeVarsToCss preserves external selector scopes", () => {
 });
 
 test("utilitiesToJson carries meta + unions and round-trips", () => {
-	const doc = JSON.parse(utilitiesToJson(payload)) as Record<string, unknown>;
+	const doc = JSON.parse(InspectorExport.utilitiesToJson(payload)) as Record<string, unknown>;
 	expect(doc["variantCount"]).toBe(88);
 	expect((doc["unions"] as Array<Record<string, unknown>>)[0]).toMatchObject({
 		key: "color",
@@ -214,13 +205,13 @@ test("utilitiesToJson carries meta + unions and round-trips", () => {
 });
 
 test("coverageToJson round-trips the coverage slice", () => {
-	const doc = JSON.parse(coverageToJson(payload)) as { eliminatedPct: number; files: unknown[] };
+	const doc = JSON.parse(InspectorExport.coverageToJson(payload)) as { eliminatedPct: number; files: unknown[] };
 	expect(doc.eliminatedPct).toBe(46);
 	expect(doc.files).toHaveLength(2);
 });
 
 describe("coverageToMarkdown", () => {
-	const md = coverageToMarkdown(payload);
+	const md = InspectorExport.coverageToMarkdown(payload);
 
 	test("contains summary, per-file table, warnings and budget", () => {
 		expect(md).toContain("# yumcss inspector report");
@@ -237,7 +228,7 @@ describe("coverageToMarkdown", () => {
 });
 
 test("coverageToCsv emits per-file fold and value coverage", () => {
-	const csv = coverageToCsv({
+	const csv = InspectorExport.coverageToCsv({
 		...payload,
 		analytics: {
 			sitesScanned: 2,
@@ -281,18 +272,16 @@ test("downloadFile creates an object URL, sets filename, clicks, revokes", () =>
 	vi.stubGlobal("document", {
 		createElement: vi.fn(() => anchor),
 	});
-	downloadFile("tokens.json", "{}");
+	InspectorExport.downloadFile("tokens.json", "{}");
 	expect(anchor.href).toBe("blob:x");
 	expect(anchor.download).toBe("tokens.json");
 	expect(anchor.click).toHaveBeenCalledTimes(1);
 	expect(revoke).toHaveBeenCalledWith("blob:x");
 });
 
-import { coverageToHtml } from "./export.ts";
-
 describe("coverageToHtml", () => {
 	test("self-contained report embeds stats, files and missing-css", () => {
-		const html = coverageToHtml(payload, "2026-01-01T00:00:00Z");
+		const html = InspectorExport.coverageToHtml(payload, "2026-01-01T00:00:00Z");
 		expect(html).toContain("<!doctype html>");
 		expect(html).toContain("<b>46%</b>");
 		expect(html).toContain("<td>a.tsx</td>");
