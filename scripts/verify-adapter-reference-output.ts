@@ -14,6 +14,7 @@ import {
 	projectRootFor,
 	readPinnedSource,
 } from "./adapter-proof-harness.ts";
+import { partitionTypecheckDiagnostics } from "./proof-typecheck-diagnostics.ts";
 import { createEffectToolingTaskRunner } from "./effect-tooling.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
@@ -556,10 +557,31 @@ async function verifyReference(reference: {
 	const allTypecheckErrors = (typecheck.stdout ?? "")
 		.split("\n")
 		.filter((line) => line.trim().length > 0);
-	const typecheckBaseline = SOURCE_TEST_TYPECHECK_BASELINES.has(reference.id)
-		? allTypecheckErrors
-		: [];
-	const typecheckErrors = allTypecheckErrors.filter((line) => !typecheckBaseline.includes(line));
+	let sourceDiagnostics: string[] = [];
+	if (SOURCE_TEST_TYPECHECK_BASELINES.has(reference.id)) {
+		writeFileSync(join(sandboxRoot, migratedPath), typecheckSourceText(reference.id, source));
+		writeFileSync(
+			join(sandboxRoot, "tsconfig.source.json"),
+			JSON.stringify({
+				extends: "./tsconfig.json",
+				include: [migratedPath, "src/**/*.d.ts"],
+				exclude: generatedModules.map(({ path }) => path),
+			}),
+		);
+		const sourceTypecheck = spawnSync(
+			"nub",
+			["exec", "tsc", "--noEmit", "-p", join(sandboxRoot, "tsconfig.source.json")],
+			{ encoding: "utf8" },
+		);
+		sourceDiagnostics = (sourceTypecheck.stdout ?? "")
+			.split("\n")
+			.filter((line) => line.trim().length > 0);
+		writeFileSync(join(sandboxRoot, migratedPath), moduleText);
+	}
+	const { baseline: typecheckBaseline, errors: typecheckErrors } = partitionTypecheckDiagnostics({
+		generated: allTypecheckErrors,
+		source: sourceDiagnostics,
+	});
 	const importErrors: string[] = [];
 	if (installError !== undefined) importErrors.push(installError);
 	if (!keepRoot) rmSync(sandboxRoot, { recursive: true, force: true });

@@ -125,7 +125,7 @@
         "skipped": 11,
         "residuals": 11,
         "validations": 0,
-        "residualSourcePreserved": false,
+        "residualSourcePreserved": true,
         "sourcePreserved": true,
         "valid": false,
         "differences": [],
@@ -135,57 +135,57 @@
         "residualDetails": [
           {
             "kind": "capability",
-            "text": "css({ color: 'DodgerBlue' })",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "globalCss({ body: { margin: 0 } })\n\t\tconst className2of2 = `${rendering2of2}`\n\t\tconst cssString2of2 = getCssText()\n\n\t\texpect(rendering2of2).toBeInstanceOf(Function)\n\t\texpect(className2of2).toBe('')\n\t\texpect(cssString2of2).toBe(`--sxs{--sxs:1 cSHHDh}@media{body{margin:0}}`)\n\t})\n\n\ttest('Functionality of keyframes()', () => {\n\t\tconst { keyframes, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = keyframes({\n\t\t\t'0%': {\n\t\t\t\tcolor: 'Black',\n\t\t\t},\n\t\t\t'100%': {\n\t\t\t\tcolor: 'White',\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('k-jOrSYg')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:1 k-jOrSYg}@media{@keyframes k-jOrSYg{0%{color:Black}100%{color:White}}}`)\n\t})\n\n\ttest('Functionality of createTheme()', () => {\n\t\tconst { createTheme, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = createTheme({\n\t\t\tcolors: {\n\t\t\t\tred: 'Crimson',\n\t\t\t\tblue: 'DodgerBlue',\n\t\t\t},\n\t\t})\n\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Object)\n\t\texpect(className1of1).toBe('t-kfidiM')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:0 t-kfidiM}@media{.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n\n\ttest('Functionality of css() — css prop', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({ color: 'DodgerBlue' })\n\t\tconst className1of1 = `${component1of1({ css: { color: 'Crimson' } })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-dataoT c-dataoT-icaIZdx-css')\n\t\texpect(cssString1of1).toBe(\n\t\t\t`--sxs{--sxs:2 c-dataoT}@media{` +\n\t\t\t\t`.c-dataoT{color:DodgerBlue}` +\n\t\t\t`}` +\n\t\t\t`--sxs{--sxs:6 c-dataoT-icaIZdx-css}@media{` +\n\t\t\t\t`.c-dataoT-icaIZdx-css{color:Crimson}` +\n\t\t\t`}`\n\t\t)\n\t})\n\n\ttest('Functionality of css() — variants', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${component1of1({ shade: 'red' })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-imTdEZ c-imTdEZ-caIZdx-shade-red')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-imTdEZ}@media{.c-imTdEZ{font-size:100%}}--sxs{--sxs:3 c-imTdEZ-caIZdx-shade-red}@media{.c-imTdEZ-caIZdx-shade-red{color:Crimson}}`)\n\t})\n\n\ttest('Functionality of css() — utils', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tuserSelect: (value) => ({\n\t\t\t\t\tWebkitUserSelector: value,\n\t\t\t\t\tuserSelect: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\tuserSelect: 'none',\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-bStdfw')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-bStdfw}@media{.c-bStdfw{-webkit-user-selector:none;user-select:none}}`)\n\t})\n\n\ttest('Functionality of stringification — numeric pixel values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: 100,\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-eBcQxc')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-eBcQxc}@media{.c-eBcQxc{width:100px}}`)\n\t})\n\n\ttest('Functionality of stringification — token values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: '$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-lpaZZu')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-lpaZZu}@media{.c-lpaZZu{width:var(--sizes-brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-elRGCe}@media{.c-elRGCe{---brand:500px;width:var(---brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens prefixed', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tprefix: 'fusion',\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('fusion-c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 fusion-c-elRGCe}@media{.fusion-c-elRGCe{--fusion--brand:500px;width:var(--fusion--brand)}}`)\n\t})\n\n\ttest('Stringification: Utils + Local Tokens', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tbackdropFilter: (value) => ({\n\t\t\t\t\tWebkitBackdropFilter: value,\n\t\t\t\t\tbackdropFilter: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-brAtkJ')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-brAtkJ}@media{.c-brAtkJ{---blur:test;-webkit-backdrop-filter:var(---blur);backdrop-filter:var(---blur)}}`)\n\t})\n\n\ttest('Theme', () => {\n\t\tconst { getCssText } = createStitches({\n\t\t\ttheme: {\n\t\t\t\tcolors: {\n\t\t\t\t\tred: 'Crimson',\n\t\t\t\t\tblue: 'DodgerBlue',\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\n\t\texpect(getCssText()).toBe(`--sxs{--sxs:0 t-kfidiM}@media{:root,.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n})\n",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "keyframes({\n\t\t\t'0%': {\n\t\t\t\tcolor: 'Black',\n\t\t\t},\n\t\t\t'100%': {\n\t\t\t\tcolor: 'White',\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('k-jOrSYg')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:1 k-jOrSYg}@media{@keyframes k-jOrSYg{0%{color:Black}100%{color:White}}}`)\n\t})\n\n\ttest('Functionality of createTheme()', () => {\n\t\tconst { createTheme, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = createTheme({\n\t\t\tcolors: {\n\t\t\t\tred: 'Crimson',\n\t\t\t\tblue: 'DodgerBlue',\n\t\t\t},\n\t\t})\n\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Object)\n\t\texpect(className1of1).toBe('t-kfidiM')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:0 t-kfidiM}@media{.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n\n\ttest('Functionality of css() — css prop', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({ color: 'DodgerBlue' })\n\t\tconst className1of1 = `${component1of1({ css: { color: 'Crimson' } })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-dataoT c-dataoT-icaIZdx-css')\n\t\texpect(cssString1of1).toBe(\n\t\t\t`--sxs{--sxs:2 c-dataoT}@media{` +\n\t\t\t\t`.c-dataoT{color:DodgerBlue}` +\n\t\t\t`}` +\n\t\t\t`--sxs{--sxs:6 c-dataoT-icaIZdx-css}@media{` +\n\t\t\t\t`.c-dataoT-icaIZdx-css{color:Crimson}` +\n\t\t\t`}`\n\t\t)\n\t})\n\n\ttest('Functionality of css() — variants', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${component1of1({ shade: 'red' })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-imTdEZ c-imTdEZ-caIZdx-shade-red')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-imTdEZ}@media{.c-imTdEZ{font-size:100%}}--sxs{--sxs:3 c-imTdEZ-caIZdx-shade-red}@media{.c-imTdEZ-caIZdx-shade-red{color:Crimson}}`)\n\t})\n\n\ttest('Functionality of css() — utils', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tuserSelect: (value) => ({\n\t\t\t\t\tWebkitUserSelector: value,\n\t\t\t\t\tuserSelect: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\tuserSelect: 'none',\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-bStdfw')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-bStdfw}@media{.c-bStdfw{-webkit-user-selector:none;user-select:none}}`)\n\t})\n\n\ttest('Functionality of stringification — numeric pixel values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: 100,\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-eBcQxc')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-eBcQxc}@media{.c-eBcQxc{width:100px}}`)\n\t})\n\n\ttest('Functionality of stringification — token values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: '$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-lpaZZu')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-lpaZZu}@media{.c-lpaZZu{width:var(--sizes-brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-elRGCe}@media{.c-elRGCe{---brand:500px;width:var(---brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens prefixed', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tprefix: 'fusion',\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('fusion-c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 fusion-c-elRGCe}@media{.fusion-c-elRGCe{--fusion--brand:500px;width:var(--fusion--brand)}}`)\n\t})\n\n\ttest('Stringification: Utils + Local Tokens', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tbackdropFilter: (value) => ({\n\t\t\t\t\tWebkitBackdropFilter: value,\n\t\t\t\t\tbackdropFilter: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-brAtkJ')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-brAtkJ}@media{.c-brAtkJ{---blur:test;-webkit-backdrop-filter:var(---blur);backdrop-filter:var(---blur)}}`)\n\t})\n\n\ttest('Theme', () => {\n\t\tconst { getCssText } = createStitches({\n\t\t\ttheme: {\n\t\t\t\tcolors: {\n\t\t\t\t\tred: 'Crimson',\n\t\t\t\t\tblue: 'DodgerBlue',\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\n\t\texpect(getCssText()).toBe(`--sxs{--sxs:0 t-kfidiM}@media{:root,.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n})\n",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({ color: 'DodgerBlue' })",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\tuserSelect: 'none',\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\twidth: 100,\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\twidth: '$brand',\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           },
           {
             "kind": "capability",
-            "text": "css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})",
+            "text": "getCssText",
             "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
           }
         ]
@@ -1376,5 +1376,5 @@
   ],
   "passed": 15,
   "failed": 16,
-  "regressions": 1
+  "regressions": 0
 }

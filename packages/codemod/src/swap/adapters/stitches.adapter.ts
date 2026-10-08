@@ -67,7 +67,7 @@ const preserveStitchesSsr = (program: StyleProgram, context: AdapterParseContext
 			...program.residuals,
 			{
 				kind: StyleProgramResidualKindTag.Capability,
-				text: context.source.slice(program.source?.start ?? 0, program.source?.end),
+				text: "getCssText",
 				hint: "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated",
 			},
 		],
