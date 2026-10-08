@@ -1485,7 +1485,7 @@ function runtimeComponent(
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css: runtimeCss }); ";
 	if (tag === undefined) {
 		return {
-			text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const ResolvedComponent = attrs.as ?? props.as ?? (${componentExpression}); const forwarded = ${forwardedPropsExpression(forwardedFilter)}; return <ResolvedComponent {...forwarded} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />; }${componentEnd}`,
+			text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs: ${propsType} = ${attrsValue}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const ResolvedComponent = attrs.as ?? props.as ?? (${componentExpression}); const forwarded = ${forwardedPropsExpression(forwardedFilter)}; return <ResolvedComponent {...forwarded} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />; }${componentEnd}`,
 			componentExpression: true,
 			imports: [
 				...hostTypeImports,
@@ -1502,7 +1502,7 @@ function runtimeComponent(
 		? `<Dynamic component={ResolvedComponent} {...forwarded} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`
 		: `<ResolvedComponent {...forwarded} ${forwardedRef}${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style, ...attrs.style }} />`;
 	return {
-		text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs = ${attrsValue}; const ResolvedComponent = attrs.as ?? props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = ${forwardedPropsExpression(forwardedFilter)}; return ${renderedComponent}; }${componentEnd}`,
+		text: `${componentStart} ${composedCxBinding}const style = runtimeCss.vars(${object}); const attrs: ${propsType} = ${attrsValue}; const ResolvedComponent = attrs.as ?? props.as ?? ${JSON.stringify(tag)}; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = ${forwardedPropsExpression(forwardedFilter)}; return ${renderedComponent}; }${componentEnd}`,
 		componentExpression: true,
 		imports: [
 			...hostTypeImports,

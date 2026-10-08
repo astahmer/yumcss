@@ -20,6 +20,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -53,6 +55,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -82,10 +86,12 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 2,
+        "converted": 4,
         "skipped": 0,
         "residuals": 0,
         "validations": 2,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -94,8 +100,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 402,
-        "targetBytes": 402,
+        "sourceBytes": 421,
+        "targetBytes": 421,
         "notLarger": true
       },
       "browser": {
@@ -115,28 +121,90 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 11,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 11,
-        "valid": true,
+        "converted": 0,
+        "skipped": 11,
+        "residuals": 11,
+        "validations": 0,
+        "residualSourcePreserved": false,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "capability": 11
+        },
+        "residualDetails": [
+          {
+            "kind": "capability",
+            "text": "css({ color: 'DodgerBlue' })",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "globalCss({ body: { margin: 0 } })\n\t\tconst className2of2 = `${rendering2of2}`\n\t\tconst cssString2of2 = getCssText()\n\n\t\texpect(rendering2of2).toBeInstanceOf(Function)\n\t\texpect(className2of2).toBe('')\n\t\texpect(cssString2of2).toBe(`--sxs{--sxs:1 cSHHDh}@media{body{margin:0}}`)\n\t})\n\n\ttest('Functionality of keyframes()', () => {\n\t\tconst { keyframes, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = keyframes({\n\t\t\t'0%': {\n\t\t\t\tcolor: 'Black',\n\t\t\t},\n\t\t\t'100%': {\n\t\t\t\tcolor: 'White',\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('k-jOrSYg')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:1 k-jOrSYg}@media{@keyframes k-jOrSYg{0%{color:Black}100%{color:White}}}`)\n\t})\n\n\ttest('Functionality of createTheme()', () => {\n\t\tconst { createTheme, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = createTheme({\n\t\t\tcolors: {\n\t\t\t\tred: 'Crimson',\n\t\t\t\tblue: 'DodgerBlue',\n\t\t\t},\n\t\t})\n\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Object)\n\t\texpect(className1of1).toBe('t-kfidiM')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:0 t-kfidiM}@media{.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n\n\ttest('Functionality of css() — css prop', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({ color: 'DodgerBlue' })\n\t\tconst className1of1 = `${component1of1({ css: { color: 'Crimson' } })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-dataoT c-dataoT-icaIZdx-css')\n\t\texpect(cssString1of1).toBe(\n\t\t\t`--sxs{--sxs:2 c-dataoT}@media{` +\n\t\t\t\t`.c-dataoT{color:DodgerBlue}` +\n\t\t\t`}` +\n\t\t\t`--sxs{--sxs:6 c-dataoT-icaIZdx-css}@media{` +\n\t\t\t\t`.c-dataoT-icaIZdx-css{color:Crimson}` +\n\t\t\t`}`\n\t\t)\n\t})\n\n\ttest('Functionality of css() — variants', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${component1of1({ shade: 'red' })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-imTdEZ c-imTdEZ-caIZdx-shade-red')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-imTdEZ}@media{.c-imTdEZ{font-size:100%}}--sxs{--sxs:3 c-imTdEZ-caIZdx-shade-red}@media{.c-imTdEZ-caIZdx-shade-red{color:Crimson}}`)\n\t})\n\n\ttest('Functionality of css() — utils', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tuserSelect: (value) => ({\n\t\t\t\t\tWebkitUserSelector: value,\n\t\t\t\t\tuserSelect: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\tuserSelect: 'none',\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-bStdfw')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-bStdfw}@media{.c-bStdfw{-webkit-user-selector:none;user-select:none}}`)\n\t})\n\n\ttest('Functionality of stringification — numeric pixel values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: 100,\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-eBcQxc')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-eBcQxc}@media{.c-eBcQxc{width:100px}}`)\n\t})\n\n\ttest('Functionality of stringification — token values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: '$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-lpaZZu')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-lpaZZu}@media{.c-lpaZZu{width:var(--sizes-brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-elRGCe}@media{.c-elRGCe{---brand:500px;width:var(---brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens prefixed', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tprefix: 'fusion',\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('fusion-c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 fusion-c-elRGCe}@media{.fusion-c-elRGCe{--fusion--brand:500px;width:var(--fusion--brand)}}`)\n\t})\n\n\ttest('Stringification: Utils + Local Tokens', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tbackdropFilter: (value) => ({\n\t\t\t\t\tWebkitBackdropFilter: value,\n\t\t\t\t\tbackdropFilter: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-brAtkJ')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-brAtkJ}@media{.c-brAtkJ{---blur:test;-webkit-backdrop-filter:var(---blur);backdrop-filter:var(---blur)}}`)\n\t})\n\n\ttest('Theme', () => {\n\t\tconst { getCssText } = createStitches({\n\t\t\ttheme: {\n\t\t\t\tcolors: {\n\t\t\t\t\tred: 'Crimson',\n\t\t\t\t\tblue: 'DodgerBlue',\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\n\t\texpect(getCssText()).toBe(`--sxs{--sxs:0 t-kfidiM}@media{:root,.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n})\n",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "keyframes({\n\t\t\t'0%': {\n\t\t\t\tcolor: 'Black',\n\t\t\t},\n\t\t\t'100%': {\n\t\t\t\tcolor: 'White',\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('k-jOrSYg')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:1 k-jOrSYg}@media{@keyframes k-jOrSYg{0%{color:Black}100%{color:White}}}`)\n\t})\n\n\ttest('Functionality of createTheme()', () => {\n\t\tconst { createTheme, getCssText } = createStitches()\n\n\t\tconst rendering1of1 = createTheme({\n\t\t\tcolors: {\n\t\t\t\tred: 'Crimson',\n\t\t\t\tblue: 'DodgerBlue',\n\t\t\t},\n\t\t})\n\n\t\tconst className1of1 = `${rendering1of1}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(rendering1of1).toBeInstanceOf(Object)\n\t\texpect(className1of1).toBe('t-kfidiM')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:0 t-kfidiM}@media{.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n\n\ttest('Functionality of css() — css prop', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({ color: 'DodgerBlue' })\n\t\tconst className1of1 = `${component1of1({ css: { color: 'Crimson' } })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-dataoT c-dataoT-icaIZdx-css')\n\t\texpect(cssString1of1).toBe(\n\t\t\t`--sxs{--sxs:2 c-dataoT}@media{` +\n\t\t\t\t`.c-dataoT{color:DodgerBlue}` +\n\t\t\t`}` +\n\t\t\t`--sxs{--sxs:6 c-dataoT-icaIZdx-css}@media{` +\n\t\t\t\t`.c-dataoT-icaIZdx-css{color:Crimson}` +\n\t\t\t`}`\n\t\t)\n\t})\n\n\ttest('Functionality of css() — variants', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tconst className1of1 = `${component1of1({ shade: 'red' })}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(component1of1).toBeInstanceOf(Function)\n\t\texpect(className1of1).toBe('c-imTdEZ c-imTdEZ-caIZdx-shade-red')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-imTdEZ}@media{.c-imTdEZ{font-size:100%}}--sxs{--sxs:3 c-imTdEZ-caIZdx-shade-red}@media{.c-imTdEZ-caIZdx-shade-red{color:Crimson}}`)\n\t})\n\n\ttest('Functionality of css() — utils', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tuserSelect: (value) => ({\n\t\t\t\t\tWebkitUserSelector: value,\n\t\t\t\t\tuserSelect: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\tuserSelect: 'none',\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-bStdfw')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-bStdfw}@media{.c-bStdfw{-webkit-user-selector:none;user-select:none}}`)\n\t})\n\n\ttest('Functionality of stringification — numeric pixel values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: 100,\n\t\t})\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-eBcQxc')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-eBcQxc}@media{.c-eBcQxc{width:100px}}`)\n\t})\n\n\ttest('Functionality of stringification — token values', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\twidth: '$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-lpaZZu')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-lpaZZu}@media{.c-lpaZZu{width:var(--sizes-brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens', () => {\n\t\tconst { css, getCssText } = createStitches()\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-elRGCe}@media{.c-elRGCe{---brand:500px;width:var(---brand)}}`)\n\t})\n\n\ttest('Functionality of stringification — local tokens prefixed', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tprefix: 'fusion',\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('fusion-c-elRGCe')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 fusion-c-elRGCe}@media{.fusion-c-elRGCe{--fusion--brand:500px;width:var(--fusion--brand)}}`)\n\t})\n\n\ttest('Stringification: Utils + Local Tokens', () => {\n\t\tconst { css, getCssText } = createStitches({\n\t\t\tutils: {\n\t\t\t\tbackdropFilter: (value) => ({\n\t\t\t\t\tWebkitBackdropFilter: value,\n\t\t\t\t\tbackdropFilter: value,\n\t\t\t\t}),\n\t\t\t},\n\t\t})\n\n\t\tconst component1of1 = css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})\n\n\t\tconst className1of1 = `${component1of1()}`\n\t\tconst cssString1of1 = getCssText()\n\n\t\texpect(className1of1).toBe('c-brAtkJ')\n\t\texpect(cssString1of1).toBe(`--sxs{--sxs:2 c-brAtkJ}@media{.c-brAtkJ{---blur:test;-webkit-backdrop-filter:var(---blur);backdrop-filter:var(---blur)}}`)\n\t})\n\n\ttest('Theme', () => {\n\t\tconst { getCssText } = createStitches({\n\t\t\ttheme: {\n\t\t\t\tcolors: {\n\t\t\t\t\tred: 'Crimson',\n\t\t\t\t\tblue: 'DodgerBlue',\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\n\t\texpect(getCssText()).toBe(`--sxs{--sxs:0 t-kfidiM}@media{:root,.t-kfidiM{--colors-red:Crimson;--colors-blue:DodgerBlue}}`)\n\t})\n})\n",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({ color: 'DodgerBlue' })",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\tfontSize: '100%',\n\t\t\tvariants: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t\tcolor: 'DodgerBlue',\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\tuserSelect: 'none',\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\twidth: 100,\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\twidth: '$brand',\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\t$$brand: '500px',\n\t\t\twidth: '$$brand',\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          },
+          {
+            "kind": "capability",
+            "text": "css({\n\t\t\t$$blur: 'test',\n\t\t\tbackdropFilter: '$$blur',\n\t\t})",
+            "hint": "Stitches getCssText observes source runtime styles; preserve them until SSR semantics can be migrated"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 333,
-        "targetBytes": 333,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 11,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -152,6 +220,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 4,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -185,6 +255,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 2,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -193,8 +265,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 75,
-        "targetBytes": 75,
+        "sourceBytes": 64,
+        "targetBytes": 64,
         "notLarger": true
       },
       "browser": {
@@ -218,6 +290,8 @@
         "skipped": 7,
         "residuals": 7,
         "validations": 8,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": false,
         "differences": [],
         "residualKinds": {
@@ -264,8 +338,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 405,
-        "targetBytes": 405,
+        "sourceBytes": 561,
+        "targetBytes": 561,
         "notLarger": true
       },
       "browser": {
@@ -289,6 +363,8 @@
         "skipped": 1,
         "residuals": 1,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": false,
         "differences": [],
         "residualKinds": {
@@ -330,6 +406,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 22,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -338,8 +416,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1129,
-        "targetBytes": 1129,
+        "sourceBytes": 1267,
+        "targetBytes": 1267,
         "notLarger": true
       },
       "browser": {
@@ -363,6 +441,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -396,6 +476,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -404,8 +486,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 208,
-        "targetBytes": 208,
+        "sourceBytes": 261,
+        "targetBytes": 261,
         "notLarger": true
       },
       "browser": {
@@ -429,6 +511,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 6,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -437,8 +521,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 291,
-        "targetBytes": 291,
+        "sourceBytes": 320,
+        "targetBytes": 320,
         "notLarger": true
       },
       "browser": {
@@ -462,6 +546,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 9,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -491,27 +577,42 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 7,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 7,
-        "valid": true,
+        "converted": 6,
+        "skipped": 2,
+        "residuals": 2,
+        "validations": 6,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "dynamic": 2
+        },
+        "residualDetails": [
+          {
+            "kind": "dynamic",
+            "text": "1px solid ${props => props.active ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)'}",
+            "hint": "vue-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "1px solid ${props => props.active ? props.theme.success : 'rgba(255, 255, 255, 0.2)'}",
+            "hint": "vue-styled function interpolation requires a framework prop wrapper"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1485,
-        "targetBytes": 1485,
+        "sourceBytes": 831,
+        "targetBytes": 831,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 7,
+        "samples": 6,
         "errors": []
       }
     },
@@ -528,6 +629,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -538,6 +641,41 @@
         "equal": true,
         "sourceBytes": 276,
         "targetBytes": 276,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "react-strict-dom-web",
+      "repository": "https://github.com/react/react-strict-dom",
+      "commit": "86a8033d3fd7272258d421c926b2a588be36eb6f",
+      "path": "apps/example-ui/Button/index.js",
+      "adapter": "react-strict-dom",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 234,
+        "targetBytes": 234,
         "notLarger": true
       },
       "browser": {
@@ -561,6 +699,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 4,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -569,8 +709,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1134,
-        "targetBytes": 1134,
+        "sourceBytes": 1163,
+        "targetBytes": 1163,
         "notLarger": true
       },
       "browser": {
@@ -589,29 +729,91 @@
       "adapter": "next-yak",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 3,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 3,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 2,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "dynamic": 2
+        },
+        "residualDetails": [
+          {
+            "kind": "dynamic",
+            "text": "styled.button<{ $variant: \"standard\" | \"primary\" }>`\n  font-size: 16px;\n  line-height: 24px;\n  letter-spacing: 0.01em;\n  font-weight: 400;\n  display: flex;\n  width: 100%;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 3px;\n  align-items: center;\n  justify-content: center;\n  text-align: center;\n  white-space: nowrap;\n  cursor: pointer;\n  user-select: none;\n  padding: 7px 15px;\n  position: relative;\n  ${desktop} {\n    font-size: 14px;\n    line-height: 20px;\n    padding: 1px 11px;\n    display: inline-flex;\n    width: auto;\n  }\n  &:active:not(:disabled) {\n    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.16), 0px 2px 4px rgba(0, 0, 0, 0.08);\n  }\n  &::before {\n    content: \"\";\n    position: absolute;\n    inset: 50%;\n    translate: -50% -50%;\n    width: 100%;\n    height: 100%;\n    min-width: 24px;\n    min-height: 24px;\n  }\n  ${({ $variant }) =>\n    $variant === \"primary\"\n      ? css`\n          &,\n          &:link,\n          &:visited {\n            color: #fff;\n            background-color: #444;\n          }\n          &:hover:not(:active, :disabled),\n          &:focus-visible:not(:active, :disabled) {\n            background-color: #000;\n          }\n        `\n      : css`\n          &,\n          &:link,\n          &:visited {\n            color: #000;\n            background-color: #eee;\n          }\n          &:hover:not(:active, :disabled),\n          &:focus-visible:not(:active, :disabled) {\n            background-color: #ddd;\n          }\n        `}\n  &:disabled {\n    color: rgba(0, 0, 0, 0.4);\n    background-color: transparent;\n    border-color: rgba(0, 0, 0, 0.1);\n    cursor: default;\n  }\n`",
+            "hint": "styled nested template interpolation requires a host-specific lowering"
+          },
+          {
+            "kind": "dynamic",
+            "text": "styled.span<{ $hasChildren: boolean }>`\n  display: flex;\n  align-items: center;\n  min-height: 24px;\n  ${desktop} {\n    min-height: 20px;\n  }\n  ${({ $hasChildren }) => $hasChildren && css`margin-right: 12px;`}\n`",
+            "hint": "styled nested template interpolation requires a host-specific lowering"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 381,
-        "targetBytes": 381,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 3,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
+      }
+    },
+    {
+      "id": "next-yak-dynamic-benchmark",
+      "repository": "https://github.com/jantimon/css-in-js-bench",
+      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+      "path": "techs/next-yak/case/dyn-fair/index.tsx",
+      "adapter": "next-yak",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
+        "differences": [],
+        "residualKinds": {
+          "dynamic": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "dynamic",
+            "text": "translateX(${({ $translateX }) => $translateX}px)",
+            "hint": "function interpolation requires a framework prop wrapper"
+          }
+        ]
+      },
+      "canonicalCss": {
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -627,6 +829,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 2,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -656,66 +860,56 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 5,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 5,
-        "valid": true,
-        "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
-      },
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 255,
-        "targetBytes": 255,
-        "notLarger": true
-      },
-      "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 5,
-        "errors": []
-      }
-    },
-    {
-      "id": "mui-box-sx",
-      "repository": "https://github.com/mui/material-ui",
-      "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
-      "path": "docs/data/material/components/box/BoxSx.tsx",
-      "adapter": "mui",
-      "execution": "adapter-program",
-      "migration": {
-        "detected": true,
         "converted": 1,
-        "skipped": 2,
-        "residuals": 2,
+        "skipped": 3,
+        "residuals": 6,
         "validations": 1,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": false,
         "differences": [],
         "residualKinds": {
-          "runtime-context": 2
+          "emission-empty": 3,
+          "token-values": 3
         },
         "residualDetails": [
           {
-            "kind": "runtime-context",
-            "text": "import { ThemeProvider } from '@mui/material/styles';",
-            "hint": "MUI providers require target-aware theme and style-engine lowering"
+            "kind": "emission-empty",
+            "text": "<Box bg=\"bg.muted\" rounded=\"l2\" p=\"4\" mt=\"2\">",
+            "hint": "target adapter produced no representable output"
           },
           {
-            "kind": "runtime-context",
-            "text": "<ThemeProvider\n      theme={{\n        palette: {\n          primary: {\n            main: '#007FFF',\n            dark: '#0066CC',\n          },\n        },\n      }}\n    >",
-            "hint": "MUI providers require target-aware theme and style-engine lowering"
+            "kind": "token-values",
+            "text": "bg.muted",
+            "hint": "source token bg.muted has no verified target value"
+          },
+          {
+            "kind": "emission-empty",
+            "text": "<Text fontWeight=\"semibold\" color=\"purple.fg\">",
+            "hint": "target adapter produced no representable output"
+          },
+          {
+            "kind": "token-values",
+            "text": "purple.fg",
+            "hint": "source token purple.fg has no verified target value"
+          },
+          {
+            "kind": "emission-empty",
+            "text": "<Text textStyle=\"sm\" color=\"fg.muted/80\">",
+            "hint": "target adapter produced no representable output"
+          },
+          {
+            "kind": "token-values",
+            "text": "fg.muted/80",
+            "hint": "source token fg.muted/80 has no verified target value"
           }
         ]
       },
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 96,
-        "targetBytes": 96,
+        "sourceBytes": 48,
+        "targetBytes": 48,
         "notLarger": true
       },
       "browser": {
@@ -727,6 +921,51 @@
       }
     },
     {
+      "id": "mui-box-sx",
+      "repository": "https://github.com/mui/material-ui",
+      "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
+      "path": "docs/data/material/components/box/BoxSx.tsx",
+      "adapter": "mui",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": false,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
+        "differences": [],
+        "residualKinds": {
+          "configuration": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "configuration",
+            "text": "MUI project theme",
+            "hint": "the official @mui/system or @mui/material package is unavailable for a discovered theme module"
+          }
+        ]
+      },
+      "canonicalCss": {
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
+      }
+    },
+    {
       "id": "mantine-style-props",
       "repository": "https://github.com/mantinedev/mantine",
       "commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
@@ -735,27 +974,37 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 9,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 9,
-        "valid": true,
+        "converted": 8,
+        "skipped": 1,
+        "residuals": 1,
+        "validations": 8,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "component": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "component",
+            "text": "Anchor",
+            "hint": "Mantine host 'Anchor' has no verified intrinsic projection"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 296,
-        "targetBytes": 296,
+        "sourceBytes": 443,
+        "targetBytes": 443,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 9,
+        "samples": 8,
         "errors": []
       }
     },
@@ -767,29 +1016,41 @@
       "adapter": "tokenami",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 2,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 2,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "configuration": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "configuration",
+            "text": "Tokenami project configuration",
+            "hint": "the official @tokenami/css config utility is unavailable for a discovered config"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 378,
-        "targetBytes": 378,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 2,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -801,27 +1062,42 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 12,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 12,
-        "valid": true,
+        "converted": 11,
+        "skipped": 1,
+        "residuals": 2,
+        "validations": 11,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "unknown-utility": 2
+        },
+        "residualDetails": [
+          {
+            "kind": "unknown-utility",
+            "text": "bg-foreground",
+            "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "text-background",
+            "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 7816,
-        "targetBytes": 7816,
+        "sourceBytes": 6259,
+        "targetBytes": 6259,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 12,
+        "samples": 11,
         "errors": []
       }
     },
@@ -838,6 +1114,8 @@
         "skipped": 0,
         "residuals": 0,
         "validations": 11,
+        "residualSourcePreserved": true,
+        "sourcePreserved": false,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -846,8 +1124,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 3786,
-        "targetBytes": 3786,
+        "sourceBytes": 2775,
+        "targetBytes": 2775,
         "notLarger": true
       },
       "browser": {
@@ -866,29 +1144,41 @@
       "adapter": "tamagui",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 3,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 3,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "configuration": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "configuration",
+            "text": "Tamagui project configuration",
+            "hint": "the official @tamagui/static compiler is unavailable for a discovered config"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 334,
-        "targetBytes": 334,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 3,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -899,29 +1189,41 @@
       "adapter": "css-modules",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 2,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 2,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 2,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "capability": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "capability",
+            "text": "apps/docsite/src/app/not-found.module.css",
+            "hint": "renaming apps/docsite/src/app/not-found.module.css to apps/docsite/src/app/not-found.module.ts requires updating project imports"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 102,
-        "targetBytes": 102,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 2,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -932,29 +1234,47 @@
       "adapter": "sass",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 2,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 2,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 2,
+        "residuals": 2,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "parse": 1,
+          "capability": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "parse",
+            "text": "// scss-docs-end stacks",
+            "hint": "stylesheet statement is preserved outside the style program"
+          },
+          {
+            "kind": "capability",
+            "text": "scss/helpers/_stacks.scss",
+            "hint": "global stylesheet selectors cannot become an unreferenced class map"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 138,
-        "targetBytes": 138,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 2,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -965,29 +1285,47 @@
       "adapter": "less",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 1,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 1,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 1,
+        "residuals": 2,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "parse": 1,
+          "capability": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "parse",
+            "text": "@color: white",
+            "hint": "stylesheet statement is preserved outside the style program"
+          },
+          {
+            "kind": "capability",
+            "text": "packages/less/test/browser/less/postProcessor/postProcessor.less",
+            "hint": "global stylesheet selectors cannot become an unreferenced class map"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 14,
-        "targetBytes": 14,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 1,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     },
     {
@@ -998,32 +1336,45 @@
       "adapter": "authored-css",
       "execution": "adapter-program",
       "migration": {
-        "detected": true,
-        "converted": 5,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 5,
-        "valid": true,
+        "detected": false,
+        "converted": 0,
+        "skipped": 5,
+        "residuals": 1,
+        "validations": 0,
+        "residualSourcePreserved": true,
+        "sourcePreserved": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "capability": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "capability",
+            "text": "src/components/Layout/SkeletonLoading.css",
+            "hint": "global stylesheet selectors cannot become an unreferenced class map"
+          }
+        ]
       },
       "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 121,
-        "targetBytes": 121,
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
         "notLarger": true
       },
       "browser": {
-        "checked": true,
-        "equivalent": true,
-        "hydrationEquivalent": true,
-        "samples": 5,
-        "errors": []
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
       }
     }
   ],
-  "passed": 26,
-  "failed": 3
+  "passed": 15,
+  "failed": 16,
+  "regressions": 1
 }

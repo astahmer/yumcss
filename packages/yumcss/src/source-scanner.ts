@@ -333,7 +333,8 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 	if (cached?.source === document.source && cached.language === language) return cached.result;
 	const result = parseSync(document.file, parsedDocument.source, {
 		sourceType: "module",
-		lang: language === "javascript" || language === "jsx" ? "jsx" : language === "tsx" ? "tsx" : "ts",
+		lang:
+			language === "javascript" || language === "jsx" ? "jsx" : language === "tsx" ? "tsx" : "ts",
 	});
 	if (sourceParseCache.size >= SOURCE_PARSE_CACHE_CAP) {
 		const oldest = sourceParseCache.keys().next().value;

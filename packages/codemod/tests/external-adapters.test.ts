@@ -915,7 +915,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			import { defaultPreset } from "yumcss/preset/default";
 			import type * as React from "react";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			export default __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
+			export default __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red" }); const attrs: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
 		`);
 		expect(result.code).not.toContain('from "yumcss/cx"');
 		expect(result.code).not.toContain('from "styled-components"');
@@ -1076,7 +1076,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			import { defaultPreset } from "yumcss/preset/default";
 			import type { JSX } from "solid-js";
 			const runtimeCss = createRuntimeCss(defaultPreset);
-			const Div = (props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: "steelblue", border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const attrs = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Dynamic component={ResolvedComponent} {...forwarded} class={runtimeCss.props(style, attrs.class, props.class).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; };
+			const Div = (props: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }) => { const style = runtimeCss.vars({ color: "steelblue", border: (({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`)(props), fontWeight: (({ bold = false }) => (bold ? "bold" : 100))(props) }); const attrs: { readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = { ...rest, ...attrsProps }; return <Dynamic component={ResolvedComponent} {...forwarded} class={runtimeCss.props(style, attrs.class, props.class).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; };
 			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
 		`);
 	});
@@ -2224,7 +2224,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.hint.includes("SSR semantics"))).toBe(true);
+		expect(result.residuals.some((residual) => residual.hint?.includes("SSR semantics"))).toBe(true);
 		expect(result.code).toContain("const { css, getCssText } = createStitches();");
 		expect(result.code).toContain('css({ color: "red" })');
 		expect(result.code).toContain("const output = getCssText();");

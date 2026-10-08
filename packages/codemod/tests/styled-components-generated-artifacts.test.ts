@@ -507,3 +507,27 @@ test("dynamic styled-components values remain source-preserving typed residuals"
 		}
 	`);
 });
+
+test("YumCSS runtime wrappers typecheck and render without authored attrs", () => {
+	const result = migrate(
+		source.replace("export const Card =", "export default"),
+		CodemodAdapterId.YumCSS,
+	);
+	const componentSource = result.code.replace("export default ", "export const Card = ");
+	expect(result.converted).toBe(1);
+	expect(result.residuals).toEqual([]);
+	expect(result.code).toContain("const attrs:");
+	expect(typecheckGeneratedProject(componentSource, result.generatedFiles)).toBe("");
+	const html = renderGeneratedProject(componentSource, result.generatedFiles);
+	expect(html).toContain("caller-class");
+	expect(html).toContain("Save</a>");
+	expect(html).not.toContain("$tone");
+	expect(result.code).toMatchInlineSnapshot(`
+		"import { forwardRef as __yumcssForwardRef } from "react";
+		import { createRuntimeCss } from "yumcss/css/runtime";
+		import { defaultPreset } from "yumcss/preset/default";
+		import type * as React from "react";
+		const runtimeCss = createRuntimeCss(defaultPreset);
+		export default __yumcssForwardRef<React.ComponentRef<"div">, { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }>((props: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }, ref) => { const style = runtimeCss.vars({ color: "red", padding: "1rem" }); const attrs: { readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown } = {}; const ResolvedComponent = attrs.as ?? props.as ?? "div"; const { as: _as, ...rest } = props; const { as: _attrsAs, ...attrsProps } = attrs; const forwarded = Object.fromEntries([...Object.entries(rest), ...Object.entries(attrsProps)].filter(([key]) => !key.startsWith("$"))); return <ResolvedComponent {...forwarded} ref={ref} className={runtimeCss.props(style, attrs.className, props.className).className} style={{ ...props.style, ...style.style, ...attrs.style }} />; });"
+	`);
+});
