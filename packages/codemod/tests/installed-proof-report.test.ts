@@ -188,6 +188,31 @@ describe("installed adapter proof artifacts", () => {
 		expect(report.css.targetBytes).toBeGreaterThan(0);
 	});
 
+	test("records atomic runtime CSS as a diagnostic size comparison", () => {
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/stitches-installed-proof.json"),
+				"utf8",
+			),
+		);
+		expect(report).toMatchObject({
+			schema: "yumcss.installed-project-proof/1",
+			route: { from: "stitches", to: "yumcss" },
+			migration: {
+				converted: 1,
+				skipped: 0,
+				residuals: 0,
+				canonical: { checked: true, equal: true, differences: [] },
+			},
+			css: {
+				targetBytes: 0,
+				comparison: "diagnostic",
+				note: expect.stringContaining("not a meaningful non-growth budget"),
+			},
+		});
+		expect(report.css.sourceBytes).toBeGreaterThan(0);
+	});
+
 	test("keeps the installed styled-components project proof complete", () => {
 		const report = JSON.parse(
 			readFileSync(

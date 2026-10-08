@@ -7,6 +7,24 @@ import { extname, join, resolve } from "node:path";
 import { z } from "zod";
 
 const installedServerResultSchema = z.object({ markup: z.string(), css: z.string() });
+const installedCliReportSchema = z.object({
+	files: z
+		.array(
+			z.object({
+				converted: z.number(),
+				skipped: z.number(),
+				residuals: z.number(),
+				canonical: z.object({
+					checked: z.boolean(),
+					equal: z.boolean(),
+					sourceBytes: z.number(),
+					targetBytes: z.number(),
+					differences: z.array(z.string()),
+				}),
+			}),
+		)
+		.optional(),
+});
 
 export interface InstalledProofCanonicalEvidence {
 	readonly checked: boolean;
@@ -21,15 +39,6 @@ export interface InstalledProofMigrationSummary {
 	readonly skipped: number;
 	readonly residuals: number;
 	readonly canonical: InstalledProofCanonicalEvidence;
-}
-
-interface InstalledCliReport {
-	readonly files?: readonly {
-		readonly converted?: number;
-		readonly skipped?: number;
-		readonly residuals?: number;
-		readonly canonical?: InstalledProofCanonicalEvidence;
-	}[];
 }
 
 export interface InstalledProofBrowserEvidence {
@@ -337,34 +346,26 @@ export function parseInstalledProofMigration(
 	output: string,
 	label: string,
 ): InstalledProofMigrationSummary {
-	let report: InstalledCliReport;
+	let parsed: unknown;
 	try {
-		report = JSON.parse(output.trim()) as InstalledCliReport;
+		parsed = JSON.parse(output.trim());
 	} catch (error) {
 		throw new Error(`installed ${label} proof received invalid codemod JSON`, { cause: error });
 	}
-	const files = report.files ?? [];
-	if (
-		files.length === 0 ||
-		files.some(
-			(file) =>
-				typeof file.converted !== "number" ||
-				typeof file.skipped !== "number" ||
-				typeof file.residuals !== "number" ||
-				file.canonical === undefined,
-		)
-	) {
+	const report = installedCliReportSchema.safeParse(parsed);
+	const files = report.success ? (report.data.files ?? []) : [];
+	if (!report.success || files.length === 0) {
 		throw new Error(`installed ${label} proof received an incomplete codemod report`);
 	}
 	const canonicalFiles = files
-		.map((file) => file.canonical!)
+		.map((file) => file.canonical)
 		.filter((canonical) => canonical.checked);
 	if (canonicalFiles.length === 0)
 		throw new Error(`installed ${label} proof received no canonical migration evidence`);
 	return {
-		converted: files.reduce((total, file) => total + file.converted!, 0),
-		skipped: files.reduce((total, file) => total + file.skipped!, 0),
-		residuals: files.reduce((total, file) => total + file.residuals!, 0),
+		converted: files.reduce((total, file) => total + file.converted, 0),
+		skipped: files.reduce((total, file) => total + file.skipped, 0),
+		residuals: files.reduce((total, file) => total + file.residuals, 0),
 		canonical: {
 			checked: canonicalFiles.every((canonical) => canonical.checked),
 			equal: canonicalFiles.every((canonical) => canonical.equal),

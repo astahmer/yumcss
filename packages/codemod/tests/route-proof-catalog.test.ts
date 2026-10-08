@@ -150,6 +150,35 @@ describe("migration route proof catalog", () => {
 		}
 	});
 
+	test("accepts zero target CSS bytes only when the representation is diagnostic", () => {
+		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
+			(candidate) => candidate.id === MigrationRouteProofRouteId.StitchesToYumCSS,
+		);
+		if (route === undefined) throw new Error("missing Stitches route");
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/stitches-installed-proof.json"),
+				"utf8",
+			),
+		);
+		const withoutComparison = {
+			...report,
+			css: { ...report.css, comparison: undefined },
+		};
+
+		expect(
+			validateMigrationRouteProofEvidence([route], new Map([["stitches-installed-proof", report]])),
+		).toEqual([]);
+		expect(
+			validateMigrationRouteProofEvidence(
+				[route],
+				new Map([["stitches-installed-proof", withoutComparison]]),
+			),
+		).toContain(
+			"stitches-to-yumcss: evidence stitches-installed-proof did not prove CSS size output",
+		);
+	});
+
 	test("does not confuse browser parity with canonical CSS proof", () => {
 		const route = MIGRATION_ROUTE_PROOF_CATALOG.find(
 			(candidate) => candidate.id === MigrationRouteProofRouteId.TailwindToYumCSS,

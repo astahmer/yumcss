@@ -30,8 +30,8 @@
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 106,
-			"targetBytes": 106,
+			"sourceBytes": 140,
+			"targetBytes": 140,
 			"differences": []
 		},
 		"targetUsesYumCSS": true
@@ -72,6 +72,6 @@
 		"sourceBytes": 90,
 		"targetBytes": 0,
 		"targetNotLarger": true,
-		"comparison": "comparable"
+		"comparison": "diagnostic"
 	}
 }

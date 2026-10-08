@@ -175,7 +175,7 @@ function dimensionEvidence(
 			return typeof evidence.css?.sourceBytes === "number" &&
 				evidence.css.sourceBytes > 0 &&
 				typeof targetBytes === "number" &&
-				(targetBytes > 0 || (targetBytes === 0 && evidence.css.comparison === "comparable")) &&
+				(targetBytes > 0 || (targetBytes === 0 && evidence.css.comparison === "diagnostic")) &&
 				(evidence.css.targetNotLarger === undefined ||
 					evidence.css.targetNotLarger === true ||
 					evidence.css.comparison === "diagnostic")
@@ -702,7 +702,7 @@ export function validateMigrationRouteProofEvidence(
 				evidence.css.sourceBytes <= 0 ||
 				typeof evidence.css.targetBytes !== "number" ||
 				(evidence.css.targetBytes <= 0 &&
-					!(evidence.css.targetBytes === 0 && evidence.css.comparison === "comparable")) ||
+					!(evidence.css.targetBytes === 0 && evidence.css.comparison === "diagnostic")) ||
 				(evidence.css.targetNotLarger !== undefined &&
 					evidence.css.targetNotLarger !== true &&
 					evidence.css.comparison !== "diagnostic")

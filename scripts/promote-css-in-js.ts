@@ -490,6 +490,12 @@ const inlineStyleBytes = (markup: string): number =>
 		[...markup.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gu)].map((match) => match[1]).join(""),
 	);
 
+const importsPackage = (source: string, packageName: string): boolean =>
+	[...source.matchAll(/^\s*import\b[\s\S]*?["']([^"']+)["']/gmu)].some((match) => {
+		const specifier = match[1];
+		return specifier === packageName || specifier?.startsWith(`${packageName}/`) === true;
+	});
+
 const proofIsComplete = (report: CssInJsInstalledProof, scenario: Scenario): boolean =>
 	report.migration.converted > 0 &&
 	report.migration.skipped === 0 &&
@@ -582,7 +588,7 @@ const runScenario = async (scenario: Scenario): Promise<CssInJsInstalledProof> =
 				},
 				migration: {
 					...migration,
-					targetUsesYumCSS: migratedApp.includes("yumcss"),
+					targetUsesYumCSS: importsPackage(migratedApp, "yumcss"),
 				},
 				checks: {
 					sourceTypecheck: true,
@@ -601,7 +607,7 @@ const runScenario = async (scenario: Scenario): Promise<CssInJsInstalledProof> =
 					sourceBytes,
 					targetBytes,
 					targetNotLarger: targetBytes <= sourceBytes,
-					comparison: targetBytes <= sourceBytes ? "comparable" : "diagnostic",
+					comparison: targetBytes === 0 || targetBytes > sourceBytes ? "diagnostic" : "comparable",
 				},
 			};
 			return report;

@@ -92,6 +92,7 @@ interface StitchesInstalledProof {
 	readonly css: {
 		readonly sourceBytes: number;
 		readonly targetBytes: number;
+		readonly comparison: "diagnostic";
 		readonly note: string;
 	};
 }
@@ -236,7 +237,9 @@ const proofIsComplete = (report: StitchesInstalledProof): boolean =>
 	report.ssr.markupEquivalent &&
 	report.browser.equivalent &&
 	report.browser.hydrationErrors.length === 0 &&
-	report.css.sourceBytes > 0;
+	report.css.sourceBytes > 0 &&
+	report.css.targetBytes >= 0 &&
+	report.css.comparison === "diagnostic";
 
 export async function runStitchesInstalledProof(): Promise<StitchesInstalledProof> {
 	const pinnedSource = referenceSource();
@@ -343,6 +346,7 @@ export async function runStitchesInstalledProof(): Promise<StitchesInstalledProo
 				css: {
 					sourceBytes: Buffer.byteLength(sourceSsr.css),
 					targetBytes: Buffer.byteLength(targetSsr.css),
+					comparison: "diagnostic",
 					note: "The tiny fixture compares Stitches' fused SSR sheet with YumCSS's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget.",
 				},
 			};

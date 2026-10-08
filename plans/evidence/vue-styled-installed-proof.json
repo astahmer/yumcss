@@ -28,8 +28,8 @@
 		"canonical": {
 			"checked": true,
 			"equal": true,
-			"sourceBytes": 1634,
-			"targetBytes": 1634,
+			"sourceBytes": 1702,
+			"targetBytes": 1702,
 			"differences": []
 		},
 		"targetUsesYumCSS": true
@@ -66,13 +66,13 @@
 		},
 		"hydrationErrors": [],
 		"runtimeStyleBytes": {
-			"source": 2875,
+			"source": 2882,
 			"target": 695
 		}
 	},
 	"css": {
-		"sourceBytes": 2875,
-		"targetBytes": 803,
+		"sourceBytes": 2882,
+		"targetBytes": 892,
 		"targetNotLarger": true,
 		"comparison": "comparable"
 	}

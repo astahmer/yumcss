@@ -77,8 +77,8 @@ while retaining gaps elsewhere.
 
 The checked-in real-repository report contains 35 reports, with 25 passed proof dimensions,
 246 pending dimensions, and 10 pipeline-unpaired references. The adapter
-reference proof has 29 small probes, 139 converted sites, 10 residuals, and
-26 fully valid migrations. The package surface exposes 107 exported paths across five packages.
+reference proof has 31 small probes, 105 converted sites, 42 residuals, and
+15 fully valid migrations. The package surface exposes 107 exported paths across five packages.
 
 These counts describe the recorded inputs and proof dimensions; they do not
 claim that every source application or adapter route is fully supported.
