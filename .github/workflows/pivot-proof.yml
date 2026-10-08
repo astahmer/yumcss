@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build publishable packages
+        run: pnpm --filter yumcss --filter @yumcss/codemod --filter @yumcss/analyze --filter @yumcss/devtools --filter @yumcss/lint-plugin run build
+
       - name: Run pinned reference corpus and offline gate
         env:
           YUMCSS_PROOF_OUTPUT: ${{ runner.temp }}/yumcss-pivot-proof/real-repository-migrations-v2.json
