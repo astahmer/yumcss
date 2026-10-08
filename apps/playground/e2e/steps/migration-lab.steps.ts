@@ -171,6 +171,76 @@ Then("the code editor contains {string}", async ({ page }, text: string) => {
 	await expect(page.locator(".monaco-editor").first()).toContainText(text);
 });
 
+Then("the preview button classes match the class string inspector", async ({ page }) => {
+	const preview = page
+		.frameLocator('iframe[title="Live preview document"]')
+		.locator('[data-preview-kind="button"] > button');
+	const output = page.locator('[data-pane="Class string"] code');
+	await expect(output).toBeVisible();
+	await expect(preview).toHaveAttribute("class", (await output.textContent())!.trim());
+});
+
+Then("the preview button has no inline declarations", async ({ page }) => {
+	const button = page
+		.frameLocator('iframe[title="Live preview document"]')
+		.locator('[data-preview-kind="button"] > button');
+	await expect(button).not.toHaveAttribute("style", /.+/u);
+});
+
+const nativeFixture = (style: string) => `import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
+const css = createCss(examplePreset);
+export default <button className={css.class(${style})}>Continue</button>;`;
+
+Given(
+	"I open the native hover fixture with adapter {string}",
+	async ({ page }, adapter: string) => {
+		const source = nativeFixture(
+			'{ backgroundColor: "$blue-500", padding: 16, _hover: { backgroundColor: "$red-500" } }',
+		);
+		await page.goto(`/basics?api=css&adapter=${adapter}#${Buffer.from(source).toString("base64")}`);
+	},
+);
+
+Given("I open the unsupported StyleX selector fixture", async ({ page }) => {
+	const source = nativeFixture('{ _dark: { color: "$white" } }');
+	await page.goto(`/basics?api=css&adapter=stylex#${Buffer.from(source).toString("base64")}`);
+});
+
+Given("I open the vars fixture with adapter {string}", async ({ page }, adapter: string) => {
+	const source = `import { createCss } from "yumcss/css";
+import { examplePreset } from "@yumcss/example-preset";
+const css = createCss(examplePreset);
+const vars = css.vars({ backgroundColor: "$blue-500", padding: 16 });
+export default <button className={vars.class} style={vars.style}>Continue</button>;`;
+	await page.goto(`/basics?api=css&adapter=${adapter}#${Buffer.from(source).toString("base64")}`);
+});
+
+When("I hover the preview button", async ({ page }) => {
+	await page
+		.frameLocator('iframe[title="Live preview document"]')
+		.locator('[data-preview-kind="button"] > button')
+		.hover();
+});
+
+Then("the live preview document is absent", async ({ page }) => {
+	await expect(page.locator('iframe[title="Live preview document"]')).toHaveCount(0);
+});
+
+Then("disabling the native preview stylesheet removes the button background", async ({ page }) => {
+	const button = page
+		.frameLocator('iframe[title="Live preview document"]')
+		.locator('[data-preview-kind="button"] > button');
+	await button.evaluate((element) => {
+		const sheet = element.ownerDocument.querySelector<HTMLStyleElement>(
+			"style[data-playground-preview]",
+		)?.sheet;
+		if (sheet === null || sheet === undefined) throw new Error("Missing native stylesheet");
+		sheet.disabled = true;
+	});
+	await expect(button).not.toHaveCSS("background-color", "rgb(49, 130, 206)");
+});
+
 Then("the page contains the text {string}", async ({ page }, text: string) => {
 	await expect(page.getByText(text, { exact: true })).toBeVisible();
 });

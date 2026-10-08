@@ -38,3 +38,73 @@ Feature: Playground editor typings
     Given I open the playground route "/basics?api=css&adapter=tailwind"
     Then the page heading is "Basics"
     And the "Class string" inspector panel contains "bg-blue-500"
+
+  Scenario: switching adapters keeps preview classes aligned with the inspector
+    Given I open the playground route "/basics?api=css"
+    When I choose "Panda" from "Select class name adapter"
+    Then the "Class string" inspector panel contains "bg-c_$blue-500"
+    And the preview button classes match the class string inspector
+    And the variant preview button uses background "rgb(49, 130, 206)" and padding "16px"
+    When I choose "danger" from preview control "tone"
+    Then the "Class string" inspector panel contains "bg-c_$red-500"
+    And the preview button classes match the class string inspector
+    And the variant preview button uses background "rgb(229, 62, 62)" and padding "16px"
+
+    When I choose "Tailwind CSS" from "Select class name adapter"
+    Then the "Class string" inspector panel contains "[background-color:#E53E3E]"
+    And the preview button classes match the class string inspector
+    And the variant preview button uses background "rgb(229, 62, 62)" and padding "16px"
+
+  Scenario Outline: selected adapter classes render in each own API preview
+    Given I open the playground route "/basics?api=<api>&adapter=<adapter>"
+    Then the preview button classes match the class string inspector
+    And the variant preview button uses background "rgb(49, 130, 206)" and padding "16px"
+    And the preview button has no inline declarations
+    And disabling the native preview stylesheet removes the button background
+
+    Examples:
+      | api | adapter     |
+      | css | panda       |
+      | dss | panda       |
+      | css | unocss      |
+      | dss | unocss      |
+      | css | tailwind    |
+      | dss | tailwind    |
+      | css | named-atoms |
+      | css | atomic      |
+      | dss | stylex      |
+
+  Scenario Outline: the native compiler owns conditional styling
+    Given I open the native hover fixture with adapter "<adapter>"
+    Then the preview button classes match the class string inspector
+    And the variant preview button uses background "rgb(49, 130, 206)" and padding "16px"
+    And the preview button has no inline declarations
+    When I hover the preview button
+    Then the variant preview button uses background "rgb(229, 62, 62)" and padding "16px"
+
+    Examples:
+      | adapter     |
+      | atomic      |
+      | named-atoms |
+      | panda       |
+      | unocss      |
+      | tailwind    |
+      | stylex      |
+
+  Scenario: unsupported native semantics display an error
+    Given I open the unsupported StyleX selector fixture
+    Then the page contains the text "StyleX does not support selector '.dark &'"
+    And the live preview document is absent
+
+  Scenario Outline: native engines preserve vars runtime companion rules
+    Given I open the vars fixture with adapter "<adapter>"
+    Then the variant preview button uses background "rgb(49, 130, 206)" and padding "16px"
+
+    Examples:
+      | adapter     |
+      | atomic      |
+      | named-atoms |
+      | panda       |
+      | unocss      |
+      | tailwind    |
+      | stylex      |
