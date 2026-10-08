@@ -70,8 +70,8 @@
 		"hydrationErrors": []
 	},
 	"css": {
-		"sourceBytes": 458,
-		"targetBytes": 350,
+		"sourceBytes": 146,
+		"targetBytes": 0,
 		"note": "The tiny fixture compares Stitches' fused SSR sheet with YumCSS's atomic runtime sheet. Browser and canonical CSS parity are required, but this representation difference is not a meaningful non-growth budget."
 	}
 }

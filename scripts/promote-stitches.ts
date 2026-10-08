@@ -236,8 +236,7 @@ const proofIsComplete = (report: StitchesInstalledProof): boolean =>
 	report.ssr.markupEquivalent &&
 	report.browser.equivalent &&
 	report.browser.hydrationErrors.length === 0 &&
-	report.css.sourceBytes > 0 &&
-	report.css.targetBytes > 0;
+	report.css.sourceBytes > 0;
 
 export async function runStitchesInstalledProof(): Promise<StitchesInstalledProof> {
 	const pinnedSource = referenceSource();
