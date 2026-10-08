@@ -1,0 +1,113 @@
+{
+  "createCssRuntime() core (internal)": {
+    "min": 6532
+  },
+  "createCss(minimal preset), fallback": {
+    "min": 16615
+  },
+  "createCss(csstypePreset)": {
+    "min": 21152
+  },
+  "createCss(tailwindPreset)": {
+    "min": 43874
+  },
+  "createCss(chakraPreset)": {
+    "min": 54733
+  },
+  "createCss(shadcnPreset)": {
+    "min": 33184
+  },
+  "createCss(pandaPreset)": {
+    "min": 47991
+  },
+  "createCss(defaultPreset)": {
+    "min": 27665
+  },
+  "createCss(fixturePreset)": {
+    "min": 30976
+  },
+  "createDesignCss(fixturePreset), fallback": {
+    "min": 39090
+  },
+  "createCss(fixturePreset) + tw()": {
+    "min": 35220
+  },
+  "createCss(fixturePreset) + cx()": {
+    "min": 38374
+  },
+  "createCss(fixturePreset) + tw() + cx()": {
+    "min": 42608
+  },
+  "createUnsafeCss(), fallback": {
+    "min": 12973
+  },
+  "createRuntimeCss(preset), live sheet": {
+    "min": 40390
+  },
+  "createUnsafeCss(), static output after extraction": {
+    "min": 81
+  },
+  "createCss(), static output after extraction": {
+    "min": 37
+  },
+  "createUnsafeCss(), dynamic fallback": {
+    "min": 12961
+  },
+  "createUnsafeCss(), compiler-pruned call": {
+    "min": 6535
+  },
+  "createUnsafeCss(), compiler-pruned class": {
+    "min": 6596
+  },
+  "createUnsafeCss(), compiler-pruned vars": {
+    "min": 9160
+  },
+  "createCss(), compiler-pruned class": {
+    "min": 10243
+  },
+  "createGeneratedCss(), compiler-pruned keyframes": {
+    "min": 10813
+  },
+  "createDesignCss(), compiler-pruned class": {
+    "min": 18373
+  },
+  "createUnsafeCss(), generated call": {
+    "min": 6472
+  },
+  "createUnsafeCss(), generated class": {
+    "min": 6527
+  },
+  "createUnsafeCss(), generated vars": {
+    "min": 9092
+  },
+  "createUnsafeCss(), generated class+vars": {
+    "min": 9148
+  },
+  "createUnsafeCss(), generated all": {
+    "min": 12244
+  },
+  "tw": {
+    "min": 4374
+  },
+  "cx, plain": {
+    "min": 7482
+  },
+  "cx": {
+    "min": 20346
+  },
+  "all (createUnsafeCss+tw+cx)": {
+    "min": 24597
+  },
+  "stylesheet generator (build-time only)": {
+    "min": 30281
+  },
+  "unsafe css subpath only": {
+    "min": 12981
+  },
+  "root barrel, tw only": {
+    "min": 4374
+  },
+  "root barrel, cx + unsafe css": {
+    "min": 20346
+  }
+}

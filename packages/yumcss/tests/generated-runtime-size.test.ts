@@ -11,6 +11,7 @@ const ROOT = resolve(import.meta.dirname, "..");
 const GENERATED_DIRECTORY = resolve(ROOT, "../../apps/playground/src");
 const EXAMPLE_DIRECTORY = resolve(ROOT, "../../examples/example/src");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots", "generated-runtime-size.json.snap");
+const MIN_SNAPSHOT = resolve(ROOT, "tests/snapshots", "generated-runtime-size-min.json.snap");
 
 interface BundleMeasurement {
 	min: number;
@@ -128,42 +129,47 @@ test("generated metadata stays out of static runtime bundles", async () => {
 	expect(hasInput(generatedStatic, "tw.runtime.ts")).toBe(false);
 	expect(hasInput(generatedStatic, "tw.build.ts")).toBe(false);
 	expect(generatedStatic.gz).toBeLessThan(200);
+	const gzipBudgets = [
+		["generated tw (dynamic)", generatedTw, 2_161],
+		["generated tw runtime metadata (opt-in)", generatedRuntime, 19_562],
+		["generated conflict metadata (opt-in)", generatedConflicts, 7_362],
+		["generated conflict cx (dynamic, no css)", generatedConflictOnly, 10_503],
+		["explicit conflict cx (dynamic)", generatedCx, 20_372],
+		["example dss+cx (no tw metadata)", plainCx, 13_078],
+		["generated tw+cx (static)", generatedStatic, 71],
+	] as const;
+	for (const [name, measurement, baseline] of gzipBudgets) {
+		const gzipBudget = baseline + Math.max(8, Math.ceil(baseline * 0.02));
+		expect(
+			measurement.gz,
+			`${name}: gz ${measurement.gz} exceeds ${gzipBudget} (baseline ${baseline} plus 2% host-compressor tolerance)`,
+		).toBeLessThanOrEqual(gzipBudget);
+	}
 
-	await expect(
-		JSON.stringify(
-			{
-				"generated tw (dynamic)": {
-					min: generatedTw.min,
-					gz: generatedTw.gz,
-				},
-				"generated tw runtime metadata (opt-in)": {
-					min: generatedRuntime.min,
-					gz: generatedRuntime.gz,
-				},
-				"generated conflict metadata (opt-in)": {
-					min: generatedConflicts.min,
-					gz: generatedConflicts.gz,
-				},
-				"generated conflict cx (dynamic, no css)": {
-					min: generatedConflictOnly.min,
-					gz: generatedConflictOnly.gz,
-				},
-				"explicit conflict cx (dynamic)": {
-					min: generatedCx.min,
-					gz: generatedCx.gz,
-				},
-				"example dss+cx (no tw metadata)": {
-					min: plainCx.min,
-					gz: plainCx.gz,
-				},
-				"generated tw+cx (static)": {
-					min: generatedStatic.min,
-					gz: generatedStatic.gz,
-				},
-			},
-			null,
-			2,
-		),
-	).toMatchFileSnapshot(SNAPSHOT);
-	if (updatingSnapshots()) writePerformanceSummary();
+	const sizes = {
+		"generated tw (dynamic)": { min: generatedTw.min, gz: generatedTw.gz },
+		"generated tw runtime metadata (opt-in)": {
+			min: generatedRuntime.min,
+			gz: generatedRuntime.gz,
+		},
+		"generated conflict metadata (opt-in)": {
+			min: generatedConflicts.min,
+			gz: generatedConflicts.gz,
+		},
+		"generated conflict cx (dynamic, no css)": {
+			min: generatedConflictOnly.min,
+			gz: generatedConflictOnly.gz,
+		},
+		"explicit conflict cx (dynamic)": { min: generatedCx.min, gz: generatedCx.gz },
+		"example dss+cx (no tw metadata)": { min: plainCx.min, gz: plainCx.gz },
+		"generated tw+cx (static)": { min: generatedStatic.min, gz: generatedStatic.gz },
+	};
+	const minifiedSizes = Object.fromEntries(
+		Object.entries(sizes).map(([name, size]) => [name, { min: size.min }]),
+	);
+	await expect(JSON.stringify(minifiedSizes, null, 2)).toMatchFileSnapshot(MIN_SNAPSHOT);
+	if (updatingSnapshots()) {
+		await expect(JSON.stringify(sizes, null, 2)).toMatchFileSnapshot(SNAPSHOT);
+		writePerformanceSummary();
+	}
 });

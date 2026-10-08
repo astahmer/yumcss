@@ -1,0 +1,23 @@
+{
+  "generated tw (dynamic)": {
+    "min": 6022
+  },
+  "generated tw runtime metadata (opt-in)": {
+    "min": 177821
+  },
+  "generated conflict metadata (opt-in)": {
+    "min": 23160
+  },
+  "generated conflict cx (dynamic, no css)": {
+    "min": 30583
+  },
+  "explicit conflict cx (dynamic)": {
+    "min": 58923
+  },
+  "example dss+cx (no tw metadata)": {
+    "min": 35844
+  },
+  "generated tw+cx (static)": {
+    "min": 51
+  }
+}
