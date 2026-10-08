@@ -244,6 +244,10 @@ const vueStyledScript = vueStyledSource
 	.slice(vueStyledSource.indexOf('<script setup lang="ts">') + '<script setup lang="ts">'.length)
 	.split("// 标签页配置", 1)[0]
 	.replace(
+		"const ContentArea = styled.div.props({\n  color: 'red'\n})",
+		"const ContentArea = styled.div.props({\n  color: String\n})",
+	)
+	.replace(
 		"import styled, { css, ThemeProvider } from '@vue-styled-components/core'",
 		"import styled, { ThemeProvider } from '@vue-styled-components/core'",
 	)

@@ -61,6 +61,7 @@ import {
 	componentAttrsExpressionForSubject,
 	componentPropNamesForSubject,
 	componentPropsExpressionForSubject,
+	vueComponentPropsExpressionForSubject,
 	componentExpressionForSubject,
 	getHostComponentRewriter,
 	hasComponentAttributeUse,
@@ -156,6 +157,12 @@ const YUMCSS_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	}) => {
 		const subject = program.source?.subject;
 		const componentFramework = framework ?? sourceFramework ?? program.source?.framework;
+		if (
+			subject !== undefined &&
+			componentFramework === BuiltinHostFramework.Vue &&
+			StyleProgramAnalysis.hasDynamic(program)
+		)
+			return StyleHostRepresentationKind.Component;
 		if (
 			subject !== undefined &&
 			(componentAttrsExpressionForSubject(subject) !== undefined ||
@@ -1378,6 +1385,16 @@ function mapThemeRuntimeValues(
 	};
 }
 
+const uniqueGeneratedTypeBinding = (source: string | undefined, base: string): string => {
+	let candidate = base;
+	let suffix = 0;
+	while (source?.includes(candidate) === true) {
+		suffix++;
+		candidate = `${base}${suffix}`;
+	}
+	return candidate;
+};
+
 function runtimeComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
@@ -1397,13 +1414,22 @@ function runtimeComponent(
 	const componentPropNames =
 		subject === undefined ? undefined : componentPropNamesForSubject(subject);
 	const componentProps =
+		subject === undefined ? undefined : vueComponentPropsExpressionForSubject(subject);
+	const sourceProps =
 		subject === undefined ? undefined : componentPropsExpressionForSubject(subject);
+	const reactTypeBinding =
+		framework === BuiltinHostFramework.React &&
+		context?.document?.document.source?.includes("React") === true
+			? uniqueGeneratedTypeBinding(context.document.document.source, "__yumcssReact")
+			: "React";
 	if ((componentExpression === undefined && tag === undefined) || framework === undefined)
 		return undefined;
 	const needsThemeContext = hasThemeContextValues(program, context?.document?.document.source);
 	const object = programObject(mapRuntimeProps(program));
 	if (framework === BuiltinHostFramework.Vue) {
 		const propsOption = componentProps === undefined ? "" : `props: ${componentProps}, `;
+		const forwardedProps =
+			componentProps !== undefined && sourceProps === undefined ? "..._props, " : "";
 		const themeSetup = needsThemeContext ? "const theme = useTheme(); " : "";
 		const propsTheme = needsThemeContext ? ", theme" : "";
 		const authoredAttrs =
@@ -1419,7 +1445,7 @@ function runtimeComponent(
 		const authoredStyle = authoredAttrs === undefined ? "" : ", styledAttrs.value.style";
 		const vueObject = programObject(mapRuntimeProps(program, "props.value"));
 		return {
-			text: `defineComponent({ ${propsOption}inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { ${themeSetup}const props = computed(() => ({ ..._props, ...rawAttrs${propsTheme} })); ${authoredAttrsSetup}const style = computed(() => runtimeCss.vars(${vueObject})); return () => h(${JSON.stringify(tag)}, { ...rawAttrs, ...${authoredAttrsValue}, class: [style.value.class, props.value.class${authoredClass}], style: [style.value.style, props.value.style${authoredStyle}] }, slots.default?.()); } })`,
+			text: `defineComponent({ ${propsOption}inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { ${themeSetup}const attrs = rawAttrs; const props = computed(() => ({ ..._props, ...attrs${propsTheme} })); ${authoredAttrsSetup}const style = computed(() => runtimeCss.vars(${vueObject})); return () => h(${JSON.stringify(tag)}, { ${forwardedProps}...attrs, ...${authoredAttrsValue}, class: [style.value.class, attrs.class${authoredClass}], style: [style.value.style, attrs.style${authoredStyle}] }, slots.default?.()); } })`,
 			componentExpression: true,
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
@@ -1438,7 +1464,7 @@ function runtimeComponent(
 		return undefined;
 	const propsType =
 		framework === BuiltinHostFramework.React
-			? `{ readonly as?: React.ElementType; readonly className?: string; readonly style?: React.CSSProperties; readonly children?: React.ReactNode; readonly [key: string]: unknown }`
+			? `{ readonly as?: ${reactTypeBinding}.ElementType; readonly className?: string; readonly style?: ${reactTypeBinding}.CSSProperties; readonly children?: ${reactTypeBinding}.ReactNode; readonly [key: string]: unknown }`
 			: framework === BuiltinHostFramework.Preact
 				? `{ readonly as?: JSX.ElementType; readonly className?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`
 				: `{ readonly as?: string | ((props: Record<string, unknown>) => JSX.Element); readonly class?: string; readonly style?: JSX.CSSProperties; readonly children?: JSX.Element; readonly [key: string]: unknown }`;
@@ -1448,7 +1474,7 @@ function runtimeComponent(
 	const forwardRefBinding = "__yumcssForwardRef";
 	const forwardRefType =
 		framework === BuiltinHostFramework.React
-			? `<${tag === undefined ? "unknown" : `React.ComponentRef<${JSON.stringify(tag)}>`}, ${propsType}>`
+			? `<${tag === undefined ? "unknown" : `${reactTypeBinding}.ComponentRef<${JSON.stringify(tag)}>`}, ${propsType}>`
 			: `<HTMLElement, ${propsType}>`;
 	const componentStart = forwardsRef
 		? `${forwardRefBinding}${forwardRefType}((${propsParameter}, ref) => {`
@@ -1458,7 +1484,7 @@ function runtimeComponent(
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const hostTypeImports =
 		framework === BuiltinHostFramework.React
-			? ['import type * as React from "react";']
+			? [`import type * as ${reactTypeBinding} from "react";`]
 			: framework === BuiltinHostFramework.Preact
 				? ['import type { JSX } from "preact";']
 				: framework === BuiltinHostFramework.Solid

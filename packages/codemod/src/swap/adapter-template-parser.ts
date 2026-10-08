@@ -31,8 +31,7 @@ export function templateValueExpression(rawValue: string): string {
  * contract lowers `function-values`. Strip a TypeScript return annotation so
  * the arrow is valid at runtime; the value expression is the annotated body.
  */
-function functionValueExpression(rawValue: string): string | undefined {
-	const expression = templateValueExpression(rawValue);
+const normalizeFunctionExpression = (expression: string): string | undefined => {
 	const annotated =
 		// The annotation must be arrow-free (`[^=>]*`); a function-typed return
 		// annotation needs a real type parser, so those stay residuals.
@@ -56,6 +55,36 @@ function functionValueExpression(rawValue: string): string | undefined {
 	const body = singleParameter[2];
 	if (parameter === undefined || body === undefined) return undefined;
 	return `${parameter} => ${body.trim()}`;
+};
+
+export function templateFunctionValueExpression(rawValue: string): string | undefined {
+	const directExpression = normalizeFunctionExpression(templateValueExpression(rawValue));
+	if (directExpression !== undefined) return directExpression;
+	const parts: string[] = [];
+	let cursor = 0;
+	let hasFunctionInterpolation = false;
+	while (cursor < rawValue.length) {
+		const interpolationStart = rawValue.indexOf("${", cursor);
+		if (interpolationStart < 0) {
+			parts.push(rawValue.slice(cursor).replaceAll("\\", "\\\\").replaceAll("`", "\\`"));
+			break;
+		}
+		const interpolation = SourcePass.matchBlock(rawValue, interpolationStart + 1);
+		if (interpolation === null) return undefined;
+		parts.push(
+			rawValue.slice(cursor, interpolationStart).replaceAll("\\", "\\\\").replaceAll("`", "\\`"),
+		);
+		const functionExpression = normalizeFunctionExpression(interpolation.body.trim());
+		if (functionExpression !== undefined) {
+			hasFunctionInterpolation = true;
+			parts.push(`\${(${functionExpression})($yumcssProps)}`);
+		} else {
+			if (interpolation.body.includes("=>")) return undefined;
+			parts.push(`\${${interpolation.body}}`);
+		}
+		cursor = interpolation.end;
+	}
+	return hasFunctionInterpolation ? `($yumcssProps) => \`${parts.join("")}\`` : undefined;
 }
 
 /** Find a template's closing backtick without mistaking nested expression templates for it. */
@@ -116,7 +145,7 @@ export function parseAdapterTemplate(
 			if (hasInterpolation) {
 				const functionValue =
 					options.functionValues === true && rawValue.includes("=>")
-						? functionValueExpression(rawValue)
+						? templateFunctionValueExpression(rawValue)
 						: undefined;
 				if (functionValue !== undefined) {
 					value = {

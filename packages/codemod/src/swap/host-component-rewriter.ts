@@ -240,7 +240,9 @@ const styledCallParts = (
 
 export function intrinsicTagForSubject(subject: string): string | undefined {
 	const suffix = "(?:\\.props\\([\\s\\S]*\\)|\\.attrs\\([\\s\\S]*\\))?";
-	const member = new RegExp(`^styled\\.([A-Za-z_$][\\w$]*)${suffix}$`, "u").exec(subject)?.[1];
+	const member = new RegExp(`^styled\\.([A-Za-z_$][\\w$]*)(?:<[^>]*>)?${suffix}$`, "u").exec(
+		subject,
+	)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
 	const call = styledCallParts(subject);
 	if (call === undefined || call.arguments.length < 1 || call.arguments.length > 2)
@@ -371,12 +373,56 @@ export function componentPropsExpressionForSubject(subject: string): string | un
 	return /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/u.test(expression) ? expression : undefined;
 }
 
+/** Return Vue runtime prop options for the source type carried by a styled subject. */
+export function vueComponentPropsExpressionForSubject(subject: string): string | undefined {
+	const propsExpression = componentPropsExpressionForSubject(subject);
+	if (propsExpression !== undefined) return propsExpression;
+	const genericType = genericPropsTypeExpressionForSubject(subject);
+	return genericType === undefined ? undefined : vuePropsExpressionFromType(genericType);
+}
+
+function vuePropsExpressionFromType(typeSource: string): string | undefined {
+	const trimmed = typeSource.trim();
+	const block = SourcePass.matchBlock(trimmed, 0);
+	if (block === null || block.end !== trimmed.length) return undefined;
+	const members = block.body
+		.split(/[;,]/u)
+		.map((member) => member.trim())
+		.filter((member) => member !== "");
+	const props: string[] = [];
+	for (const member of members) {
+		const match =
+			/^(?:readonly\s+)?([A-Za-z_$][\w$]*)(\?)?\s*:\s*([A-Za-z_$][\w$]*(?:\s*\|\s*[A-Za-z_$][\w$]*)*)$/u.exec(
+				member,
+			);
+		if (match === null) return undefined;
+		const name = match[1];
+		const optional = match[2] === "?";
+		const types = match[3]
+			?.split("|")
+			.map((type) => type.trim())
+			.toSorted();
+		if (name === undefined || types === undefined || types.length === 0) return undefined;
+		const constructors = new Map([
+			["boolean", "Boolean"],
+			["number", "Number"],
+			["string", "String"],
+		]);
+		const runtimeTypes = types.map((type) => constructors.get(type));
+		if (runtimeTypes.some((type) => type === undefined)) return undefined;
+		const type = runtimeTypes.length === 1 ? runtimeTypes[0] : `[${runtimeTypes.join(", ")}]`;
+		props.push(`${JSON.stringify(name)}: { type: ${type}, required: ${String(!optional)} }`);
+	}
+	return `{ ${props.join(", ")} }`;
+}
+
 /**
  * Return top-level keys consumed by a literal `.props({...})` payload. Dynamic
  * payloads stay unfiltered because their key set cannot be proven here.
  */
 export function componentPropNamesForSubject(subject: string): readonly string[] | undefined {
-	const expression = componentPropsExpressionForSubject(subject);
+	const expression =
+		componentPropsExpressionForSubject(subject) ?? genericPropsTypeExpressionForSubject(subject);
 	if (expression === undefined || !expression.startsWith("{")) return undefined;
 	const block = SourcePass.matchBlock(expression, 0);
 	if (block === null || expression.slice(block.end).trim() !== "") return undefined;
@@ -430,16 +476,20 @@ export function componentPropNamesForSubject(subject: string): readonly string[]
 	return names;
 }
 
+function genericPropsTypeExpressionForSubject(subject: string): string | undefined {
+	return /^styled\.[A-Za-z_$][\w$]*<([\s\S]+)>(?:\.attrs\([\s\S]*\))?$/u.exec(subject)?.[1];
+}
+
 /** Preserve a styled subject and its source-owned `.attrs(...)` chain. */
 export function styledSubjectFromFunctionMatch(match: string): string | undefined {
 	const subject =
-		/^(styled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?)(\s*\.attrs\s*\([\s\S]*?\))?(?=\s*(?:\(|`))/u.exec(
+		/^(styled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?)(\s*\.(?:attrs|props)\s*\([\s\S]*?\))?(?=\s*(?:\(|`))/u.exec(
 			match.trim(),
 		);
 	if (subject?.[1] === undefined) return undefined;
 	const base = subject[1].replace(/\s+/gu, " ").replace(/\.\s+/gu, ".");
-	const attrs = subject[2]?.replace(/^\s*\.\s*attrs\s*/u, ".attrs");
-	return `${base}${attrs ?? ""}`;
+	const suffix = subject[2]?.replace(/^\s*\.\s*(attrs|props)\s*/u, ".$1");
+	return `${base}${suffix ?? ""}`;
 }
 
 /**

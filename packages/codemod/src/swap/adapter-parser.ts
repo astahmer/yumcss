@@ -18,10 +18,15 @@ import type { AdapterMatch, AdapterParseContext, AdapterParseResult } from "./ad
 import {
 	findTemplateLiteralEnd,
 	camelPropertyName as camelProperty,
+	templateFunctionValueExpression,
 	templateValueExpression as templateDynamicExpression,
 } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStylePropSelector } from "./jsx-style-host.ts";
-import { CodemodCallPatternFormTag, CodemodCallPatternKindTag } from "./identifiers.ts";
+import {
+	CodemodCallPatternFormTag,
+	CodemodCallPatternKindTag,
+	StyleDynamicExpressionKind,
+} from "./identifiers.ts";
 import { styledSubjectFromFunctionMatch } from "./host-component-rewriter.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
 import type {
@@ -270,6 +275,7 @@ function parseTemplateProgram(
 	body: string,
 	context: AdapterParseContext,
 	start: number,
+	options: { readonly functionValues?: boolean } = {},
 ): StyleProgram {
 	const parseBlock = (
 		input: string,
@@ -307,19 +313,32 @@ function parseTemplateProgram(
 			const hasInterpolation = rawValue.includes("${");
 			let value: StyleDeclaration["value"];
 			if (hasInterpolation) {
-				const expression = templateDynamicExpression(rawValue);
-				value = {
-					kind: StyleValueKindTag.Dynamic,
-					expression,
-					lowering: StyleDynamicLoweringTag.Residual,
-				};
-				residuals.push({
-					kind: StyleProgramResidualKindTag.Dynamic,
-					text: rawValue,
-					hint: rawValue.includes("=>")
-						? "function interpolation requires a framework prop wrapper"
-						: "template interpolation requires a runtime-aware lowering",
-				});
+				const functionValue =
+					options.functionValues === true && rawValue.includes("=>")
+						? templateFunctionValueExpression(rawValue)
+						: undefined;
+				if (functionValue !== undefined) {
+					value = {
+						kind: StyleValueKindTag.Dynamic,
+						expression: functionValue,
+						expressionKind: StyleDynamicExpressionKind.Function,
+						lowering: StyleDynamicLoweringTag.Residual,
+					};
+				} else {
+					const expression = templateDynamicExpression(rawValue);
+					value = {
+						kind: StyleValueKindTag.Dynamic,
+						expression,
+						lowering: StyleDynamicLoweringTag.Residual,
+					};
+					residuals.push({
+						kind: StyleProgramResidualKindTag.Dynamic,
+						text: rawValue,
+						hint: rawValue.includes("=>")
+							? "function interpolation requires a framework prop wrapper"
+							: "template interpolation requires a runtime-aware lowering",
+					});
+				}
 			} else {
 				value = { kind: "literal", value: rawValue };
 			}
@@ -887,7 +906,9 @@ function parseCalls(
 								)
 							: pattern.kind === CodemodCallPatternKindTag.Global
 								? parseGlobalTemplateProgram(templateBody, context, start)
-								: parseTemplateProgram(templateBody, context, start);
+								: parseTemplateProgram(templateBody, context, start, {
+										functionValues: pattern.functionValues,
+									});
 					program = {
 						...program,
 						source: {

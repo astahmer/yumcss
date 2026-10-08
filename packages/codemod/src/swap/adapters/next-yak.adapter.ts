@@ -37,9 +37,11 @@ export default defineCodemodAdapter({
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^`]*>)?\s*`/g,
 			form: CodemodCallPatternFormTag.Template,
+			functionValues: true,
 		},
 	],
 	packages: CodemodAdapterKit.dependency("next-yak", "peer"),
+	hostPropFilter: { prefixes: ["$"] },
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.NextYak, "partial", {
 		keyframes: "unsupported",
 		"theme-context": "partial",

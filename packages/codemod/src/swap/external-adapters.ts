@@ -68,6 +68,8 @@ export type CallPattern = {
 	>;
 	readonly kind?: CodemodCallPatternKindTag;
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
+	/** Accept function-valued interpolations as dynamic callbacks for this template syntax. */
+	readonly functionValues?: boolean;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	/** Optional source syntax immediately following the balanced call body. */
 	readonly suffix?: RegExp;

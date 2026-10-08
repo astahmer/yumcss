@@ -750,11 +750,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { styled } from "next-yak";\nconst Card = styled.button`color: ${({ theme }) => theme.color};`;',
 			{ from: "next-yak", to: "emotion", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
 		expect(result.residuals.some((residual) => residual.kind === SwapResidualKindTag.Dynamic)).toBe(
-			true,
+			false,
 		);
+		expect(result.code).toContain("theme.color");
+		expect(result.code).not.toContain('from "next-yak"');
 	});
 
 	test("lowers named style maps to target class maps when the target owns that strategy", () => {
@@ -1301,7 +1303,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"next-yak",
 			"App.tsx",
 			'import { styled } from "next-yak";\nconst Card = styled.div`color: red; padding: 1rem;`;',
-			'classAttribute: "className", filteredPropPrefixes: [], attrs: {}, joinClass: cx',
+			'classAttribute: "className", filteredPropPrefixes: ["$"], attrs: {}, joinClass: cx',
 		],
 		[
 			"solid-styled",
@@ -2611,12 +2613,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(vue.converted).toBe(1);
 		expect(vue.residuals).toEqual([]);
-		expect(vue.code).toContain("const props = computed(() => ({ ..._props, ...rawAttrs }));");
+		expect(vue.code).toContain("const props = computed(() => ({ ..._props, ...attrs }));");
 		expect(vue.code).toContain("((props) => props.color)(props.value)");
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 		expect(vue.code).toContain("props: { color: String }");
-		expect(vue.code).toContain('h("div", { ...rawAttrs');
-		expect(vue.code).toContain("style: [style.value.style, props.value.style]");
+		expect(vue.code).toContain('h("div", { ...attrs');
+		expect(vue.code).toContain("style: [style.value.style, attrs.style]");
 		expect(vue.code).not.toContain("styledAttrs");
 		expect(vue.code).not.toContain("runtimeCss.group");
 		expect(vue.code).toMatchInlineSnapshot(`
@@ -2626,7 +2628,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			import { defaultPreset } from "yumcss/preset/default";
 			const runtimeCss = createRuntimeCss(defaultPreset);
 
-			const Card = defineComponent({ props: { color: String }, inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const props = computed(() => ({ ..._props, ...rawAttrs })); const style = computed(() => runtimeCss.vars({ color: ((props) => props.color)(props.value) })); return () => h("div", { ...rawAttrs, ...{}, class: [style.value.class, props.value.class], style: [style.value.style, props.value.style] }, slots.default?.()); } });
+			const Card = defineComponent({ props: { color: String }, inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const props = computed(() => ({ ..._props, ...attrs })); const style = computed(() => runtimeCss.vars({ color: ((props) => props.color)(props.value) })); return () => h("div", { ...attrs, ...{}, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } });
 			</script>"
 		`);
 	});
