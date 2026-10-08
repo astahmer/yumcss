@@ -1,13 +1,13 @@
 {
 	"schema": "yumcss.tsc-api/1",
 	"source": "tests/tsc-performance.test.ts",
-	"updatedAt": "2026-09-26",
+	"updatedAt": "2026-10-08",
 	"samples": 3,
 	"environment": {
 		"platform": "darwin",
 		"arch": "arm64",
-		"node": "v24.20.0",
-		"typescript": "7.0.2"
+		"node": "v24.19.0",
+		"typescript": "7.0.2+effect-tsgo.0.36.5"
 	},
 	"scenarios": [
 		{
@@ -18,13 +18,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-default.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 234,
-				"symbols": 77864,
-				"types": 20453,
-				"instantiations": 41294,
-				"memoryUsedKiB": 68450,
-				"checkTimeSeconds": 0.043,
-				"totalTimeSeconds": 0.071
+				"files": 236,
+				"symbols": 85215,
+				"types": 29836,
+				"instantiations": 77785,
+				"memoryUsedKiB": 78682,
+				"checkTimeSeconds": 0.098,
+				"totalTimeSeconds": 0.133
 			}
 		},
 		{
@@ -35,13 +35,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-custom.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 237,
-				"symbols": 82171,
-				"types": 14666,
-				"instantiations": 25516,
-				"memoryUsedKiB": 70491,
-				"checkTimeSeconds": 0.009,
-				"totalTimeSeconds": 0.039
+				"files": 238,
+				"symbols": 84924,
+				"types": 22099,
+				"instantiations": 45292,
+				"memoryUsedKiB": 73635,
+				"checkTimeSeconds": 0.041,
+				"totalTimeSeconds": 0.097
 			}
 		},
 		{
@@ -53,12 +53,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 209,
-				"symbols": 73055,
-				"types": 8329,
-				"instantiations": 11941,
-				"memoryUsedKiB": 63350,
-				"checkTimeSeconds": 0.006,
-				"totalTimeSeconds": 0.038
+				"symbols": 75583,
+				"types": 11455,
+				"instantiations": 27485,
+				"memoryUsedKiB": 64243,
+				"checkTimeSeconds": 0.012,
+				"totalTimeSeconds": 0.053
 			}
 		},
 		{
@@ -69,13 +69,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-generated.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 240,
-				"symbols": 83558,
-				"types": 16646,
-				"instantiations": 29371,
-				"memoryUsedKiB": 71819,
-				"checkTimeSeconds": 0.015,
-				"totalTimeSeconds": 0.052
+				"files": 241,
+				"symbols": 87354,
+				"types": 26283,
+				"instantiations": 52128,
+				"memoryUsedKiB": 76578,
+				"checkTimeSeconds": 0.043,
+				"totalTimeSeconds": 0.073
 			}
 		},
 		{
@@ -86,13 +86,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-unsafe.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 228,
-				"symbols": 72564,
-				"types": 9845,
-				"instantiations": 12024,
-				"memoryUsedKiB": 61257,
-				"checkTimeSeconds": 0.009,
-				"totalTimeSeconds": 0.036
+				"files": 230,
+				"symbols": 79242,
+				"types": 15946,
+				"instantiations": 14297,
+				"memoryUsedKiB": 69218,
+				"checkTimeSeconds": 0.032,
+				"totalTimeSeconds": 0.072
 			}
 		},
 		{
@@ -104,12 +104,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 209,
-				"symbols": 75787,
-				"types": 10223,
-				"instantiations": 24866,
-				"memoryUsedKiB": 65028,
-				"checkTimeSeconds": 0.013,
-				"totalTimeSeconds": 0.039
+				"symbols": 79345,
+				"types": 15191,
+				"instantiations": 46871,
+				"memoryUsedKiB": 66833,
+				"checkTimeSeconds": 0.019,
+				"totalTimeSeconds": 0.05
 			}
 		},
 		{
@@ -120,13 +120,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/real-world-usage.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 262,
-				"symbols": 99040,
-				"types": 31171,
-				"instantiations": 81048,
-				"memoryUsedKiB": 87165,
-				"checkTimeSeconds": 0.079,
-				"totalTimeSeconds": 0.12
+				"files": 263,
+				"symbols": 103637,
+				"types": 45770,
+				"instantiations": 127853,
+				"memoryUsedKiB": 95004,
+				"checkTimeSeconds": 0.134,
+				"totalTimeSeconds": 0.166
 			}
 		},
 		{
@@ -137,13 +137,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/css-dynamic.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 235,
-				"symbols": 77124,
-				"types": 17254,
-				"instantiations": 38207,
-				"memoryUsedKiB": 65807,
-				"checkTimeSeconds": 0.018,
-				"totalTimeSeconds": 0.057
+				"files": 237,
+				"symbols": 84904,
+				"types": 27233,
+				"instantiations": 73589,
+				"memoryUsedKiB": 76072,
+				"checkTimeSeconds": 0.042,
+				"totalTimeSeconds": 0.068
 			}
 		},
 		{
@@ -154,13 +154,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/design.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 247,
-				"symbols": 85023,
-				"types": 18219,
-				"instantiations": 33225,
-				"memoryUsedKiB": 73697,
-				"checkTimeSeconds": 0.015,
-				"totalTimeSeconds": 0.042
+				"files": 248,
+				"symbols": 89269,
+				"types": 28087,
+				"instantiations": 54913,
+				"memoryUsedKiB": 78451,
+				"checkTimeSeconds": 0.053,
+				"totalTimeSeconds": 0.091
 			}
 		},
 		{
@@ -171,13 +171,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/runtime.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 260,
-				"symbols": 91767,
-				"types": 24285,
-				"instantiations": 47542,
-				"memoryUsedKiB": 81218,
-				"checkTimeSeconds": 0.026,
-				"totalTimeSeconds": 0.057
+				"files": 261,
+				"symbols": 96734,
+				"types": 38572,
+				"instantiations": 72869,
+				"memoryUsedKiB": 88558,
+				"checkTimeSeconds": 0.077,
+				"totalTimeSeconds": 0.123
 			}
 		},
 		{
@@ -188,13 +188,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/dss-runtime.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 259,
-				"symbols": 91773,
-				"types": 24184,
-				"instantiations": 45784,
-				"memoryUsedKiB": 81191,
-				"checkTimeSeconds": 0.02,
-				"totalTimeSeconds": 0.052
+				"files": 260,
+				"symbols": 96789,
+				"types": 39827,
+				"instantiations": 72455,
+				"memoryUsedKiB": 89562,
+				"checkTimeSeconds": 0.085,
+				"totalTimeSeconds": 0.142
 			}
 		},
 		{
@@ -205,13 +205,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/cx.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 240,
-				"symbols": 86494,
-				"types": 18565,
-				"instantiations": 34618,
-				"memoryUsedKiB": 74051,
-				"checkTimeSeconds": 0.012,
-				"totalTimeSeconds": 0.041
+				"files": 241,
+				"symbols": 89864,
+				"types": 27897,
+				"instantiations": 55652,
+				"memoryUsedKiB": 78451,
+				"checkTimeSeconds": 0.052,
+				"totalTimeSeconds": 0.091
 			}
 		},
 		{
@@ -222,13 +222,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/tw.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 229,
-				"symbols": 68741,
-				"types": 5035,
-				"instantiations": 3886,
-				"memoryUsedKiB": 58235,
-				"checkTimeSeconds": 0.004,
-				"totalTimeSeconds": 0.031
+				"files": 230,
+				"symbols": 74845,
+				"types": 6317,
+				"instantiations": 3891,
+				"memoryUsedKiB": 63578,
+				"checkTimeSeconds": 0.009,
+				"totalTimeSeconds": 0.039
 			}
 		},
 		{
@@ -239,13 +239,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/tw-root.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 255,
-				"symbols": 76843,
-				"types": 11182,
-				"instantiations": 13498,
-				"memoryUsedKiB": 65375,
-				"checkTimeSeconds": 0.008,
-				"totalTimeSeconds": 0.036
+				"files": 257,
+				"symbols": 83759,
+				"types": 17935,
+				"instantiations": 17253,
+				"memoryUsedKiB": 73633,
+				"checkTimeSeconds": 0.052,
+				"totalTimeSeconds": 0.112
 			}
 		},
 		{
@@ -256,13 +256,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/strategies.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 242,
-				"symbols": 83470,
-				"types": 17209,
-				"instantiations": 32405,
-				"memoryUsedKiB": 72091,
-				"checkTimeSeconds": 0.011,
-				"totalTimeSeconds": 0.044
+				"files": 243,
+				"symbols": 86823,
+				"types": 25502,
+				"instantiations": 55529,
+				"memoryUsedKiB": 75648,
+				"checkTimeSeconds": 0.041,
+				"totalTimeSeconds": 0.072
 			}
 		},
 		{
@@ -273,13 +273,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/stack.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 250,
-				"symbols": 108163,
-				"types": 25520,
-				"instantiations": 56121,
-				"memoryUsedKiB": 93129,
-				"checkTimeSeconds": 0.025,
-				"totalTimeSeconds": 0.067
+				"files": 251,
+				"symbols": 111758,
+				"types": 33848,
+				"instantiations": 78852,
+				"memoryUsedKiB": 96738,
+				"checkTimeSeconds": 0.057,
+				"totalTimeSeconds": 0.097
 			}
 		},
 		{
@@ -291,12 +291,12 @@
 			"samples": 3,
 			"metrics": {
 				"files": 238,
-				"symbols": 84764,
-				"types": 16801,
-				"instantiations": 31991,
-				"memoryUsedKiB": 72329,
-				"checkTimeSeconds": 0.023,
-				"totalTimeSeconds": 0.087
+				"symbols": 91375,
+				"types": 23791,
+				"instantiations": 57157,
+				"memoryUsedKiB": 76051,
+				"checkTimeSeconds": 0.028,
+				"totalTimeSeconds": 0.071
 			}
 		},
 		{
@@ -307,13 +307,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/tooling.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 517,
-				"symbols": 186284,
-				"types": 36838,
-				"instantiations": 80819,
-				"memoryUsedKiB": 154254,
-				"checkTimeSeconds": 0.051,
-				"totalTimeSeconds": 0.104
+				"files": 448,
+				"symbols": 176488,
+				"types": 45035,
+				"instantiations": 103687,
+				"memoryUsedKiB": 145816,
+				"checkTimeSeconds": 0.082,
+				"totalTimeSeconds": 0.146
 			}
 		},
 		{
@@ -324,13 +324,13 @@
 			"command": "pnpm exec tsc --ignoreConfig --noEmit --extendedDiagnostics --pretty false --target ES2022 --module ESNext --moduleResolution Bundler --customConditions yumcss --lib ES2023,DOM --strict --noUncheckedIndexedAccess --noImplicitOverride --isolatedModules --verbatimModuleSyntax --allowImportingTsExtensions --skipLibCheck --forceConsistentCasingInFileNames --types node tests/fixtures/tsc/app.ts",
 			"samples": 3,
 			"metrics": {
-				"files": 289,
-				"symbols": 97583,
-				"types": 26059,
-				"instantiations": 49131,
-				"memoryUsedKiB": 86143,
-				"checkTimeSeconds": 0.027,
-				"totalTimeSeconds": 0.057
+				"files": 290,
+				"symbols": 103219,
+				"types": 40578,
+				"instantiations": 75435,
+				"memoryUsedKiB": 93809,
+				"checkTimeSeconds": 0.048,
+				"totalTimeSeconds": 0.076
 			}
 		}
 	],
