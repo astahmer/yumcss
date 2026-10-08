@@ -263,6 +263,8 @@ const typescriptVersion = (): string => {
 	return match[1];
 };
 
+const typescriptRelease = (version: string): string => version.split("+")[0] ?? version;
+
 const buildSnapshot = (scenarios: readonly ScenarioResult[], typescript: string): Snapshot => ({
 	schema: "yumcss.tsc-api/1",
 	source: "tests/tsc-performance.test.ts",
@@ -290,9 +292,9 @@ const assertNoRegression = (
 	if (baseline.schema !== "yumcss.tsc-api/1") {
 		throw new Error(`unsupported TSC snapshot schema ${baseline.schema}`);
 	}
-	if (baseline.environment.typescript !== typescript) {
+	if (typescriptRelease(baseline.environment.typescript) !== typescriptRelease(typescript)) {
 		throw new Error(
-			`TypeScript changed from ${baseline.environment.typescript} to ${typescript}; run pnpm --filter yumcss run test:tsc -- -u to establish a new baseline`,
+			`TypeScript release changed from ${typescriptRelease(baseline.environment.typescript)} to ${typescriptRelease(typescript)}; run pnpm --filter yumcss run test:tsc -- -u to establish a new baseline`,
 		);
 	}
 	const baselineByName = new Map(baseline.scenarios.map((scenario) => [scenario.name, scenario]));
@@ -314,6 +316,11 @@ const assertNoRegression = (
 		baseline.environment.platform === process.platform &&
 		baseline.environment.arch === process.arch &&
 		baseline.environment.node === process.version;
+	if (sameEnvironment && baseline.environment.typescript !== typescript) {
+		throw new Error(
+			`TypeScript compiler build changed from ${baseline.environment.typescript} to ${typescript}; run pnpm --filter yumcss run test:tsc -- -u to establish a new baseline`,
+		);
+	}
 	const failures: string[] = [];
 	for (const scenario of measured) {
 		const reference = baselineByName.get(scenario.name)!;
@@ -361,4 +368,23 @@ test("public API typecheck scenarios stay within the recorded evidence band", as
 	}
 	const baseline = JSON.parse(readFileSync(SNAPSHOT, "utf8")) as Snapshot;
 	assertNoRegression(measured, baseline, snapshot.environment.typescript);
+});
+
+test("accepts platform compiler metadata for the pinned TypeScript release", () => {
+	const baseline = buildSnapshot([], "7.0.2+effect-tsgo.0.36.5");
+	const crossPlatformBaseline: Snapshot = {
+		...baseline,
+		environment: {
+			...baseline.environment,
+			platform: process.platform === "linux" ? "darwin" : "linux",
+		},
+	};
+
+	expect(() => assertNoRegression([], crossPlatformBaseline, "7.0.2")).not.toThrow();
+	expect(() => assertNoRegression([], crossPlatformBaseline, "7.0.3")).toThrow(
+		"TypeScript release changed",
+	);
+	expect(() => assertNoRegression([], baseline, "7.0.2")).toThrow(
+		"TypeScript compiler build changed",
+	);
 });
