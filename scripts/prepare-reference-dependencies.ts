@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { delimiter, join } from "node:path";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 import { resolveReferenceCheckoutId } from "./reference-repository-catalog.ts";
@@ -21,6 +21,7 @@ interface NpmProjectDependencyInstall extends ReferenceDependencyInstallBase {
 	readonly kind: typeof REFERENCE_DEPENDENCY_INSTALL_KIND.NpmProject;
 	readonly project: string;
 	readonly packages: readonly string[];
+	readonly linkProject?: string;
 }
 
 interface PnpmWorkspaceDependencyInstall extends ReferenceDependencyInstallBase {
@@ -41,6 +42,13 @@ export interface PrepareReferenceDependenciesOptions {
  * the official-config proof remains reproducible.
  */
 const INSTALLS: readonly ReferenceDependencyInstall[] = [
+	{
+		reference: "shadcn-ui",
+		kind: REFERENCE_DEPENDENCY_INSTALL_KIND.NpmProject,
+		project: ".yumcss-css-dependencies",
+		packages: ["tailwindcss@4.3.3", "tw-animate-css@1.4.0", "shadcn@4.19.0"],
+		linkProject: "apps/v4",
+	},
 	{
 		reference: "unocss",
 		kind: REFERENCE_DEPENDENCY_INSTALL_KIND.NpmProject,
@@ -94,6 +102,10 @@ export function prepareReferenceDependencies(
 		const referenceRoot = workspace.path(entry.reference);
 		if (entry.kind === REFERENCE_DEPENDENCY_INSTALL_KIND.NpmProject) {
 			const project = join(referenceRoot, entry.project);
+			if (entry.linkProject !== undefined) {
+				mkdirSync(project, { recursive: true });
+				writeFileSync(join(project, "package.json"), JSON.stringify({ private: true }));
+			}
 			if (!existsSync(join(project, "package.json")))
 				throw new Error(`reference project is not prepared: ${project}`);
 			run(
@@ -110,6 +122,16 @@ export function prepareReferenceDependencies(
 				referenceRoot,
 				options,
 			);
+			if (entry.linkProject !== undefined) {
+				const modules = join(referenceRoot, entry.linkProject, "node_modules");
+				mkdirSync(modules, { recursive: true });
+				for (const specifier of entry.packages) {
+					const name = specifier.slice(0, specifier.lastIndexOf("@"));
+					const destination = join(modules, name);
+					if (!existsSync(destination))
+						symlinkSync(join(project, "node_modules", name), destination, "dir");
+				}
+			}
 			results.push(`${entry.reference}/${entry.project}: installed ${entry.packages.join(", ")}`);
 			continue;
 		}

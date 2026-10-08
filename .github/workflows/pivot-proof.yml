@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Chromium for adapter browser proofs
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Build publishable packages
         run: pnpm --filter yumcss --filter @yumcss/codemod --filter @yumcss/analyze --filter @yumcss/devtools --filter @yumcss/lint-plugin run build
 

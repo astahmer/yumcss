@@ -10,7 +10,7 @@ export default defineConfig({
 		// a small worker pool keeps cold official-loader work below the per-test
 		// timeout and avoids spawning one isolated worker per file.
 		isolate: false,
-		maxWorkers: 4,
+		maxWorkers: process.env.CI ? 1 : 4,
 		// Workspace packages expose their sources behind the "yumcss"
 		// condition (see tsconfig.base.json customConditions). Without it,
 		// Node-style resolution falls through to a stale dist/ build and
