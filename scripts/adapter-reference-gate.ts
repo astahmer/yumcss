@@ -3,6 +3,7 @@ export interface AdapterReferenceGateInput {
 		readonly converted: number;
 		readonly residuals: number;
 		readonly sourcePreserved: boolean;
+		readonly residualSourcePreserved: boolean;
 		readonly differences: readonly string[];
 	};
 	readonly canonicalCss: {
@@ -20,6 +21,7 @@ export interface AdapterReferenceGateInput {
 
 export const adapterReferenceProofFails = (reference: AdapterReferenceGateInput): boolean =>
 	reference.migration.differences.length > 0 ||
+	!reference.migration.residualSourcePreserved ||
 	(reference.migration.converted > 0 &&
 		(!reference.canonicalCss.checked || !reference.browser.checked)) ||
 	(reference.canonicalCss.checked &&

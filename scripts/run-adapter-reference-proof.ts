@@ -163,6 +163,9 @@ async function proveReference(
 			skipped: migration.skipped,
 			residuals: migration.residuals.length,
 			validations: validations.length,
+			residualSourcePreserved: migration.residuals.every(
+				(residual) => !source.includes(residual.text) || migration.code.includes(residual.text),
+			),
 			sourcePreserved:
 				migration.code
 					.replaceAll(/\/\/ yumcss:migrate-skip[^\n]*\n/gu, "")

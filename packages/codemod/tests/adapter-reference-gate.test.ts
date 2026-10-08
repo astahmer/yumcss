@@ -5,13 +5,25 @@ import {
 } from "../../../scripts/adapter-reference-gate.ts";
 
 const verified: AdapterReferenceGateInput = {
-	migration: { converted: 1, residuals: 0, sourcePreserved: false, differences: [] },
+	migration: {
+		converted: 1,
+		residuals: 0,
+		sourcePreserved: false,
+		residualSourcePreserved: true,
+		differences: [],
+	},
 	canonicalCss: { checked: true, equal: true, notLarger: true },
 	browser: { checked: true, equivalent: true, hydrationEquivalent: true, errors: [] },
 };
 
 const preserved: AdapterReferenceGateInput = {
-	migration: { converted: 0, residuals: 1, sourcePreserved: true, differences: [] },
+	migration: {
+		converted: 0,
+		residuals: 1,
+		sourcePreserved: true,
+		residualSourcePreserved: true,
+		differences: [],
+	},
 	canonicalCss: { checked: false, equal: false, notLarger: true },
 	browser: { checked: false, equivalent: false, hydrationEquivalent: false, errors: [] },
 };
@@ -55,4 +67,13 @@ test("fails canonical differences, CSS growth, browser differences, and hydratio
 		{ ...verified.browser, errors: ["page error"] },
 	])
 		expect(adapterReferenceProofFails({ ...verified, browser })).toBe(true);
+});
+
+test("fails loss of unsupported source even when converted CSS has browser proof", () => {
+	expect(
+		adapterReferenceProofFails({
+			...verified,
+			migration: { ...verified.migration, residuals: 1, residualSourcePreserved: false },
+		}),
+	).toBe(true);
 });
