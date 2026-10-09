@@ -247,20 +247,22 @@ describe("language-neutral source scanner registry", () => {
 		expect(result.program).toMatchObject({
 			type: "Program",
 			body: expect.arrayContaining([
-				{
+				expect.objectContaining({
 					type: "VariableDeclaration",
 					declarations: expect.arrayContaining([
-						{
-							init: {
+						expect.objectContaining({
+							init: expect.objectContaining({
 								type: "ArrowFunctionExpression",
-								body: {
+								body: expect.objectContaining({
 									type: "BlockStatement",
-									body: expect.arrayContaining([{ type: "ReturnStatement" }]),
-								},
-							},
-						},
+									body: expect.arrayContaining([
+										expect.objectContaining({ type: "ReturnStatement" }),
+									]),
+								}),
+							}),
+						}),
 					]),
-				},
+				}),
 			]),
 		});
 		const bindings = SourceBindings.fromDocument(result.document);

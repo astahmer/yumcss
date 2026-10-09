@@ -241,17 +241,10 @@ const embeddedAstroSource = (document: SourceDocument): EmbeddedScriptSource | u
 	if (frontmatter === null) return undefined;
 	const content = frontmatter[1] ?? "";
 	const contentStart = (frontmatter.index ?? 0) + frontmatter[0].indexOf("\n") + 1;
-	const script = content.split("");
-	const excluded = lexicalExcludedRanges(content);
-	// Astro permits top-level return inside its render function; blanking the keyword preserves OXC offsets.
-	for (const match of content.matchAll(/\breturn\b/gu)) {
-		const start = match.index ?? 0;
-		if (excluded.some((range) => start >= range.start && start < range.end)) continue;
-		for (let index = start; index < start + match[0].length; index++) script[index] = " ";
-	}
 	const ranges = [{ start: contentStart, end: contentStart + content.length }];
 	const source = maskOutsideRanges(document.source, ranges).split("");
-	for (let index = 0; index < script.length; index++) source[contentStart + index] = script[index]!;
+	for (let index = 0; index < content.length; index++)
+		source[contentStart + index] = content[index]!;
 	return { source: source.join(""), language: "typescript" };
 };
 
@@ -280,7 +273,12 @@ const parserDocument = (document: SourceDocument): SourceDocument | undefined =>
 const SOURCE_PARSE_CACHE_CAP = 512;
 const sourceParseCache = new Map<
 	string,
-	{ readonly source: string; readonly language: SourceLanguage; readonly result: ParseResult }
+	{
+		readonly source: string;
+		readonly language: SourceLanguage;
+		readonly sourceType: "commonjs" | "module";
+		readonly result: ParseResult;
+	}
 >();
 
 function lexicalExcludedRanges(source: string): SourceRange[] {
@@ -329,10 +327,17 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 		throw new Error(`source language ${language} does not expose an oxc program`);
 	}
 	const language = parsedDocument.language ?? sourceLanguageForFile(document.file);
+	const sourceType =
+		(document.language ?? sourceLanguageForFile(document.file)) === "astro" ? "commonjs" : "module";
 	const cached = sourceParseCache.get(document.file);
-	if (cached?.source === document.source && cached.language === language) return cached.result;
+	if (
+		cached?.source === document.source &&
+		cached.language === language &&
+		cached.sourceType === sourceType
+	)
+		return cached.result;
 	const result = parseSync(document.file, parsedDocument.source, {
-		sourceType: "module",
+		sourceType,
 		lang:
 			language === "javascript" || language === "jsx" ? "jsx" : language === "tsx" ? "tsx" : "ts",
 	});
@@ -340,7 +345,7 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 		const oldest = sourceParseCache.keys().next().value;
 		if (oldest !== undefined) sourceParseCache.delete(oldest);
 	}
-	sourceParseCache.set(document.file, { source: document.source, language, result });
+	sourceParseCache.set(document.file, { source: document.source, language, sourceType, result });
 	return result;
 }
 
@@ -513,9 +518,28 @@ const makeFrameworkAdapter = (
 	extensions: languages
 		.map(extensionForLanguage)
 		.filter((extension): extension is string => extension !== undefined),
-	detect: (document) =>
-		languages.includes(document.language ?? sourceLanguageForFile(document.file)) &&
-		patterns.some((pattern) => pattern.test(document.source)),
+	detect: (document) => {
+		if (!languages.includes(document.language ?? sourceLanguageForFile(document.file)))
+			return false;
+		if (patterns.length === 0) return true;
+		try {
+			const module = parseSourceProgram(document).module;
+			return (
+				module.staticImports.some(({ moduleRequest }) =>
+					patterns.some((pattern) => pattern.test(moduleRequest.value)),
+				) ||
+				module.staticExports.some(({ entries }) =>
+					entries.some(
+						({ moduleRequest }) =>
+							moduleRequest !== null &&
+							patterns.some((pattern) => pattern.test(moduleRequest.value)),
+					),
+				)
+			);
+		} catch {
+			return false;
+		}
+	},
 	scan: (document) => ({ ...scanDocument(document), framework }),
 });
 
@@ -524,31 +548,31 @@ export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 		SourceLanguageAdapterId.ReactJsx,
 		"react",
 		["typescript", "tsx", "javascript", "jsx"],
-		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
+		[/^(?:react|react-dom|@emotion\/react|styled-components)(?:\/.*)?$/],
 	),
 	makeFrameworkAdapter(
 		SourceLanguageAdapterId.PreactJsx,
 		"preact",
 		["typescript", "tsx", "javascript", "jsx"],
-		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
+		[/^(?:preact(?:\/.*)?|@preact\/.+)$/],
 	),
 	makeFrameworkAdapter(
 		SourceLanguageAdapterId.SolidJsx,
 		"solid",
 		["typescript", "tsx", "javascript", "jsx"],
-		[/from\s+["']solid-js(?:\/|["'])/],
+		[/^solid-js(?:\/.*)?$/],
 	),
 	makeFrameworkAdapter(
 		SourceLanguageAdapterId.QwikJsx,
 		"qwik",
 		["typescript", "tsx", "javascript", "jsx"],
-		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
+		[/^@builder\.io\/qwik(?:\/.*)?$/],
 	),
 	makeAdapter(SourceLanguageAdapterId.Mdx, ["mdx"]),
 	makeAdapter(SourceLanguageAdapterId.EcmaScript, ["typescript", "tsx", "javascript", "jsx"]),
-	makeFrameworkAdapter(SourceLanguageAdapterId.Vue, "vue", ["vue"], [/^[\s\S]*$/]),
-	makeFrameworkAdapter(SourceLanguageAdapterId.Svelte, "svelte", ["svelte"], [/^[\s\S]*$/]),
-	makeFrameworkAdapter(SourceLanguageAdapterId.Astro, "astro", ["astro"], [/^[\s\S]*$/]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Vue, "vue", ["vue"], []),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Svelte, "svelte", ["svelte"], []),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Astro, "astro", ["astro"], []),
 ];
 
 function createSourceLanguageClassifier(
@@ -721,7 +745,19 @@ export function createSourceScannerContractSuite(): SourceScannerContractSuite {
 					});
 					continue;
 				}
-				if (!adapter.detect(fixture.document)) {
+				let detected: boolean;
+				try {
+					detected = adapter.detect(fixture.document);
+				} catch (error) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "detection",
+						message:
+							error instanceof Error ? error.message : "adapter detection threw a non-error value",
+					});
+					continue;
+				}
+				if (!detected) {
 					failures.push({
 						adapter: adapter.id,
 						phase: "detection",
