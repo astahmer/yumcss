@@ -18,7 +18,12 @@
  *   eliminated counts (see analyze.test.ts).
  */
 import { dirname, resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "yumcss/source";
+import {
+	SOURCE_SCANNER_SERVICE,
+	SourceBindingKind,
+	SourceBindings,
+	type SourceScanResult,
+} from "yumcss/source";
 import { createSourceWorkspace } from "yumcss/source/workspace";
 import { bindingIsShadowedOrWritten } from "yumcss/vite/cross-module-consts";
 import {
@@ -157,22 +162,15 @@ function parseModule(
 	const program = parsedProgram ?? SOURCE_SCANNER_SERVICE.scan({ file, source }).program;
 	if (program === undefined) throw new Error(`Could not parse ${file} for analysis.`);
 
+	const sourceBindings = SourceBindings.fromProgram(program);
 	const imported = new Map<string, string>();
-	walk(program, (node) => {
-		if ((node as { type?: string }).type !== NodeKind.ImportDeclaration) return;
-		for (const specifier of (node as { specifiers?: Array<Record<string, unknown>> }).specifiers ??
-			[]) {
-			const spec = specifier as {
-				type?: string;
-				imported?: { name?: string };
-				local?: { name?: string };
-			};
-			if (spec.type !== NodeKind.ImportSpecifier) continue;
-			const importedName = (spec.imported?.name ?? "") as string;
-			const local = spec.local?.name ?? "";
-			if (importedName === "cx" || importedName === "tw") imported.set(local, importedName);
-		}
-	});
+	for (const binding of sourceBindings.bindings) {
+		if (
+			binding.kind === SourceBindingKind.Named &&
+			(binding.importedName === "cx" || binding.importedName === "tw")
+		)
+			imported.set(binding.localName, binding.importedName);
+	}
 
 	// Modules analyzed directly often use the conventional local names
 	// without an explicit helper import — mirror the coverage-harness
@@ -213,11 +211,20 @@ function parseModule(
 		};
 		if (call.callee?.type !== NodeKind.Identifier) return;
 		const name = call.callee.name ?? "";
+		const start = call.start ?? 0;
+		if (sourceBindings.isShadowedAt(name, start)) return;
+		const binding = sourceBindings.binding(name);
+		if (
+			binding !== undefined &&
+			binding.importedName !== "cx" &&
+			binding.importedName !== "tw"
+		)
+			return;
 		if (!cxNames.has(name) && !twNames.has(name)) return;
 
 		if (twNames.has(name)) {
 			calls.push({
-				start: call.start ?? 0,
+				start,
 				kind: FoldKindTag.Full,
 				reason: "",
 				args: call.arguments ?? [],
@@ -228,7 +235,7 @@ function parseModule(
 		const clsfy = classify(
 			call.arguments ?? [],
 			consts,
-			call.start ?? 0,
+			start,
 			name,
 			twNames,
 			config,
