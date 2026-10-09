@@ -999,6 +999,25 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toBe("body{margin:0}");
 	});
 
+	test("keeps distinct semantic rules when their short hashes collide", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "style",
+				selector: ".ciz7p9zt61",
+				declarations: [{ property: "color", value: "red" }],
+			},
+			{
+				kind: "style",
+				selector: ".c45hnhaukb",
+				declarations: [{ property: "color", value: "red" }],
+			},
+		]);
+
+		expect(sheet.snapshot().rules).toHaveLength(2);
+		expect(sheet.css()).toBe(".ciz7p9zt61{color:red}\n.c45hnhaukb{color:red}");
+	});
+
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([
