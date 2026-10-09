@@ -151,6 +151,46 @@ describe("adapter migration e2e matrix", () => {
 		}
 	}, 120_000);
 
+	test("preflights generated artifacts against every migrated output before writing", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-cli-collision-"));
+		const componentFile = join(directory, "Card.tsx");
+		const stylesFile = join(directory, "Card.styles.ts");
+		const generatedFile = join(directory, "Card.styles.treat.ts");
+		const componentSource =
+			'import styled from "@emotion/styled"; export const Card = styled.div({ color: "red" });';
+		const stylesSource =
+			'import { css } from "@emotion/css"; export const card = css({ color: "blue" });';
+		writeFileSync(componentFile, componentSource);
+		writeFileSync(stylesFile, stylesSource);
+
+		try {
+			expect(() =>
+				execFileSync(
+					"nub",
+					[
+						"src/cli.ts",
+						"migrate",
+						"--root",
+						directory,
+						"--from=emotion",
+						"--to=treat",
+						"--safe",
+						"--no-install",
+						"--report=json",
+						`${directory}/*.{ts,tsx}`,
+					],
+					{ cwd: codemodRoot, encoding: "utf8" },
+				),
+			).toThrow(/conflict/u);
+
+			expect(readFileSync(componentFile, "utf8")).toBe(componentSource);
+			expect(readFileSync(stylesFile, "utf8")).toBe(stylesSource);
+			expect(existsSync(generatedFile)).toBe(false);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 120_000);
+
 	test("writes a host-dialect conversion to the target extension", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
 		const file = join(directory, "App.vue");
