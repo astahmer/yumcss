@@ -64,6 +64,40 @@ describe("Node MCP validation host", () => {
 		expect(() => readFileSync(join(root, "generated/marker.txt"), "utf8")).toThrow();
 	});
 
+	it("isolates package-script writes to the dependency tree", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(join(root, "node_modules", ".cache"), { recursive: true });
+		mkdirSync(join(root, "packages", "fixture-dependency"), { recursive: true });
+		writeFileSync(join(root, "node_modules", ".cache", "mcp-marker"), "original");
+		writeFileSync(
+			join(root, "packages", "fixture-dependency", "index.js"),
+			"module.exports = 'isolated';",
+		);
+		symlinkSync(
+			"../packages/fixture-dependency",
+			join(root, "node_modules", "fixture-dependency"),
+			"dir",
+		);
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: {
+					typecheck:
+						"node -e \"if (require('fixture-dependency') !== 'isolated') process.exit(1); require('node:fs').writeFileSync('node_modules/.cache/mcp-marker', 'changed')\"",
+				},
+			}),
+		);
+
+		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
+
+		expect(result.status).toBe(MCP_VALIDATION_STATUS.Passed);
+		expect(readFileSync(join(root, "node_modules", ".cache", "mcp-marker"), "utf8")).toBe(
+			"original",
+		);
+	});
+
 	it("keeps relative symlink overlays inside the validation copy", async () => {
 		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
 		roots.push(root);
