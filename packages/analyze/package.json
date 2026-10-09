@@ -1,6 +1,6 @@
 {
 	"name": "@yumcss/analyze",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Build-time CSS usage, provenance, coverage, and budget analysis for YumCSS projects.",
 	"keywords": [
 		"analysis",
