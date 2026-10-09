@@ -156,6 +156,41 @@ function validatePlannedGeneratedFiles(
 	}
 }
 
+function validateGeneratedOutputCollisions(
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
+	migrations: readonly {
+		readonly relative: string;
+		readonly outputRelative: string;
+		readonly result: { readonly generatedFiles: readonly { readonly path: string }[] };
+	}[],
+	projectGeneratedFiles: readonly { readonly path: string }[],
+): void {
+	const generatedPaths = new Set(
+		[
+			...projectGeneratedFiles,
+			...migrations.flatMap((migration) => migration.result.generatedFiles),
+		].map((file) => pathBoundary.resolve(normalizeProjectRelativePath(file.path))),
+	);
+	const outputPaths = new Set<string>();
+	const removedSourcePaths = new Set<string>();
+	for (const migration of migrations) {
+		const outputPath = pathBoundary.resolve(normalizeProjectRelativePath(migration.outputRelative));
+		if (outputPaths.has(outputPath))
+			throw new Error(
+				`codemod: conflicting migration output path ${migration.outputRelative} in one migration run`,
+			);
+		outputPaths.add(outputPath);
+		if (migration.outputRelative !== migration.relative)
+			removedSourcePaths.add(pathBoundary.resolve(normalizeProjectRelativePath(migration.relative)));
+	}
+	for (const outputPath of outputPaths)
+		if (generatedPaths.has(outputPath))
+			throw new Error(`codemod: generated file path conflicts with planned migration output ${outputPath}`);
+	for (const sourcePath of removedSourcePaths)
+		if (generatedPaths.has(sourcePath))
+			throw new Error(`codemod: generated file path conflicts with planned source removal ${sourcePath}`);
+}
+
 function validatePlannedFileChanges(
 	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly {
@@ -936,6 +971,7 @@ async function runAdapterRoute(
 		canonicalizePath: pathBoundary.relative,
 	});
 	validatePlannedFileChanges(pathBoundary, composedFileChanges, plannedFileChanges);
+	validateGeneratedOutputCollisions(pathBoundary, pendingWrites, projectGeneratedFiles);
 	const migratedFiles = new Set(pendingWrites.map((pending) => pending.relative));
 	const changesByPath = new Map(composedModuleChanges.map((change) => [change.path, change]));
 	for (const pending of pendingWrites) {
