@@ -2,16 +2,18 @@ import { spawn } from "node:child_process";
 import {
 	cpSync,
 	existsSync,
+	lstatSync,
 	mkdtempSync,
 	mkdirSync,
 	readFileSync,
+	realpathSync,
 	rmSync,
 	symlinkSync,
 	unlinkSync,
 	writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import {
 	MCP_EXECUTION_LANE,
 	MCP_PROVENANCE_SOURCE,
@@ -78,6 +80,33 @@ function safeRelativePath(root: string, candidate: string): string {
 	const outside = relative(root, absolute);
 	if (outside === ".." || outside.startsWith("../"))
 		throw new Error(`validation overlay path escapes the project root: ${candidate}`);
+	const isolatedRoot = realpathSync(root);
+	let existingPath = absolute;
+	while (true) {
+		try {
+			lstatSync(existingPath);
+		} catch (error) {
+			if (
+				!(error instanceof Error) ||
+				!("code" in error) ||
+				(error.code !== "ENOENT" && error.code !== "ENOTDIR")
+			)
+				throw error;
+			const parent = dirname(existingPath);
+			if (parent === existingPath) throw error;
+			existingPath = parent;
+			continue;
+		}
+		const resolvedPath = realpathSync(existingPath);
+		const resolvedOutside = relative(isolatedRoot, resolvedPath);
+		if (
+			resolvedOutside === ".." ||
+			resolvedOutside.startsWith(`..${sep}`) ||
+			isAbsolute(resolvedOutside)
+		)
+			throw new Error(`validation overlay path resolves outside the isolated project: ${candidate}`);
+		break;
+	}
 	return absolute;
 }
 
@@ -115,6 +144,7 @@ function copyProject(root: string): ValidationWorkspace {
 	try {
 		cpSync(root, isolatedRoot, {
 			recursive: true,
+			verbatimSymlinks: true,
 			filter: (source) => {
 				const path = relative(root, source).replaceAll("\\", "/");
 				return (
