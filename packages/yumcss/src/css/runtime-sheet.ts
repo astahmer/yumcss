@@ -117,12 +117,13 @@ const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => 
 		}
 		if (current.priority !== undefined && !Number.isFinite(current.priority)) return false;
 		if (current.conditions !== undefined) {
-			if (!Array.isArray(current.conditions) || !current.conditions.every(isSafeText)) return false;
+			if (!Array.isArray(current.conditions) || !Array.from(current.conditions).every(isSafeText))
+				return false;
 		}
 		if (current.declarations !== undefined) {
 			if (
 				!Array.isArray(current.declarations) ||
-				!current.declarations.every(
+				!Array.from(current.declarations).every(
 					(item) =>
 						isRecord(item) &&
 						isSafeText(item.property) &&
@@ -325,10 +326,14 @@ export function createRuntimeSheet(
 		if (!isRecord(value) || !isSafeString(value.tokens) || !Array.isArray(value.rules)) return;
 		tokens = value.tokens;
 		const manifest = value.tokenManifest;
-		if (Array.isArray(manifest) && manifest.every(isRuntimeTokenManifestEntry)) {
-			const nextManifest = new Map(manifest.map((entry) => [entry.name, entry.fingerprint]));
+		const manifestEntries = Array.isArray(manifest) ? Array.from(manifest) : undefined;
+		if (manifestEntries?.every(isRuntimeTokenManifestEntry)) {
+			const nextManifest = new Map(
+				manifestEntries.map((entry) => [entry.name, entry.fingerprint]),
+			);
 			tokenManifestKnown =
-				nextManifest.size === manifest.length && (value.tokens === "" || nextManifest.size > 0);
+				nextManifest.size === manifestEntries.length &&
+				(value.tokens === "" || nextManifest.size > 0);
 			tokenManifest = tokenManifestKnown ? nextManifest : new Map();
 		} else {
 			tokenManifest = new Map();
