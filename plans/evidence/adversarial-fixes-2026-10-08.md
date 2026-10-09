@@ -92,6 +92,7 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 77    | Validate every plugin and adapter ID before mutating the source scanner registry.                                             | Source scanner test: failed plugin registration leaves the registry's existing adapters and plugin list unchanged.                                      |
 | 78    | Copy `node_modules` into the validation workspace and dereference dependency symlinks.                                        | MCP validation test: package script resolves an absolute-linked dependency and writes cache/dependency markers; both source markers remain unchanged.   |
 | 79    | Include serialized CSS in generated semantic IDs so hash collisions cannot overwrite distinct rules.                          | Runtime-sheet test: two rules with the same 32-bit hash both remain in the snapshot and emitted CSS.                                                    |
+| 80    | Accept empty declaration strings only for custom-property names.                                                              | Runtime-sheet test: `--empty` remains in emitted and PostCSS-parsed CSS; an empty `color` declaration is still rejected.                                |
 
 ## Follow-up found during validation
 
@@ -125,6 +126,8 @@ The initial governance snapshot discrepancy has been rechecked and passes in the
 The MCP validation regression file passed 7/7 tests, Analyze typecheck passed, and Oxfmt passed on both changed MCP files.
 
 The runtime-sheet regression failed before the fix because the two selectors shared `semantic-1a35qq`. All 54 runtime-sheet tests passed after the fix; Oxfmt passed on both changed runtime CSS files.
+
+The empty custom-property regression failed before the fix because validation dropped the declaration and its rule. All 55 runtime-sheet tests passed after the fix, including the PostCSS parse check; Oxfmt passed on both changed files.
 
 ## Browser proof
 

@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Eleven additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Twelve additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -576,3 +576,10 @@ Eleven additional defects were reproduced against the unified fixes workspace an
 - Reproduction: register `.ciz7p9zt61{color:red}` and `.c45hnhaukb{color:red}` as semantic rules.
 - Actual: both rules canonicalized to `semantic-1a35qq`, so the runtime store retained only the second rule.
 - Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires both rules to remain in the snapshot and emitted CSS.
+
+### 80. P2 — empty CSS custom-property values are rejected by runtime validation
+
+- Reproduction: register a global `:root` semantic rule with `{ property: "--empty", value: "" }`.
+- Actual: the validator rejected the declaration and dropped the rule; no CSS was emitted.
+- Contract: the [W3C CSS Custom Properties Level 1 specification](https://www.w3.org/TR/css-variables-1/#defining-variables) makes `<declaration-value>` optional and explicitly allows an empty custom-property value.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires `:root{--empty:}` to remain in the sheet, parses it with PostCSS, and confirms empty values on ordinary properties remain rejected.
