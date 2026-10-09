@@ -351,7 +351,7 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 
 const runtimeBoundaryFromProgram = (program: ParseResult["program"]): SourceRuntimeBoundary => {
 	for (const statement of program.body) {
-		if (statement.type !== "ExpressionStatement" || statement.directive === undefined) break;
+		if (statement.type !== NodeKind.ExpressionStatement || statement.directive === undefined) break;
 		if (statement.directive === "use client") return SourceRuntimeBoundary.Client;
 		if (statement.directive === "use server") return SourceRuntimeBoundary.Server;
 	}
