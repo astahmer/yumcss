@@ -224,7 +224,9 @@ describe("analyzeTokenGovernance", () => {
 				},
 			},
 		});
-		const candidates = new Map(report.unusedCandidates.map((candidate) => [candidate.tokenId, candidate]));
+		const candidates = new Map(
+			report.unusedCandidates.map((candidate) => [candidate.tokenId, candidate]),
+		);
 
 		expect(report.summary.boundaries["public-export"]).toBe(1);
 		expect(candidates.get("colors::brand")).toMatchObject({
@@ -243,7 +245,7 @@ describe("analyzeTokenGovernance", () => {
 					content: 'export const theme = { note: "}", color: "$brand" };',
 				},
 			],
-		tokenContext: { tokenGroups: { colors: { brand: "#e11d48" } } },
+			tokenContext: { tokenGroups: { colors: { brand: "#e11d48" } } },
 		});
 		const candidate = report.unusedCandidates.find((item) => item.tokenId === "colors::brand");
 

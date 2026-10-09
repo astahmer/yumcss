@@ -181,7 +181,8 @@ const styleApiForCall = (
 		const callee = oxcNodeAt(call, "callee");
 		if (callee?.type !== NodeKind.MemberExpression) return undefined;
 		const object = oxcNodeAt(callee, "object");
-		if (object?.type !== NodeKind.Identifier || stringAt(object, "name") !== rootName) return undefined;
+		if (object?.type !== NodeKind.Identifier || stringAt(object, "name") !== rootName)
+			return undefined;
 		const memberName = staticMemberName(callee);
 		return memberName === "css" || memberName === "tw" ? memberName : undefined;
 	}

@@ -506,3 +506,43 @@ These were reproduced against the isolated fixes workspace, then checked again w
 - Reproduction: compare `yumcss/source` runtime exports with the maintained public API contract.
 - Actual: the source scanner re-exported `NodeKind` even though that value belongs to the existing `yumcss/tw/literal` subpath, and the exact export test failed. Codemod and Analyze also imported it through the accidental export.
 - Regression: the public API type test remains exact, while internal consumers import `NodeKind` from `yumcss/tw/literal`.
+
+## Additional issues independently confirmed after branch unification
+
+Six additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+
+### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
+
+- Reproduction: import `css as makeStyle` or `* as styles` from a CSS facade and use `$colors.brand` in a call.
+- Actual: governance collected no usage, classified the used token as safe to remove, and could emit a prune changeset.
+- Regression: Analyze usage and service suites require both import forms to count while an alias shadowed by a function parameter remains ignored.
+
+### 70. P1 — qualified token references in exported objects miss their public boundary
+
+- Reproduction: export `{ color: "$colors.brand" }` when another group also defines `brand`.
+- Actual: the scanner returned `colors.brand`, but service lookup treated it as a bare token name and recorded no boundary.
+- Regression: governance service coverage requires the exact `colors::brand` boundary while the other group remains safe to remove.
+
+### 71. P1 — a brace inside an exported string hides later token references
+
+- Reproduction: export `{ note: "}", color: "$colors.brand" }`.
+- Actual: source-text brace balancing stopped at the string's `}` and returned no public-export hit, allowing unsafe removal.
+- Regression: public-export scanner and service tests require the later reference to remain review-required; scanning now uses the shared AST service.
+
+### 72. P2 — Analyze counts a shadowed imported `cx` alias as fully folded
+
+- Reproduction: import `cx as classNames`, then call a parameter named `classNames` from a local function.
+- Actual: Analyze reported a full fold while `inlineCxCalls` left the call unchanged.
+- Regression: the Analyze test compares the report to the real pass and excludes the shadowed call from CX totals.
+
+### 73. P1 — CLI can partially apply migrations when an output path collides with a generated artifact
+
+- Reproduction: migrate Emotion files where one result outputs `Card.styles.treat.ts` and another generates that same path.
+- Actual: the CLI wrote one result and removed its source before a later generated-file conflict stopped the run.
+- Regression: the CLI e2e test requires preflight rejection with both sources unchanged and no generated destination.
+
+### 74. P2 — CSS extraction can erase a switch-case temporal-dead-zone error
+
+- Reproduction: declare `const style` in one switch case, then read it in another case's `css.class(style)` call.
+- Actual: source-order constant evaluation folded the call even though the original inactive case throws `ReferenceError`.
+- Regression: Vite CSS test executes both source and transformed code and requires the same TDZ error; switch cases now remain conservatively dynamic.

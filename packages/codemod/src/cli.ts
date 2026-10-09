@@ -181,14 +181,20 @@ function validateGeneratedOutputCollisions(
 			);
 		outputPaths.add(outputPath);
 		if (migration.outputRelative !== migration.relative)
-			removedSourcePaths.add(pathBoundary.resolve(normalizeProjectRelativePath(migration.relative)));
+			removedSourcePaths.add(
+				pathBoundary.resolve(normalizeProjectRelativePath(migration.relative)),
+			);
 	}
 	for (const outputPath of outputPaths)
 		if (generatedPaths.has(outputPath))
-			throw new Error(`codemod: generated file path conflicts with planned migration output ${outputPath}`);
+			throw new Error(
+				`codemod: generated file path conflicts with planned migration output ${outputPath}`,
+			);
 	for (const sourcePath of removedSourcePaths)
 		if (generatedPaths.has(sourcePath))
-			throw new Error(`codemod: generated file path conflicts with planned source removal ${sourcePath}`);
+			throw new Error(
+				`codemod: generated file path conflicts with planned source removal ${sourcePath}`,
+			);
 }
 
 function validatePlannedFileChanges(

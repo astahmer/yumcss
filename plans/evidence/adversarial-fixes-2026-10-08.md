@@ -1,6 +1,6 @@
 # Adversarial fixes — 2026-10-08
 
-Resolution ledger for the [68 independently checked issues](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace, based on `19ff1c72`; concurrent default-workspace work remains separate.
+Resolution ledger for 74 independently checked issues: the original 68 plus six follow-ups recorded in the [adversarial review](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace; concurrent default-workspace work remains separate.
 
 ## Checked fixes
 
@@ -81,6 +81,12 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 66    | Detect TypeScript-only bindings before canonicalizing generated CSS names.                                                    | Codemod adversarial suite: a `type css` declaration remains intact while emitted styles use a collision-free binding.                                   |
 | 67    | Emit JavaScript-valid syntax for `.js` and Vue `<script setup>` targets so parse-gated import cleanup can run.                | `external-adapters.test.ts`: JSS output parses as `.js`, `.ts`, and `.vue`; source bindings are removed and Vue module evaluation is preserved.         |
 | 68    | Keep the internal AST identity out of the source-scanner public API and import it from its existing public subpath.           | `packages/yumcss/tests/public-api/exports.tst.ts` verifies the exact `yumcss/source` value export set.                                                  |
+| 69    | Resolve imported CSS/TW aliases and namespace calls before collecting token usage.                                            | Analyze governance usage/service suites: aliases and namespace calls count; a shadowed imported alias does not.                                         |
+| 70    | Resolve qualified public-export token references by exact group and name.                                                     | Governance service suite: `$colors.brand` creates a boundary for `colors::brand` only when another group has the same token name.                       |
+| 71    | Parse public exports through the shared source scanner instead of balancing braces in source text.                            | Public-export scanner and governance service suites: a `}` inside an exported string cannot hide a later token reference.                               |
+| 72    | Exclude shadowed imported `cx` calls from fold-coverage totals.                                                               | Analyze suite compares shadowed-alias report counts with the real `inlineCxCalls` pass.                                                                 |
+| 73    | Preflight all generated artifact paths against migrated output paths and removed sources before the first write.              | CLI e2e regression: a generated/output collision fails with every original source intact and no generated file left behind.                             |
+| 74    | Keep switch-case initializers out of cross-branch CSS constant evaluation.                                                    | Vite CSS regression executes original and transformed code and requires the same TDZ `ReferenceError` for an inactive case.                             |
 
 ## Follow-up found during validation
 

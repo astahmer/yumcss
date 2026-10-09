@@ -214,11 +214,7 @@ function parseModule(
 		const start = call.start ?? 0;
 		if (sourceBindings.isShadowedAt(name, start)) return;
 		const binding = sourceBindings.binding(name);
-		if (
-			binding !== undefined &&
-			binding.importedName !== "cx" &&
-			binding.importedName !== "tw"
-		)
+		if (binding !== undefined && binding.importedName !== "cx" && binding.importedName !== "tw")
 			return;
 		if (!cxNames.has(name) && !twNames.has(name)) return;
 
@@ -232,15 +228,7 @@ function parseModule(
 			});
 			return;
 		}
-		const clsfy = classify(
-			call.arguments ?? [],
-			consts,
-			start,
-			name,
-			twNames,
-			config,
-			cxFold,
-		);
+		const clsfy = classify(call.arguments ?? [], consts, start, name, twNames, config, cxFold);
 		calls.push(clsfy);
 	});
 
