@@ -34,6 +34,24 @@ describe("scanPublicExports", () => {
 		expect(hits[0]!.name).toBe("shared");
 	});
 
+	it("keeps scanning exported objects when string values contain braces", () => {
+		const hits = scanPublicExports([
+			{
+				file: "theme.ts",
+				content: 'export const theme = { note: "}", color: "$colors.brand" };',
+			},
+		]);
+
+		expect(hits).toEqual([
+			{
+				tokenId: null,
+				references: ["colors.brand"],
+				file: "theme.ts",
+				name: "theme",
+			},
+		]);
+	});
+
 	it("ignores exports without $-references", () => {
 		const hits = scanPublicExports([
 			{ file: "a.ts", content: 'export const plain = { bg: "#fff", text: "red" };\n' },

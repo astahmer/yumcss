@@ -234,6 +234,23 @@ describe("analyzeTokenGovernance", () => {
 		expect(candidates.get("semantic::brand")).toMatchObject({ safety: "safe-to-remove" });
 	});
 
+	it("does not miss exported token values after a brace inside a string", () => {
+		const report = analyzeTokenGovernance({
+			root: "/repo",
+			files: [
+				{
+					file: "src/theme.ts",
+					content: 'export const theme = { note: "}", color: "$brand" };',
+				},
+			],
+		tokenContext: { tokenGroups: { colors: { brand: "#e11d48" } } },
+		});
+		const candidate = report.unusedCandidates.find((item) => item.tokenId === "colors::brand");
+
+		expect(report.summary.boundaries["public-export"]).toBe(1);
+		expect(candidate).toMatchObject({ safety: "review-required", boundaries: ["public-export"] });
+	});
+
 	it("downgrades candidates when configuration fails", () => {
 		const report = analyzeTokenGovernance({
 			root: "/repo",
