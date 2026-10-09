@@ -31,6 +31,21 @@ describe("rn value/unit policy", () => {
 		expect(() => backend.declare("color", "1rem")).toThrow(/not representable/);
 	});
 
+	test("rejects CSS length functions and percentages on numeric-only properties", () => {
+		const backend = createRnBackend();
+		for (const value of ["calc(100% - 20px)", "min(100%, 20px)", "var(--width)"])
+			expect(() => backend.declare("width", value)).toThrow(/not representable/);
+		const numericOnlyValues: ReadonlyArray<readonly [string, string]> = [
+			["fontSize", "50%"],
+			["lineHeight", "150%"],
+			["letterSpacing", "4%"],
+			["borderWidth", "10%"],
+		];
+		for (const [property, value] of numericOnlyValues)
+			expect(() => backend.declare(property, value)).toThrow(/not representable/);
+		expect(backend.declare("width", "50%")).toEqual({ width: "50%" });
+	});
+
 	test("non-numeric values pass through as strings", () => {
 		const backend = createRnBackend();
 		expect(backend.declare("flexDirection", "row")).toEqual({ flexDirection: "row" });
