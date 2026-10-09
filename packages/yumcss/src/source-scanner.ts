@@ -344,6 +344,15 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 	return result;
 }
 
+const runtimeBoundaryFromProgram = (program: ParseResult["program"]): SourceRuntimeBoundary => {
+	for (const statement of program.body) {
+		if (statement.type !== "ExpressionStatement" || statement.directive === undefined) break;
+		if (statement.directive === "use client") return SourceRuntimeBoundary.Client;
+		if (statement.directive === "use server") return SourceRuntimeBoundary.Server;
+	}
+	return SourceRuntimeBoundary.Shared;
+};
+
 /** Mask comments and literal strings while keeping supported style templates actionable. */
 export function computeExcludedRanges(
 	source: string,
@@ -417,18 +426,14 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	const diagnostics: SourceScanDiagnostic[] = [];
 	let program: OxcNode | undefined;
-	const runtimeBoundary =
-		document.runtimeBoundary ??
-		(/^[\s\S]*['"]use client['"]/.test(document.source)
-			? SourceRuntimeBoundary.Client
-			: /^[\s\S]*['"]use server['"]/.test(document.source)
-				? SourceRuntimeBoundary.Server
-				: SourceRuntimeBoundary.Shared);
+	let runtimeBoundary = document.runtimeBoundary ?? SourceRuntimeBoundary.Shared;
 	let excluded: SourceRange[] = [];
 	if (parserDocument(document) !== undefined) {
 		try {
 			const parsed = parseSourceProgram({ ...document, language });
 			program = toOxcNode(parsed.program);
+			if (document.runtimeBoundary === undefined)
+				runtimeBoundary = runtimeBoundaryFromProgram(parsed.program);
 			diagnostics.push(
 				...parsed.errors.map((error) => ({ kind: "parse" as const, message: error.message })),
 			);
