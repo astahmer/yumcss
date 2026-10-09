@@ -161,7 +161,7 @@ export class SemanticRuleCanonicalizer {
 		// Priority affects ordering, not the emitted rule identity.
 		const css = this.serializer.serialize(rule);
 		return {
-			id: rule.id ?? `semantic-${hash(css)}`,
+			id: rule.id ?? `semantic-${hash(css)}-${css}`,
 			css,
 			priority: rule.priority ?? 0,
 		};
