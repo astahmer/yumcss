@@ -104,7 +104,9 @@ function safeRelativePath(root: string, candidate: string): string {
 			resolvedOutside.startsWith(`..${sep}`) ||
 			isAbsolute(resolvedOutside)
 		)
-			throw new Error(`validation overlay path resolves outside the isolated project: ${candidate}`);
+			throw new Error(
+				`validation overlay path resolves outside the isolated project: ${candidate}`,
+			);
 		break;
 	}
 	return absolute;
