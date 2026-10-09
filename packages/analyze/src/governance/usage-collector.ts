@@ -15,8 +15,8 @@ import type {
 	TokenPolicySnapshot,
 	TokenUsage,
 } from "./contracts.ts";
-import { NodeKind, SOURCE_SCANNER_SERVICE } from "yumcss/source";
-import { walk, type OxcNode } from "yumcss/tw/literal";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, walk, type OxcNode } from "yumcss/tw/literal";
 
 /** Token id for non-token (raw/unknown) observations. */
 export const UNRESOLVED_TOKEN_ID = "";

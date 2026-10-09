@@ -1,6 +1,6 @@
 # Adversarial fixes — 2026-10-08
 
-Resolution ledger for the [66 independently checked issues](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace, based on `19ff1c72`; concurrent default-workspace work remains separate.
+Resolution ledger for the [68 independently checked issues](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace, based on `19ff1c72`; concurrent default-workspace work remains separate.
 
 ## Checked fixes
 
@@ -77,8 +77,10 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 62    | Return an ordinary style object from `css.raw()` and `dss.raw()`.                                                             | Design test checks `Object.prototype`; fresh Showcase browser E2E reports computed styles and zero console/page errors.                                 |
 | 63    | Keep nested condition objects out of React's inline style prop.                                                               | Showcase browser E2E passes the web status through the shared base style and verifies web/native status behavior.                                       |
 | 64    | Separate web/native corner radii from the shared base vocabulary used by OpenTUI.                                             | `pnpm --filter showcase run test` passes web/native browser parity and OpenTUI headless parity.                                                         |
-| 65    | Infer `.tsx`/`.jsx` output extensions when target emission adds JSX to `.ts`/`.js` modules.                                  | Codemod adversarial route regression checks extension, JSX, stale source binding cleanup, and module evaluation.                                       |
-| 66    | Detect TypeScript-only bindings before canonicalizing generated CSS names.                                                   | Codemod adversarial suite: a `type css` declaration remains intact while emitted styles use a collision-free binding.                                |
+| 65    | Infer `.tsx`/`.jsx` output extensions when target emission adds JSX to `.ts`/`.js` modules.                                   | Codemod adversarial route regression checks extension, JSX, stale source binding cleanup, and module evaluation.                                        |
+| 66    | Detect TypeScript-only bindings before canonicalizing generated CSS names.                                                    | Codemod adversarial suite: a `type css` declaration remains intact while emitted styles use a collision-free binding.                                   |
+| 67    | Emit JavaScript-valid syntax for `.js` and Vue `<script setup>` targets so parse-gated import cleanup can run.                | `external-adapters.test.ts`: JSS output parses as `.js`, `.ts`, and `.vue`; source bindings are removed and Vue module evaluation is preserved.         |
+| 68    | Keep the internal AST identity out of the source-scanner public API and import it from its existing public subpath.           | `packages/yumcss/tests/public-api/exports.tst.ts` verifies the exact `yumcss/source` value export set.                                                  |
 
 ## Follow-up found during validation
 
@@ -97,11 +99,13 @@ The OpenTUI example passed `$frame.corners`, which resolves to `borderRadius`; t
 
 ## Validation
 
-Focused regression proof passed for compiler regressions, native backends, selector output, source bindings, codemod import collisions and route/roundtrip coverage, migration planning, MCP containment, preview races, and token governance. The isolated package build and packed-consumer build passed. `pnpm run typecheck` and `pnpm run format` passed across the workspace; generated Playground editor types were refreshed with `pnpm --filter playground run editor:types` before typechecking.
+The standalone Codemod suite passed 2,148 files and 10,632 tests in 294.70 seconds. Analyze passed 39 files and 231 tests. Post-format Codemod regressions passed 215 tests across seven focused files, and the six slow files from the monorepo run passed 58/58 with `--maxWorkers=1`.
 
-The core Vitest run passed 1,087 tests across 95 files, and the TypeScript performance checks passed. One runtime benchmark threshold failed while a concurrent Vitest process in the default workspace was using the host CPU: `css.props` measured 777,508 operations/second against a 937,040 floor. The focused runtime hot-path evidence recorded a faster post-fix median (52.437 ms before, 46.803 ms after). This noisy throughput sample is not being used to change implementation or baseline; rerun the benchmark after the concurrent process exits. The broad `test:all` command stopped at that benchmark, so Codemod and Analyze full suites remain to be run separately.
+`pnpm test` passed 1,116 core tests across 95 files, two TypeScript performance checks, five runtime benchmark checks, and 175 type tests with 411 assertions. The YumCSS build passed before the public API gate. Workspace typecheck passed across 13 packages, including Astro with zero diagnostics; lint and format checks passed.
 
-The initial governance snapshot discrepancy has been rechecked and passes in the current workspace. Follow-up codemod regressions, including CLI symlink containment, absolute-path handling, flat `tw` import resolution, and dedup, passed 91 tests across three focused files. Final repository-wide checks are recorded below after completion.
+The final serial `pnpm run test:all` passed the core, benchmark, lint-plugin, example browser/PTY, React Native, and Showcase stages. Its parallel Codemod stage timed out nine tests across six files after 90–120 seconds; 2,142/2,148 files and 10,623/10,632 tests passed. Running those six files serially passed all 58 tests in 302.84 seconds. This run did not report assertion failures, and the standalone full Codemod run passed. No test timeout or budget was changed.
+
+The initial governance snapshot discrepancy has been rechecked and passes in the current workspace. Follow-up codemod regressions, including CLI symlink containment, absolute-path handling, flat `tw` import resolution, and dedup, passed 91 tests across three focused files.
 
 ## Browser proof
 

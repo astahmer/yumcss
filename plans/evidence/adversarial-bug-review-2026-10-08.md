@@ -494,3 +494,15 @@ These were reproduced against the isolated fixes workspace, then checked again w
 - Reproduction: migrate a styled component in a TypeScript file that declares `type css = string`.
 - Actual: binding selection avoided the type name, but cleanup's text-based check missed it and renamed the generated binding back to `css`, creating a type/value name conflict.
 - Regression: the codemod adversarial suite requires the declaration to remain intact and generated styles to keep a separate target binding.
+
+### 67. P1 — adapters emit TypeScript-only syntax into JavaScript outputs
+
+- Reproduction: migrate JSS into `styles.js` or a plain Vue `<script setup>` block, or migrate a Vue styled component without `lang="ts"`.
+- Actual: JSS emitted `button!.classList` and Vue emitted a `Record<string, any>` annotation. The target parser rejected each file, so conservative import cleanup retained dead source bindings.
+- Regression: `external-adapters.test.ts` parses generated `.js`, `.ts`, and `.vue` files with their language adapters, checks JSS binding removal, and checks Vue side-effect import preservation.
+
+### 68. P2 — source scanner leaks an internal AST identity through its public exports
+
+- Reproduction: compare `yumcss/source` runtime exports with the maintained public API contract.
+- Actual: the source scanner re-exported `NodeKind` even though that value belongs to the existing `yumcss/tw/literal` subpath, and the exact export test failed. Codemod and Analyze also imported it through the accidental export.
+- Regression: the public API type test remains exact, while internal consumers import `NodeKind` from `yumcss/tw/literal`.

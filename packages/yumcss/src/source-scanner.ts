@@ -663,7 +663,6 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 		}),
 };
 
-export { NodeKind } from "./ast-node-kind.ts";
 export {
 	SourceBindings,
 	SourceBindingKind,
