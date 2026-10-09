@@ -1,6 +1,6 @@
 {
 	"name": "@yumcss/lint-plugin",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Oxlint diagnostics for YumCSS style code that should be folded at build time.",
 	"keywords": [
 		"atomic-css",
