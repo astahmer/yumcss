@@ -31,7 +31,8 @@ const declarations = (items: readonly RuntimeDeclaration[] = [], propertyRule = 
 				propertyRule && item.property === "syntax" && typeof item.value === "string"
 					? serializeCssPropertySyntax(item.value)
 					: declarationValue(item.value);
-			return `${dashCase(item.property)}:${value}`;
+			const property = item.property.startsWith("--") ? item.property : dashCase(item.property);
+			return `${property}:${value}`;
 		})
 		.join(";");
 
