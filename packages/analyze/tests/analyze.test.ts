@@ -29,6 +29,20 @@ describe("analyzeSource — per-call classification", () => {
 		expect(stats.cxRuntime).toBe(0);
 	});
 
+	test("ignores imported cx aliases shadowed by local parameters", () => {
+		const source =
+			'import { cx as classNames } from "yumcss"; export const invoke = (classNames) => classNames("px-2");';
+		const stats = analyzeSource(source, "shadowed.ts", { config });
+		const pass = inlineCxCalls(source, "shadowed.ts", config, new Set(["classNames"]), {
+			constants: true,
+			partialFold: true,
+		});
+
+		expect(pass.inlined).toBe(0);
+		expect(stats.cxCalls).toBe(0);
+		expect(stats.cxFoldedFull).toBe(0);
+	});
+
 	test("same-module constants fold", () => {
 		const source = `const PAD = "px-4 py-3";\nexport const b = cx(PAD, "rounded-xl");`;
 		const stats = analyzeSource(source, "b.ts", { config });
