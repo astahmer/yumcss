@@ -844,6 +844,29 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(client.css()).toBe(":root { --server-token: red; }\n.a{color:red}\n.b{color:blue}");
 	});
 
+	test("preserves implicit semantic rule priority after hydration", () => {
+		const redRule = {
+			kind: "style" as const,
+			selector: ".x",
+			declarations: [{ property: "color", value: "red" }],
+		};
+		const blueRule = {
+			kind: "style" as const,
+			selector: ".x",
+			declarations: [{ property: "color", value: "blue" }],
+		};
+		const server = createRuntimeSheet({ autoMount: false });
+		server.registerSemanticRules([redRule, blueRule]);
+
+		const client = createRuntimeSheet({ autoMount: false });
+		client.hydrate(server.snapshot());
+		const before = client.css();
+		client.registerSemanticRules([blueRule]);
+
+		expect(before).toBe(".x{color:red}\n.x{color:blue}");
+		expect(client.css()).toBe(before);
+	});
+
 	test("ignores sparse token manifest entries during hydration", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		const tokenManifest = new Array<{ name: string; fingerprint: string }>(1);
