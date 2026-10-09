@@ -1,6 +1,6 @@
 # Adversarial fixes — 2026-10-08
 
-Resolution ledger for 75 independently checked issues: the original 68 plus seven follow-ups recorded in the [adversarial review](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace; concurrent default-workspace work remains separate.
+Resolution ledger for 77 independently checked issues: the original 68 plus nine follow-ups recorded in the [adversarial review](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace; concurrent default-workspace work remains separate.
 
 ## Checked fixes
 
@@ -88,6 +88,8 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 73    | Preflight all generated artifact paths against migrated output paths and removed sources before the first write.              | CLI e2e regression: a generated/output collision fails with every original source intact and no generated file left behind.                             |
 | 74    | Keep switch-case initializers out of cross-branch CSS constant evaluation.                                                    | Vite CSS regression executes original and transformed code and requires the same TDZ `ReferenceError` for an inactive case.                             |
 | 75    | Revalidate every pending source snapshot after adapter awaits and before the first migration write.                           | CLI e2e test gates `runAsync`, edits the input, then verifies the CLI rejects the stale plan and preserves the edit.                                    |
+| 76    | Classify runtime boundaries from exact module directive-prologue AST nodes.                                                   | Source scanner tests: leading `use client`/`use server` directives classify; comments, ordinary strings, and later expressions remain shared.           |
+| 77    | Validate every plugin and adapter ID before mutating the source scanner registry.                                             | Source scanner test: failed plugin registration leaves the registry's existing adapters and plugin list unchanged.                                     |
 
 ## Follow-up found during validation
 

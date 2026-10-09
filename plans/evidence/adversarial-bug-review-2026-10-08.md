@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Seven additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Nine additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -552,3 +552,15 @@ Seven additional defects were reproduced against the unified fixes workspace and
 - Reproduction: pause an Emotion-to-Treat adapter run after the CLI reads `Card.tsx`, replace the file with a user edit, then resume the adapter.
 - Actual: the CLI wrote output derived from the stale snapshot over the newer edit and reported success.
 - Regression: the CLI e2e test gates the migration use case, edits the file during the await, and requires the CLI to reject the stale plan while preserving the edit.
+
+### 76. P2 — source scanner treats matching strings anywhere in a module as directives
+
+- Reproduction: place `"use client"` in a comment, ordinary string, or expression after a declaration.
+- Actual: the scanner marked the module client-bound even though none of those strings are in the directive prologue.
+- Regression: scanner coverage distinguishes exact leading directives from comments, values, and later expression statements.
+
+### 77. P2 — failed source-scanner plugin registration leaves adapters behind
+
+- Reproduction: register a plugin containing one new adapter followed by an adapter ID already in the registry.
+- Actual: registration throws at the duplicate, but the earlier adapter stays registered while the plugin is absent.
+- Regression: scanner coverage requires adapter and plugin registries to remain unchanged after a failed registration.
