@@ -844,6 +844,15 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(client.css()).toBe(":root { --server-token: red; }\n.a{color:red}\n.b{color:blue}");
 	});
 
+	test("ignores sparse token manifest entries during hydration", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const tokenManifest = new Array<{ name: string; fingerprint: string }>(1);
+
+		expect(() => sheet.hydrate({ tokens: "", rules: [], tokenManifest })).not.toThrow();
+		expect(sheet.css()).toBe("");
+		expect(sheet.snapshot().tokenManifest).toEqual([]);
+	});
+
 	test("mounts into an explicit document and updates one style element", () => {
 		const styles: Array<{
 			tagName: string;
