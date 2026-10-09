@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Six additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Seven additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -546,3 +546,9 @@ Six additional defects were reproduced against the unified fixes workspace and t
 - Reproduction: declare `const style` in one switch case, then read it in another case's `css.class(style)` call.
 - Actual: source-order constant evaluation folded the call even though the original inactive case throws `ReferenceError`.
 - Regression: Vite CSS test executes both source and transformed code and requires the same TDZ error; switch cases now remain conservatively dynamic.
+
+### 75. P1 — CLI overwrites source edits made while adapter migration is running
+
+- Reproduction: pause an Emotion-to-Treat adapter run after the CLI reads `Card.tsx`, replace the file with a user edit, then resume the adapter.
+- Actual: the CLI wrote output derived from the stale snapshot over the newer edit and reported success.
+- Regression: the CLI e2e test gates the migration use case, edits the file during the await, and requires the CLI to reject the stale plan while preserving the edit.

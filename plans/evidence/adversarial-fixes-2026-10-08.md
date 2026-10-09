@@ -1,6 +1,6 @@
 # Adversarial fixes — 2026-10-08
 
-Resolution ledger for 74 independently checked issues: the original 68 plus six follow-ups recorded in the [adversarial review](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace; concurrent default-workspace work remains separate.
+Resolution ledger for 75 independently checked issues: the original 68 plus seven follow-ups recorded in the [adversarial review](adversarial-bug-review-2026-10-08.md). Implemented in the isolated `adversarial-fixes-2026-10-08` JJ workspace; concurrent default-workspace work remains separate.
 
 ## Checked fixes
 
@@ -87,6 +87,7 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 72    | Exclude shadowed imported `cx` calls from fold-coverage totals.                                                               | Analyze suite compares shadowed-alias report counts with the real `inlineCxCalls` pass.                                                                 |
 | 73    | Preflight all generated artifact paths against migrated output paths and removed sources before the first write.              | CLI e2e regression: a generated/output collision fails with every original source intact and no generated file left behind.                             |
 | 74    | Keep switch-case initializers out of cross-branch CSS constant evaluation.                                                    | Vite CSS regression executes original and transformed code and requires the same TDZ `ReferenceError` for an inactive case.                             |
+| 75    | Revalidate every pending source snapshot after adapter awaits and before the first migration write.                           | CLI e2e test gates `runAsync`, edits the input, then verifies the CLI rejects the stale plan and preserves the edit.                                    |
 
 ## Follow-up found during validation
 

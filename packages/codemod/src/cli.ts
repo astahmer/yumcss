@@ -197,6 +197,26 @@ function validateGeneratedOutputCollisions(
 			);
 }
 
+function validateMigrationSourcesUnchanged(
+	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
+	sources: readonly { readonly relative: string; readonly source: string }[],
+): void {
+	for (const migration of sources) {
+		let currentSource: string;
+		try {
+			currentSource = readFileSync(pathBoundary.resolve(migration.relative), "utf8");
+		} catch {
+			throw new Error(
+				`codemod: refusing to overwrite stale source ${migration.relative}: file is missing or unreadable`,
+			);
+		}
+		if (currentSource !== migration.source)
+			throw new Error(
+				`codemod: refusing to overwrite stale source ${migration.relative}: file changed during migration`,
+			);
+	}
+}
+
 function validatePlannedFileChanges(
 	pathBoundary: ReturnType<typeof createProjectPathBoundary>,
 	files: readonly {
@@ -808,6 +828,7 @@ async function runAdapterRoute(
 	const dependencies: AdapterDependencies[] = [...targetDependencies];
 	const pendingWrites: Array<{
 		relative: string;
+		source: string;
 		outputRelative: string;
 		result: Awaited<ReturnType<typeof swapImport.runAdapterMigrationAsync>>;
 	}> = [];
@@ -931,6 +952,7 @@ async function runAdapterRoute(
 		);
 		pendingWrites.push({
 			relative,
+			source,
 			outputRelative,
 			result,
 		});
@@ -997,6 +1019,7 @@ async function runAdapterRoute(
 			if (pending.outputRelative === pending.relative)
 				assertPathIsNotHardLinked(pathBoundary.resolve(pending.relative));
 	if (!args.dryRun) {
+		validateMigrationSourcesUnchanged(pathBoundary, pendingWrites);
 		if (pendingWrites.length > 0 || args.force)
 			writeGeneratedFiles(pathBoundary, projectGeneratedFiles, args.force);
 		applyFileChanges(
