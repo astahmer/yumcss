@@ -102,6 +102,30 @@ describe("Node MCP validation host", () => {
 		);
 	});
 
+	it("isolates writes when node_modules itself is a symlink", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		const dependencies = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-dependencies-"));
+		roots.push(root, dependencies);
+		mkdirSync(join(dependencies, ".cache"), { recursive: true });
+		writeFileSync(join(dependencies, ".cache", "mcp-marker"), "original");
+		symlinkSync(dependencies, join(root, "node_modules"), "dir");
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: {
+					typecheck:
+						"node -e \"require('node:fs').writeFileSync('node_modules/.cache/mcp-marker', 'changed')\"",
+				},
+			}),
+		);
+
+		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
+
+		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
+		expect(readFileSync(join(dependencies, ".cache", "mcp-marker"), "utf8")).toBe("original");
+	});
+
 	it("keeps relative symlink overlays inside the validation copy", async () => {
 		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
 		roots.push(root);
