@@ -71,10 +71,15 @@ export function analyzeTokenGovernance(options: TokenGovernanceOptions): TokenGo
 	const exported = scanPublicExports(options.files);
 	const definitionIds = new Set(context.definitions.map((d) => d.id));
 	const idsByAuthoredName = new Map<string, string[]>();
+	const idsByQualifiedName = new Map<string, string[]>();
 	for (const def of context.definitions) {
 		const list = idsByAuthoredName.get(def.name) ?? [];
 		list.push(def.id);
 		idsByAuthoredName.set(def.name, list);
+		const qualified = `${def.group}.${def.name}`;
+		const qualifiedIds = idsByQualifiedName.get(qualified) ?? [];
+		qualifiedIds.push(def.id);
+		idsByQualifiedName.set(qualified, qualifiedIds);
 	}
 	for (const hit of exported) {
 		for (const authored of hit.references) {
@@ -84,7 +89,9 @@ export function analyzeTokenGovernance(options: TokenGovernanceOptions): TokenGo
 				if (definitionIds.has(hit.tokenId)) boundaryHits["public-export"].push(hit.tokenId);
 				continue;
 			}
-			const ids = idsByAuthoredName.get(authored) ?? [];
+			const ids = authored.includes(".")
+				? (idsByQualifiedName.get(authored) ?? [])
+				: (idsByAuthoredName.get(authored) ?? []);
 			if (ids.length === 1) boundaryHits["public-export"].push(ids[0]!);
 		}
 	}
