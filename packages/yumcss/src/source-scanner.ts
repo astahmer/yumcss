@@ -623,8 +623,19 @@ export function createSourceScannerRegistry(
 				throw new Error(`unsupported source scanner plugin schema: ${plugin.schema}`);
 			if (plugins.has(plugin.id))
 				throw new Error(`source scanner plugin already registered: ${plugin.id}`);
-			for (const adapter of plugin.adapters) registry.register(adapter);
+			const pluginAdapterIds = new Set<string>();
+			for (const adapter of plugin.adapters) {
+				if (adapter.schema !== SOURCE_SCANNER_SCHEMA)
+					throw new Error(`unsupported source scanner schema: ${adapter.schema}`);
+				if (adapters.has(adapter.id) || pluginAdapterIds.has(adapter.id))
+					throw new Error(`source scanner already registered: ${adapter.id}`);
+				pluginAdapterIds.add(adapter.id);
+			}
+			const nextAdapters = [...adapters.values(), ...plugin.adapters];
+			const nextClassifier = createSourceLanguageClassifier(nextAdapters);
+			for (const adapter of plugin.adapters) adapters.set(adapter.id, adapter);
 			plugins.set(plugin.id, plugin);
+			classifier = nextClassifier;
 			return registry;
 		},
 		languageForFile: (file) => classifier.languageForFile(file),
