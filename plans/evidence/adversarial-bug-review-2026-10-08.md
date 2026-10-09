@@ -596,3 +596,31 @@ Fourteen additional defects were reproduced against the unified fixes workspace 
 - Actual: `dashCase` changed them to `---my-token` and `--my-token`, so the authored custom-property names were not preserved.
 - Contract: CSS custom-property names are case-sensitive in the [W3C CSS Custom Properties Level 1 specification](https://www.w3.org/TR/css-variables-1/#defining-variables).
 - Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires both names and values to survive serialization and PostCSS parsing exactly.
+
+### 83. P2 — sparse semantic conditions crash CSS serialization
+
+- Reproduction: register a style rule with `conditions: new Array(1)` and a valid selector and declaration.
+- Actual: `Array.prototype.every` skips the hole during validation; selector serialization later reads `startsWith` from `undefined` and throws.
+- Source: `packages/yumcss/src/css/runtime-sheet.ts` semantic-rule validation and `packages/yumcss/src/css/runtime-sheet-serializer.ts` condition serialization.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the malformed rule to be ignored without changing sheet state.
+
+### 84. P2 — sparse hydration manifests throw after partially changing sheet state
+
+- Reproduction: hydrate an existing sheet with new tokens and rules plus `tokenManifest: new Array(1)`.
+- Actual: validation skips the array hole, then constructing the manifest `Map` throws after tokens have changed; old rules and cached CSS remain until a later mutation.
+- Source: `packages/yumcss/src/css/runtime-sheet.ts` `hydrate`.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires sparse manifest data to be treated as unknown metadata while tokens and rules hydrate coherently.
+
+### 85. P2 — sparse semantic declarations register an empty CSS rule
+
+- Reproduction: register a style rule with `declarations: new Array(1)`.
+- Actual: validation skips the hole and serialization produces `.x{}`, which is stored as a valid runtime rule.
+- Source: `packages/yumcss/src/css/runtime-sheet.ts` semantic-rule validation and `packages/yumcss/src/css/runtime-sheet-serializer.ts` declaration serialization.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the malformed rule to be ignored.
+
+### 86. P2 — re-registering an implicit-priority rule after hydration changes the cascade
+
+- Reproduction: register two conflicting semantic rules without explicit priorities on the server, hydrate their snapshot, then re-register the later rule on the client.
+- Actual: its implicit priority resets from its server registration index to zero, so the two rules reorder and the winning declaration changes.
+- Source: `packages/yumcss/src/css/runtime-sheet.ts` `registerSemanticRules`.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the hydrated CSS order to remain unchanged after re-registering the identical rule.

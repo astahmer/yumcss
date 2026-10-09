@@ -95,6 +95,8 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 80    | Accept empty declaration strings only for custom-property names.                                                              | Runtime-sheet test: `--empty` remains in emitted and PostCSS-parsed CSS; an empty `color` declaration is still rejected.                                |
 | 81    | Terminate parent declarations before serializing the first nested semantic child.                                             | Runtime-sheet test: emitted CSS keeps the parent declaration and `&:hover` child distinct in the PostCSS syntax tree.                                   |
 | 82    | Preserve authored custom-property spelling instead of applying CSS property-name normalization.                               | Runtime-sheet test: case-distinct `--MyToken` and `--myToken` names and values survive PostCSS parsing.                                                 |
+| 83–85 | Densify semantic arrays and hydration manifests with `Array.from` before validation, so holes are rejected as malformed entries. | Runtime-sheet tests reject sparse conditions/declarations and complete hydration safely when a token manifest is sparse.                                |
+| 86    | Reuse the stored priority when identical semantic CSS is re-registered without an explicit priority after hydration.          | Runtime-sheet hydration test preserves the original cascade order; existing explicit-priority updates still pass.                                      |
 
 ## Follow-up found during validation
 
