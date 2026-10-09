@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import {
 	CodemodAdapterId,
 	STYLE_MIGRATION_USE_CASE,
@@ -190,6 +190,102 @@ describe("adapter migration e2e matrix", () => {
 			rmSync(directory, { recursive: true, force: true });
 		}
 	}, 120_000);
+
+	test("refuses to overwrite a source edited while adapter migration is running", async () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-cli-stale-source-"));
+		const sourceFile = join(directory, "Card.tsx");
+		const originalSource =
+			'import styled from "@emotion/styled"; export const Card = styled.div({ color: "red" });';
+		const concurrentEdit =
+			"// USER EDIT made while adapter work was pending\nexport const Card = 42;\n";
+		writeFileSync(sourceFile, originalSource);
+
+		const previousArgv = process.argv;
+		const previousExitCode = process.exitCode;
+		const previousLog = console.log;
+		const previousError = console.error;
+		let migrationEnteredResolver: () => void = () => {};
+		const migrationEntered = new Promise<void>((resolvePromise) => {
+			migrationEnteredResolver = resolvePromise;
+		});
+		let releaseMigrationResolver: () => void = () => {};
+		const migrationGate = new Promise<void>((resolvePromise) => {
+			releaseMigrationResolver = resolvePromise;
+		});
+		let completeCommandResolver: () => void = () => {};
+		const commandCompleted = new Promise<void>((resolvePromise) => {
+			completeCommandResolver = resolvePromise;
+		});
+		const commandErrors: Array<string> = [];
+		const waitFor = (promise: Promise<void>) => {
+			let timeout: ReturnType<typeof setTimeout> | undefined;
+			return Promise.race([
+				promise,
+				new Promise<never>((_, reject) => {
+					timeout = setTimeout(() => reject(new Error("CLI race reproduction timed out")), 30_000);
+				}),
+			]).finally(() => {
+				if (timeout !== undefined) clearTimeout(timeout);
+			});
+		};
+
+		try {
+			vi.resetModules();
+			const swap = await import("../src/swap/index.ts");
+			const useCase = swap.STYLE_MIGRATION_USE_CASE;
+			const originalRunAsync = useCase.runAsync;
+			Object.defineProperty(useCase, "runAsync", {
+				configurable: true,
+				value: async (...args: Parameters<typeof originalRunAsync>) => {
+					migrationEnteredResolver();
+					await migrationGate;
+					return originalRunAsync(...args);
+				},
+				writable: true,
+			});
+
+			console.log = (...args) => {
+				const message = args.map(String).join(" ");
+				if (message.startsWith("{") && message.includes('"files"')) completeCommandResolver();
+			};
+			console.error = (...args) => {
+				const message = args.map(String).join(" ");
+				commandErrors.push(message);
+				if (message.startsWith("yumcss-codemod:")) completeCommandResolver();
+			};
+			process.argv = [
+				process.execPath,
+				join(codemodRoot, "src/cli.ts"),
+				"migrate",
+				"--root",
+				directory,
+				"--from=emotion",
+				"--to=treat",
+				"--safe",
+				"--no-install",
+				"--report=json",
+				sourceFile,
+			];
+			await import("../src/cli.ts");
+
+			await waitFor(migrationEntered);
+			writeFileSync(sourceFile, concurrentEdit);
+			releaseMigrationResolver();
+			await waitFor(commandCompleted);
+
+			expect(readFileSync(sourceFile, "utf8")).toBe(concurrentEdit);
+			expect(commandErrors.join("\n")).toContain("refusing to overwrite stale source");
+			expect(process.exitCode).toBe(1);
+		} finally {
+			releaseMigrationResolver();
+			console.log = previousLog;
+			console.error = previousError;
+			process.argv = previousArgv;
+			process.exitCode = previousExitCode;
+			vi.resetModules();
+			rmSync(directory, { recursive: true, force: true });
+		}
+	}, 90_000);
 
 	test("writes a host-dialect conversion to the target extension", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
