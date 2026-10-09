@@ -1133,6 +1133,22 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.snapshot().rules).toHaveLength(0);
 	});
 
+	test("ignores sparse semantic declaration arrays", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const declarations = new Array<{ property: string; value: string }>(1);
+
+		expect(() =>
+			sheet.registerSemanticRules([
+				{
+					kind: "style",
+					selector: ".x",
+					declarations,
+				},
+			]),
+		).not.toThrow();
+		expect(sheet.snapshot().rules).toHaveLength(0);
+	});
+
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([
