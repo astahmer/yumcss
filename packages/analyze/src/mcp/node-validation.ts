@@ -1,5 +1,6 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import {
+	constants,
 	cpSync,
 	existsSync,
 	lstatSync,
@@ -8,7 +9,6 @@ import {
 	readFileSync,
 	realpathSync,
 	rmSync,
-	symlinkSync,
 	unlinkSync,
 	writeFileSync,
 } from "node:fs";
@@ -139,10 +139,34 @@ function detectPackageManager(root: string, packageJson: PackageJson): PackageMa
 	return "npm";
 }
 
+function copyNodeModules(source: string, destination: string): void {
+	if (process.platform === "darwin") {
+		const result = spawnSync("/bin/cp", ["-cRL", source, destination], { encoding: "utf8" });
+		if (result.error !== undefined) throw result.error;
+		if (result.status !== 0)
+			throw new Error(
+				result.stderr.trim() ||
+					`copying node_modules failed with exit code ${String(result.status)}`,
+			);
+		return;
+	}
+	cpSync(source, destination, {
+		recursive: true,
+		dereference: true,
+		mode: constants.COPYFILE_FICLONE,
+	});
+}
+
 function copyProject(root: string): ValidationWorkspace {
 	if (!existsSync(join(root, "package.json")))
 		throw new Error("project validation requires a package.json at the project root");
-	const isolatedRoot = mkdtempSync(join(tmpdir(), "yumcss-mcp-validation-"));
+	const isolatedRoot = (() => {
+		try {
+			return mkdtempSync(join(dirname(realpathSync(root)), ".yumcss-mcp-validation-"));
+		} catch {
+			return mkdtempSync(join(tmpdir(), "yumcss-mcp-validation-"));
+		}
+	})();
 	try {
 		cpSync(root, isolatedRoot, {
 			recursive: true,
@@ -156,7 +180,7 @@ function copyProject(root: string): ValidationWorkspace {
 		});
 		const sourceNodeModules = join(root, "node_modules");
 		const targetNodeModules = join(isolatedRoot, "node_modules");
-		if (existsSync(sourceNodeModules)) symlinkSync(sourceNodeModules, targetNodeModules, "dir");
+		if (existsSync(sourceNodeModules)) copyNodeModules(sourceNodeModules, targetNodeModules);
 		return {
 			root: isolatedRoot,
 			cleanup: () => rmSync(isolatedRoot, { recursive: true, force: true }),

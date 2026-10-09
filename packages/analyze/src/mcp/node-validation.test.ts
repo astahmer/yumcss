@@ -74,8 +74,9 @@ describe("Node MCP validation host", () => {
 			join(root, "packages", "fixture-dependency", "index.js"),
 			"module.exports = 'isolated';",
 		);
+		writeFileSync(join(root, "packages", "fixture-dependency", "marker.txt"), "original");
 		symlinkSync(
-			"../packages/fixture-dependency",
+			join(root, "packages", "fixture-dependency"),
 			join(root, "node_modules", "fixture-dependency"),
 			"dir",
 		);
@@ -85,15 +86,18 @@ describe("Node MCP validation host", () => {
 				private: true,
 				scripts: {
 					typecheck:
-						"node -e \"if (require('fixture-dependency') !== 'isolated') process.exit(1); require('node:fs').writeFileSync('node_modules/.cache/mcp-marker', 'changed')\"",
+						"node -e \"if (require('fixture-dependency') !== 'isolated') process.exit(1); require('node:fs').writeFileSync('node_modules/.cache/mcp-marker', 'changed'); require('node:fs').writeFileSync('node_modules/fixture-dependency/marker.txt', 'changed')\"",
 				},
 			}),
 		);
 
 		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
 
-		expect(result.status).toBe(MCP_VALIDATION_STATUS.Passed);
+		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
 		expect(readFileSync(join(root, "node_modules", ".cache", "mcp-marker"), "utf8")).toBe(
+			"original",
+		);
+		expect(readFileSync(join(root, "packages", "fixture-dependency", "marker.txt"), "utf8")).toBe(
 			"original",
 		);
 	});
