@@ -126,6 +126,29 @@ describe("Node MCP validation host", () => {
 		expect(readFileSync(join(dependencies, ".cache", "mcp-marker"), "utf8")).toBe("original");
 	});
 
+	it("does not let package scripts write through project symlinks", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		const outside = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-outside-"));
+		roots.push(root, outside);
+		writeFileSync(join(outside, "mcp-marker"), "original");
+		symlinkSync(outside, join(root, "outside"), "dir");
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: {
+					typecheck:
+						"node -e \"require('node:fs').writeFileSync('outside/mcp-marker', 'changed')\"",
+				},
+			}),
+		);
+
+		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
+
+		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
+		expect(readFileSync(join(outside, "mcp-marker"), "utf8")).toBe("original");
+	});
+
 	it("keeps relative symlink overlays inside the validation copy", async () => {
 		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
 		roots.push(root);
