@@ -6,9 +6,13 @@ import {
 	lstatSync,
 	mkdtempSync,
 	mkdirSync,
+	readdirSync,
 	readFileSync,
+	readlinkSync,
 	realpathSync,
 	rmSync,
+	statSync,
+	symlinkSync,
 	unlinkSync,
 	writeFileSync,
 } from "node:fs";
@@ -157,30 +161,86 @@ function copyNodeModules(source: string, destination: string): void {
 	});
 }
 
+const isolateProjectSymlinks = ({
+	sourceRoot,
+	isolatedRoot,
+}: {
+	sourceRoot: string;
+	isolatedRoot: string;
+}): void => {
+	const realSourceRoot = realpathSync(sourceRoot);
+	const visit = (sourceDirectory: string): void => {
+		for (const entry of readdirSync(sourceDirectory, { withFileTypes: true })) {
+			const sourcePath = join(sourceDirectory, entry.name);
+			const projectRelativePath = relative(sourceRoot, sourcePath).replaceAll("\\", "/");
+			if (
+				projectRelativePath === ".git" ||
+				projectRelativePath.startsWith(".git/") ||
+				projectRelativePath.split("/").includes("node_modules")
+			)
+				continue;
+			if (!entry.isSymbolicLink()) {
+				if (entry.isDirectory()) visit(sourcePath);
+				continue;
+			}
+
+			let resolvedTarget: string;
+			try {
+				resolvedTarget = realpathSync(sourcePath);
+			} catch {
+				throw new Error(`project symlink cannot be isolated: ${projectRelativePath}`);
+			}
+			const targetWithinRoot = relative(realSourceRoot, resolvedTarget);
+			if (
+				targetWithinRoot === ".." ||
+				targetWithinRoot.startsWith(`..${sep}`) ||
+				isAbsolute(targetWithinRoot)
+			)
+				throw new Error(
+					`project symlink resolves outside the source project: ${projectRelativePath}`,
+				);
+
+			if (!isAbsolute(readlinkSync(sourcePath))) continue;
+			const isolatedPath = join(isolatedRoot, relative(sourceRoot, sourcePath));
+			const isolatedTarget = join(isolatedRoot, targetWithinRoot);
+			const isolatedLinkTarget = relative(dirname(isolatedPath), isolatedTarget);
+			rmSync(isolatedPath);
+			symlinkSync(
+				isolatedLinkTarget,
+				isolatedPath,
+				statSync(resolvedTarget).isDirectory() ? "dir" : "file",
+			);
+		}
+	};
+	visit(sourceRoot);
+};
+
 function copyProject(root: string): ValidationWorkspace {
-	if (!existsSync(join(root, "package.json")))
+	const sourceRoot = realpathSync(root);
+	if (!existsSync(join(sourceRoot, "package.json")))
 		throw new Error("project validation requires a package.json at the project root");
 	const isolatedRoot = (() => {
 		try {
-			return mkdtempSync(join(dirname(realpathSync(root)), ".yumcss-mcp-validation-"));
+			return mkdtempSync(join(dirname(sourceRoot), ".yumcss-mcp-validation-"));
 		} catch {
 			return mkdtempSync(join(tmpdir(), "yumcss-mcp-validation-"));
 		}
 	})();
 	try {
-		cpSync(root, isolatedRoot, {
+		cpSync(sourceRoot, isolatedRoot, {
 			recursive: true,
 			verbatimSymlinks: true,
 			filter: (source) => {
-				const path = relative(root, source).replaceAll("\\", "/");
+				const path = relative(sourceRoot, source).replaceAll("\\", "/");
 				return (
 					path !== ".git" && !path.startsWith(".git/") && !path.split("/").includes("node_modules")
 				);
 			},
 		});
-		const sourceNodeModules = join(root, "node_modules");
+		const sourceNodeModules = join(sourceRoot, "node_modules");
 		const targetNodeModules = join(isolatedRoot, "node_modules");
 		if (existsSync(sourceNodeModules)) copyNodeModules(sourceNodeModules, targetNodeModules);
+		isolateProjectSymlinks({ sourceRoot, isolatedRoot });
 		return {
 			root: isolatedRoot,
 			cleanup: () => rmSync(isolatedRoot, { recursive: true, force: true }),

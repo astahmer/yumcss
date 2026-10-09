@@ -143,9 +143,14 @@ describe("Node MCP validation host", () => {
 			}),
 		);
 
-		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
+		const outcome = await createNodeMcpValidationPort({ timeoutMs: 10_000 })
+			.run(request(root))
+			.then(
+				() => "resolved",
+				(error: unknown) => (error instanceof Error ? error.message : String(error)),
+			);
 
-		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
+		expect(outcome).toContain("project symlink resolves outside the source project");
 		expect(readFileSync(join(outside, "mcp-marker"), "utf8")).toBe("original");
 	});
 
@@ -172,22 +177,27 @@ describe("Node MCP validation host", () => {
 		expect(readFileSync(join(root, "real.ts"), "utf8")).toBe("before");
 	});
 
-	it("rejects absolute symlink overlays that resolve outside the isolated project", async () => {
+	it("rebases absolute project symlinks before applying overlays", async () => {
 		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
 		roots.push(root);
 		mkdirSync(join(root, "src"), { recursive: true });
 		writeFileSync(join(root, "real.ts"), "before");
 		symlinkSync(join(root, "real.ts"), join(root, "src/button.ts"));
-		writeFileSync(join(root, "package.json"), JSON.stringify({ private: true, scripts: {} }));
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: {
+					typecheck:
+						"node -e \"if (require('node:fs').readFileSync('src/button.ts','utf8') !== 'after') process.exit(1)\"",
+				},
+			}),
+		);
 
-		const outcome = await createNodeMcpValidationPort()
-			.run(request(root))
-			.then(
-				() => "resolved",
-				(error: unknown) => (error instanceof Error ? error.message : String(error)),
-			);
+		const [result] = await createNodeMcpValidationPort({ timeoutMs: 10_000 }).run(request(root));
+
+		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
 		expect(readFileSync(join(root, "real.ts"), "utf8")).toBe("before");
-		expect(outcome).toContain("validation overlay path resolves outside the isolated project");
 	});
 
 	it("reports an unavailable check when the project has no matching script", async () => {
