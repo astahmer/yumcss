@@ -349,9 +349,16 @@ export function createRuntimeSheet(
 			rules
 				.filter(isRuntimeSemanticRule)
 				.filter((rule) => (rule.declarations?.length ?? 0) > 0 || (rule.children?.length ?? 0) > 0)
-				.map((rule, index) =>
-					canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index }),
-				),
+				.map((rule, index) => {
+					const canonical = canonicalizer.canonicalize({
+						...rule,
+						priority: rule.priority ?? index,
+					});
+					const previous = store.rules.get(canonical.id);
+					if (rule.priority === undefined && previous?.css === canonical.css)
+						return { ...canonical, priority: previous.priority };
+					return canonical;
+				}),
 		);
 	};
 
