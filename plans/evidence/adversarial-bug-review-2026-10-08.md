@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Thirteen additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Fourteen additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -589,3 +589,10 @@ Thirteen additional defects were reproduced against the unified fixes workspace 
 - Reproduction: register a `.parent` rule with `color: red` and a nested `&:hover` rule with `color: blue`.
 - Actual: serialization emitted `.parent{color:red&:hover{color:blue}}`, joining the child selector to the declaration value.
 - Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the declaration and nested rule to serialize separately and checks the parsed PostCSS tree.
+
+### 82. P2 — runtime CSS serialization changes case-sensitive custom-property names
+
+- Reproduction: register `--MyToken` and `--myToken` declarations in one global rule.
+- Actual: `dashCase` changed them to `---my-token` and `--my-token`, so the authored custom-property names were not preserved.
+- Contract: CSS custom-property names are case-sensitive in the [W3C CSS Custom Properties Level 1 specification](https://www.w3.org/TR/css-variables-1/#defining-variables).
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires both names and values to survive serialization and PostCSS parsing exactly.

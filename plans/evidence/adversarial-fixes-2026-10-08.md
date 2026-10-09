@@ -94,6 +94,7 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 79    | Include serialized CSS in generated semantic IDs so hash collisions cannot overwrite distinct rules.                          | Runtime-sheet test: two rules with the same 32-bit hash both remain in the snapshot and emitted CSS.                                                    |
 | 80    | Accept empty declaration strings only for custom-property names.                                                              | Runtime-sheet test: `--empty` remains in emitted and PostCSS-parsed CSS; an empty `color` declaration is still rejected.                                |
 | 81    | Terminate parent declarations before serializing the first nested semantic child.                                             | Runtime-sheet test: emitted CSS keeps the parent declaration and `&:hover` child distinct in the PostCSS syntax tree.                                   |
+| 82    | Preserve authored custom-property spelling instead of applying CSS property-name normalization.                               | Runtime-sheet test: case-distinct `--MyToken` and `--myToken` names and values survive PostCSS parsing.                                                 |
 
 ## Follow-up found during validation
 
@@ -131,6 +132,8 @@ The runtime-sheet regression failed before the fix because the two selectors sha
 The empty custom-property regression failed before the fix because validation dropped the declaration and its rule. All 55 runtime-sheet tests passed after the fix, including the PostCSS parse check; Oxfmt passed on both changed files.
 
 The nested-rule regression failed before the fix because `color:red` and `&:hover` were concatenated. All 56 runtime-sheet tests passed after the fix, and PostCSS parsed the parent declaration and nested child as separate nodes.
+
+The custom-property spelling regression failed before the fix because `dashCase` rewrote uppercase letters in both names. All 57 runtime-sheet tests passed after the fix; PostCSS preserved the authored name casing.
 
 ## Browser proof
 
