@@ -1,6 +1,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { runInNewContext } from "node:vm";
 import { expect, test } from "vitest";
 import { build } from "vite";
 import { createTwAdapter } from "../src/tw/adapter.ts";
@@ -1819,6 +1820,32 @@ test("scope-aware CSS inlining respects module constants, shadowing, and TDZ", (
 	expect(result.code).toContain('return "[color:green]"');
 	expect(result.code).toContain('style["--pw-c-color"]');
 	expect(result.code).not.toContain('classNames.push("[color:red]")');
+});
+
+test("CSS extraction does not evaluate switch declarations from an inactive case", () => {
+	const source = [
+		'import { css } from "./design";',
+		"function run(which) {",
+		"  switch (which) {",
+		'    case "red": const style = { color: "red" }; break;',
+		'    case "blue": return css.class(style);',
+		"  }",
+		"}",
+	].join("\n");
+	const executable = source.replace('import { css } from "./design";', "");
+	const original = runInNewContext(`${executable}\nrun;`, { css: { class: () => "[runtime]" } });
+
+	expect(() => original("blue")).toThrow(/Cannot access 'style' before initialization/u);
+
+	const result = inline().inline(source, "app.tsx", new Set(["css"]));
+	const transformed = runInNewContext(
+		`${result.code.replace('import { css } from "./design";', "")}\nrun;`,
+		{ css: { class: () => "[runtime]" } },
+	);
+
+	expect(result.inlined).toBe(0);
+	expect(result.code).toContain("css.class(style)");
+	expect(() => transformed("blue")).toThrow(/Cannot access 'style' before initialization/u);
 });
 
 test("direct carriers fold proven spreads and literal computed keys", () => {
