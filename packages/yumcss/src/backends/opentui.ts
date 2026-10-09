@@ -23,6 +23,7 @@ const BORDER_STYLES = new Set([
 	"inset",
 	"outset",
 ]);
+const BORDER_WIDTH_KEYWORDS = new Set(["thin", "medium", "thick"]);
 const CELL_PROPERTIES = new Set([
 	"width",
 	"height",
@@ -161,7 +162,10 @@ const toBorder = (value: string): Record<string, unknown> => {
 		return { border: false };
 	const out: Record<string, unknown> = { border: true };
 	const candidates = parts.filter(
-		(part) => !CSS_LENGTH.test(part) && !BORDER_STYLES.has(part.toLowerCase()),
+		(part) =>
+			!CSS_LENGTH.test(part) &&
+			!BORDER_STYLES.has(part.toLowerCase()) &&
+			!BORDER_WIDTH_KEYWORDS.has(part.toLowerCase()),
 	);
 	const color = candidates[candidates.length - 1];
 	if (color !== undefined) out.borderColor = color;
