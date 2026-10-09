@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Nine additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Ten additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -564,3 +564,9 @@ Nine additional defects were reproduced against the unified fixes workspace and 
 - Reproduction: register a plugin containing one new adapter followed by an adapter ID already in the registry.
 - Actual: registration throws at the duplicate, but the earlier adapter stays registered while the plugin is absent.
 - Regression: scanner coverage requires adapter and plugin registries to remain unchanged after a failed registration.
+
+### 78. P2 — MCP validation scripts can mutate the source dependency tree
+
+- Reproduction: run a package validation script that writes `node_modules/.cache/mcp-marker` in a copied project.
+- Actual: the validation workspace symlinked the original `node_modules`; the script passed and changed the original marker from `original` to `changed`.
+- Regression: `packages/analyze/src/mcp/node-validation.test.ts` runs a script that writes both a cache file and a file through an absolute dependency symlink, then requires the originals to remain unchanged.

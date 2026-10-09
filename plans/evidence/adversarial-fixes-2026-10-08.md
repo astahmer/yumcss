@@ -89,11 +89,14 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 74    | Keep switch-case initializers out of cross-branch CSS constant evaluation.                                                    | Vite CSS regression executes original and transformed code and requires the same TDZ `ReferenceError` for an inactive case.                             |
 | 75    | Revalidate every pending source snapshot after adapter awaits and before the first migration write.                           | CLI e2e test gates `runAsync`, edits the input, then verifies the CLI rejects the stale plan and preserves the edit.                                    |
 | 76    | Classify runtime boundaries from exact module directive-prologue AST nodes.                                                   | Source scanner tests: leading `use client`/`use server` directives classify; comments, ordinary strings, and later expressions remain shared.           |
-| 77    | Validate every plugin and adapter ID before mutating the source scanner registry.                                             | Source scanner test: failed plugin registration leaves the registry's existing adapters and plugin list unchanged.                                     |
+| 77    | Validate every plugin and adapter ID before mutating the source scanner registry.                                             | Source scanner test: failed plugin registration leaves the registry's existing adapters and plugin list unchanged.                                      |
+| 78    | Copy `node_modules` into the validation workspace and dereference dependency symlinks.                                        | MCP validation test: package script resolves an absolute-linked dependency and writes cache/dependency markers; both source markers remain unchanged.   |
 
 ## Follow-up found during validation
 
 The OpenTUI example passed `$frame.corners`, which resolves to `borderRadius`; that backend has no radius field and correctly refuses it. Removed the unsupported sample while retaining the backend refusal test. `pnpm --filter opentui-example run test` passed all seven headless checks and the PTY smoke.
+
+MCP validation previously symlinked the original `node_modules` into its temporary project. A passing package script could change the original cache or files reached through dependency symlinks. The validation workspace now receives a private copy of dependencies with symlinks dereferenced.
 
 ## Tradeoffs
 
@@ -102,6 +105,7 @@ The OpenTUI example passed `$frame.corners`, which resolves to `borderRadius`; t
 - Project-wide bootstrap writes wait until source migrations are resolved; preserving a working project takes precedence over partial destructive integration changes.
 - Unknown dynamic token references conservatively block automated removal, including unrelated token groups when their identity cannot be established.
 - Extension-changing MCP migrations preserve inode metadata for single-link files and refuse hard-linked files because Node cannot safely clone arbitrary ACLs and xattrs to a new inode.
+- Dependency copying uses macOS `cp -c` and Node's `COPYFILE_FICLONE` elsewhere. Filesystems without copy-on-write support fall back to copying the dependency tree, which can take extra time and disk space; the workspace is placed beside the project when possible to keep macOS clones on the same volume.
 - The live-sheet fixture grows from 40,390 to 43,026 minified bytes (+2,636), and 14,685 to 15,705 gzip bytes (+1,020). This growth is in the explicit `createRuntimeCss` live-sheet lane, where token-manifest conflict checks and transactional style registration protect shared sheets; the static `createCss` path stays separate. The live-sheet hard budget is now 43,300 minified and 15,500 gzip (plus the test's 2% compressor tolerance). Plain CX grows +103 minified / +55 gzip; fixture CX +103 / +61. The stylesheet generator grows from 30,281 to 31,272 minified bytes (+991) and 11,066 to 11,399 gzip bytes (+333); this code is build-time only. Other hard-budget adjustments remain 100 and 100 bytes.
 - Showcase uses the common style intersection for all three targets. Web and React Native add their supported corner-radius extensions, while OpenTUI keeps the backend's explicit rejection of CSS border radius. The web inline-style example passes its base status because React's `style` prop cannot represent nested condition objects.
 - Runtime and generated-size snapshots were regenerated with the pinned Vitest runners; the same runner refreshes `PERF.md`. No derived size output was hand-edited.
@@ -115,6 +119,8 @@ The standalone Codemod suite passed 2,148 files and 10,632 tests in 294.70 secon
 The final serial `pnpm run test:all` passed the core, benchmark, lint-plugin, example browser/PTY, React Native, and Showcase stages. Its parallel Codemod stage timed out nine tests across six files after 90–120 seconds; 2,142/2,148 files and 10,623/10,632 tests passed. Running those six files serially passed all 58 tests in 302.84 seconds. This run did not report assertion failures, and the standalone full Codemod run passed. No test timeout or budget was changed.
 
 The initial governance snapshot discrepancy has been rechecked and passes in the current workspace. Follow-up codemod regressions, including CLI symlink containment, absolute-path handling, flat `tw` import resolution, and dedup, passed 91 tests across three focused files.
+
+The MCP validation regression file passed 7/7 tests, Analyze typecheck passed, and Oxfmt passed on both changed MCP files.
 
 ## Browser proof
 
