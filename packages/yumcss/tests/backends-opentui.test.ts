@@ -77,6 +77,16 @@ describe("opentui border model", () => {
 		expect(backend.declare("border", "solid")).toEqual({ border: true });
 	});
 
+	test("border width keywords do not become colors", () => {
+		const backend = createOpentuiBackend();
+		for (const value of ["thin solid", "medium dashed", "thick double"])
+			expect(backend.declare("border", value)).toEqual({ border: true });
+		expect(backend.declare("border", "thin solid red")).toEqual({
+			border: true,
+			borderColor: "red",
+		});
+	});
+
 	test("disabled CSS borders stay disabled and functional colors stay intact", () => {
 		const backend = createOpentuiBackend();
 		for (const value of ["none", "hidden", "0", "0 solid red"])
