@@ -1045,6 +1045,33 @@ describe("runtime CSS-in-JS sheet", () => {
 		]);
 	});
 
+	test("preserves authored casing in custom property names", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "global",
+				selector: ":root",
+				declarations: [
+					{ property: "--MyToken", value: "red" },
+					{ property: "--myToken", value: "blue" },
+				],
+			},
+		]);
+
+		const css = sheet.css();
+		expect(css).toBe(":root{--MyToken:red;--myToken:blue}");
+		expect(parse(css).nodes).toMatchObject([
+			{
+				type: "rule",
+				selector: ":root",
+				nodes: [
+					{ type: "decl", prop: "--MyToken", value: "red" },
+					{ type: "decl", prop: "--myToken", value: "blue" },
+				],
+			},
+		]);
+	});
+
 	test("separates declarations from nested semantic child rules", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([
