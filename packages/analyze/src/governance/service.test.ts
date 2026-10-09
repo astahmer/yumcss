@@ -167,6 +167,29 @@ describe("analyzeTokenGovernance", () => {
 		expect(report.summary.strictViolations).toBe(0);
 	});
 
+	it.each([
+		[
+			"a named alias",
+			'import { css as makeStyle } from "./css"; makeStyle({ color: "$colors.brand" });',
+		],
+		[
+			"a namespace binding",
+			'import * as styles from "./css"; styles.css({ color: "$colors.brand" });',
+		],
+	])("does not recommend removing tokens used through %s", (_label, content) => {
+		const report = analyzeTokenGovernance({
+			root: "/repo",
+			files: [{ file: "src/app.ts", content }],
+			policy,
+			tokenContext: { tokenGroups: { colors: { brand: "#e11d48" } } },
+		});
+
+		expect(report.usage).toContainEqual(expect.objectContaining({ tokenId: "colors::brand" }));
+		expect(report.unusedCandidates.some((candidate) => candidate.tokenId === "colors::brand")).toBe(
+			false,
+		);
+	});
+
 	it("requires review before pruning tokens behind comment-adjacent dynamic values", () => {
 		const report = analyzeTokenGovernance({
 			root: "/repo",

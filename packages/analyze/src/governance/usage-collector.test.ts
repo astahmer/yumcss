@@ -146,6 +146,26 @@ describe("collectTokenUsage", () => {
 		expect(byValue.red?.tokenId).toBe("colors::red");
 		expect(result.usage.filter((u) => u.strictness === "raw-strict-violation")).toHaveLength(1);
 	});
+
+	it.each([
+		[
+			"named import aliases",
+			'import { css as makeStyle } from "./css"; makeStyle({ color: "$colors.brand" });',
+		],
+		[
+			"namespace imports",
+			'import * as styles from "./css"; styles.css({ color: "$colors.brand" });',
+		],
+	])("collects token usage through %s", (_label, content) => {
+		const result = collectTokenUsage([{ file: "src/app.ts", content }], resolvedPolicy);
+
+		expect(result.usage).toHaveLength(1);
+		expect(result.usage[0]).toMatchObject({
+			tokenId: "$colors.brand",
+			property: "color",
+			strictness: "token",
+		});
+	});
 });
 
 describe("resolveUsageAgainstDefinitions", () => {
