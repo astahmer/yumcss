@@ -70,9 +70,11 @@ export const App = () => <Box data-proof sx={{ width: 100, height: 100 }} />;`;
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain('width: "100px"');
 	expect(result.code).toContain('height: "100px"');
-	expect(result.code).not.toContain("@mui/material");
+	expect(result.code).toContain('import "@mui/material";');
+	expect(result.code).not.toContain('import { Box } from "@mui/material";');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mui/material";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div data-proof className={css.class({ width: "100px", height: "100px" })} />;"
 	`);

@@ -93,9 +93,11 @@ export const App = () => <Box data-proof c="#123456" bg="#ffffff" p="16px" bdrs=
 	expect(result.converted).toBe(1);
 	expect(result.residuals).toEqual([]);
 	expect(result.code).toContain('padding: "calc(1rem * var(--mantine-scale, 1))"');
-	expect(result.code).not.toContain("@mantine/core");
+	expect(result.code).toContain('import "@mantine/core";');
+	expect(result.code).not.toContain('import { Box } from "@mantine/core";');
 	expect(result.code).toMatchInlineSnapshot(`
-		"import { createUnsafeCss } from "yumcss/unsafe/css";
+		"import "@mantine/core";
+		import { createUnsafeCss } from "yumcss/unsafe/css";
 		const css = createUnsafeCss();
 		export const App = () => <div data-proof className={css.class({ color: "#123456", backgroundColor: "#ffffff", padding: "calc(1rem * var(--mantine-scale, 1))", borderRadius: "8px", fontWeight: 700 })}>Mantine proof</div>;"
 	`);
