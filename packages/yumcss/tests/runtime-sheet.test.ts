@@ -876,6 +876,24 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.snapshot().tokenManifest).toEqual([]);
 	});
 
+	test("hydrates rules coherently when the token manifest is sparse", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.register([{ id: "old", css: ".old{color:red}", priority: 0 }]);
+		expect(sheet.css()).toBe(".old{color:red}");
+		const tokenManifest = new Array<{ name: string; fingerprint: string }>(1);
+
+		expect(() =>
+			sheet.hydrate({
+				tokens: ":root{--new:2}",
+				rules: [{ id: "new", css: ".new{color:blue}", priority: 0 }],
+				tokenManifest,
+			}),
+		).not.toThrow();
+		expect(sheet.css()).toBe(":root{--new:2}\n.new{color:blue}");
+		expect(sheet.snapshot().rules.map((rule) => rule.id)).toEqual(["new"]);
+		expect(sheet.snapshot().tokenManifest).toBeUndefined();
+	});
+
 	test("mounts into an explicit document and updates one style element", () => {
 		const styles: Array<{
 			tagName: string;
