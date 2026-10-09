@@ -1107,6 +1107,23 @@ describe("runtime CSS-in-JS sheet", () => {
 		]);
 	});
 
+	test("ignores sparse semantic condition arrays without throwing", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const conditions = new Array<string>(1);
+
+		expect(() =>
+			sheet.registerSemanticRules([
+				{
+					kind: "style",
+					selector: ".x",
+					conditions,
+					declarations: [{ property: "color", value: "red" }],
+				},
+			]),
+		).not.toThrow();
+		expect(sheet.snapshot().rules).toHaveLength(0);
+	});
+
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([
