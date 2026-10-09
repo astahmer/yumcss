@@ -87,6 +87,7 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 			const frame = frames.at(-1)!;
 			const child = frame.rule.children?.[frame.index++];
 			if (child !== undefined) {
+				if (frame.index === 1 && frame.parts[0] !== "") frame.parts[0] += ";";
 				if (activeRules.has(child)) throw new Error("Cyclic runtime semantic rule tree");
 				activeRules.add(child);
 				frames.push({
