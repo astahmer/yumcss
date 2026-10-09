@@ -208,6 +208,32 @@ describe("analyzeTokenGovernance", () => {
 		expect(candidate?.boundaries).toContain("dynamic-expression");
 	});
 
+	it("tracks qualified token references from public object exports by group", () => {
+		const report = analyzeTokenGovernance({
+			root: "/repo",
+			files: [
+				{
+					file: "src/theme.ts",
+					content: 'export const theme = { color: "$colors.brand" };',
+				},
+			],
+			tokenContext: {
+				tokenGroups: {
+					colors: { brand: "#e11d48" },
+					semantic: { brand: "#abc123" },
+				},
+			},
+		});
+		const candidates = new Map(report.unusedCandidates.map((candidate) => [candidate.tokenId, candidate]));
+
+		expect(report.summary.boundaries["public-export"]).toBe(1);
+		expect(candidates.get("colors::brand")).toMatchObject({
+			safety: "review-required",
+			boundaries: ["public-export"],
+		});
+		expect(candidates.get("semantic::brand")).toMatchObject({ safety: "safe-to-remove" });
+	});
+
 	it("downgrades candidates when configuration fails", () => {
 		const report = analyzeTokenGovernance({
 			root: "/repo",
