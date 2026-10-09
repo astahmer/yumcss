@@ -1045,6 +1045,41 @@ describe("runtime CSS-in-JS sheet", () => {
 		]);
 	});
 
+	test("separates declarations from nested semantic child rules", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "style",
+				selector: ".parent",
+				declarations: [{ property: "color", value: "red" }],
+				children: [
+					{
+						kind: "style",
+						selector: "&:hover",
+						declarations: [{ property: "color", value: "blue" }],
+					},
+				],
+			},
+		]);
+
+		const css = sheet.css();
+		expect(css).toBe(".parent{color:red;&:hover{color:blue}}");
+		expect(parse(css).nodes).toMatchObject([
+			{
+				type: "rule",
+				selector: ".parent",
+				nodes: [
+					{ type: "decl", prop: "color", value: "red" },
+					{
+						type: "rule",
+						selector: "&:hover",
+						nodes: [{ type: "decl", prop: "color", value: "blue" }],
+					},
+				],
+			},
+		]);
+	});
+
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([
