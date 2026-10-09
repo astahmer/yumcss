@@ -42,7 +42,7 @@
     "min": 12977
   },
   "createRuntimeCss(preset), live sheet": {
-    "min": 43026
+    "min": 43222
   },
   "createUnsafeCss(), static output after extraction": {
     "min": 81
