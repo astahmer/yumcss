@@ -1,3 +1,6 @@
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { NodeKind, walk, type OxcNode } from "yumcss/tw/literal";
+
 /**
  * Public-export coverage boundary (plans/054 step 6) - any statically
  * string-literal export of the project (export const X = "..." and object
@@ -20,52 +23,81 @@ export interface PublicExportHit {
 	readonly name?: string;
 }
 
-const EXPORT_REGEX =
-	/\bexport\s+const\s+([\w$]+)\s*[:=]\s*([\s\S]*?)(?:;|\n(?=\s*(?:export|const|let|var|function|class|import|type))|$)/g;
+const isOxcNode = (value: unknown): value is OxcNode =>
+	typeof value === "object" && value !== null && "type" in value && typeof value.type === "string";
 
-/** Balanced-brace scan for an object literal body. */
-function matchBrace(source: string, open: number): string | null {
-	let depth = 0;
-	for (let i = open; i < source.length; i++) {
-		const ch = source[i];
-		if (ch === "{") depth++;
-		else if (ch === "}") {
-			depth--;
-			if (depth === 0) return source.slice(open + 1, i);
-		}
-	}
-	return null;
-}
+const oxcNodeAt = (node: OxcNode, key: string): OxcNode | undefined => {
+	const value = node[key];
+	return isOxcNode(value) ? value : undefined;
+};
+
+const oxcNodesAt = (node: OxcNode, key: string): OxcNode[] => {
+	const value = node[key];
+	return Array.isArray(value) ? value.filter(isOxcNode) : [];
+};
+
+const stringAt = (node: OxcNode, key: string): string | undefined => {
+	const value = node[key];
+	return typeof value === "string" ? value : undefined;
+};
+
+const tokenReferenceIn = (value: string): string | undefined => /^\$([\w.-]+)$/u.exec(value)?.[1];
+
+const tokenIdFor = (authored: string): string | null => {
+	const dot = authored.indexOf(".");
+	return dot === -1 ? null : `${authored.slice(0, dot)}::${authored.slice(dot + 1)}`;
+};
+
+const stringLiteralValue = (node: OxcNode): string | undefined =>
+	node.type === NodeKind.Literal ? stringAt(node, "value") : undefined;
+
+const exportedVariableName = (declarator: OxcNode): string | undefined => {
+	const id = oxcNodeAt(declarator, "id");
+	return id?.type === NodeKind.Identifier ? stringAt(id, "name") : undefined;
+};
+
+const exportedDeclarators = (statement: OxcNode): OxcNode[] => {
+	if (statement.type !== NodeKind.ExportNamedDeclaration) return [];
+	const declaration = oxcNodeAt(statement, "declaration");
+	return declaration?.type === NodeKind.VariableDeclaration
+		? oxcNodesAt(declaration, "declarations")
+		: [];
+};
+
+const tokenReferencesIn = (initializer: OxcNode): string[] => {
+	const references: string[] = [];
+	walk(initializer, (node) => {
+		const value = stringLiteralValue(node);
+		if (value === undefined) return;
+		const reference = tokenReferenceIn(value);
+		if (reference !== undefined) references.push(reference);
+	});
+	return references;
+};
 
 export function scanPublicExports(
 	files: ReadonlyArray<{ readonly file: string; readonly content: string }>,
 ): readonly PublicExportHit[] {
 	const hits: Array<PublicExportHit> = [];
 	for (const { file, content } of files) {
-		for (const match of content.matchAll(EXPORT_REGEX)) {
-			const name = match[1] ?? "";
-			const initializer = match[2] ?? "";
-			// Full-string export: attribute the exact token when the literal is
-			// the authored spelling itself ($colors.brand / $colors.red-500).
-			const exact = /^(["'])\$([\w.-]+)\1$/.exec(initializer.trim());
-			if (exact !== null) {
-				const authored = exact[2] ?? "";
-				const dot = authored.indexOf(".");
-				const tokenId = dot !== -1 ? authored.slice(0, dot) + "::" + authored.slice(dot + 1) : null;
-				hits.push({ tokenId, references: [authored], file, name });
-				continue;
+		const scanned = SOURCE_SCANNER_SERVICE.scan({ file, source: content });
+		if (scanned.program === undefined || scanned.diagnostics.length > 0) continue;
+		for (const statement of oxcNodesAt(scanned.program, "body")) {
+			for (const declarator of exportedDeclarators(statement)) {
+				const initializer = oxcNodeAt(declarator, "init");
+				const name = exportedVariableName(declarator);
+				if (initializer === undefined || name === undefined) continue;
+				const exact = stringLiteralValue(initializer);
+				if (exact !== undefined) {
+					const authored = tokenReferenceIn(exact);
+					if (authored !== undefined) {
+						hits.push({ tokenId: tokenIdFor(authored), references: [authored], file, name });
+						continue;
+					}
+				}
+				const references = tokenReferencesIn(initializer);
+				if (references.length > 0) hits.push({ tokenId: null, references, file, name });
 			}
-			// Object/array literals: collect every quoted $-reference string so
-			// the caller can attribute them against the definition universe.
-			if (!initializer.includes("$")) continue;
-			const trimmed = initializer.trimEnd();
-			const bodyStart = initializer.indexOf("{");
-			const strings =
-				bodyStart !== -1 && trimmed.endsWith("}")
-					? (matchBrace(initializer, bodyStart) ?? initializer)
-					: initializer;
-			const references = [...strings.matchAll(/(["'])\$([\w.-]+)\1/g)].map((m) => m[2] ?? "");
-			if (references.length > 0) hits.push({ tokenId: null, references, file, name });
 		}
 	}
 	return hits;
