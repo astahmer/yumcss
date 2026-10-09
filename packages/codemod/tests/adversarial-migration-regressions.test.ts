@@ -469,7 +469,7 @@ test("live source css binding stays separate from generated YumCSS css", async (
 	expect(result.code).toContain('import { css as sourceCss } from "@tokenami/css";');
 	expect(result.code).toContain("const css = createUnsafeCss();");
 	expect(result.code).toContain("export const original = sourceCss;");
-	expect(result.code).toContain("export const card = css.class({ color: \"red\" });");
+	expect(result.code).toContain('export const card = css.class({ color: "red" });');
 	expect(parseSync("Card.ts", result.code).errors).toEqual([]);
 	expect(result.code).toMatchInlineSnapshot(`
 		"import { createUnsafeCss } from "yumcss/unsafe/css";
@@ -577,7 +577,7 @@ test("YumCSS binding selection ignores import-shaped strings and comments", asyn
 		},
 	);
 
-	expect(result.code).toContain('const prose = \'import { css } from "./helpers"; css.class\';');
+	expect(result.code).toContain("const prose = 'import { css } from \"./helpers\"; css.class';");
 	expect(result.code).toContain('// import { css } from "./helpers"; css.class');
 	expect(result.code).toContain('import { css } from "./helpers";');
 	expect(result.code).toContain("export const helperStyle = css;");
@@ -645,7 +645,9 @@ test("source CSS binding normalization edits imports without touching strings or
 	);
 
 	expect(result.code).toContain('import { css as sourceCss } from "@tokenami/css";');
-	expect(result.code).toContain('const prose = \'import { css } from "@tokenami/css"; css.class\';');
+	expect(result.code).toContain(
+		"const prose = 'import { css } from \"@tokenami/css\"; css.class';",
+	);
 	expect(result.code).toContain('// import { css } from "@tokenami/css"; css.class');
 	expect(result.code).toContain("export const original = sourceCss;");
 	expect(result.code).toContain('export const card = css.class({ color: "red" });');

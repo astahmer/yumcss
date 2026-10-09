@@ -1,4 +1,8 @@
-import { computeExcludedRanges as scanExcludedRanges, SourceBindingKind, SourceBindings } from "yumcss/source";
+import {
+	computeExcludedRanges as scanExcludedRanges,
+	SourceBindingKind,
+	SourceBindings,
+} from "yumcss/source";
 import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import { NodeKind, type OxcNode, walkWithParent } from "yumcss/tw/literal";
 import { MagicString } from "magic-string";
@@ -50,8 +54,7 @@ export class SourcePass {
 			const start = node.start;
 			if (
 				importedBindings.some(
-					(binding) =>
-						start >= binding.range.start && start < binding.range.end,
+					(binding) => start >= binding.range.start && start < binding.range.end,
 				)
 			)
 				return;

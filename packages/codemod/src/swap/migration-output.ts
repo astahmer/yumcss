@@ -92,7 +92,10 @@ export class MigrationOutput {
 		const reserved = new Set(options.reservedBindings ?? []);
 		let parsed: ReturnType<typeof SOURCE_SCANNER_SERVICE.parse>;
 		try {
-			parsed = SOURCE_SCANNER_SERVICE.parse({ file: options.file ?? "migration-output.tsx", source: code });
+			parsed = SOURCE_SCANNER_SERVICE.parse({
+				file: options.file ?? "migration-output.tsx",
+				source: code,
+			});
 			if (parsed.errors.length > 0) return code;
 		} catch {
 			return code;
@@ -244,25 +247,26 @@ export class MigrationOutput {
 				code.slice(lineStart, range.start).trim() === "" &&
 				(lineEnd === -1 || code.slice(end, lineEnd).trim() === "");
 			const preserveSideEffectImport =
-				!moduleIsSideEffectFree &&
-				keepsModuleEvaluation &&
-				!keptBindingsKeepModuleEvaluation;
+				!moduleIsSideEffectFree && keepsModuleEvaluation && !keptBindingsKeepModuleEvaluation;
 			const rewrittenImport =
 				importClause.length === 0
 					? ""
 					: "import " +
-							(declaration.importKind === "type" ? "type " : "") +
-							importClause.join(", ") +
-							" from " +
-							code.slice(sourceSpan.start, sourceSpan.end) +
-							code.slice(sourceSpan.end, end);
+						(declaration.importKind === "type" ? "type " : "") +
+						importClause.join(", ") +
+						" from " +
+						code.slice(sourceSpan.start, sourceSpan.end) +
+						code.slice(sourceSpan.end, end);
 			edits.push({
 				start:
 					importClause.length === 0 && !preserveSideEffectImport && isStandaloneLine
-					? lineStart
-					: range.start,
+						? lineStart
+						: range.start,
 				end:
-					importClause.length === 0 && !preserveSideEffectImport && isStandaloneLine && lineEnd !== -1
+					importClause.length === 0 &&
+					!preserveSideEffectImport &&
+					isStandaloneLine &&
+					lineEnd !== -1
 						? lineEnd + 1
 						: end,
 				text: preserveSideEffectImport
@@ -322,10 +326,7 @@ export class MigrationOutput {
 					return;
 				}
 				const end = range.end + (code[range.end] === ";" ? 1 : 0);
-				const importSuffix = code
-					.slice(source.end, range.end)
-					.replace(/;\s*$/u, "")
-					.trim();
+				const importSuffix = code.slice(source.end, range.end).replace(/;\s*$/u, "").trim();
 				const specifiers = Array.isArray(declaration.specifiers)
 					? (declaration.specifiers as Array<{
 							readonly type?: string;

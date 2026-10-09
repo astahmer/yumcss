@@ -300,8 +300,6 @@ describe("explicit adapter round trips", () => {
 		expect(reverse.skipped).toBe(0);
 		expect(reverse.residuals).toEqual([]);
 		expect(reverse.code).not.toContain("createCss");
-		expect(reverse.code).toMatchInlineSnapshot(
-			`"<div className={"[color:red] [padding:1rem]"}/>"`,
-		);
+		expect(reverse.code).toMatchInlineSnapshot(`"<div className={"[color:red] [padding:1rem]"}/>"`);
 	});
 });

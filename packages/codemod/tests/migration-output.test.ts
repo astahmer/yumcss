@@ -35,14 +35,11 @@ describe("MigrationOutput", () => {
 			"</script>",
 			"<template><Card /></template>",
 		].join("\n");
-		const result = MigrationOutput.removeSourceImports(
-			source,
-			{
-				modules: ["solid-styled-components"],
-				reservedBindings: ["styled"],
-				file: "App.vue",
-			},
-		);
+		const result = MigrationOutput.removeSourceImports(source, {
+			modules: ["solid-styled-components"],
+			reservedBindings: ["styled"],
+			file: "App.vue",
+		});
 		expect(result).toContain('import "solid-styled-components";');
 		expect(result).not.toContain('import { styled } from "solid-styled-components";');
 		expect(result).toContain("const Card = styled.div`color: red`;");
