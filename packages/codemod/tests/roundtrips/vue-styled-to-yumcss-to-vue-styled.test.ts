@@ -58,7 +58,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves an actionable concrete round
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -95,7 +95,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves an actionable concrete round
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = styled.div\`color: red; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = styled.div\`color: red; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -151,7 +151,7 @@ test("vue-styled -> yumcss -> vue-styled: retains the documented secondary API w
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = css.class({ color: "red", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -188,7 +188,7 @@ test("vue-styled -> yumcss -> vue-styled: retains the documented secondary API w
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = styled.div\`color: red; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = styled.div\`color: red; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -260,7 +260,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "#2563eb", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = css.class({ color: "#2563eb", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -297,7 +297,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -340,7 +340,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -377,7 +377,7 @@ test("vue-styled -> yumcss -> vue-styled: preserves concrete theme and project c
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		      "converted": 1,
 		      "generatedFiles": [],
 		      "loweringPlans": [
@@ -436,7 +436,7 @@ test("vue-styled -> yumcss -> vue-styled: resolves token values across both conc
 		import { createCx } from "yumcss/cx";
 		const cx = createCx();
 		const css = createUnsafeCss();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = css.class({ color: "brand", padding: "1rem" }); return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [
@@ -473,7 +473,7 @@ test("vue-styled -> yumcss -> vue-styled: resolves token values across both conc
 		import { createCx } from "yumcss/cx";
 		import styled from "vue-styled-components";
 		const cx = createCx();
-		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
+		export const Card = defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = styled.div\`color: #2563eb; padding: 1rem;\`; return () => h("div", { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } });",
 		    "converted": 1,
 		    "generatedFiles": [],
 		    "loweringPlans": [

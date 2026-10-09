@@ -48,8 +48,8 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { NodeKind, SOURCE_SCANNER_SERVICE, SourceBindingKind, SourceBindings } from "yumcss/source";
-import { walkWithParent, type OxcNode } from "yumcss/tw/literal";
+import { SOURCE_SCANNER_SERVICE, SourceBindingKind, SourceBindings } from "yumcss/source";
+import { NodeKind, walkWithParent, type OxcNode } from "yumcss/tw/literal";
 import { presetConditions } from "yumcss/preset";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -1021,19 +1021,13 @@ function generatedCssBinding(
 			bindings.bindings.some(
 				(binding) => start >= binding.range.start && start < binding.range.end,
 			);
-		if (
-			node.type === NodeKind.Identifier &&
-			typeof node.name === "string" &&
-			!inImportSpecifier
-		)
+		if (node.type === NodeKind.Identifier && typeof node.name === "string" && !inImportSpecifier)
 			reservedNames.add(node.name);
 		if (node.type !== NodeKind.VariableDeclarator) return;
 		const identifier = isOxcNode(node.id) ? node.id : undefined;
 		const initializer = isOxcNode(node.init) ? node.init : undefined;
 		const callee =
-			initializer !== undefined && isOxcNode(initializer.callee)
-				? initializer.callee
-				: undefined;
+			initializer !== undefined && isOxcNode(initializer.callee) ? initializer.callee : undefined;
 		if (
 			identifier?.type === NodeKind.Identifier &&
 			typeof identifier.name === "string" &&
@@ -2013,7 +2007,7 @@ function staticComponent(
 				? "attrs"
 				: `Object.fromEntries(Object.entries(attrs).filter(([key]) => !${JSON.stringify(componentPropNames)}.includes(key)))`;
 		return {
-			text: `defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs: Record<string, any> = rawAttrs; const style = ${style}; return () => h(${tagExpression}, { ...${forwardedAttrs}, class: cx(style, attrs.class) }, slots.default?.()); } })`,
+			text: `defineComponent({ inheritAttrs: false, setup(_props, { attrs: rawAttrs, slots }) { const attrs = rawAttrs; const style = ${style}; return () => h(${tagExpression}, { ...${forwardedAttrs}, class: cx(style, attrs.class) }, slots.default?.()); } })`,
 			imports: [
 				'import { defineComponent, h } from "vue";',
 				'import { createUnsafeCss } from "yumcss/unsafe/css";',

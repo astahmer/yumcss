@@ -16,6 +16,7 @@ import {
 	runAdapterMigration,
 } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
 import {
 	createAdapterRouteProject,
 	fixtureAdapterRegistry,
@@ -1347,6 +1348,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).not.toMatch(/^import .*vue.*\n<script setup>/);
 		expect(result.code).toContain('import "vue-styled-components";');
+		expect(SOURCE_SCANNER_SERVICE.parse({ file: "Card.vue", source: result.code }).errors).toEqual(
+			[],
+		);
 	});
 
 	test("wraps an unused Vue styled subject for a static class target", () => {
@@ -2339,7 +2343,41 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('import jss from "jss";');
 		expect(result.code).toContain('const sheet = { "button": css.class({ color: "red" }) }');
 		expect(result.code).not.toContain("css.group");
-		expect(result.code).toContain("button!.classList.add(sheet.button)");
+		expect(result.code).toContain("button.classList.add(sheet.button)");
+		expect(SOURCE_SCANNER_SERVICE.parse({ file: "styles.js", source: result.code }).errors).toEqual(
+			[],
+		);
+
+		const vueSource = [
+			"<script setup>",
+			'import jss from "jss";',
+			"const styles = { button: { color: 'red' } };",
+			"const sheet = jss.createStyleSheet(styles);",
+			"sheet.getRule('button').applyTo(button);",
+			"</script>",
+		].join("\n");
+		const vueResult = runAdapterMigration(vueSource, {
+			from: "jss",
+			to: "yumcss",
+			file: "styles.vue",
+			mode: "safe",
+		});
+		const tsResult = runAdapterMigration(source, {
+			from: "jss",
+			to: "yumcss",
+			file: "styles.ts",
+			mode: "safe",
+		});
+
+		expect(vueResult.code).toContain("button.classList.add(sheet.button)");
+		expect(vueResult.code).not.toContain('import jss from "jss";');
+		expect(
+			SOURCE_SCANNER_SERVICE.parse({ file: "styles.vue", source: vueResult.code }).errors,
+		).toEqual([]);
+		expect(tsResult.code).toContain("button!.classList.add(sheet.button)");
+		expect(
+			SOURCE_SCANNER_SERVICE.parse({ file: "styles.ts", source: tsResult.code }).errors,
+		).toEqual([]);
 	});
 
 	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {

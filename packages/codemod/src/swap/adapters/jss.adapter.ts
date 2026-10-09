@@ -14,6 +14,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 		return { code: context.code, residuals: [] };
 	}
 	const edits: Array<{ start: number; end: number; text: string }> = [];
+	const nonNullAssertion = /\.(?:[mc]?ts|tsx)$/u.test(context.file) ? "!" : "";
 	const application =
 		/\b([A-Za-z_$][\w$]*)\.getRule\(\s*["']([A-Za-z_$][\w$]*)["']\s*\)\.applyTo\(\s*([^)]*?)\s*\)/g;
 	for (const match of context.code.matchAll(application)) {
@@ -25,7 +26,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 		edits.push({
 			start,
 			end: start + match[0].length,
-			text: `${element}!.classList.add(${sheet}.${rule})`,
+			text: `${element}${nonNullAssertion}.classList.add(${sheet}.${rule})`,
 		});
 	}
 	for (const match of context.code.matchAll(/\.attach\(\)/g)) {
@@ -60,7 +61,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 			edits.push({
 				start,
 				end: start + match[0].length,
-				text: `${element}!.classList.add(${sheet})`,
+				text: `${element}${nonNullAssertion}.classList.add(${sheet})`,
 			});
 		}
 	}
