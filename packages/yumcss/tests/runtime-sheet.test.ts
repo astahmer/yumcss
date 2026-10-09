@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import { parse } from "postcss";
 import { typeValue } from "./type-fixtures.ts";
 import { createCss } from "../src/css/create-css.ts";
 import {
@@ -1016,6 +1017,32 @@ describe("runtime CSS-in-JS sheet", () => {
 
 		expect(sheet.snapshot().rules).toHaveLength(2);
 		expect(sheet.css()).toBe(".ciz7p9zt61{color:red}\n.c45hnhaukb{color:red}");
+	});
+
+	test("preserves empty custom property values in semantic rules", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "global",
+				selector: ":root",
+				declarations: [{ property: "--empty", value: "" }],
+			},
+			{
+				kind: "style",
+				selector: ".invalid",
+				declarations: [{ property: "color", value: "" }],
+			},
+		]);
+
+		expect(sheet.snapshot().rules).toHaveLength(1);
+		expect(sheet.css()).toBe(":root{--empty:}");
+		expect(parse(sheet.css()).nodes).toMatchObject([
+			{
+				type: "rule",
+				selector: ":root",
+				nodes: [{ type: "decl", prop: "--empty", value: "" }],
+			},
+		]);
 	});
 
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
