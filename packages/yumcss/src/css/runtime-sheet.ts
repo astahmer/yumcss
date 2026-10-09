@@ -127,6 +127,7 @@ const isRuntimeSemanticRule = (value: unknown): value is RuntimeSemanticRule => 
 						isRecord(item) &&
 						isSafeText(item.property) &&
 						(isSafeText(item.value) ||
+							(item.value === "" && item.property.startsWith("--") && item.property.length > 2) ||
 							typeof item.value === "boolean" ||
 							(typeof item.value === "number" && Number.isFinite(item.value))),
 				)
