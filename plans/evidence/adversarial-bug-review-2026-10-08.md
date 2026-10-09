@@ -624,3 +624,31 @@ Fourteen additional defects were reproduced against the unified fixes workspace 
 - Actual: its implicit priority resets from its server registration index to zero, so the two rules reorder and the winning declaration changes.
 - Source: `packages/yumcss/src/css/runtime-sheet.ts` `registerSemanticRules`.
 - Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the hydrated CSS order to remain unchanged after re-registering the identical rule.
+
+### 87. P2 — MCP validation scripts can write outside the project through symlinks
+
+- Reproduction: add a project symlink to an external directory and declare a package script that writes through that link.
+- Actual: validation copies the link verbatim, so the package script changes the external marker instead of a file in its temporary workspace.
+- Source: `packages/analyze/src/mcp/node-validation.ts` project-copy boundary.
+- Regression: `packages/analyze/src/mcp/node-validation.test.ts` verifies external links are rejected before execution and absolute links to in-project files are rebased into the copy.
+
+### 88. P2 — framework detection mistakes comments, strings, and package lookalikes for imports
+
+- Reproduction: place a React import comment or `from "react"` template string before a real Solid import; also import from `preact-not-a-framework`.
+- Actual: the first two files are classified as React, and the unrelated package is classified as Preact.
+- Source: `packages/yumcss/src/source-scanner.ts` framework adapter detection.
+- Regression: `packages/codemod/tests/source-scanner.test.ts` checks actual imports, misleading text, exact package boundaries, and valid Preact subpaths.
+
+### 89. P2 — Astro preprocessing corrupts valid `return` syntax
+
+- Reproduction: parse Astro frontmatter containing `{ return: 1 }` and a nested function that returns a value.
+- Actual: preprocessing removes each unquoted `return`, producing an `Unexpected token` diagnostic for the property and changing nested return statements into expression statements; source binding analysis can throw.
+- Source: `packages/yumcss/src/source-scanner.ts` Astro parser boundary.
+- Regression: `packages/codemod/tests/source-scanner.test.ts` requires valid frontmatter, an intact nested `ReturnStatement`, and the YumCSS call binding.
+
+### 90. P2 — scanner contract validation lets detection exceptions escape
+
+- Reproduction: register a scanner adapter whose `detect` callback throws, then run its matching contract fixture.
+- Actual: the exception escapes instead of returning a detection-phase failure.
+- Source: `packages/yumcss/src/source-scanner.ts` `createSourceScannerContractSuite`.
+- Regression: `packages/codemod/tests/source-scanner.test.ts` expects a structured failure with `phase: "detection"` and the thrown message.
