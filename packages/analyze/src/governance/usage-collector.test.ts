@@ -166,6 +166,21 @@ describe("collectTokenUsage", () => {
 			strictness: "token",
 		});
 	});
+
+	it("ignores local functions that shadow an imported style alias", () => {
+		const result = collectTokenUsage(
+			[
+				{
+					file: "src/app.ts",
+					content:
+						'import { css as makeStyle } from "./css"; const render = (makeStyle) => makeStyle({ color: "$colors.brand" });',
+				},
+			],
+			resolvedPolicy,
+		);
+
+		expect(result.usage).toEqual([]);
+	});
 });
 
 describe("resolveUsageAgainstDefinitions", () => {

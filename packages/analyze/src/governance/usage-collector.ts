@@ -16,6 +16,7 @@ import type {
 	TokenUsage,
 } from "./contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "yumcss/source";
+import { SourceBindingKind, SourceBindings } from "yumcss/source";
 import { NodeKind, walk, type OxcNode } from "yumcss/tw/literal";
 
 /** Token id for non-token (raw/unknown) observations. */
@@ -160,6 +161,35 @@ const callRootName = (call: OxcNode): string | undefined => {
 	return callee?.type === NodeKind.Identifier ? stringAt(callee, "name") : undefined;
 };
 
+const staticMemberName = (member: OxcNode): string | undefined => {
+	const property = oxcNodeAt(member, "property");
+	if (property?.type === NodeKind.Identifier) return stringAt(property, "name");
+	const value = property?.value;
+	return typeof value === "string" ? value : undefined;
+};
+
+const styleApiForCall = (
+	call: OxcNode,
+	bindings: ReturnType<typeof SourceBindings.fromProgram>,
+	start: number,
+): "css" | "tw" | undefined => {
+	const rootName = callRootName(call);
+	if (rootName === undefined || bindings.isShadowedAt(rootName, start)) return undefined;
+	const binding = bindings.binding(rootName);
+	if (binding === undefined) return rootName === "css" || rootName === "tw" ? rootName : undefined;
+	if (binding.kind === SourceBindingKind.Namespace) {
+		const callee = oxcNodeAt(call, "callee");
+		if (callee?.type !== NodeKind.MemberExpression) return undefined;
+		const object = oxcNodeAt(callee, "object");
+		if (object?.type !== NodeKind.Identifier || stringAt(object, "name") !== rootName) return undefined;
+		const memberName = staticMemberName(callee);
+		return memberName === "css" || memberName === "tw" ? memberName : undefined;
+	}
+	return binding.importedName === "css" || binding.importedName === "tw"
+		? binding.importedName
+		: undefined;
+};
+
 interface PolicySets {
 	strictProperties: ReadonlySet<string>;
 	allowedValues: ReadonlySet<string>;
@@ -242,10 +272,11 @@ export function collectTokenUsage(
 				boundaries["unscanned-file"].push(file.file);
 				continue;
 			}
+			const bindings = SourceBindings.fromProgram(scanned.program);
 			walk(scanned.program, (node) => {
 				if (node.type !== NodeKind.CallExpression) return;
-				const rootName = callRootName(node);
-				if (rootName !== "tw" && rootName !== "css") return;
+				const start = numberAt(node, "start") ?? 0;
+				if (styleApiForCall(node, bindings, start) === undefined) return;
 				for (const argument of oxcNodesAt(node, "arguments")) {
 					if (argument.type === NodeKind.ObjectExpression) {
 						collectObjectUsages(file.content, argument, "", fileRaws);
