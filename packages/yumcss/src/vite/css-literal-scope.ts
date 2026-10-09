@@ -316,6 +316,8 @@ const applyBlockScope = (
 ): void => {
 	const data = blockScopeData(block);
 	scope.pushLayer(data.bindings);
+	// Switch cases share a scope, but source order does not prove a case initializer ran.
+	if (block.type === NodeKind.SwitchStatement) return;
 	for (const declaration of data.declarations)
 		applyVariableScope(scope, declaration, useStart, evaluateCall);
 };
