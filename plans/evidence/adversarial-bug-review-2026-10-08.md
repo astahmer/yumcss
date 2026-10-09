@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Twelve additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Thirteen additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -583,3 +583,9 @@ Twelve additional defects were reproduced against the unified fixes workspace an
 - Actual: the validator rejected the declaration and dropped the rule; no CSS was emitted.
 - Contract: the [W3C CSS Custom Properties Level 1 specification](https://www.w3.org/TR/css-variables-1/#defining-variables) makes `<declaration-value>` optional and explicitly allows an empty custom-property value.
 - Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires `:root{--empty:}` to remain in the sheet, parses it with PostCSS, and confirms empty values on ordinary properties remain rejected.
+
+### 81. P1 — nested semantic rules merge into the final parent declaration
+
+- Reproduction: register a `.parent` rule with `color: red` and a nested `&:hover` rule with `color: blue`.
+- Actual: serialization emitted `.parent{color:red&:hover{color:blue}}`, joining the child selector to the declaration value.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires the declaration and nested rule to serialize separately and checks the parsed PostCSS tree.
