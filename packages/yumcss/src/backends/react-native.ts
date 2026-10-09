@@ -51,6 +51,16 @@ const LENGTH_PROPERTIES = new Set([
 	"lineHeight",
 	"letterSpacing",
 ]);
+const NUMBER_ONLY_LENGTH_PROPERTIES = new Set([
+	"borderWidth",
+	"borderTopWidth",
+	"borderRightWidth",
+	"borderBottomWidth",
+	"borderLeftWidth",
+	"fontSize",
+	"lineHeight",
+	"letterSpacing",
+]);
 const UNSUPPORTED = new Set([
 	"backdropFilter",
 	"filter",
@@ -108,6 +118,13 @@ const convert = (prop: string, value: string): Record<string, unknown> => {
 		throw new Error(
 			`yumcss/react-native: property "${prop}" does not support the length unit in "${unsupportedUnit}"`,
 		);
+	if (LENGTH_PROPERTIES.has(prop) && value.includes("("))
+		throw new Error(`yumcss/react-native: property "${prop}" value "${value}" is not representable`);
+	if (
+		NUMBER_ONLY_LENGTH_PROPERTIES.has(prop) &&
+		parts.some((part) => CSS_NUMERIC_WITH_UNIT.exec(part)?.[2] === "%")
+	)
+		throw new Error(`yumcss/react-native: property "${prop}" value "${value}" is not representable`);
 	if (!LENGTH_PROPERTIES.has(prop) && parts.some((part) => CSS_NUMERIC_WITH_UNIT.test(part)))
 		throw new Error(
 			`yumcss/react-native: property "${prop}" value "${value}" is not representable`,
