@@ -321,7 +321,9 @@ export const createRuntimeStylesheet = (
 		// oxlint-disable-next-line no-array-sort
 		const orderedConditions = conditionParts.sort();
 		const orderedKey = pairs.join([...orderedConditions, propPart]);
-		if (orderedKey === "" || varCache.has(orderedKey)) return;
+		if (orderedKey === "") return;
+		const cachedRule = varCache.get(orderedKey);
+		if (cachedRule !== undefined) return cachedRule;
 
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(cssPropertyFromKey(propPart, preset.conditions));

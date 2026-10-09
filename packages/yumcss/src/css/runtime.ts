@@ -226,15 +226,17 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		if (!needsRegistration) return;
 		flush({ checkpoint: checkpoint() });
 		const newRules: RuntimeRule[] = [];
+		const newVarKeys = new Set<string>();
 		for (const atom of varAtoms) {
 			for (const key of atom.keys) {
-				if (registeredVarKeys.has(key)) continue;
+				if (registeredVarKeys.has(key) || newVarKeys.has(key)) continue;
 				const rule = stylesheet.processVarKey(key);
-				registeredVarKeys.add(key);
+				newVarKeys.add(key);
 				if (rule !== undefined) newRules.push(rule);
 			}
 		}
 		if (newRules.length > 0) sync(newRules);
+		for (const key of newVarKeys) registeredVarKeys.add(key);
 	};
 	const authoredStrategy = cssOptions.className;
 	const runtimeStrategy: ClassNameStrategy = {
