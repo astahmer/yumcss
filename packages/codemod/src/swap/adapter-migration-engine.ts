@@ -100,19 +100,18 @@ const hasLocalCssBinding = (source: string): boolean => {
 					node.type === "TSModuleDeclaration" ||
 					node.type === "TSTypeAliasDeclaration") &&
 				"id" in node
-			)
-				{
-					const identifier = node.id;
-					if (
-						identifier !== null &&
-						typeof identifier === "object" &&
-						"type" in identifier &&
-						identifier.type === "Identifier" &&
-						"name" in identifier &&
-						identifier.name === "css"
-					)
-						hasTypeBinding = true;
-				}
+			) {
+				const identifier = node.id;
+				if (
+					identifier !== null &&
+					typeof identifier === "object" &&
+					"type" in identifier &&
+					identifier.type === NodeKind.Identifier &&
+					"name" in identifier &&
+					identifier.name === "css"
+				)
+					hasTypeBinding = true;
+			}
 		});
 		return hasTypeBinding;
 	} catch {
@@ -428,12 +427,10 @@ function runAdapterMigrationInternal(
 	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
-	const adapterSourceModulesToRemove = sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? [];
+	const adapterSourceModulesToRemove =
+		sourceAdapter.sourceModulesToRemove?.(targetAdapter.id) ?? [];
 	const sourceModulesForRemoval = [
-		...new Set([
-			...adapterSourceModulesToRemove,
-			...sourceOwnership.modules,
-		]),
+		...new Set([...adapterSourceModulesToRemove, ...sourceOwnership.modules]),
 	];
 	// Host rewrites that collapse a factory-qualified host to its canonical
 	// element leave the source factory namespace without references. The runner
@@ -1793,23 +1790,23 @@ function runAdapterMigrationInternal(
 		outputExtension = undefined;
 	}
 	if (converted > 0 && outputExtension === undefined)
-		outputExtension = jsxOutputExtension(options.file, [runtimeEdited, ...generatedStatements].join("\n"));
+		outputExtension = jsxOutputExtension(
+			options.file,
+			[runtimeEdited, ...generatedStatements].join("\n"),
+		);
 	// Prune only source bindings that are no longer referenced. This is safe even
 	// when another match remains residual: used Chakra/Panda bindings stay in the
 	// file, while dead layout imports do not keep the old runtime surface alive.
 	let code = runtimeEdited;
 	if (converted > 0) {
-		code = MigrationOutput.removeSourceImports(
-			code,
-			{
-				modules: [...sourceModulesForRemoval, ...sourceModulesToRemove],
-				moduleMatchers: sourceOwnership.matchers,
-				reservedBindings: support.generatedBindings(imports),
-				sideEffectFreeModules: sourceOwnership.sideEffectFreeModules,
-				sideEffectFreeMatchers: sourceOwnership.sideEffectFreeMatchers,
-				file: support.fileWithExtension(options.file, outputExtension),
-			},
-		);
+		code = MigrationOutput.removeSourceImports(code, {
+			modules: [...sourceModulesForRemoval, ...sourceModulesToRemove],
+			moduleMatchers: sourceOwnership.matchers,
+			reservedBindings: support.generatedBindings(imports),
+			sideEffectFreeModules: sourceOwnership.sideEffectFreeModules,
+			sideEffectFreeMatchers: sourceOwnership.sideEffectFreeMatchers,
+			file: support.fileWithExtension(options.file, outputExtension),
+		});
 	}
 	if (converted > 0 && skipped === 0 && residuals.length === 0) {
 		code = MigrationOutput.removeNamedImportSpecifiers(
@@ -1940,37 +1937,34 @@ function runAdapterMigrationInternal(
 			(targetOwnership.matchers ?? []).some((matcher) => matcher(moduleSpecifier));
 		const finalSourceModules = [
 			...adapterSourceModulesToRemove,
-			...sourceOwnership.modules.filter((moduleSpecifier) => !targetOwnsSourceModule(moduleSpecifier)),
+			...sourceOwnership.modules.filter(
+				(moduleSpecifier) => !targetOwnsSourceModule(moduleSpecifier),
+			),
 			...sourceModulesToRemove,
 		];
 		const finalSourceMatchers = (sourceOwnership.matchers ?? []).map(
-			(matcher) =>
-				(moduleSpecifier: string) =>
+			(matcher) => (moduleSpecifier: string) =>
+				matcher(moduleSpecifier) &&
+				(!targetOwnsSourceModule(moduleSpecifier) ||
+					explicitlyRemovedSourceModules.has(moduleSpecifier)),
+		);
+		code = MigrationOutput.removeSourceImports(code, {
+			modules: finalSourceModules,
+			moduleMatchers: finalSourceMatchers,
+			reservedBindings: support.generatedBindings(imports),
+			sideEffectFreeModules: sourceOwnership.sideEffectFreeModules?.filter(
+				(moduleSpecifier) =>
+					!targetOwnsSourceModule(moduleSpecifier) ||
+					explicitlyRemovedSourceModules.has(moduleSpecifier),
+			),
+			sideEffectFreeMatchers: (sourceOwnership.sideEffectFreeMatchers ?? []).map(
+				(matcher) => (moduleSpecifier) =>
 					matcher(moduleSpecifier) &&
 					(!targetOwnsSourceModule(moduleSpecifier) ||
 						explicitlyRemovedSourceModules.has(moduleSpecifier)),
-		);
-		code = MigrationOutput.removeSourceImports(
-			code,
-			{
-				modules: finalSourceModules,
-				moduleMatchers: finalSourceMatchers,
-				reservedBindings: support.generatedBindings(imports),
-				sideEffectFreeModules: sourceOwnership.sideEffectFreeModules?.filter(
-					(moduleSpecifier) =>
-						!targetOwnsSourceModule(moduleSpecifier) ||
-						explicitlyRemovedSourceModules.has(moduleSpecifier),
-				),
-				sideEffectFreeMatchers: (sourceOwnership.sideEffectFreeMatchers ?? []).map(
-					(matcher) =>
-						(moduleSpecifier) =>
-							matcher(moduleSpecifier) &&
-							(!targetOwnsSourceModule(moduleSpecifier) ||
-								explicitlyRemovedSourceModules.has(moduleSpecifier)),
-				),
-				file: outputFile,
-			},
-		);
+			),
+			file: outputFile,
+		});
 	}
 	code = MigrationOutput.removeRedundantSideEffectImports(code, outputFile);
 	return {
