@@ -728,6 +728,30 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toContain(".pw-color");
 	});
 
+	test("failed var batches do not poison later rule registration", () => {
+		const tokens = define.tokens({ colors: { "blue.500": "#3182ce" } });
+		const colorPalettes = tokens.defineColorPalettes({ brand: "colors.blue" });
+		const preset = define.preset(
+			{ config: {}, tokens },
+			{
+				strict: true,
+				conditions: { base: "" },
+				properties: { color: { $tokens: "colors", $strict: false } },
+				colorPalettes,
+			},
+		);
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(preset, { sheet });
+
+		expect(() => css.vars({ color: "red", colorPalette: "brand" } as never)).toThrow(
+			"colorPalette is a static palette selector",
+		);
+		const retry = css.vars({ color: "blue" });
+
+		expect(retry.class).toBe("pw-color");
+		expect(sheet.css()).toContain(".pw-color");
+	});
+
 	test("dynamic groups bind input values through runtime custom properties", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		const css = createRuntimeCss(examplePreset, { sheet });
