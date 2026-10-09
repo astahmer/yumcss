@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, rmSync, symlinkSync } from "node:fs";
 import { join } from "node:path";
 import { MCP_EXECUTION_LANE, MCP_VALIDATION_CHECK, MCP_VALIDATION_STATUS } from "./contract.ts";
 import { createNodeMcpValidationPort } from "./node-validation.ts";
@@ -62,6 +62,47 @@ describe("Node MCP validation host", () => {
 		});
 		expect(readFileSync(join(root, "src/button.ts"), "utf8")).toBe("before");
 		expect(() => readFileSync(join(root, "generated/marker.txt"), "utf8")).toThrow();
+	});
+
+	it("keeps relative symlink overlays inside the validation copy", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(join(root, "src"), { recursive: true });
+		writeFileSync(join(root, "real.ts"), "before");
+		symlinkSync("../real.ts", join(root, "src/button.ts"));
+		writeFileSync(
+			join(root, "package.json"),
+			JSON.stringify({
+				private: true,
+				scripts: {
+					typecheck:
+						"node -e \"const fs=require('node:fs'); if (fs.readFileSync('src/button.ts','utf8') !== 'after') process.exit(1)\"",
+				},
+			}),
+		);
+
+		const [result] = await createNodeMcpValidationPort().run(request(root));
+
+		expect(result).toMatchObject({ status: MCP_VALIDATION_STATUS.Passed });
+		expect(readFileSync(join(root, "real.ts"), "utf8")).toBe("before");
+	});
+
+	it("rejects absolute symlink overlays that resolve outside the isolated project", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-mcp-validation-"));
+		roots.push(root);
+		mkdirSync(join(root, "src"), { recursive: true });
+		writeFileSync(join(root, "real.ts"), "before");
+		symlinkSync(join(root, "real.ts"), join(root, "src/button.ts"));
+		writeFileSync(join(root, "package.json"), JSON.stringify({ private: true, scripts: {} }));
+
+		const outcome = await createNodeMcpValidationPort()
+			.run(request(root))
+			.then(
+				() => "resolved",
+				(error: unknown) => (error instanceof Error ? error.message : String(error)),
+			);
+		expect(readFileSync(join(root, "real.ts"), "utf8")).toBe("before");
+		expect(outcome).toContain("validation overlay path resolves outside the isolated project");
 	});
 
 	it("reports an unavailable check when the project has no matching script", async () => {
