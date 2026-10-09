@@ -91,6 +91,7 @@ Each row names regression coverage exercising the actual implementation. Compile
 | 76    | Classify runtime boundaries from exact module directive-prologue AST nodes.                                                   | Source scanner tests: leading `use client`/`use server` directives classify; comments, ordinary strings, and later expressions remain shared.           |
 | 77    | Validate every plugin and adapter ID before mutating the source scanner registry.                                             | Source scanner test: failed plugin registration leaves the registry's existing adapters and plugin list unchanged.                                      |
 | 78    | Copy `node_modules` into the validation workspace and dereference dependency symlinks.                                        | MCP validation test: package script resolves an absolute-linked dependency and writes cache/dependency markers; both source markers remain unchanged.   |
+| 79    | Include serialized CSS in generated semantic IDs so hash collisions cannot overwrite distinct rules.                          | Runtime-sheet test: two rules with the same 32-bit hash both remain in the snapshot and emitted CSS.                                                    |
 
 ## Follow-up found during validation
 
@@ -106,6 +107,7 @@ MCP validation previously symlinked the original `node_modules` into its tempora
 - Unknown dynamic token references conservatively block automated removal, including unrelated token groups when their identity cannot be established.
 - Extension-changing MCP migrations preserve inode metadata for single-link files and refuse hard-linked files because Node cannot safely clone arbitrary ACLs and xattrs to a new inode.
 - Dependency copying uses macOS `cp -c` and Node's `COPYFILE_FICLONE` elsewhere. Filesystems without copy-on-write support fall back to copying the dependency tree, which can take extra time and disk space; the workspace is placed beside the project when possible to keep macOS clones on the same volume.
+- Generated semantic IDs retain the serialized CSS alongside the short hash to make rule identity collision-free. This enlarges each ID and repeats the CSS in serialized runtime-sheet snapshots.
 - The live-sheet fixture grows from 40,390 to 43,026 minified bytes (+2,636), and 14,685 to 15,705 gzip bytes (+1,020). This growth is in the explicit `createRuntimeCss` live-sheet lane, where token-manifest conflict checks and transactional style registration protect shared sheets; the static `createCss` path stays separate. The live-sheet hard budget is now 43,300 minified and 15,500 gzip (plus the test's 2% compressor tolerance). Plain CX grows +103 minified / +55 gzip; fixture CX +103 / +61. The stylesheet generator grows from 30,281 to 31,272 minified bytes (+991) and 11,066 to 11,399 gzip bytes (+333); this code is build-time only. Other hard-budget adjustments remain 100 and 100 bytes.
 - Showcase uses the common style intersection for all three targets. Web and React Native add their supported corner-radius extensions, while OpenTUI keeps the backend's explicit rejection of CSS border radius. The web inline-style example passes its base status because React's `style` prop cannot represent nested condition objects.
 - Runtime and generated-size snapshots were regenerated with the pinned Vitest runners; the same runner refreshes `PERF.md`. No derived size output was hand-edited.
@@ -121,6 +123,8 @@ The final serial `pnpm run test:all` passed the core, benchmark, lint-plugin, ex
 The initial governance snapshot discrepancy has been rechecked and passes in the current workspace. Follow-up codemod regressions, including CLI symlink containment, absolute-path handling, flat `tw` import resolution, and dedup, passed 91 tests across three focused files.
 
 The MCP validation regression file passed 7/7 tests, Analyze typecheck passed, and Oxfmt passed on both changed MCP files.
+
+The runtime-sheet regression failed before the fix because the two selectors shared `semantic-1a35qq`. All 54 runtime-sheet tests passed after the fix; Oxfmt passed on both changed runtime CSS files.
 
 ## Browser proof
 

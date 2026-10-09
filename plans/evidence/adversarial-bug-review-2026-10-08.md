@@ -509,7 +509,7 @@ These were reproduced against the isolated fixes workspace, then checked again w
 
 ## Additional issues independently confirmed after branch unification
 
-Ten additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
+Eleven additional defects were reproduced against the unified fixes workspace and then covered by focused regressions.
 
 ### 69. P1 — governance misses aliased and namespace CSS calls, allowing used-token pruning
 
@@ -570,3 +570,9 @@ Ten additional defects were reproduced against the unified fixes workspace and t
 - Reproduction: run a package validation script that writes `node_modules/.cache/mcp-marker` in a copied project.
 - Actual: the validation workspace symlinked the original `node_modules`; the script passed and changed the original marker from `original` to `changed`.
 - Regression: `packages/analyze/src/mcp/node-validation.test.ts` runs a script that writes both a cache file and a file through an absolute dependency symlink, then requires the originals to remain unchanged.
+
+### 79. P2 — colliding semantic-rule hashes discard distinct runtime CSS
+
+- Reproduction: register `.ciz7p9zt61{color:red}` and `.c45hnhaukb{color:red}` as semantic rules.
+- Actual: both rules canonicalized to `semantic-1a35qq`, so the runtime store retained only the second rule.
+- Regression: `packages/yumcss/tests/runtime-sheet.test.ts` requires both rules to remain in the snapshot and emitted CSS.
