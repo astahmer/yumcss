@@ -204,6 +204,97 @@ describe("language-neutral source scanner registry", () => {
 		expect(solid.framework).toBe("solid");
 	});
 
+	test("detects frameworks from real package imports only", () => {
+		const registry = createSourceScannerRegistry();
+		const solidWithReactComment = registry.scan({
+			file: "solid.tsx",
+			source: '// import React from "react";\nimport { createSignal } from "solid-js";',
+		});
+		const solidWithReactText = registry.scan({
+			file: "solid.tsx",
+			source: 'const note = `from "react"`;\nimport { createSignal } from "solid-js";',
+		});
+		const packageLookalike = registry.scan({
+			file: "preact.tsx",
+			source: 'import { h } from "preact-not-a-framework";',
+		});
+		const preactSubpath = registry.scan({
+			file: "preact.tsx",
+			source: 'import { h } from "preact/compat";',
+		});
+
+		expect([
+			solidWithReactComment.framework,
+			solidWithReactText.framework,
+			packageLookalike.framework,
+			preactSubpath.framework,
+		]).toEqual(["solid", "solid", undefined, "preact"]);
+	});
+
+	test("preserves valid Astro property names and nested returns", () => {
+		const source = [
+			"---",
+			'import { css } from "yumcss/css";',
+			"const object = { return: 1 };",
+			"const readValue = () => { return object.return; };",
+			"if (Astro.props.active) return css({ color: 'red' });",
+			"---",
+			"<div />",
+		].join("\n");
+		const result = createSourceScannerRegistry().scan({ file: "probe.astro", source });
+
+		expect(result.diagnostics).toEqual([]);
+		expect(result.program).toMatchObject({
+			type: "Program",
+			body: expect.arrayContaining([
+				{
+					type: "VariableDeclaration",
+					declarations: expect.arrayContaining([
+						{
+							init: {
+								type: "ArrowFunctionExpression",
+								body: {
+									type: "BlockStatement",
+									body: expect.arrayContaining([{ type: "ReturnStatement" }]),
+								},
+							},
+						},
+					]),
+				},
+			]),
+		});
+		const bindings = SourceBindings.fromDocument(result.document);
+		expect(bindings.callSites.map((site) => source.slice(site.start, site.end))).toContain(
+			"css({ color: 'red' })",
+		);
+	});
+
+	test("reports adapter detection exceptions as contract failures", () => {
+		const adapter: SourceLanguageAdapter = {
+			schema: SOURCE_SCANNER_SCHEMA,
+			id: "detect-throws",
+			languages: ["custom"],
+			detect: () => {
+				throw new Error("detect failed");
+			},
+			scan: (document) => ({
+				document,
+				language: "custom",
+				excluded: [],
+				diagnostics: [],
+				isExcluded: () => false,
+			}),
+		};
+		const result = createSourceScannerContractSuite().run(createSourceScannerRegistry([adapter]), [
+			{ adapter: adapter.id, document: { file: "probe.custom", source: "" } },
+		]);
+
+		expect(result.valid).toBe(false);
+		expect(result.failures).toEqual([
+			{ adapter: adapter.id, phase: "detection", message: "detect failed" },
+		]);
+	});
+
 	test("keeps supported tagged-template call sites actionable", () => {
 		const result = createSourceScannerRegistry().scan({
 			file: "styles.tsx",
